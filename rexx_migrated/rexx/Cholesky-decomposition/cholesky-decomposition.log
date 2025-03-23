@@ -1,0 +1,88 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX program performs the Cholesky decomposition on a square matrix & displays results*/
+0002 niner =  '25  15  -5' ,                          /*define a  3x3  matrix with elements. */
+0003 '15  18   0' ,
+0004 '-5   0  11'
+0005 call Cholesky niner
+0006 hexer =  18  22  54  42,                         /*define a  4x4  matrix with elements. */
+0007 22  70  86  62,
+0008 54  86 174 134,
+0009 42  62 134 106
+0010 call Cholesky hexer
+0011 exit                                             /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 Cholesky: procedure;  parse arg mat;   say;   say;   call tell 'input array',mat
+0014 do    r=1  for ord
+0015 do c=1  for r; $=0;  do i=1  for c-1;  $= $  +  !.r.i * !.c.i;  end /*i*/
+0016 if r=c  then !.r.r= sqrt(!.r.r - $)
+0017 else !.r.c= 1 / !.c.c * (@.r.c - $)
+0018 end   /*c*/
+0019 end      /*r*/
+0020 call tell  'Cholesky factor',,!.,'─'
+0021 return
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 err:   say;   say;   say '***error***!';      say;    say arg(1);   say;   say;    exit 13
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 tell:  parse arg hdr,x,y,sep;   #=0;          if sep==''  then sep= '═'
+0026 dPlaces= 5                                /*# dec. places past the decimal point.*/
+0027 width  =10                                /*field width used to display elements.*/
+0028 if y==''  then !.=0
+0029 else do row=1  for ord;  do col=1  for ord;  x=x !.row.col;  end;   end
+0030 w=words(x)
+0031 do ord=1  until ord**2>=w;  end   /*a fast way to find the matrix's order*/
+0032 say
+0033 if ord**2\==w  then call err  "matrix elements don't form a square matrix."
+0034 say center(hdr, ((width + 1) * w) % ord,  sep)
+0035 say
+0036 do   row=1  for ord;         z=
+0037 do col=1  for ord;         #= # + 1
+0038 @.row.col= word(x, #)
+0039 if col<=row  then  !.row.col= @.row.col
+0040 z=z  right( format(@.row.col, , dPlaces) / 1,   width)
+0041 end   /*col*/                   /*       ↑↑↑                           */
+0042 say z                             /*       └┴┴──◄──normalization for zero*/
+0043 end        /*row*/
+0044 return
+0045 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0046 sqrt:  procedure; parse arg x;  if x=0  then return 0;  d=digits(); numeric digits;  h=d+6
+0047 numeric form; m.=9; parse value format(x,2,1,,0) 'E0' with g 'E' _ .; g=g*.5'e'_ %2
+0048 do j=0  while h>9;      m.j=h;              h=h%2+1;       end  /*j*/
+0049 do k=j+5  to 0  by -1;  numeric digits m.k; g=(g+x/g)*.5;  end  /*k*/; return g/1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                46
+002 d                46
+003 h                46 48
+004 m.               47 48
+005 dPlaces          26
+006 width            27
+007 col              29 37
+008 w                30
+009 ord              31
+010 row              36
+011 z                36 40
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                47 47 49
+024 j                48
+025 k                49
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           16 28 39
+002 @.               -> newV2.           38
+003 $                -> newV3            15 15
+004 #                -> newV4            25 37
+005 _                -> newV5            47

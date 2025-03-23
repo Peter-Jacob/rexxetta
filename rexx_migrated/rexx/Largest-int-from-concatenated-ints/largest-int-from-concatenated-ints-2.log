@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program constructs the largest integer  from an integer list using concatenation.*/
+0002 @.=.;     @.1 =   1   34    3  98  9  76  45  4  /*the  1st  integer list to be used.   */
+0003 @.2 =  54  546  548  60                /* "   2nd     "      "   "  "   "     */
+0004 @.3 =   4   45   54   5                /* "   3rd     "      "   "  "   "     */
+0005 @.4 =   4   45   54   5  6.6e77        /* "   4th     "      "   "  "   "     */
+0006 w= 0                                             /* [↓]   process all the integer lists.*/
+0007 do j=1  while @.j\==.;        z= space(@.j)  /*keep truckin' until lists exhausted. */
+0008 w=max(w, length(z) );         $=             /*obtain maximum width to align output.*/
+0009 do while z\='';  idx=1;   big= norm(1)   /*keep examining the list  until  done.*/
+0010 do k=2  to  words(z);   #= norm(k)     /*obtain an a number from the list.    */
+0011 L= max(length(big), length(#) )        /*get the maximum length of the integer*/
+0012 if left(#, L, left(#, 1) )   <<=   left(big, L, left(big, 1) )    then iterate
+0013 big=#;                  idx= k         /*we found a new biggie (and the index)*/
+0014 end   /*k*/                            /* [↑]  find max concatenated integer. */
+0015 z= delword(z, idx, 1)                    /*delete this maximum integer from list*/
+0016 $= $  ||  big                            /*append   "     "       "    ───►  $. */
+0017 end     /*while z*/                      /* [↑]  process all integers in a list.*/
+0018 say 'largest concatenatated integer from '    left( space(@.j), w)       " is "      $
+0019 end         /*j*/                            /* [↑]  process each list of integers. */
+0020 exit                                             /*stick a fork in it,  we're all done. */
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 norm: arg i;  #= word(z, i);  er= '***error***';  if left(#, 1)=="-"  then #= substr(#, 2)
+0023 if \datatype(#, 'N')  then signal er13                      /*go and tell err msg.*/
+0024 else #= # / 1                         /*a #, so normalize it*/
+0025 if pos('E',#)>0  then do; parse var # mant "E" pow          /*Has exponent? Expand*/
+0026 numeric digits pow + length(mand) /*expand digs, adjust#*/
+0027 end
+0028 if datatype(#, 'W')  then return # / 1
+0029 er13: say er  #  "isn't an integer.";             exit 13
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 mant             25
+002 pow              25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 2 3 4 5
+002 $                -> newV2            8 16
+003 #                -> newV3            10 22 22 25

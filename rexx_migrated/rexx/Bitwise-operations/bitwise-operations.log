@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX program performs  bit─wise operations  on integers:   &   |   &&   ¬   «L   »R   */
+0002 numeric digits 1000                              /*be able to handle ginormous integers.*/
+0003 say  center('decimal', 9)      center("value", 9)        center('bits', 50)
+0004 say  copies('─'      , 9)      copies("─"    , 9)        copies('─',    50)
+0005 a = 21 ;   call show           a          ,      'A'                   /* display   A   */
+0006 b =  3 ;   call show              b       ,      'B'                   /* display   B   */
+0007 call show      bAnd(a, b)      ,      'A & B'               /*  and          */
+0008 call show       bOr(a, b)      ,      'A | B'               /*   or          */
+0009 call show      bXor(a, b)      ,      'A && B'              /*  xor          */
+0010 call show      bNot(a)         ,      '¬ A'                 /*  not          */
+0011 call show   bShiftL(a, b)      ,      'A [«B]'              /* shift  left   */
+0012 call show   bShiftR(a, b)      ,      'A [»B]'              /* shirt right   */
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 show:    say  right( arg(1), 9)  center( arg(2), 9)  right( d2b( arg(1) ), 50);     return
+0016 d2b:     return x2b( d2x( arg(1) ) ) + 0         /*some REXXes have the   D2B   BIF.    */
+0017 b2d:     return x2d( b2x( arg(1) ) )             /*  "     "     "   "    B2D    "      */
+0018 bNot:    return b2d( translate( d2b( arg(1) ), 10, 01) )     +0   /*+0 ≡ normalizes a #.*/
+0019 bShiftL: return b2d( d2b( arg(1) ) || copies(0, arg(2) ) )   +0   /* " "      "     " " */
+0020 bAnd:    return c2d( bitand( d2c( arg(1) ), d2c( arg(2) ) ) )
+0021 bOr:     return c2d(  bitor( d2c( arg(1) ), d2c( arg(2) ) ) )
+0022 bXor:    return c2d( bitxor( d2c( arg(1) ), d2c( arg(2) ) ) )
+0023 bShiftR: $=substr(reverse(d2b(arg(1))),arg(2)+1); if $='' then $=0; return b2d(reverse($))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                5
+002 b                6
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            23

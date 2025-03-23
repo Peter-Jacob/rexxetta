@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program calculates the totient numbers for a range of numbers, and count primes. */
+0002 parse arg N .                                    /*obtain optional argument from the CL.*/
+0003 if N==''  |  N==","  then N= 25                  /*Not specified?  Then use the default.*/
+0004 tell= N>0                                        /*N positive>?  Then display them all. */
+0005 N= abs(N)                                        /*use the absolute value of N for loop.*/
+0006 w= length(N)                                     /*W:  is used in aligning the output.  */
+0007 primes= 0                                        /*the number of primes found  (so far).*/
+0008 /*if N was negative, only count primes.*/
+0009 do j=1  for  N;              T= phi(j)       /*obtain totient number for a number.  */
+0010 prime= word('(prime)', 1 +  (T \== j-1 ) )   /*determine if  J  is a prime number.  */
+0011 if prime\==''  then primes= primes + 1       /*if a prime, then bump the prime count*/
+0012 if tell  then say 'totient number for '  right(j, w)  " ──► "  right(T, w)  ' '  prime
+0013 end   /*j*/
+0014 say
+0015 say right(primes, w)      ' primes detected for numbers up to and including '        N
+0016 exit 0                                           /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 phi: procedure; parse arg z;                       if z==1  then return 1
+0019 #= 1
+0020 do m=2  for z-2;       parse value     m   z    with    x  y
+0021 do until y==0;     parse value   x//y  y    with    y  x
+0022 end   /*until*/
+0023 if x==1  then #= # + 1
+0024 end       /*m*/
+0025 return #
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                18
+002 m                20
+003 w                6
+004 primes           7 11
+005 j                9
+006 T                9
+007 prime            10
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 x                20 21
+012 y                20 21
+013 until            21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            19 23

@@ -1,0 +1,34 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 Parse arg str                         /*obtain optional arguments from the CL*/
+0003 if str==''  then str= 'gHHH5YY++///\' /*Not specified?  Then use the default.*/
+0004 input=str
+0005 x=''
+0006 cp=''
+0007 result=''
+0008 Do While str<>''
+0009 Parse Var str c +1 str
+0010 If c==cp Then x=x||c
+0011 Else Do
+0012 If x>>'' Then
+0013 result=result||x', '
+0014 x=c
+0015 End
+0016 cp=c
+0017 End
+0018 result=result||x
+0019 say '      input string: '    input
+0020 say '     output string: '    result
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 str              9 9
+002 c                9
+003 x                10 14
+004 result           13 18
+005 cp               16
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

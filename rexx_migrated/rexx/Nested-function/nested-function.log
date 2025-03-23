@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates that functions can be nested  (an outer and inner function).*/
+0002 ctr= 0                                           /*initialize the   CTR   REXX variable.*/
+0003 call MakeList '. '                               /*invoke  MakeList  with the separator.*/
+0004 exit 0                                           /*stick a fork in it,  we're all done. */
+0005 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0006 MakeItem: parse arg sep,text;    ctr= ctr + 1    /*bump the counter variable.           */
+0007 say ctr  ||  sep  ||  word($, ctr)     /*display three thingys ───► terminal. */
+0008 return
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 MakeList: parse arg sep; $= 'first second third' /*obtain an argument;  define a string.*/
+0011 do  while  ctr<3            /*keep truckin'  until  finished.      */
+0012 call MakeItem  sep, $       /*invoke the   MakeItem   function.    */
+0013 end   /*while*/
+0014 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 sep              10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            10

@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program determines what characters are  lowercase and uppercase  (Latin) letters.*/
+0002 $L=                                              /*set lowercase alphabet string to null*/
+0003 $U=                                              /* "  uppercase     "       "    "   " */
+0004 do #=0  for 2**8                             /*traipse through  all  the characters.*/
+0005 _=d2c(#)     /*convert decimal number to character. */
+0006 if datatype(_, 'L')  then $L=$L _            /*Lowercase?  Then add char to the list*/
+0007 if datatype(_, 'U')  then $U=$U _            /*Uppercase?    "   "   "    "  "    " */
+0008 end   /*#*/                                  /* [↑]  put all the letters into a list*/
+0009 
+0010 say '    lowercase letters: '   $L               /*display all the  lowercase  letters. */
+0011 say '    uppercase letters: '   $U               /*   "     "   "   uppercase     "     */
+0012 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $L               -> newV1            2 6
+002 $U               -> newV2            3 7
+003 #                -> newV3            4
+004 _                -> newV4            5

@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program finds the minimum length abbreviation for a lists of words (from a file).*/
+0002 parse arg uw                                     /*obtain optional arguments from the CL*/
+0003 iFID= 'ABBREV_A.TAB'                             /*name of the file that has the table. */
+0004 say 'minimum'                                    /*display the first part of the title. */
+0005 say 'abbrev' center("days of the week", 80)      /*display the title for the output.    */
+0006 say '══════' center("",                 80, '═') /*display separator for the title line.*/
+0007 /* [↓]  process the file until done.   */
+0008 do while lines(iFID)\==0; days=linein(iFID) /*read a line (should contain 7 words).*/
+0009 minLen= abb(days)                           /*find the minimum abbreviation length.*/
+0010 say right(minLen, 4)   '  '    days         /*display a somewhat formatted output. */
+0011 end   /*j*/
+0012 exit                                             /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 abb: procedure;  parse arg x;  #=words(x)        /*obtain list of words;  find how many.*/
+0015 if #==0  then return ''                     /*check for a blank line or null line. */
+0016 @.=                                         /*@.   is a stemmed array of the words.*/
+0017 L=0                                         /*L    is the max length  of  "    "   */
+0018 do j=1  for #;         @.j=word(x, j)    /*assign to array for faster processing*/
+0019 L.j=length(@.j);       L= max(L, L.j)    /*find the maximum length of any item. */
+0020 end   /*L*/
+0021 /* [↓]  determine minimum abbrev length*/
+0022 do m=1  for L;         $=                /*for all lengths, find a unique abbrev*/
+0023 do k=1  to #;     a=left(@.k, m)    /*get an abbreviation (with length  M).*/
+0024 if wordpos(a,$)\==0  then iterate M /*test this abbreviation for uniquness.*/
+0025 $=$  a                              /*so far, it's unique; add to the list.*/
+0026 end   /*k*/
+0027 leave m                                  /*a good abbreviation length was found.*/
+0028 end        /*m*/
+0029 return m
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                14
+002 L                17 19
+003 j                18
+004 L.               19
+005 m                22
+006 k                23
+007 a                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           16 18
+002 #                -> newV2            14
+003 $                -> newV3            22 25

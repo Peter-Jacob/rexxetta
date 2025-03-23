@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program calculates the  Nth  Fibonacci number,   N   can be  zero  or  negative. */
+0002 numeric digits 210000                            /*be able to handle ginormous numbers. */
+0003 parse  arg  x y .                                /*allow a  single number  or  a range. */
+0004 if x=='' | x==","  then do;  x=-40;  y=+40;  end /*No input?  Then use range -40 ──► +40*/
+0005 if y=='' | y==","  then y=x                      /*if only one number, display   fib(X).*/
+0006 w= max(length(x),  length(y) )                   /*W:  used for making formatted output.*/
+0007 fw= 10                                           /*Minimum maximum width. Sounds ka─razy*/
+0008 do j=x  to y;          q= fib(j)           /*process all of the Fibonacci requests*/
+0009 L= length(q)                               /*obtain the length (decimal digs) of Q*/
+0010 fw= max(fw, L)                             /*fib number length, or the max so far.*/
+0011 say 'Fibonacci('right(j,w)") = "  right(q,fw)                   /*right justify Q.*/
+0012 if L>10  then  say    'Fibonacci('right(j, w)") has a length of"     L
+0013 end   /*j*/                                /* [↑]  list a Fib. sequence of  x──►y */
+0014 exit                                             /*stick a fork in it,  we're all done. */
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 fib:  procedure; parse arg n;        an= abs(n)  /*use  │n│   (the absolute value of N).*/
+0017 a= 0;    b= 1;   if an<2  then return an   /*handle two special cases: zero & one.*/
+0018 /* [↓]   this method is non─recursive. */
+0019 do k=2  to an;   $= a+b;   a= b;   b= $ /*sum  the numbers  up to   │n│        */
+0020 end   /*k*/                             /* [↑]  (only positive Fibs nums used).*/
+0021 /* [↓]  an//2   [same as]   (an//2==1).*/
+0022 if n>0 | an//2   then  return  $           /*Positive or even?   Then return sum. */
+0023 return -$           /*Negative and odd? Return negative sum*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                16
+002 an               16
+003 a                17 19
+004 b                17 19
+005 k                19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            19

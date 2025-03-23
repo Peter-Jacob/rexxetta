@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates tokenizing and displaying a string with escaping sequences. */
+0002 str = 'one^|uno||three^^^^|four^^^|^cuatro|'   /*the character string to be tokenized.*/
+0003 esc = '^'                                      /* "    escape  character to be used.  */
+0004 sep = '|'                                      /* "  separator     "      "  "   "    */
+0005 $   =                                          /* "  output string  (so far).         */
+0006 eMode = 0                                        /*a flag,  escape is in progress.      */
+0007 say ' output len        output'                  /*title  verbiage  used for the output.*/
+0008 say '──────────── ────────────────────'          /*  "    separator   "   "   "     "   */
+0009 
+0010 do j=1  for length(str);  _=substr(str, j, 1)  /*parse a single character at a time.  */
+0011 select
+0012 when eMode   then do; $=$ || _;  eMode=0; end      /*are we in in escape  mode?   */
+0013 when _==esc  then                eMode=1           /*is it an  escape  character? */
+0014 when _==sep  then do; call show;          end      /* "  " a separator character? */
+0015 otherwise             $=$ || _                     /*append the single character. */
+0016 end   /*select*/
+0017 end       /*j*/
+0018 
+0019 if $\=='' | _==sep  then call show               /*handle a residual str or a separator.*/
+0020 say '──────────── ────────────────────'          /*the foot separator for the output.   */
+0021 say '             ····^····1····^····2'          /*show the    top    part of the scale.*/
+0022 say '  {scale}    12345678901234567890'          /*  "   "    bottom    "   "  "    "   */
+0023 exit                                             /*stick a fork in it,  we're all done. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 show:  say  '[length'right(length($),4)"]"   $;                 $=;                 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 str              2
+002 esc              3
+003 sep              4
+004 eMode            6 12
+005 j                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            5 12 25
+002 _                -> newV2            10

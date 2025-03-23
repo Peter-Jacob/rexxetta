@@ -1,0 +1,59 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program picks a   random element   from a list   (tongue in cheek, a visual pun).*/
+0002 l=  "Hydrogen_H Helium_He Lithium_Li Beryllium_Be Boron_B"
+0003 l=l "Carbon_C Nitrogen_N Oxygen_O Fluorine_F Neon_Ne Sodium_Na"
+0004 l=l "Magnesium_Mg Aluminium_Al Silicon_Si Phosphorus_P Sulfur_S"
+0005 l=l "Chlorine_Cl Argon_Ar Potassium_K Calcium_Ca Scandium_Sc"
+0006 l=l "Titanium_Ti Vanadium_V Chromium_Cr Manganese_Mn Iron_Fe"
+0007 l=l "Cobalt_Co Nickel_Ni Copper_Cu Zinc_Zn Gallium_Ga"
+0008 l=l "Germanium_Ge Arsenic_As Selenium_Se Bromine_Br Krypton_Kr"
+0009 l=l "Rubidium_Rb Strontium_Sr Yttrium_Y Zirconium_Zr Niobium_Nb"
+0010 l=l "Molybdenum_Mo Technetium_Tc Ruthenium_Ru Rhodium_Rh"
+0011 l=l "Palladium_Pd Silver_Ag Cadmium_Cd Indium_In Tin_Sn"
+0012 l=l "Antimony_Sb Tellurium_Te Iodine_I Xenon_Xe Caesium_Cs"
+0013 l=l "Barium_Ba Lanthanum_La Cerium_Ce Praseodymium_Pr"
+0014 l=l "Neodymium_Nd Promethium_Pm Samarium_Sm Europium_Eu"
+0015 l=l "Gadolinium_Gd Terbium_Tb Dysprosium_Dy Holmium_Ho Erbium_Er"
+0016 l=l "Thulium_Tm Ytterbium_Yb Lutetium_Lu Hafnium_Hf Tantalum_Ta"
+0017 l=l "Tungsten_W Rhenium_Re Osmium_Os Iridium_Ir Platinum_Pt"
+0018 l=l "Gold_Au Mercury_Hg Thallium_Tl Lead_Pb Bismuth_Bi"
+0019 l=l "Polonium_Po Astatine_At Radon_Rn Francium_Fr Radium_Ra"
+0020 l=l "Actinium_Ac Thorium_Th Protactinium_Pa Uranium_U"
+0021 l=l "Neptunium_Np Plutonium_Pu Americium_Am Curium_Cm"
+0022 l=l "Berkelium_Bk Californium_Cf Einsteinium_Es Fermium_Fm"
+0023 l=l "Mendelevium_Md Nobelium_No Lawrencium_Lr Rutherfordium_Rf"
+0024 l=l "Dubnium_Db Seaborgium_Sg Bohrium_Bh Hassium_Hs Meitnerium_Mt"
+0025 l=l "Darmstadtium_Ds Roentgenium_Rg Copernicium_Cn Nihonium_Nh"
+0026 l=l "Flerovium_Fl Moscovium_Mc Livermorium_Lv Tennessine_Ts"
+0027 l=l "Oganesson_Og Ununbium_Uub Ununtrium_Uut Ununquadium_Uuq"
+0028 n=words(l)                       /* Number of known elements            */
+0029 /*-----  You can't trust atoms,   -----*/
+0030 /*-----  they make everything up. -----*/
+0031 Parse Arg pick                   /* atomic number specified             */
+0032 If pick>n Then Do
+0033 Say 'Element' pick 'hasn''t been discovered by now'
+0034 Exit
+0035 End
+0036 take=pick
+0037 If pick='' Then
+0038 take=random(1,n)
+0039 
+0040 item=word(l,take)                /*pick the specified or random element */
+0041 Parse Var item name '_' symbol
+0042 If pick='' Then
+0043 which='Random'
+0044 Else
+0045 which='Specified'
+0046 Say which 'element: ' take name '('symbol')' /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 item             41
+002 name             41
+003 symbol           41
+004 which            43 45
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

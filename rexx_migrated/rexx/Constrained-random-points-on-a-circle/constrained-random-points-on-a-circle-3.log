@@ -1,0 +1,91 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 19.06.2014 Walter Pachl alternate algorithm
+0003 * the idea: yl is a list of y coordinates which may have unused points
+0004 * one of the y's is picked at random
+0005 * Then we look for unused x coordinates in this line
+0006 * we pick one at random or drop the y from yl if none is found
+0007 * When yl becomes empty, all points are used and we stop
+0008 *--------------------------------------------------------------------*/
+0009 Parse Arg n r rr scale
+0010 If r=''     Then r=10
+0011 If rr=''    Then rr=15
+0012 If n=''     Then n=100
+0013 If scale='' Then scale=2
+0014 r2=r*r
+0015 rr2=rr*rr
+0016 ymin=0
+0017 ymax=rr*2
+0018 ol=''
+0019 pp.=0
+0020 used.=0
+0021 yl=''                                  /* list of available y values */
+0022 Do y=-rr To rr
+0023 yl=yl y
+0024 End
+0025 Do Until pp.0=n                        /*look for the required points*/
+0026 If yl='' Then Do                     /* no more points available   */
+0027 Say 'all points filled'
+0028 Leave
+0029 End
+0030 yi=random(1,words(yl))               /* pick a y                   */
+0031 y=word(yl,yi)
+0032 y2=y*y
+0033 p.=0
+0034 Do x=0 To rr                         /* Loop through possible x's  */
+0035 x2=x*x
+0036 xy2=x2+y2
+0037 If xy2>=r2&xy2<=rr2 Then Do        /* within the annulus         */
+0038 Call take x y
+0039 Call take (-x) y
+0040 End
+0041 End
+0042 If p.0>0 Then Do                     /* some x's found (or just 1) */
+0043 xi=random(1,p.0)                   /* pick an x                  */
+0044 z=pp.0+1
+0045 pp.z=p.xi
+0046 pp.0=z
+0047 Parse Var pp.z xa ya
+0048 used.xa.ya=1                       /* remember it's taken        */
+0049 End
+0050 Else Do                              /* no x for this y            */
+0051 yi=wordpos(y,yl)                   /* remove y from yl           */
+0052 Select
+0053 When yi=1 Then yl=subword(yl,yi+1)
+0054 When yi=words(yl) Then yl=subword(yl,1,yi-1)
+0055 Otherwise yl=subword(yl,1,yi-1) subword(yl,yi+1)
+0056 End
+0057 End
+0058 End
+0059 line.=''                               /* empty the raster           */
+0060 Do i=1 To pp.0                         /* place the points           */
+0061 Parse Var pp.i x y
+0062 line.y=overlay('+',line.y,scale*(rr+x)+1)
+0063 End
+0064 Do y=-rr To rr                         /* show the result            */
+0065 Say line.y
+0066 End
+0067 say pp.0 'points filled'
+0068 Exit
+0069 Return
+0070 
+0071 take: Procedure Expose p. used.        /* add x to p. if its not used*/
+0072 Parse Arg x y
+0073 If used.x.y=0 Then Do
+0074 z=p.0+1
+0075 p.z=x y
+0076 p.0=z
+0077 End
+0078 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                72
+002 y                72
+003 z                74
+004 p.               75 76
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

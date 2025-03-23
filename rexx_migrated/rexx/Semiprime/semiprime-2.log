@@ -1,0 +1,50 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program determines if any integer  (or a range of integers)  is/are  semiprime.  */
+0002 parse arg bot top .                              /*obtain optional arguments from the CL*/
+0003 if bot=='' | bot==","  then bot=random()         /*None given?   User wants us to guess.*/
+0004 if top=='' | top==","  then top=bot              /*maybe define a range of numbers.     */
+0005 tell=  top=>0 |  top==bot                        /*should results be shown to the term? */
+0006 w=max(length(bot), length(top)) + 5              /*obtain the maximum width of numbers. */
+0007 numeric digits max(9, w)                         /*ensure there're enough decimal digits*/
+0008 #=0                                              /*initialize number of semiprimes found*/
+0009 do n=bot  to abs(top)               /*show results for a range of numbers. */
+0010 ?=isSemiPrime(n);      #=#+?        /*Is N a semiprime?; Maybe bump counter*/
+0011 if tell  then say right(n,w)  right(word("isn't" 'is', ?+1), 6)  'semiprime.'
+0012 end   /*n*/
+0013 say
+0014 if bot\==top  then say 'found '   #   " semiprimes."
+0015 exit                                             /*stick a fork in it,  we're all done. */
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 isPrime: procedure;  parse arg x;               if x<2  then return 0  /*number too low?*/
+0018 if wordpos(x, '2 3 5 7 11 13 17 19 23')\==0    then return 1  /*it's low prime.*/
+0019 if x//2==0  then return 0;     if x//3==0      then return 0  /*÷ by 2; ÷ by 3?*/
+0020 do j=5  by 6  until j*j>x;   if x//j==0      then return 0  /*not a prime.   */
+0021 if x//(j+2)==0  then return 0  /* "  "   "      */
+0022 end   /*j*/
+0023 return 1                                /*indicate that  X  is a prime number. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 isSemiPrime: procedure;  parse arg x;          if x<4  then return 0
+0026 
+0027 do i=2  for 2;  if x//i==0  then if isPrime(x%i)  then return 1
+0028 else return 0
+0029 end   /*i*/
+0030 /*    ___  */
+0031 do   j=5  by 6;         if j*j>x    then  return 0            /* > √ x  ?*/
+0032 do k=j  by 2  for 2;  if x//k==0  then  if isPrime(x%k)  then return 1
+0033 else return 0
+0034 end   /*k*/                     /* [↑]  see if 2nd factor is prime or ¬*/
+0035 end     /*j*/                     /* [↑]  J is never a multiple of three.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                25
+002 i                27
+003 j                31
+004 k                32
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            8 10
+002 ?                -> newV2            10

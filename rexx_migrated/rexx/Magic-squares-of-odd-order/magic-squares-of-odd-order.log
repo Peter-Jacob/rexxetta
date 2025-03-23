@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program generates and displays magic squares (odd N will be a true magic square).*/
+0002 parse arg N .                                    /*obtain the optional argument from CL.*/
+0003 if N=='' | N==","  then N=5                      /*Not specified?  Then use the default.*/
+0004 NN=N*N;    w=length(NN)                          /*W:  width of largest number (output).*/
+0005 r=1;       c=(n+1) % 2                           /*define the initial  row  and  column.*/
+0006 @.=.                                             /*assign a default value for entire  @.*/
+0007 do j=1  for NN                               /* [↓]  filling uses the Siamese method*/
+0008 if r<1 & c>N then do; r=r+2;  c=c-1;  end    /*the  row   is under,  column is over.*/
+0009 if r<1       then r=N                        /* "    "     "   "     make row=last. */
+0010 if r>N       then r=1                        /* "    "     "  over,    "   "  first.*/
+0011 if c>N       then c=1                        /* "  column  "  over,    "  col=first.*/
+0012 if @.r.c\==. then do; r=min(N,r+2);  c=max(1,c-1);  end     /*at the previous cell? */
+0013 @.r.c=j;              r=r-1;  c=c+1          /*assign # ───► cell; next row & column*/
+0014 end   /*j*/
+0015 /* [↓]  display square with aligned #'s*/
+0016 do   r=1  for N;  _=                   /*display  one matrix row  at a time.  */
+0017 do c=1  for N;  _=_ right(@.r.c, w)  /*construct a row of the magic square. */
+0018 end   /*c*/
+0019 say substr(_, 2)                       /*display a row of the magic square.   */
+0020 end     /*r*/
+0021 say                                              /* [↓]  If an odd square, show magic #.*/
+0022 if N//2  then say  'The magic number  (or magic constant is): '         N * (NN+1) % 2
+0023 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                2 3
+002 NN               4
+003 w                4
+004 r                5 8 9 10 12 13 16
+005 c                5 8 11 12 13 17
+006 j                7
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           6 13
+002 _                -> newV2            16 17

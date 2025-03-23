@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program reads a PPM formatted image file,  and creates a gray─scale image of it. */
+0002 parse arg iFN oFN                                /*obtain optional argument from the CL.*/
+0003 if iFN=='' | iFN==","  then  iFN= 'Lenna50'      /*Not specified?  Then use the default.*/
+0004 if oFN=='' | oFN==","  then  oFN= 'greyscale'    /* "      "         "   "   "     "    */
+0005 iFID= iFN'.ppm';             oFID= oFN'.ppm'     /*complete the  input and output  FIDs.*/
+0006 call charin iFID, 1, 0                           /*set the position of the input file.  */
+0007 y=charin(iFID, , copies(9, digits() ) )          /*read the entire input file  ───►  X  */
+0008 parse var  y   id  3 c 4 3 width height # pixels /*extract header info from the PPM hdr.*/
+0009 LF= 'a'x                                   /*define a comment separator  (in hdr).*/      /* ◄─── LF delimiters & comments*/
+0010 if c==LF  then do;  commentEND=pos(LF, y, 4)     /*point to the last char in the comment*/      /* ◄─── LF delimiters & comments*/
+0011 parse var  y   =(commentEND)  +1  width  height          #  pixels          /* ◄─── LF delimiters & comments*/
+0012 end                                                                              /* ◄─── LF delimiters & comments*/
+0013 /* [↓]  has an alternative delimiter?  */      /* ◄─── LF delimiters & comments*/
+0014 z=pos(LF, height);  if z\==0  then parse var  height height    =(z)   +1     #  pixels          /* ◄─── LF delimiters & comments*/
+0015 z=pos(LF, #     );  if z\==0  then parse var  #      #         =(z)   +1        pixels          /* ◄─── LF delimiters & comments*/
+0016 chunk=4000                                       /*chunk size to be written at one time.*/
+0017 LenPixels= length(pixels)
+0018 
+0019 do j=0  for 256;  _=d2c(j);   @._=j;   @@.j=_  /*build two tables for fast conversions*/
+0020 end   /*j*/
+0021 
+0022 call charout oFID, ,  1                          /*set the position of the output file. */
+0023 call charout oFID, id || width height #' '       /*write the header followed by a blank.*/
+0024 !=1
+0025 do until !>=LenPixels;            $=         /*$:      partial output string so far.*/
+0026 do !=!  by 3  for chunk                    /*chunk:  # pixels converted at 1 time.*/
+0027 parse var pixels  =(!)  r +1   g +1   b +1 /*obtain the next  RGB  of a PPM pixel.*/
+0028 if r==''  then leave                       /*has the end─of─string been reached?  */
+0029 _=(.2126*@.r  + .7152*@.g  + .0722*@.b )%1 /*an integer RGB greyscale of a pixel. */
+0030 $=$  ||  @@._  ||  @@._  ||  @@._          /*lump (grey)  R G B  pixels together. */
+0031 end   /*!*/                                /* [↑]  D2C  converts decimal ───► char*/
+0032 call charout oFID, $                         /*write the next bunch of pixels.      */
+0033 end     /*until*/
+0034 
+0035 call charout oFID                                /*close the output file just to be safe*/
+0036 say 'File '       oFID       " was created."     /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pixels           27
+002 r                27
+003 g                27
+004 b                27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 =(commentEND)    -> newV1            11
+002 =(z)             -> newV2            14 15
+003 =(!)             -> newV3            27
+004 @@.              -> newV4.           19
+005 @.               -> newV5.           19
+006 #                -> newV6            8 11 14 15 15
+007 _                -> newV7            19 29
+008 !                -> newV8            24 26
+009 $                -> newV9            25 30

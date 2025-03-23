@@ -1,0 +1,71 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program solves the knapsack/unbounded problem: highest value, weight, and volume.*/
+0002 
+0003 maxPanacea= 0
+0004 maxIchor  = 0;             /*   value                   weight                   volume */
+0005 maxGold   = 0;             /*  ═══════                  ══════                   ══════ */
+0006 max$      = 0;      panacea.$ = 3000  ;      panacea.w =  0.3 ;       panacea.v = 0.025
+0007 now.      = 0;        ichor.$ = 1800  ;        ichor.w =  0.2 ;         ichor.v = 0.015
+0008 #         = 0;         gold.$ = 2500  ;         gold.w =  2   ;          gold.v = 0.002
+0009 L         = 0;         sack.$ =    0  ;         sack.w = 25   ;          sack.v = 0.25
+0010 
+0011 maxPanacea= min(sack.w / panacea.w,     sack.v / panacea.v)
+0012 maxIchor  = min(sack.w /   ichor.w,     sack.v /   ichor.v)
+0013 maxGold   = min(sack.w /    gold.w,     sack.v /    gold.v)
+0014 
+0015 do     p=0  to maxPanacea
+0016 do   i=0  to maxIchor
+0017 do g=0  to maxGold
+0018 now.$ = g * gold.$     +     i * ichor.$     +     p * panacea.$
+0019 now.w = g * gold.w     +     i * ichor.w     +     p * panacea.w
+0020 now.v = g * gold.v     +     i * ichor.v     +     p * panacea.v
+0021 if now.w > sack.w  |  now.v  > sack.v  then iterate i
+0022 if now.$ > max$  then do;  #= 0;           max$= now.$;    end
+0023 if now.$ = max$  then do;  #= # + 1;       maxP.#= p;      maxI.#= i;     maxG.#= g
+0024 max$.#= now.$;  maxW.#= now.w;  maxV.#= now.v
+0025 L= max(L, length(p + i + g) )
+0026 end
+0027 end  /*g  (gold)   */
+0028 end    /*i  (ichor)  */
+0029 end      /*p  (panacea)*/
+0030 L= L + 1
+0031 do j=1  for #;      say;      say copies('▒', 70)                "solution"  j
+0032 say '    panacea in sack:'    right(maxP.j, L)
+0033 say '     ichors in sack:'    right(maxI.j, L)
+0034 say ' gold items in sack:'    right(maxG.j, L)
+0035 say '════════════════════'    copies("═",   L)
+0036 say 'carrying a total of:'    right(maxP.j + maxI.j + maxG.j, L)
+0037 say left('', 40)     "total  value: "        max$.j / 1
+0038 say left('', 40)     "total weight: "        maxW.j / 1
+0039 say left('', 40)     "total volume: "        maxV.j / 1
+0040 end  /*j*/
+0041 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 maxPanacea       3 11
+002 maxIchor         4 12
+003 maxGold          5 13
+004 max$             6 22
+005 panacea.         6 6 6
+006 now.             7 18 19 20
+007 ichor.           7 7 7
+008 gold.            8 8 8
+009 L                9 25 30
+010 sack.            9 9 9
+011 p                15
+012 i                16
+013 g                17
+014 maxP.            23
+015 maxI.            23
+016 maxG.            23
+017 max$.            24
+018 maxW.            24
+019 maxV.            24
+020 j                31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            8 22 23

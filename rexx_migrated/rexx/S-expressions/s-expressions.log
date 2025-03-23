@@ -1,0 +1,86 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program  parses  an   S-expression   and  displays the results to the terminal.  */
+0002 input= '((data "quoted data" 123 4.5) (data (!@# (4.5) "(more" "data)")))'
+0003 say center('input', length(input), "═")          /*display the header title to terminal.*/
+0004 say         input                                /*   "     "  input data    "    "     */
+0005 say copies('═',     length(input) )              /*   "     "  header sep    "    "     */
+0006 grpO.=;      grpO.1 = '{'   ;    grpC.1 = "}"    /*pair of grouping symbol: braces      */
+0007 grpO.2 = '['   ;    grpC.2 = "]"    /*  "   "    "       "     brackets    */
+0008 grpO.3 = '('   ;    grpC.3 = ")"    /*  "   "    "       "     parentheses */
+0009 grpO.4 = '«'   ;    grpC.4 = "»"    /*  "   "    "       "     guillemets  */
+0010 q.=;            q.1 = "'"   ;       q.2 = '"'    /*1st and 2nd literal string delimiter.*/
+0011 #        = 0                                     /*the number of tokens found (so far). */
+0012 tabs     = 10                                    /*used for the indenting of the levels.*/
+0013 seps     = ',;'                                  /*characters used for separation.      */
+0014 atoms    = ' 'seps                               /*     "       "  to  separate atoms.  */
+0015 level    = 0                                     /*the current level being processed.   */
+0016 quoted   = 0                                     /*quotation level  (for nested quotes).*/
+0017 grpU     =                                       /*used to go   up  an expression level.*/
+0018 grpD     =                                       /*  "   "  "  down  "     "       "    */
+0019 @.=;        do n=1  while grpO.n\==''
+0020 atoms = atoms || grpO.n || grpC.n    /*add Open and Closed groups to  ATOMS.*/
+0021 grpU  = grpU  || grpO.n              /*add Open            groups to  GRPU, */
+0022 grpD  = grpD  || grpC.n              /*add          Closed groups to  GRPD, */
+0023 end   /*n*/                          /* [↑]  handle a bunch of grouping syms*/
+0024 literals=
+0025 do k=1  while q.k\=='';  literals= literals || q.k  /*add literal delimiters*/
+0026 end   /*k*/
+0027 !=;                                      literalStart=
+0028 do j=1  to length(input);          $= substr(input, j, 1)                              /* ◄■■■■■text parsing*/
+0029 /* ◄■■■■■text parsing*/
+0030 if quoted                then do;  !=! || $;    if $==literalStart  then quoted= 0     /* ◄■■■■■text parsing*/
+0031 iterate                                             /* ◄■■■■■text parsing*/
+0032 end          /* [↑]  handle running  quoted string. */   /* ◄■■■■■text parsing*/
+0033 /* ◄■■■■■text parsing*/
+0034 if pos($, literals)\==0  then do;  literalStart= $;      != ! || $;        quoted= 1   /* ◄■■■■■text parsing*/
+0035 iterate                                             /* ◄■■■■■text parsing*/
+0036 end          /* [↑]  handle start of quoted strring.*/   /* ◄■■■■■text parsing*/
+0037 /* ◄■■■■■text parsing*/
+0038 if pos($, atoms)==0      then do;  != ! || $;   iterate;   end    /*is    an atom?*/   /* ◄■■■■■text parsing*/
+0039 else do;  call add!;   != $;      end    /*isn't  "   " ?*/   /* ◄■■■■■text parsing*/
+0040 /* ◄■■■■■text parsing*/
+0041 if pos($, literals)==0   then do;  if pos($, grpU)\==0  then level= level + 1          /* ◄■■■■■text parsing*/
+0042 call add!                                           /* ◄■■■■■text parsing*/
+0043 if pos($, grpD)\==0  then level= level - 1          /* ◄■■■■■text parsing*/
+0044 if level<0  then say  'error, mismatched'   $       /* ◄■■■■■text parsing*/
+0045 end                                                      /* ◄■■■■■text parsing*/
+0046 end   /*j*/                                                                            /* ◄■■■■■text parsing*/
+0047 /* ◄■■■■■text parsing*/
+0048 call add!                                        /*process any residual tokens.         */   /* ◄■■■■■text parsing*/
+0049 if level\==0  then say  'error, mismatched grouping symbol'                                  /* ◄■■■■■text parsing*/
+0050 if quoted     then say  'error, no end of quoted literal'      literalStart                  /* ◄■■■■■text parsing*/
+0051 
+0052 do m=1  for #;   say @.m                   /*display the tokens  ───►  terminal.  */
+0053 end   /*m*/
+0054 exit 0                                           /*stick a fork in it,  we're all done. */
+0055 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0056 add!: if !=''  then return;   #=#+1;  @.#=left("", max(0, tabs*(level-1)))!;  !=;   return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 input            2
+002 grpO.            6 6 7 8 9
+003 grpC.            6 7 8 9
+004 q.               10 10 10
+005 tabs             12
+006 seps             13
+007 atoms            14 20
+008 level            15 41 43
+009 quoted           16 30 34
+010 grpU             17 21
+011 grpD             18 22
+012 n                19
+013 literals         24 25
+014 k                25
+015 literalStart     27 34
+016 j                28
+017 m                52
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           19 56
+002 #                -> newV2            11 56
+003 !                -> newV3            27 30 34 38 39 56
+004 $                -> newV4            28

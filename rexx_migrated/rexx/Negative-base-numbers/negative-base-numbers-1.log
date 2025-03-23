@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX pgm converts & displays a base ten integer to a negative base number (up to -10).*/
+0002 @=' converted to base ';      numeric digits 300 /*be able to handle ginormous numbers. */
+0003 n=  10;  b=  -2;   q= nBase(n, b);   say right(n, 20)   @   right(b, 3)  '────►'  q   ok()
+0004 n= 146;  b=  -3;   q= nBase(n, b);   say right(n, 20)   @   right(b, 3)  '────►'  q   ok()
+0005 n=  15;  b= -10;   q= nBase(n, b);   say right(n, 20)   @   right(b, 3)  '────►'  q   ok()
+0006 n= -15;  b= -10;   q= nBase(n, b);   say right(n, 20)   @   right(b, 3)  '────►'  q   ok()
+0007 n=   0;  b=  -5;   q= nBase(n, b);   say right(n, 20)   @   right(b, 3)  '────►'  q   ok()
+0008 exit                                             /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 nBase: procedure; parse arg x,r;             $=  /*obtain args; $ is the integer result.*/
+0011 if r<-10 | r>-2 then do; say 'base' r "must be in range: -2 ───► -10"; exit 13; end
+0012 do  while x\==0              /*keep processing while  X  isn't zero.*/
+0013 z= x // r;        x= x % r   /*calculate remainder; calculate int ÷.*/
+0014 if z<0  then do;  z= z - r   /*subtract a negative  R  from  Z ◄──┐ */
+0015 x= x + 1   /*bump  X  by one.                   │ */
+0016 end             /*                   Funny "add" ►───┘ */
+0017 $= z || $                    /*prepend new digit (numeral) to result*/
+0018 end   /*while*/
+0019 return word($ 0, 1)                       /*possibly adjust for a  zero  value.  */
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 ok:    ?=;  if pBase(q, b)\=n  then ?= ' ◄──error in negative base calculation';  return ?
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 pBase: procedure; parse arg x,r;   p= 0;   $= 0  /*obtain args; $ is the integer result.*/
+0024 if r<-10 | r>-2 then do; say 'base' r "must be in range: -2 ───► -10"; exit 13; end
+0025 do j=length(x)  by -1  for length(x) /*process each of the numerals in  X.  */
+0026 $= $ + substr(x,j,1) *    r ** p     /*add value of a numeral to $ (result).*/
+0027 p= p + 1                             /*bump the power by 1.                 */
+0028 end   /*j*/                          /* [↓]  process the number "bottom-up".*/
+0029 return $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                23
+002 r                23
+003 p                23 27
+004 j                25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            2
+002 $                -> newV2            10 17 23 26
+003 ?                -> newV3            21

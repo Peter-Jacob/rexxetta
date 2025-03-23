@@ -1,0 +1,73 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program constructs the largest integer  from an integer list using concatenation.*/
+0002 l.='';    l.1 = '1 34 3 98 9 76 45 4'   /*the  1st  integer list to be used.   */
+0003 l.2 = '54 546 548 60'             /* "   2nd     "      "   "  "   "     */
+0004 l.3 = ' 4  45  54  5'             /* "   3rd     "      "   "  "   "     */
+0005 l.4 = ' 4  45  54  5  6.6e77'    /* "   4th     "      "   "  "   "     */
+0006 l.5 = ' 3 3 .2'                  /* "   5th     "      "   "  "   "     */
+0007 /*
+0008 soll.1=998764543431
+0009 soll.2=6054854654
+0010 soll.3=554454
+0011 soll.4=660000000000000000000000000000000000000000000000000000000000000000000000000000545454
+0012 */
+0013 l_length=0
+0014 Do li=1 By 1 While l.li<>''
+0015 l_length=max(l_length,length(space(l.li)))
+0016 End
+0017 
+0018 Do li=1 By 1 While l.li<>''
+0019 z=''
+0020 Do j=1 To words(l.li)
+0021 int=integer(word(l.li,j))
+0022 If int='?' Then Do
+0023 Say left(space(l.li),l_length) '-> ** invalid ** bad integer' word(l.li,j)
+0024 Iterate li
+0025 End
+0026 Else
+0027 z=z int
+0028 End
+0029 /*Say copies(' ',l_length) '  ' soll.li */
+0030 Say left(space(l.li),l_length) '->' largeint(l.li)
+0031 End
+0032 Exit
+0033 
+0034 integer: Procedure
+0035 Numeric Digits 1000
+0036 Parse Arg z
+0037 If Datatype(z,'W') Then
+0038 Return z+0
+0039 Else
+0040 Return '?'
+0041 
+0042 largeint:
+0043 result=''
+0044 Do While z<>''                                 /* [?]  check the rest of the integers.*/
+0045 big=word(z,1); index=1; LB=length(big)       /*assume that first integer is biggest.*/
+0046 do k=2 to words(z);
+0047 n=word(z,k)                                /*obtain an integer from the list.     */
+0048 L=max(LB,length(n))                        /*get the maximum length of the integer*/
+0049 if left(n,L,left(n,1))<<=left(big,L,left(big,1)) then iterate
+0050 big=n; index=k                             /*we found a new biggie (and the index)*/
+0051 LB=length(big)
+0052 End   /*k*/
+0053 z=delword(z,index,1)                         /*delete this maximum integer from list*/
+0054 result=result||big                           /*append   "     "       "    ---?  $. */
+0055 end     /*while z*/                          /* [?]  process all integers in a list.*/
+0056 Return result
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                36 53
+002 result           43 54
+003 big              45 50
+004 index            45 50
+005 LB               45 51
+006 k                46
+007 n                47
+008 L                48
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

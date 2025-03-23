@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program  solves a  riddle  of 5 sailors, a pile of coconuts, and a monkey.       */
+0002 parse arg L H .;        if L==''  then L= 2      /*L  not specified?   Then use default.*/
+0003 if H==''  then H= 9      /*H   "      "          "   "     "    */
+0004 do n=L  to H                              /*traipse through the number of sailors*/
+0005 do $=1  until t\==0;   t= total(n, $) /*perform while number coconuts not 0. */
+0006 end   /*$*/
+0007 say 'sailors='n           "  coconuts="t               '  share='$
+0008 end       /*n*/
+0009 exit 0                                           /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 total: procedure;  parse arg n,nuts              /*obtain the number sailors & coconuts.*/
+0012 nuts= nuts * n                            /*multiple # nuts by number of sailors.*/
+0013 nn= n - 1                                 /*NN  is used as calculation shortcut. */
+0014 do k=0  for n                  /*step through the possibilities.      */
+0015 if nuts//nn\==0  then return 0 /*Not one coconut left?   No solution. */
+0016 nuts= nuts  +  1  +  nuts % nn /*bump the number coconuts to the pile.*/
+0017 end   /*k*/
+0018 return nuts                               /*see if number coconuts>0 & remainder.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                11
+002 nuts             11 12 16
+003 nn               13
+004 k                14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            5

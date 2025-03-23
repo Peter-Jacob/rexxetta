@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program to separate a string of comma-delimited words and echo */
+0002 sss='Hello,How,Are,You,Today'
+0003 say 'input string='sss
+0004 say ''
+0005 say 'Words in the string:'
+0006 ss =translate(sss,' ',',')
+0007 dot='.'
+0008 Do i=1 To words(ss)
+0009 If i=words(ss) Then dot=''
+0010 say word(ss,i)dot
+0011 End
+0012 say 'End-of-list.'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 sss              2
+002 ss               6
+003 dot              7 9
+004 i                8
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

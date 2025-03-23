@@ -1,0 +1,64 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*rexx*/
+0002 
+0003 call test 'kitten'      ,'sitting'
+0004 call test 'rosettacode' ,'raisethysword'
+0005 call test 'Sunday'      ,'Saturday'
+0006 call test 'Vladimir_Levenshtein[1965]',,
+0007 'Vladimir_Levenshtein[1965]'
+0008 call test 'this_algorithm_is_similar_to',,
+0009 'Damerau-Levenshtein_distance'
+0010 call test '','abc'
+0011 exit 0
+0012 
+0013 
+0014 test: Procedure
+0015 Parse Arg s,t
+0016 ld.=''
+0017 Say '          1st string  = >'s'<'
+0018 Say '          2nd string  = >'t'<'
+0019 Say 'Levenshtein distance  =' LevenshteinDistance(s,length(s),t,length(t))
+0020 Say ''
+0021 Return
+0022 
+0023 
+0024 LevenshteinDistance: Procedure
+0025 Parse Arg s,t
+0026 If s==t Then Return 0;
+0027 sl=length(s)
+0028 tl=length(t)
+0029 If sl=0 Then Return tl
+0030 If tl=0 Then Return sl
+0031 Do i=0 To tl
+0032 v0.i=i
+0033 End
+0034 Do i=0 To sl-1
+0035 v1.0=i+1
+0036 Do j=0 To tl-1
+0037 jj=j+1
+0038 cost=substr(s,i+1,1)<>substr(t,j+1,1)
+0039 v1.jj=min(v1.j+1,v0.jj+1,v0.j+cost)
+0040 End
+0041 Do j=0 to tl-1
+0042 v0.j=v1.j
+0043 End
+0044 End
+0045 return v1.tl
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                25
+002 t                25
+003 sl               27
+004 tl               28
+005 i                31 34
+006 v0.              32 42
+007 v1.              35 39
+008 j                36 41
+009 jj               37
+010 cost             38
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

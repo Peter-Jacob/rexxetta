@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 oid='diet.xxx'; 'erase' oid
+0003 Call test '9  4 6 6'
+0004 Call test '5 10 6 7'
+0005 Exit
+0006 test:
+0007 Parse Arg n1 s1 n2 s2
+0008 Call o 'Player 1:' n1 'dice with' s1 'sides each'
+0009 Call o 'Player 2:' n2 'dice with' s2 'sides each'
+0010 cnt1.=0
+0011 cnt2.=0
+0012 win.=0
+0013 nn=10000
+0014 Call time 'R'
+0015 Do i=1 To nn
+0016 sum1=sum(n1 s1) ; cnt1.sum1=cnt1.sum1+1
+0017 sum2=sum(n2 s2) ; cnt2.sum2=cnt2.sum2+1
+0018 Select
+0019 When sum1>sum2 Then win.1=win.1+1
+0020 When sum1<sum2 Then win.2=win.2+1
+0021 Otherwise           win.0=win.0+1
+0022 End
+0023 End
+0024 Call o win.1/nn 'player 1 wins'
+0025 Call o win.2/nn 'player 2 wins'
+0026 Call o win.0/nn 'draws'
+0027 /*
+0028 Do i=min(n1,n2) To max(n1*s1,n2*s2)
+0029 Call o right(i,2) format(cnt1.i,7) format(cnt2.i,7)
+0030 End
+0031 */
+0032 Call o time('E') 'seconds elapsed'
+0033 Return
+0034 
+0035 sum: Parse Arg n s
+0036 sum=0
+0037 Do k=1 To n
+0038 sum=sum+rand(s)
+0039 End
+0040 Return sum
+0041 
+0042 rand: Parse Arg n
+0043 Return random(n-1)+1
+0044 
+0045 o:
+0046 Say arg(1)
+0047 Return lineout(oid,arg(1))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                42
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,62 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX pgm computes & shows a value grid of the Möbius function for a range of integers.*/
+0002 parse arg LO HI grp .                            /*obtain optional arguments from the CL*/
+0003 if  LO=='' |  LO==","  then  LO=   0             /*Not specified?  Then use the default.*/
+0004 if  HI=='' |  HI==","  then  HI= 199             /* "      "         "   "   "     "    */
+0005 if grp=='' | grp==","  then grp=  20             /* "      "         "   "   "     "    */
+0006 /*                            ______   */
+0007 call genP HI                                     /*generate primes up to the  √  HI     */
+0008 say center(' The Möbius sequence from ' LO " ──► " HI" ", max(50, grp*3), '═')   /*title*/
+0009 $=                                               /*variable holds output grid of GRP #s.*/
+0010 do j=LO  to  HI;  $= $  right( mobius(j), 2) /*process some numbers from  LO ──► HI.*/
+0011 if words($)==grp  then do;  say substr($, 2);  $=    /*show grid if fully populated,*/
+0012 end                           /*  and nullify it for more #s.*/
+0013 end   /*j*/                                  /*for small grids, using wordCnt is OK.*/
+0014 
+0015 if $\==''  then say substr($, 2)                 /*handle any residual numbers not shown*/
+0016 exit                                             /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 mobius: procedure expose @.;  parse arg x        /*obtain a integer to be tested for mu.*/
+0019 if x<1  then return '∙'                  /*special? Then return symbol for null.*/
+0020 #= 0                                     /*start with a value of zero.          */
+0021 do k=1;  p= @.k                     /*get the  Kth  (pre─generated)  prime.*/
+0022 if p>x  then leave                  /*prime (P)   > X?    Then we're done. */
+0023 if p*p>x  then do;   #= #+1;  leave /*prime (P**2 > X?    Bump # and leave.*/
+0024 end
+0025 if x//p==0  then do; #= #+1         /*X divisible by P?   Bump mu number.  */
+0026 x= x % p       /*                    Divide by prime. */
+0027 if x//p==0  then return 0  /*X÷by P?  Then return zero*/
+0028 end
+0029 end   /*k*/                         /*#  (below) is almost always small, <9*/
+0030 if #//2==0  then return  1               /*Is # even?   Then return postive  1  */
+0031 return -1               /* " "  odd?     "     "   negative 1. */
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 genP: @.1=2; @.2=3; @.3=5; @.4=7; @.5=11; @.6= 13;  nP=6  /*assign low primes; # primes.*/
+0034 do lim=nP  until lim*lim>=HI /*only keep primes up to the  sqrt(HI).*/
+0035 end   /*lim*/
+0036 do j=@.nP+4  by 2  to HI                  /*only find odd primes from here on.   */
+0037 parse var j '' -1 _;if _==5  then iterate /*Is last digit a "5"?   Then not prime*/
+0038 if j// 3==0  then iterate                 /*is J divisible by  3?    "   "    "  */
+0039 if j// 7==0  then iterate                 /* " "     "      "  7?    "   "    "  */
+0040 if j//11==0  then iterate                 /* " "     "      " 11?    "   "    "  */
+0041 if j//13==0  then iterate                 /* " "     "      " 13?    "   "    "  */
+0042 do k=7  while k*k<=j            /*divide by some generated odd primes. */
+0043 if j // @.k==0  then iterate j  /*Is J divisible by  P?  Then not prime*/
+0044 end   /*k*/                     /* [↓]  a prime  (J)  has been found.  */
+0045 nP= nP+1;    if nP<=HI  then @.nP= j      /*bump prime count; assign prime to  @.*/
+0046 end      /*j*/;              return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                37
+002 k                42
+003 nP               45
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           33 33 33 33 33 45
+002 $                -> newV2            9 10 11
+003 #                -> newV3            20 23 25
+004 _                -> newV4            37

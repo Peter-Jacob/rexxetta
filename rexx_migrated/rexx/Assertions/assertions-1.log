@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * There's no assert feature in Rexx. That's how I'd implement it
+0003 * 10.08.2012 Walter Pachl
+0004 **********************************************************************/
+0005 x.=42
+0006 x.2=11
+0007 Do i=1 By 1
+0008 Call assert x.i,42
+0009 End
+0010 Exit
+0011 assert:
+0012 Parse Arg assert_have,assert_should_have
+0013 If assert_have\==assert_should_have Then Do
+0014 Say 'Assertion fails in line' sigl
+0015 Say 'expected:' assert_should_have
+0016 Say '   found:' assert_have
+0017 Say sourceline(sigl)
+0018 Say 'Look around'
+0019 Trace ?R
+0020 Nop
+0021 Signal Syntax
+0022 End
+0023 Return
+0024 Syntax: Say 'program terminated'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 assert_have      12
+002 assert_should_ha 12
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

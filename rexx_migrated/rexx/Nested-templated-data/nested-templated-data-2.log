@@ -1,0 +1,112 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 tok.=''
+0003 Do i=0 To 6
+0004 tok.i="'Payload#"i"'"
+0005 End
+0006 t1='[[[1,2],[ 3,4,1],5]]'
+0007 t2='1[[[1,6]],[[3,4[7] 0],5]3]9 [8] 9'
+0008 Call transform t1
+0009 Call transform t2
+0010 Exit
+0011 
+0012 transform:
+0013 Parse Arg t 1 tt
+0014 t=space(t,0)
+0015 lvl=0
+0016 t.=0
+0017 used.=0
+0018 undefined=''
+0019 Do While t<>''
+0020 Parse Var t c +1 t
+0021 Select
+0022 When c='[' Then
+0023 lvl=lvl+1
+0024 When c=']' Then
+0025 lvl=lvl-1
+0026 When c=',' Then
+0027 Nop
+0028 Otherwise Do
+0029 t=c||t
+0030 p1=pos(']',t)
+0031 p2=pos('[',t)
+0032 Select
+0033 When p2=0 Then p=p1
+0034 When p1=0 Then p=p2
+0035 Otherwise p=min(p1,p2)
+0036 End
+0037 If p=0 Then Do
+0038 Call mem lvl': >'t'<'
+0039 t=''
+0040 End
+0041 Else Do
+0042 Call mem lvl': >'left(t,p-1)'<'
+0043 t=substr(t,p)
+0044 End
+0045 End
+0046 End
+0047 End
+0048 Call show
+0049 Return
+0050 
+0051 mem:
+0052 z=t.0+1
+0053 t.z=arg(1)
+0054 t.0=z
+0055 Return
+0056 
+0057 show:
+0058 Say tt
+0059 Say 'lvl Element'
+0060 Do i=1 To t.0
+0061 Parse Var t.i lvl ':' '>' cont '<'
+0062 ol=right(lvl,3) copies(' ',lvl*3)cont(cont)
+0063 Say ol
+0064 End
+0065 Do i=0 To 6
+0066 If used.i=0 Then Say 'Payload' i 'not used'
+0067 End
+0068 Do While undefined>''
+0069 Parse Var undefined i undefined
+0070 Say 'Payload' i 'is not defined'
+0071 End
+0072 Call o ' '
+0073 Return
+0074 
+0075 cont: Procedure Expose tok. used. undefined
+0076 Parse Arg list
+0077 list=translate(list,' ',',')
+0078 res=''
+0079 Do while list>''
+0080 Parse Var list i list
+0081 res= res tok(i)','
+0082 End
+0083 res=strip(res)
+0084 res=strip(res,'T',',')
+0085 Return res
+0086 
+0087 tok: Procedure Expose tok. used. undefined
+0088 Parse Arg i
+0089 If tok.i<>'' Then Do
+0090 used.i=1
+0091 Return tok.i
+0092 End
+0093 Else Do
+0094 If wordpos(i,undefined)=0 Then
+0095 undefined=undefined i
+0096 Return "'Payload#"i "not defined'"
+0097 End
+0098 
+0099 o: Say arg(1)
+0100 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 i                88
+002 used.            90
+003 undefined        95
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

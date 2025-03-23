@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX pgm shows smallest & largest positive numbers that can be expressed, compares 0's*/
+0002 parse version v;    say 'version=' v;    say
+0003 zero=  '0.0'                                          /*a (positive) value for zero. */
+0004 negZero= '-0.0'                                          /*"  negative     "   "    "   */
+0005 say 'value of zero         equals negZero: '     word('no yes',   1 + (zero  = negZero) )
+0006 say 'value of zero exactly equals negZero: '     word('no yes',   1 + (zero == negZero) )
+0007 say
+0008 do digs=20  by 20  to 100;   numeric digits digs          /*use a range of digits. */
+0009 say center(' number of decimal digits being used:'  digs" ", 79, '═')
+0010 say 'tiny=' tiny()
+0011 say 'huge=' huge()
+0012 end   /*j*/
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 tiny:  return $xnum('1e-')
+0016 huge:  return $xnum('.'copies(9, digits() )"e+")
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 $xnum: procedure;  parse arg $                           /*use the given mantissa value.*/
+0019 !=10                                              /*use starting  exponent value.*/
+0020 do forever;  _=$ || !            /*construct a REXX decimal num.*/
+0021 if \datatype(_, 'N')  then leave /*Not numeric?   Then leave.   */
+0022 p=!;         !=! * 10            /*save number; magnify mantissa*/
+0023 end   /*forever*/
+0024 j=! % 2                                           /*halve the exponent (power).  */
+0025 do forever;  _=$ || !            /* [+]  Not numeric?  Halve it.*/
+0026 if \datatype(_, 'N')  then do; !=p;     j=j % 2
+0027 if j==0  then leave
+0028 end
+0029 p=!;         !=! + j             /*save number;  bump mantissa. */
+0030 end   /*forever*/
+0031 return $ || !
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 p                22 29
+002 j                24 26
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            18
+002 !                -> newV2            19 22 26 29
+003 _                -> newV3            20 25

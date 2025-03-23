@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program interactively plays "guess my number" with a human, the range is 1──►10. */
+0002 ?= random(1, 10)                                 /*generate a low random integer.       */
+0003 say 'Try to guess my number between 1 ──► 10  (inclusive).'  /*the directive to be used.*/
+0004 
+0005 do j=1  until  g=?                      /*keep prompting 'til done.*/
+0006 if j\==1  then say 'Try again.'         /*issue secondary prompt.  */
+0007 pull g                                  /*obtain a guess from user.*/
+0008 end   /*j*/
+0009 say 'Well guessed!'                              /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 ?                -> newV1            2

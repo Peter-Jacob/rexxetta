@@ -1,0 +1,115 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:03
+-------------------------------------------------------------------------
+0001 /*REXX program lets a user play the  2048  game on an  NxN  grid  (default is 4x4 grid).*/
+0002 parse arg N win seed .                           /*obtain optional arguments from the CL*/
+0003 if   N=='' |   N==","  then    N=     4          /*Not specified?  Then use the default.*/
+0004 if win=='' | win==","  then  win= 2**11          /* "      "         "   "   "      "   */
+0005 if datatype(seed, 'W') then call random ,,seed   /*Specified?  Then use seed for RANDOM.*/
+0006 L= length(win) + 2                               /*L:  used for displaying the grid #'s.*/
+0007 eye=copies("─", 8);  pad=left('', length(eye)+2) /*eye catchers; and perusable perusing.*/
+0008 b= ' '                                           /*comfortable readable name for a blank*/
+0009 @cls= 'CLS'                                      /*hardcoded command to clear the screen*/
+0010 prompt= eye "Please enter a direction  (Up, Down, Right, Left)       ───or───    Quit:"
+0011 move= 1;     moves= 0;      score= 0;      ok= 1 /*simulation that a move was performed.*/
+0012 @.= b                                            /*define all grid elements to a blank. */
+0013 do  until any(win);  if ok  then call put;   ok= 1;   say;    call showGrid
+0014 say;  say prompt;   parse pull a x . 1 d 2 1 way xx   /*show prompt; obtain answer.*/
+0015 if datatype(a, 'U')     then @cls           /*if uppercase, then clear the screen. */
+0016 if a==''  then do;  ok= 0                   /*the user entered blank(s) or nothing.*/
+0017 say copies(eye, 5)   'moves:'   moves    eye     "score:"   score
+0018 iterate                 /* [↑]  display # of moves & the score.*/
+0019 end
+0020 upper d a x                                 /*uppercase contents of three variables*/
+0021 if x\==''               then call err  "too many arguments entered: "   xx
+0022 if abbrev('QUIT',a,1)   then do;  say;  say eye  "quitting the game".;  exit 1;   end
+0023 good=abbrev('UP',a,1) | abbrev("DOWN",a,1) | abbrev('RIGHT',a,1) | abbrev("LEFT",a,1)
+0024 if \good                then call err  "invalid direction: "       way
+0025 if \ok  then  iterate;       moves= moves + 1;                call mov
+0026 end   /*until*/
+0027 say
+0028 say translate(eye  "Congrats!!  You've won the"  win  'game!' eye,"═",'─')  "score:" score
+0029 exit 0                                           /*stick a fork in it,  we're all done. */
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 @:   procedure expose @.;  parse arg row,col;                return @.row.col
+0032 any: arg ?; do r=1  for N; do c=1  for N;  if @.r.c==?  then return 1; end; end;  return 0
+0033 err: say;   say eye  '***error*** '   arg(1);       say;                  ok=0;   return
+0034 o_c: $=;  do k=1  for N; $=$ word(@.k.c .,1); end;  !=space(translate($,,.))==''; return $
+0035 o_r: $=;  do k=1  for N; $=$ word(@.r.k .,1); end;  !=space(translate($,,.))==''; return $
+0036 put: if \any(b) then call err ,"game over, no more moves."; if move then call two; return
+0037 row: if r==0 | r>N  then return copies('═', L);                    return center(@.r.c, L)
+0038 ten: if random(9)==4  then return 4;   return 2  /*10% of the time,  use 4 instead of 2.*/
+0039 two:   do  until @.p.q==b;  p= random(1,N);  q= random(1,N);  end;   @.p.q= ten();  return
+0040 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0041 showGrid:     do    r=0  for N+2;    _= '║';                 __= "╠"
+0042 do c=1  for N;      _= _  ||  row()'║';     __= __  ||  copies("═", L)'╬'
+0043 end   /*c*/
+0044 if r==0  then _= '╔'translate( substr(_, 2, length(_) - 2),  "╦",  '║')"╗"
+0045 if r >N  then _= '╚'translate( substr(_, 2, length(_) - 2),  "╩",  '║')"╝"
+0046 say pad _
+0047 if r<N & r>0  then say pad substr(__, 1, length(__) - 1)"╣"
+0048 end      /*r*/;        return
+0049 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0050 mov: move= 0;    if d=='R'  then call moveLR N, 1, -1    /*move (slide) numbers    ►    */
+0051 if d=='L'  then call moveLR 1, N, +1    /*  "     "       "       ◄    */
+0052 if d=='U'  then call moveUD 1, N, +1    /*  "     "       "       ↑    */
+0053 if d=='D'  then call moveUD N, 1, -1    /*  "     "       "       ↓    */
+0054 if \move  then call err 'moving '    way    " doesn't change anything.";       return
+0055 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0056 moveLR: parse arg start, sTo, #                                   /*slide   ◄   or   ►  */
+0057 do   r=1  for N;    old= o_r();      if !  then iterate /*is this row blank?  */
+0058 do N-1;           call packLR                         /*pack    ◄  or   ►   */
+0059 end        /*N-1*/                                    /* [↓]  get new tiles.*/
+0060 new= o_r();              move= move | (old\==new)       /*indicate tiles moved*/
+0061 do c=start  for N-1  by #  while @.r.c\==b          /*slide   ◄  or   ►   */
+0062 if @.r.c\==@(r,c+#)  then iterate                   /*not a duplicate ?   */
+0063 @.r.c= @.r.c * 2;    score= score + @.r.c           /*double;  bump score */
+0064 c= c + #        ;    @.r.c= b;         move= 1      /*bump C; blank dup 2.*/
+0065 end      /*c*/                                      /* [↑]  indicate move.*/
+0066 call packLR                                             /*pack    ◄  or    ►  */
+0067 end          /*r*/;                        return
+0068 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0069 moveUD: parse arg start, Sto, #                                   /*slide   ↑   or   ↓  */
+0070 do   c=1  for N;    old= o_c();      if !  then iterate /*is this col blank?  */
+0071 do N-1;           call packUD                         /*pack  up or down.   */
+0072 end        /*N-1*/                                    /* [↓]  get new tiles.*/
+0073 new= o_c();              move= move | (old\==new)       /*indicate tiles moved*/
+0074 do r=start  for N-1  by #  while @.r.c\==b          /*slide   ↑   or   ↓  */
+0075 if @.r.c\==@(r+#,c)  then iterate                   /*not a duplicate ?   */
+0076 @.r.c= @.r.c * 2;    score= score + @.r.c           /*double;  bump score */
+0077 r= r + #        ;    @.r.c= b;         move= 1      /*bump R; blank dup 2.*/
+0078 end      /*r*/                                      /* [↑]  indicate move.*/
+0079 call packUD                                             /*pack    ↑   or   ↓  */
+0080 end          /*c*/;                        return
+0081 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0082 packLR:   do c=start  for N-1  by #;   if @.r.c\==b  then iterate /*Not a blank?  Skip. */
+0083 do s=c  to sTo  by #;     @.r.s= @(r, s + #)         /*slide   ◄   or   ►  */
+0084 end   /*s*/;              @.r.sTo= b                 /*handle the last one.*/
+0085 end      /*c*/;                            return
+0086 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0087 packUD:   do r=start  for N-1  by #;   if @.r.c\==b  then iterate /*Not a blank?  Skip. */
+0088 do s=r  to sTo  by #;     @.s.c= @(s + #, c)         /*slide   ↑   or   ↓  */
+0089 end   /*s*/;              @.sTo.c= b                 /*handle the last one.*/
+0090 end      /*r*/;                            return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 start            69
+002 Sto              69
+003 c                70
+004 old              70
+005 new              73
+006 move             73 77
+007 r                74 77
+008 score            76
+009 s                83 88
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @cls             -> newV1            9
+002 @.               -> newV2.           12 39 63 64 76 77 83 84 88 89
+003 __               -> newV3            41 42
+004 $                -> newV4            34 35
+005 !                -> newV5            34 35
+006 _                -> newV6            41 42 44 45
+007 #                -> newV7            56 69

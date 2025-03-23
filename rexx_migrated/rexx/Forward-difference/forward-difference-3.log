@@ -1,0 +1,66 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX program  computes the   forward difference   of a  list of numbers.              */
+0002 numeric digits 100                               /*ensure enough accuracy (decimal digs)*/
+0003 parse arg e ',' N                                /*get a list:  ε1 ε2 ε3 ε4 ··· , order */
+0004 if e==''  then e=90 47 58 29 22 32 55 5 55 73    /*Not specified?  Then use the default.*/
+0005 #=words(e);    w=5                               /*#  is the number of elements in list.*/
+0006 /* [↓]  verify list items are numeric. */
+0007 do i=1  for #;        _=word(e, i)            /*process each number one at a time.   */
+0008 if \datatype(_, 'N')  then call ser    _    "isn't a valid number";    @.i=_/1
+0009 w=max(w, length(@.i))                         /*use the maximum length of an element.*/
+0010 end   /*i*/                                   /* [↑]  removes superfluous stuff.     */
+0011 /* [↓]  process the optional order.    */
+0012 if N==''  then parse value 0 # # with bot top N  /*define the default  order  range.    */
+0013 else parse var N bot 1 top             /*Not specified?  Then use only 1 order*/
+0014 if #==0   then call ser     "no numbers were specified."
+0015 if N<0    then call ser  N  "(order) can't be negative."
+0016 if N>#    then call ser  N  "(order) can't be greater than"  #
+0017 _=;               do k=1  for #;  _=_ right(@.k, w);  end  /*k*/;        _=substr(_, 2)
+0018 say right(#  'numbers:', 44)  _                  /*display the header title    and ···  */
+0019 say left('', 44)copies('─', w*#+#)               /*   "     "     "   fence.            */
+0020 /* [↓]  where da rubber meets da road. */
+0021 do o=bot  to top;        do r=1  for #;  !.r=@.r;     end /*r*/;        $=
+0022 do j=1  for o; d=!.j;  do k=j+1  to #;     parse value  !.k  !.k-d   with   d  !.k
+0023 w=max(w, length(!.k))
+0024 end   /*k*/
+0025 end   /*j*/
+0026 do i=o+1  to #; $=$ right(!.i/1, w);  end  /*i*/
+0027 if $==''  then $=' [null]'
+0028 say right(o, 7)th(o)'─order forward difference vector ='     $
+0029 end     /*o*/
+0030 exit                                             /*stick a fork in it,  we're all done. */
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 ser:           say;           say '***error***';      say arg(1);     say;         exit 13
+0033 th: procedure; x=abs(arg(1)); return word('th st nd rd',1+x//10*(x//100%10\==1)*(x//10<4))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                13
+002 bot              13
+003 top              13
+004 k                17 22
+005 o                21
+006 r                21
+007 j                22
+008 d                22 22
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 bot              12
+014 top              12
+015 NORMAL.15        
+016 NORMAL.16        
+017 w                23
+018 i                26
+019 x                33
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           8
+002 !.               -> newV2.           21 22
+003 #                -> newV3            5
+004 _                -> newV4            7 17 17 17
+005 $                -> newV5            21 26 27

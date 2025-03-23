@@ -1,0 +1,62 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX pgm sorts a stemmed array (numbers and/or chars) using the  merge─sort algorithm.*/
+0002 call init                                        /*sinfully initialize the   @   array. */
+0003 call show      'before sort'                     /*show the   "before"  array elements. */
+0004 say copies('▒', 75)  /*display a separator line to the term.*/
+0005 call merge          #                            /*invoke the  merge sort  for the array*/
+0006 call show      ' after sort'                     /*show the    "after"  array elements. */
+0007 exit 0                                           /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 init: @.=;    @.1= '---The seven deadly sins---'  ;    @.4= "avarice"  ;   @.7= 'gluttony'
+0010 @.2= '==========================='  ;    @.5= "wrath"    ;   @.8= 'sloth'
+0011 @.3= 'pride'                        ;    @.6= "envy"     ;   @.9= 'lust'
+0012 do #=1  until @.#==''; end;   #= #-1;   return      /*#:  # of entries in @ array.*/
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 show: do j=1  for #; say right('element',20) right(j,length(#)) arg(1)":" @.j; end; return
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 merge: procedure expose @. !.;   parse arg n, L;   if L==''  then do;  !.=;  L= 1;  end
+0017 if n==1  then return;     h= L + 1
+0018 if n==2  then do; if @.L>@.h  then do; _=@.h; @.h=@.L; @.L=_; end; return;  end
+0019 m= n % 2                                     /* [↑]  handle case of two items.*/
+0020 call merge  n-m, L+m                         /*divide items  to the left   ···*/
+0021 call merger m,   L,   1                      /*   "     "     "  "  right  ···*/
+0022 i= 1;                     j= L + m
+0023 do k=L  while k<j                 /*whilst items on right exist ···*/
+0024 if j==L+n  |  !.i<=@.j  then do;     @.k= !.i;     i= i + 1;      end
+0025 else do;     @.k= @.j;     j= j + 1;      end
+0026 end   /*k*/
+0027 return
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 merger: procedure expose @. !.;  parse arg n,L,T
+0030 if n==1  then do;  !.T= @.L;                                       return;  end
+0031 if n==2  then do;  h= L + 1;   q= T + 1;  !.q= @.L;    !.T= @.h;   return;  end
+0032 m= n % 2                                    /* [↑]  handle case of two items.*/
+0033 call merge  m,   L                          /*divide items  to the left   ···*/
+0034 call merger n-m, L+m, m+T                   /*   "     "     "  "  right  ···*/
+0035 i= L;                     j= m + T
+0036 do k=T  while k<j                 /*whilst items on left exist  ···*/
+0037 if j==T+n  |  @.i<=!.j  then do;     !.k= @.i;     i= i + 1;      end
+0038 else do;     !.k= !.j;     j= j + 1;      end
+0039 end   /*k*/
+0040 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                29
+002 L                29
+003 T                29
+004 h                31
+005 q                31
+006 m                32
+007 i                35 37
+008 j                35 38
+009 k                36
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           9 9 9 10 10 10 11 11 11 18 18 24 25
+002 !.               -> newV2.           16 30 31 31 37 38
+003 #                -> newV3            12 12
+004 _                -> newV4            18

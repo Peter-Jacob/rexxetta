@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /* call stack */
+0002 say 'Call A'
+0003 call A '123'
+0004 say result
+0005 exit 0
+0006 
+0007 A:
+0008 say 'Call B'
+0009 call B '456'
+0010 say result
+0011 return ARG(1)
+0012 
+0013 B:
+0014 say 'Call C'
+0015 call C '789'
+0016 say result
+0017 return ARG(1)
+0018 
+0019 C:
+0020 call callstack
+0021 return ARG(1)
+0022 
+0023 callstack: procedure
+0024 getcallstack(cs.)
+0025 say 'Dump call stack with' cs.0 'items'
+0026 do i = 1 to cs.0
+0027 parse var cs.i line func
+0028 say format(line, 3) ':' left(func, 9) ': source "' || sourceline(line) || '"'
+0029 end
+0030 return cs.0
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 cs.              27
+002 line             27
+003 func             27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

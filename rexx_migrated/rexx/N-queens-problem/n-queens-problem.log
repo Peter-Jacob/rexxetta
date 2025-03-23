@@ -1,0 +1,79 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program  places   N   queens on an  NxN  chessboard  (the eight queens problem). */
+0002 parse arg N .                                    /*obtain optional argument from the CL.*/
+0003 if N=='' | N==","  then N= 8                     /*Not specified:  Then use the default.*/
+0004 if N<1             then call nOK                 /*display a message, the board is bad. */
+0005 rank= 1;           file= 1;               #= 0   /*starting rank&file;  #≡number queens.*/
+0006 @.= 0;             pad= left('', 9* (N<18) )     /*define empty board;  set indentation.*/
+0007 /* [↓]  rank&file ≡ chessboard row&cols*/
+0008 do  while #<N;     @.file.rank= 1              /*keep placing queens until we're done.*/
+0009 if ok(file, rank)  then do; file= 1;    #= #+1 /*Queen not being attacked? Then eureka*/
+0010 rank= rank+1       /*use another attempt at another rank. */
+0011 iterate            /*go and try another queen placement.  */
+0012 end                    /* [↑]  found a good queen placement.  */
+0013 @.file.rank= 0                                 /*It isn't safe.  So remove this queen.*/
+0014 file= file + 1                                 /*So, try the next (higher) chess file.*/
+0015 do  while file>N;    rank= rank - 1;            if rank==0  then call nOK
+0016 do j=1  for N;    if \@.j.rank  then iterate             /*¿ocupado?*/
+0017 @.j.rank= 0;      #= # - 1;     file= j + 1;     leave
+0018 end  /*j*/
+0019 end     /*while file>N*/
+0020 end                    /*while    #<N*/
+0021 call show                                        /*display the chess board with queens. */
+0022 exit  1                                          /*stick a fork in it,  we're all done. */
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 nOK: say;      say  "No solution for"      N      'queens.';          say;          exit 0
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 ok:  parse arg f,r;  fp= f + 1;   rm= r - 1      /*if return≡0,  then queen isn't safe. */
+0027 do k=1          for rm;               if @.f.k  then return 0;           end
+0028 f= f-1;  do k=rm  by -1  for rm  while f\==0;  if @.f.k  then return 0;  f= f-1;  end
+0029 f= fp;   do k=rm  by -1  for rm  while f <=N;  if @.f.k  then return 0;  f= f+1;  end
+0030 return 1   /*1≡queen is safe. */            /*  ↑↑↑↑↑↑↑↑    is queen under attack? */
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 show: say  'A solution for '     N     " queens:"     /*display a title to the terminal.*/
+0033 g= substr( copies("╬═══",  N)  ,2)              /*start of all cells on chessboard*/
+0034 say;      say pad  translate('╔'g"╗", '╦', "╬") /*display top rank (of the board).*/
+0035 line   = '╠'g"╣";   dither= "▓";   ditherQ= '░' /*define a line for cell boundary.*/
+0036 bar    = '║'    ;   queen = "Q"                 /*kinds:   horiz.,  vert.,  salad.*/
+0037 Bqueen = ditherQ  ||  queen  ||  ditherQ        /*glyph befitting a black square Q*/
+0038 Wqueen =           ' 'queen" "                  /*  "       "     " white    "   "*/
+0039 do   rank=1  for N;     if rank\==1  then say pad line;    _=  /*show rank sep. */
+0040 do file=1  for N
+0041 B = (file + rank) // 2                      /*Is the square black ?  Then B=1.*/
+0042 if  B          then Qgylph= Bqueen          /*if black square, use dithered Q.*/
+0043 else Qgylph= Wqueen          /* " white    "     "   white   " */
+0044 if @.file.rank then _= _ || bar || Qgylph   /*Has queen? Use a 3─char Q symbol*/
+0045 else if B then _=_ || bar || copies(dither,3) /*dithering      */
+0046 else _=_ || bar || copies(  ' ' ,3) /* 3 blanks      */
+0047 end   /*file*/                              /* [↑]  preserve square─ish board.*/
+0048 say pad  _ || bar                             /*show a single rank of the board.*/
+0049 end     /*rank*/                              /*80 cols  can view a 19x19 board.*/
+0050 say pad  translate('╚'g"╝", '╩', "╬");   return /*display the last rank (of board)*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 f                26 28 28 29 29
+002 r                26
+003 fp               26
+004 rm               26
+005 k                27 28 29
+006 g                33
+007 line             35
+008 dither           35
+009 ditherQ          35
+010 bar              36
+011 queen            36
+012 Bqueen           37
+013 Wqueen           38
+014 rank             39
+015 file             40
+016 B                41
+017 Qgylph           42
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           6 8 13 17
+002 #                -> newV2            5 9 17
+003 _                -> newV3            39 44

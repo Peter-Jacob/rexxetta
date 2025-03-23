@@ -1,0 +1,18 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 aaa. = '───────nope.'                  /*assign this string as a default*/
+0002 aaa.1=1                                /*assign   1   to first  element.*/
+0003 aaa.4=4.                               /*   "     4    " fourth    "    */
+0004 aaa.7='lucky'                          /*   "     7    " seventh   "    */
+0005 do j=0  to 8             /*go through a bunch of elements.*/
+0006 say 'aaa.'||j '=' aaa.j  /*display element # and its value*/
+0007 end                      /*we could've started J at  -100.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 aaa.             1 2 3 4
+002 j                5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

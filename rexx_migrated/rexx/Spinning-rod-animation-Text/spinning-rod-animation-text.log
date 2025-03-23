@@ -1,0 +1,26 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX program displays a  "spinning rod"  (AKA:  trobbers  or  progress indicators).   */
+0002 
+0003 if 4=='f4'x  then bs= "16"x                      /*EBCDIC?  Then use this backspace chr.*/
+0004 else bs= "08"x                      /* ASCII?    "   "    "      "      "  */
+0005 
+0006 signal on halt                                   /*jump to   HALT   when user halts pgm.*/
+0007 $= '│/─\'                                        /*the throbbing characters for display.*/
+0008 do j=1                         /*perform  until  halted by the user.  */
+0009 call charout ,  bs  ||  substr($, 1 + j//length($), 1)
+0010 call delay .25                 /*delays a quarter of a second.        */
+0011 if result==1  then leave       /*see if  HALT  was issued during DELAY*/
+0012 end   /*j*/
+0013 
+0014 halt: say bs  ' '                                /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 bs               3
+002 j                8
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            7

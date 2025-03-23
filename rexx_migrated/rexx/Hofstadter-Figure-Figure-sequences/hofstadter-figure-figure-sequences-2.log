@@ -1,0 +1,87 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /* REXX **************************************************************
+0002 * 21.11.2012 Walter Pachl transcribed from PL/I
+0003 **********************************************************************/
+0004 Call time 'R'
+0005 Say 'Verification that the first 40 FFR numbers and the first'
+0006 Say '960 FFS numbers result in the integers 1 to 1000 only.'
+0007 t.=0
+0008 num.=''
+0009 do i = 1 to 40
+0010 j = ffr(i)
+0011 if t.j then Say 'error, duplicate value at ' || i
+0012 else t.j = 1
+0013 num.i=j
+0014 end
+0015 nn=0
+0016 Say time('E') 'seconds elapsed'
+0017 Do i=1 To 3
+0018 ol=''
+0019 Do j=1 To 15
+0020 nn=nn+1
+0021 ol=ol right(num.nn,3)
+0022 End
+0023 Say ol
+0024 End
+0025 do i = 1 to 960
+0026 j = ffs(i)
+0027 if t.j then
+0028 Say 'error, duplicate value at ' || i
+0029 else t.j = 1
+0030 end
+0031 Do i=1 To 1000
+0032 if t.i=0 Then
+0033 Say i 'was not set'
+0034 End
+0035 If i>1000 Then
+0036 Say 'passed test'
+0037 Say time('E') 'seconds elapsed'
+0038 Exit
+0039 
+0040 ffr: procedure Expose v.
+0041 Parse Arg n
+0042 v.= 0
+0043 v.1 = 1
+0044 if n = 1 then return 1
+0045 r = 1
+0046 do i = 2 to n
+0047 do j = 2 to 2*n
+0048 if v.j = 0 then leave
+0049 end
+0050 v.j = 1
+0051 s = j
+0052 r = r + s
+0053 if r <= 2*n then v.r = 1
+0054 end
+0055 return r
+0056 
+0057 ffs: procedure Expose v.
+0058 Parse Arg n
+0059 v.= 0
+0060 v.1 = 1
+0061 if n = 1 then return 2
+0062 r = 1
+0063 do i = 1 to n
+0064 do j = 2 to 2*n
+0065 if v.j = 0 then leave
+0066 end
+0067 v.j = 1
+0068 s = j
+0069 r = r + s
+0070 if r <= 2*n then v.r = 1
+0071 end
+0072 return s
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                58
+002 v.               59 60 67 70
+003 r                62 69
+004 i                63
+005 j                64
+006 s                68
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

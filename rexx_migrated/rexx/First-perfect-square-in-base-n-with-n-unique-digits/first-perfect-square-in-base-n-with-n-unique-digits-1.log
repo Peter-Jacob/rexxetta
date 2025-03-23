@@ -1,0 +1,66 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program finds/displays the first perfect square with  N  unique digits in base N.*/
+0002 numeric digits 40                                /*ensure enough decimal digits for a #.*/
+0003 parse arg LO HI .                                /*obtain optional argument from the CL.*/
+0004 if LO==''            then do;  LO=2;  HI=16; end /*not specified?  Then use the default.*/
+0005 if LO==','           then      LO=2              /*not specified?  Then use the default.*/
+0006 if HI=='' | HI==","  then             HI=LO      /*not specified?  Then use the default.*/
+0007 @start= 1023456789abcdefghijklmnopqrstuvwxyz     /*contains the start # (up to base 36).*/
+0008 /* [↓]  find the smallest square with  */
+0009 do j=LO  to HI;        beg= left(@start, j)  /*      N  unique digits in base  N.   */
+0010 do k=iSqrt( base(beg,10,j) )  until #==0  /*start each search from smallest sqrt.*/
+0011 $= base(k*k, j, 10)                       /*calculate square, convert to base J. */
+0012 $u= $;              upper $u              /*get an uppercase version fast count. */
+0013 #= verify(beg, $u)                        /*count differences between 2 numbers. */
+0014 end   /*k*/
+0015 say 'base'            right(j, length(HI) )                   "   root="   ,
+0016 lower( right( base(k, j, 10), max(5, HI) ) )   '   square='    lower($)
+0017 end      /*j*/
+0018 exit                                             /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 base: procedure;  arg x 1 #,toB,inB              /*obtain:  three arguments.            */
+0021 @l= '0123456789abcdefghijklmnopqrstuvwxyz' /*lowercase (Latin or English) alphabet*/
+0022 @u= @l;     upper @u                       /*uppercase    "    "    "         "   */
+0023 if inb\==10  then                          /*only convert if  not  base 10.       */
+0024 do 1;  #= 0                             /*result of converted  X  (in base 10).*/
+0025 if inb==2   then do; #= b2d(x); leave; end  /*convert   binary    to decimal.  */
+0026 if inb==16  then do; #= x2d(x); leave; end  /*   "    hexadecimal  "    "      */
+0027 do j=1  for length(x)                 /*convert  X:   base inB  ──► base 10. */
+0028 #= # * inB + pos(substr(x,j,1), @u)-1 /*build a new number,  digit by digit. */
+0029 end    /*j*/                          /* [↑]  this also verifies digits.     */
+0030 end
+0031 y=                                         /*the value of  X  in base  B (so far).*/
+0032 if tob==10  then return #                  /*if TOB is ten,  then simply return #.*/
+0033 if tob==2   then return d2b(#)             /*convert base 10 number to binary.    */
+0034 if tob==16  then return lower( d2x(#) )    /*   "      "   "    "    " hexadecimal*/
+0035 do  while  # >= toB                     /*convert #:    decimal  ──►  base toB.*/
+0036 y= substr(@l, (# // toB) + 1, 1)y       /*construct the output number.         */
+0037 #= # % toB                              /*      ··· and whittle  #  down also. */
+0038 end    /*while*/                        /* [↑]  algorithm may leave a residual.*/
+0039 return substr(@l, # + 1, 1)y               /*prepend the residual, if any.        */
+0040 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0041 iSqrt: procedure; parse arg x;  r=0;  q=1;             do while q<=x;  q=q*4;  end
+0042 do while q>1; q=q%4; _=x-r-q; r=r%2; if _>=0 then do;x=_;r=r+q; end; end; return r
+0043 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0044 b2d:   return x2d( b2x( arg(1) ) )               /*convert binary      number to decimal*/
+0045 d2b:   return x2b( d2x( arg(1) ) )  +  0         /*   "    hexadecimal    "    "    "   */
+0046 lower: @abc= 'abcdefghijklmnopqrstuvwxyz'; return translate(arg(1), @abc, translate(@abc))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                41 42
+002 r                41 42 42
+003 q                41 41 42
+004 while            41
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @start           -> newV1            7
+002 $u               -> newV2            12
+003 @l               -> newV3            21
+004 @u               -> newV4            22
+005 $                -> newV5            11
+006 #                -> newV6            13 24 25 26 28 37
+007 _                -> newV7            42

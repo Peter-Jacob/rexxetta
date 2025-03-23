@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /*REXX program finds and displays the   home prime   of a range of positive integers.   */
+0002 numeric digits 20                                /*ensure handling of larger integers.  */
+0003 parse arg  LO HI .                               /*obtain optional arguments from the CL*/
+0004 if LO=='' | LO=="," then LO=  2                  /*Not specified?  Then use the default.*/
+0005 if HI=='' | HI=="," then HI= 20                  /* "     "         "   "   "     "     */
+0006 @hpc= 'home prime chain for '                    /*a literal used in two SAY statements.*/
+0007 w= length(HI)   /*HI width, used for output alignment. */
+0008 do j=max(2, LO)  to HI                    /*find home primes for an integer range*/
+0009 pf= factr(j);             f= words(pf)    /*get prime factors; number of factors.*/
+0010 if f==1  then do;  say @hpc j": "  j  ' is prime.';  iterate;  end   /*J is prime*/
+0011 xxx.1= j                                  /*save  J  in the first array element. */
+0012 do n=2  until #==1               /*keep processing until we find a prime*/
+0013 xxx.n= space(pf, 0)              /*obtain factors of a concatenated p.f.*/
+0014 pf= factr(xxx.n);   #= words(pf) /*assign factors to PF;  # of factors. */
+0015 end   /*n*/
+0016 ee= n                                     /*save  EE  as the final (last) prime. */
+0017 n= n - 1;   z= n                          /*adjust N (for DO loop); assign N to Z*/
+0018 $=                                        /*nullify the string of   home primes. */
+0019 do m=1  for n                    /*build a list  ($)  of     "     "    */
+0020 $= $  'HP'xxx.m"("z') ─► '       /*concatenate to string of  "     "    */
+0021 z= z - 1                         /*decrease the index counter by unity. */
+0022 end   /*m*/                      /* [↑]  the index counter is decreasing*/
+0023 
+0024 say @hpc right(j, w)":"   $   xxx.ee  ' is prime.'  /*show string of home primes.*/
+0025 end   /*n*/
+0026 exit 0                                           /*stick a fork in it,  we're all done. */
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 factr: procedure;  parse arg x 1 d,$             /*set X, D  to argument 1;  $  to null.*/
+0029 if x==1  then return ''                   /*handle the special case of   X = 1.  */
+0030 do  while x//2==0; $= $ 2; x= x% 2; end /*append all the  2  factors of new  X.*/
+0031 do  while x//3==0; $= $ 3; x= x% 3; end /*   "    "   "   3     "     "  "   " */
+0032 do  while x//5==0; $= $ 5; x= x% 5; end /*   "    "   "   5     "     "  "   " */
+0033 do  while x//7==0; $= $ 7; x= x% 7; end /*   "    "   "   7     "     "  "   " */
+0034 q= 1;                              r= 0   /*R:  will be iSqrt(x).             ___*/
+0035 do  while q<=x; q=q*4; end              /*these two lines compute integer  √ X */
+0036 do  while q>1;  q=q%4; _= d-r-q; r= r%2; if _>=0  then do; d= _; r= r+q; end; end
+0037 
+0038 do k=11  by 6  to r                     /*insure that  J  isn't divisible by 3.*/
+0039 parse var k  ''  -1  _                  /*obtain the last decimal digit of  K. */
+0040 if _\==5  then  do  while x//k==0;  $=$ k;  x=x%k;  end    /*maybe reduce by K.*/
+0041 if _ ==3  then iterate                  /*Is next  Y  is divisible by 5?  Skip.*/
+0042 y= k+2;         do  while x//y==0;  $=$ y;  x=x%y;  end    /*maybe reduce by Y.*/
+0043 end   /*k*/
+0044 /* [↓]  The $ list has a leading blank.*/
+0045 if x==1  then return $                    /*Is residual=unity? Then don't append.*/
+0046 return $ x                  /*return   $   with appended residual. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 k                39
+002 while            40 42
+003 x                40 42
+004 y                42
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @hpc             -> newV1            6
+002 #                -> newV2            14
+003 $                -> newV3            18 20 28 30 31 32 33 40 42
+004 _                -> newV4            36 39

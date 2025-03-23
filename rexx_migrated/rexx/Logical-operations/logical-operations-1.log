@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates some  binary  (also known as  bit  or logical)  operations.*/
+0002 x= 1    ;    @x= ' x '   /*set the initial values of  X  and Y, */
+0003 y= 0    ;    @y= ' y '   /*  and a couple of literals for HDRs. */
+0004 /* [↓]  echo  the   X  and  Y   values.*/
+0005 call $ 'name', "value"                           /*display the  header  (title) line.   */
+0006 call $ 'x'   ,    x                              /*display "x"  and then the value of X.*/
+0007 call $ 'y'   ,    y                              /*   "    "y"   "    "   "    "    " Y */
+0008 /* [↓]  negate the X; then the Y value.*/
+0009 call $ 'name', "negated"                         /*some REXXes support the  ¬  character*/
+0010 call $ 'x'   ,   \x                              /*display "x"  and then the value of ¬X*/
+0011 call $ 'y'   ,   \y                              /*   "    "y"   "    "   "    "    " ¬Y*/
+0012 say
+0013 say
+0014 call $ @x, @y, 'AND';    do x=0  to 1;   do y=0  to 1;   call $ x, y, x  & y;    end;  end
+0015 call $ @x, @y, 'OR' ;    do x=0  to 1;   do y=0  to 1;   call $ x, y, x  | y;    end;  end
+0016 call $ @x, @y, 'XOR';    do x=0  to 1;   do y=0  to 1;   call $ x, y, x && y;    end;  end
+0017 exit 0                                           /*stick a fork in it,  we're all done. */
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 $: parse arg @.1, @.2, @.3, @.4;         hdr= length(@.1) \== 1;        if hdr  then say
+0020 do j=0  to hdr;             _=
+0021 do k=1  for arg();    _= _  center(@.k, 7)
+0022 end   /*k*/
+0023 say _
+0024 @.= copies('═', 7)                  /*define a new header separator line.  */
+0025 end         /*j*/
+0026 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 hdr              19
+002 j                20
+003 k                21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @x               -> newV1            2
+002 @y               -> newV2            3
+003 @.               -> newV3.           19 19 19 19 24
+004 _                -> newV4            20 21

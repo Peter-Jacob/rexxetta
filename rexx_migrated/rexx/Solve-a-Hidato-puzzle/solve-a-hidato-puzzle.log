@@ -1,0 +1,93 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program solves a  Numbrix (R) puzzle, it also displays the puzzle and solution.  */
+0002 maxR=0;    maxC=0;    maxX=0;     minR=9e9;      minC=9e9;    minX=9e9;    cells=0;    @.=
+0003 parse arg xxx;        PZ='Hidato puzzle'         /*get the cell definitions from the CL.*/
+0004 xxx=translate(xxx, , "/\;:_", ',')               /*also allow other characters as comma.*/
+0005 
+0006 do  while xxx\='';  parse var  xxx    r c   marks  ','  xxx
+0007 do  while marks\='';          _=@.r.c
+0008 parse var marks  x  marks
+0009 if datatype(x,'N')  then do;  x=x/1                     /*normalize X*/
+0010 if x<0  then PZ= 'Numbrix puzzle'
+0011 x=abs(x)                  /*use  │x│   */
+0012 end
+0013 minR=min(minR,r);  maxR=max(maxR,r); minC=min(minC,c); maxC=max(maxC,c)
+0014 if x==1   then do;  !r=r;  !c=c;  end              /*the START cell. */
+0015 if _\=='' then call err "cell at" r c 'is already occupied with:'  _
+0016 @.r.c=x;   c=c+1;    cells=cells+1                 /*assign a mark.  */
+0017 if x==.              then iterate                  /*is a hole?  Skip*/
+0018 if \datatype(x,'W')  then call err 'illegal marker specified:' x
+0019 minX=min(minX,x);    maxX=max(maxX,x)              /*min and max  X. */
+0020 end   /*while marks¬='' */
+0021 end       /*while xxx  ¬='' */
+0022 call show                                        /* [↓]  is used for making fast moves. */
+0023 Nr = '0  1   0  -1    -1   1   1  -1'            /*possible  row     for the next move. */
+0024 Nc = '1  0  -1   0     1  -1   1  -1'            /*   "      column   "   "    "    "   */
+0025 pMoves=words(Nr) -4*(left(PZ,1)=='N')            /*is this to be a Numbrix puzzle ?     */
+0026 do i=1  for pMoves;   Nr.i=word(Nr,i);   Nc.i=word(Nc,i);   end     /*for fast moves. */
+0027 if \next(2,!r,!c)  then call err  'No solution possible for this'   PZ    "puzzle."
+0028 say 'A solution for the'   PZ    "exists.";      say;                     call show
+0029 exit                                             /*stick a fork in it,  we're all done. */
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 err:  say;    say '***error*** (from' PZ"): "    arg(1);        say;          exit 13
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 next: procedure expose @. Nr. Nc. cells pMoves;  parse arg #,r,c;   ##=#+1
+0034 do t=1  for pMoves                                   /* [↓]  try some moves. */
+0035 parse value  r+Nr.t c+Nc.t  with nr nc               /*next move coördinates.*/
+0036 if @.nr.nc==.  then do;                @.nr.nc=#     /*let's try this move.  */
+0037 if #==cells        then leave    /*is this the last move?*/
+0038 if next(##,nr,nc)  then return 1
+0039 @.nr.nc=.                        /*undo the above move.  */
+0040 iterate                          /*go & try another move.*/
+0041 end
+0042 if @.nr.nc==#  then do                               /*this a fill-in move ? */
+0043 if #==cells        then return 1 /*this is the last move.*/
+0044 if next(##,nr,nc)  then return 1 /*a fill-in move.       */
+0045 end
+0046 end   /*t*/
+0047 return 0                                                  /*this ain't working.   */
+0048 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0049 show: if maxR<1 | maxC<1  then call err  'no legal cell was specified.'
+0050 if minX<1           then call err  'no  1  was specified for the puzzle start'
+0051 w=max(2,length(cells));  do    r=maxR  to minR  by -1; _=
+0052 do c=minC  to maxC;        _=_ right(@.r.c,w); end /*c*/
+0053 say _
+0054 end   /*r*/
+0055 say;    return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 r                33 51
+002 c                33 52
+003 t                34
+004 minR             13
+005 maxR             13
+006 minC             13
+007 maxC             13
+008 c                16
+009 cells            16
+010 minX             19
+011 maxX             19
+012 Nr               23
+013 Nc               24
+014 pMoves           25
+015 i                26
+016 Nr.              26
+017 Nc.              26
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 nr               35
+022 nc               35
+023 w                51
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 16 36 39
+002 !r               -> newV2            14
+003 !c               -> newV3            14
+004 ##               -> newV4            33
+005 _                -> newV5            7 51 52
+006 #                -> newV6            33

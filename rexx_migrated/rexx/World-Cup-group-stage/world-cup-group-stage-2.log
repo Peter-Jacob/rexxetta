@@ -1,0 +1,82 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX pgm calculates world cup standings based on the number of games won by the teams.*/
+0002 parse arg teams win .                            /*obtain optional argument from the CL.*/
+0003 if teams=='' | teams==","  then teams= 4         /*Not specified?  Then use the default.*/
+0004 if   win=='' |   win==","  then   win= 3         /* "      "         "   "   "     "    */
+0005 sets= 0;                           gs=           /*the number of sets  (so far).        */
+0006 do   j=1   for teams
+0007 do k=j+1  to teams;   sets= sets + 1  /*bump the number of game sets.        */
+0008 games.sets= j || k;   gs= gs  j || k  /*generate the game combinations.      */
+0009 end   /*j*/
+0010 end     /*k*/
+0011 z= 1;                  setLimit= copies(2, sets) /*Z:   max length of any number shown. */
+0012 say teams  ' teams, '  sets   " game sets: "  gs /*display what's being used for calcs. */
+0013 results = copies(0, sets);                 say   /*start with left-most teams all losing*/
+0014 points. = 0                                      /*zero all the team's point.           */
+0015 do until \nextResult(results);       @.= 0
+0016 do j=1  for sets;                  r= substr( results, j, 1)
+0017 parse var  games.j    A  +1  B                  /*get the  A  and  B teams*/
+0018 if r==0  then      @.B= @.B + win               /*win for right─most team.*/
+0019 if r==1  then do;  @.A= @.A + 1;  @.B= @.B + 1; end  /*draw for both teams*/
+0020 if r==2  then      @.A= @.A + win               /*win for left─most team. */
+0021 end       /*j*/
+0022 call sort teams
+0023 do  t=1  for teams;  tm= t - 1;                             _= @.t
+0024 points.tm._ = points.tm._ + 1;  z= max(z, length( points.tm._) )
+0025 end   /*t*/
+0026 end               /*until*/
+0027 $.=
+0028 do j=0  for teams+6;  do k=0  for teams;   $.k= $.k || right( points.k.j, z)'│ ';  end
+0029 end   /*j*/
+0030 say                                                  /* [↓]  build grid line for the box*/
+0031 L= length($.1) -2;     $$= translate( translate( left($.1, L), , 0123456789),   '─', " ")
+0032 say left('', 15)       center("points", L)           /*display the boxed title.         */
+0033 say left('', 15)  "╔"translate($$, '═╤', "─│")'╗'    /*display the bottom sep for title.*/
+0034 p= 0
+0035 do m=teams-1  by -1  for teams;   p = p + 1     /*bump the  place  holder (counter)*/
+0036 say right('('th(p) "place)", 14)  " ║"left($.m, L)'║'
+0037 if m>0  then say right('               ', 14)  " ╟"translate($$, '┼', "│")'╢'
+0038 end   /*m*/
+0039 say left('', 15)  "╚"translate( $$, '═╧', "─│")'╝'   /*display the bottom sep for title.*/
+0040 exit 0                                           /*stick a fork in it,  we're all done. */
+0041 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0042 nextResult: if results==setLimit  then return 0  /* [↓]  do arithmetic in base three.   */
+0043 res= 0;      do k=1  for sets;      res= res * 3    +   substr( results, k, 1)
+0044 end   /*k*/
+0045 results=;                           res= res + 1
+0046 do sets;      results= res // 3   ||   results;      res= res % 3
+0047 end   /*sets*/;                    return 1
+0048 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0049 sort: procedure expose @.; arg #;  do   j=1   for #-1  /*a bubble sort, ascending order.*/
+0050 do k=j+1  to #    /*swap two elements out of order.*/
+0051 if @.k<@.j  then parse value  @.j @.k  with  @.k @.j
+0052 end   /*k*/
+0053 end     /*j*/;           return
+0054 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0055 th: arg th; return (th/1) || word('th st nd rd', 1 +(th//10) *(th//100%10\==1)*(th//10<4))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 games.           17
+002 A                17
+003 B                17
+004 t                23
+005 tm               23
+006 points.          24
+007 z                24
+008 j                28 49
+009 k                28 43 50
+010 L                31
+011 p                34 35
+012 m                35
+013 res              43 43 45 46
+014 results          45 46
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           15 18 19 19 20 51 51
+002 $.               -> newV2.           27 28
+003 $$               -> newV3            31
+004 _                -> newV4            23

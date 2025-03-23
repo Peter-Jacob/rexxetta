@@ -1,0 +1,56 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program finds and displays  Pierpont primes  of the  first  and  second  kinds.  */
+0002 parse arg n .                                    /*obtain optional argument from the CL.*/
+0003 if n=='' | n==","  then n= 50                    /*Not specified?  Then use the default.*/
+0004 numeric digits n                                 /*ensure enough decimal digs (bit int).*/
+0005 big= copies(9, digits() )                        /*BIG:  used as a max number (a limit).*/
+0006 @.= '2nd';                      @.1= '1st'
+0007 do t=1  to -1  by -2;   usum= 0;   vsum= 0;    s= 0       /*T  is  1,  then  -1.*/
+0008 #= 0                                     /*number of Pierpont primes  (so far). */
+0009 $=;    do j=0  until #>=n                /*$:   the list  "  "      "      "    */
+0010 if usum<=s  then usum= get(2, 3);    if vsum<=s  then vsum= get(3, 2)
+0011 s= min(vsum, usum);  if \isPrime(s)  then iterate /*get min;  Not prime? */
+0012 #= # + 1;            $= $ s                       /*bump counter; append.*/
+0013 end   /*j*/
+0014 say
+0015 w= length(word($, #) )                                   /*biggest prime length.*/
+0016 say center(n   " Pierpont primes of the "   @.t ' kind',  max(10 *(w+1), 80), "═")
+0017 
+0018 do p=1  by 10  to #;      _=;      do k=p  for 10;   _= _ right( word($, k),  w)
+0019 end   /*k*/
+0020 if _\==''  then say substr( strip(_, "T"),  2)
+0021 end   /*p*/
+0022 end     /*t*/
+0023 exit 0                                           /*stick a fork in it,  we're all done. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 isPrime: procedure; parse arg x '' -1 _; if x<17  then return wordpos(x,"2 3 5 7 11 13")>0
+0026 if _==5  then return 0;           if x//2==0  then return 0       /*not prime. */
+0027 if x//3==0  then return 0;        if x//7==0  then return 0       /* "    "    */
+0028 do j=11  by 6  until j*j>x                                     /*skip ÷ 3's.*/
+0029 if x//j==0  then return 0;  if x//(j+2)==0  then return 0      /*not prime. */
+0030 end   /*j*/;                                     return 1      /*it's prime.*/
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 get: parse arg c1,c2; m=big;  do   ju=0;  pu= c1**ju;  if pu+t>s  then return min(m, pu+t)
+0033 do jv=0;  pv= c2**jv;  if pv  >s  then iterate ju
+0034 _= pu*pv  +  t;        if _   >s  then m= min(_, m)
+0035 end   /*jv*/
+0036 end     /*ju*/           /*see the    RETURN    (above).  */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 c1               32
+002 c2               32
+003 m                32 34
+004 ju               32
+005 pu               32
+006 jv               33
+007 pv               33
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           6 6
+002 #                -> newV2            8 12
+003 $                -> newV3            9 12
+004 _                -> newV4            18 18 25 34

@@ -1,0 +1,97 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 patients='patients.csv'
+0003 l=linein(patients)
+0004 Parse Var l h1 ',' h2
+0005 n=0
+0006 idl=''
+0007 Do n=1 By 1 While lines(patients)>0
+0008 l=linein(patients)
+0009 Parse Var l id ',' lastname.id
+0010 idl=idl id
+0011 End
+0012 n=n-1 /* number of patients */
+0013 visits='visits.csv'
+0014 l=linein(visits) /* skip the header line of this file */
+0015 h3='LAST_VISIT'
+0016 h4='SCORE_SUM'
+0017 h5='SCORE_AVG'
+0018 date.=''
+0019 score.=0
+0020 Say '|' h1 '|' h2 '|' h3 '|' h4 '|' h5 '|'
+0021 Do While lines(visits)>0
+0022 l=linein(visits)
+0023 Parse Var l id ',' date ',' score
+0024 if date>date.id Then date.id=date
+0025 If score>'' Then Do
+0026 z=score.id.0+1
+0027 score.id.z=score
+0028 score.id.0=z
+0029 End
+0030 end
+0031 idl=wordsort(idl)
+0032 Do While idl<>''
+0033 Parse Var idl id idl
+0034 If date.id='' Then date.id=copies(' ',10)
+0035 ol='|' left(id,length(h1)) '|' left(lastname.id,length(h2)),
+0036 '|' left(date.id,length(h3))
+0037 If score.id.0=0 Then Do
+0038 ol=ol '|' left(' ',length(h4)) '|',
+0039 left(' ',length(h5)) '|'
+0040 score_sum=copies(' ',length(h4))
+0041 score_avg=copies(' ',length(h4))
+0042 End
+0043 Else Do
+0044 score_sum=0
+0045 Do j=1 To score.id.0
+0046 score_sum=score_sum+score.id.j
+0047 End
+0048 score_avg=score_sum/score.id.0
+0049 ol=ol '|' left(format(score_sum,2,1),length(h4)) '|',
+0050 left(format(score_avg,2,1),length(h5)) '|'
+0051 End
+0052 Say ol
+0053 End
+0054 Exit
+0055 
+0056 wordsort: Procedure
+0057 /**********************************************************************
+0058 * Sort the list of words supplied as argument. Return the sorted list
+0059 **********************************************************************/
+0060 Parse Arg wl
+0061 wa.=''
+0062 wa.0=0
+0063 Do While wl<>''
+0064 Parse Var wl w wl
+0065 Do i=1 To wa.0
+0066 If wa.i>w Then Leave
+0067 End
+0068 If i<=wa.0 Then Do
+0069 Do j=wa.0 To i By -1
+0070 ii=j+1
+0071 wa.ii=wa.j
+0072 End
+0073 End
+0074 wa.i=w
+0075 wa.0=wa.0+1
+0076 End
+0077 swl=''
+0078 Do i=1 To wa.0
+0079 swl=swl wa.i
+0080 End
+0081 Return strip(swl)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 wl               64 64
+002 w                64
+003 i                65 78
+004 j                69
+005 ii               70
+006 wa.              71 74 75
+007 swl              77 79
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

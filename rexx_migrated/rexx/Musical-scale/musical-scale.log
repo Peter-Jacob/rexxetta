@@ -1,0 +1,77 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program  sounds  eight notes  of the    C  major   natural diatonic  music scale.*/
+0002 parse arg !                                      /*obtain optional arguments from the CL*/
+0003 /* [↓]  invoke boilerplate REXX code.  */
+0004 if !all( arg() )  then exit                      /*determine which REXX is running,  if */
+0005 /*    any form of help requested, exit.*/
+0006 if \!regina   & \!pcrexx  then do
+0007 say "***error***  this program can't execute under:"   !ver
+0008 exit 13
+0009 end
+0010 
+0011 $ = 'do ra me fa so la te do'                    /*the words for music scale sounding.  */
+0012 dur = 1/4                                        /*define duration as a quarter second. */
+0013 do j=1  for words($)                  /*sound each "note" in the string.     */
+0014 call notes word($, j), dur            /*invoke a subroutine for the sounds.  */
+0015 end   /*j*/                           /* [↑]   sound each of the words.      */
+0016 exit 0                                           /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 notes: procedure expose !regina !pcrexx; arg note,dur /*obtain the arguments from list. */
+0019 @.= 0                                          /*define common names for sounds. */
+0020 @.la= 220;        @.si= 246.94;    @.te= @.si;      @.ta= @.te;    @.ti=  @.te
+0021 @.do= 261.6256;   @.ut= @.do;      @.re= 293.66;    @.ra= @.re;    @.mi=  329.63
+0022 @.ma= @.mi;       @.fa= 349.23;    @.so= 392;                      @.sol= @.so
+0023 if @.note==0  then return                      /*if frequency is zero,  skip it. */
+0024 if !pcrexx  then call  sound @.note,dur        /*sound the note using SOUND bif. */
+0025 if !regina  then do                            /* [↓]  reformat some numbers.    */
+0026 ms= format(dur*1000, , 0)     /*Regina requires DUR in millisec.*/
+0027 intN= format(@.note, , 0)     /*   "      "     NOTE is integer.*/
+0028 call  beep  intN, ms          /*sound the note using  BEEP  BIF.*/
+0029 end
+0030 return
+0031 /*─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────*/
+0032 !all: !!=!;!=space(!);upper !;call !fid;!nt=right(!var('OS'),2)=='NT';!cls=word('CLS VMFCLEAR CLRSCREEN',1+!cms+!tso*2);if arg(1)\==1 then return 0;if wordpos(!,'? ?SAMPLES ?AUTHOR ?FLOW')==0 then return 0;!call=']$H';call '$H' !fn !;!call=;return 1
+0033 !cal: if symbol('!CALL')\=="VAR"  then !call=;                             return !call
+0034 !env: !env= 'ENVIRONMENT';   if !sys=="MSDOS"  |  !brexx  |  !r4  |  !roo  then !env= 'SYSTEM';   if !os2  then !env= "OS2"!env;   !ebcdic= 3=='f3'x;   if !crx  then !env="DOS";                    return
+0035 !fid: parse upper source !sys !fun !fid . 1 . . !fn !ft !fm .;  call !sys;  if !dos  then do;  _= lastpos('\',!fn);  !fm= left(!fn,_);  !fn= substr(!fn,_+1);  parse var !fn !fn "." !ft;  end;      return word(0 !fn !ft !fm, 1 + ('0'arg(1) ) )
+0036 !rex: parse upper version !ver !vernum !verdate .;  !brexx= 'BY'==!vernum; !kexx= "KEXX"==!ver; !pcrexx= 'REXX/PERSONAL'==!ver | "REXX/PC"==!ver; !r4= 'REXX-R4'==!ver; !regina= "REXX-REGINA"==left(!ver, 11); !roo= 'REXX-ROO'==!ver; call !env; return
+0037 !sys: !cms= !sys=='CMS';   !os2= !sys=="OS2";   !tso= !sys=='TSO'  |  !sys=="MVS";   !vse= !sys=='VSE';   !dos= pos("DOS", !sys)\==0  |  pos('WIN', !sys)\==0  |  !sys=="CMD";   !crx= left(!sys, 6)=='DOSCRX';                         call !rex; return
+0038 !var: call !fid;   if !kexx  then return space( dosenv( arg(1) ) );        return space( value( arg(1), , !env) )
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 version          36
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !verdate         -> newV1            36
+002 !ebcdic          -> newV2            34
+003 !vernum          -> newV3            36
+004 !pcrexx          -> newV4            36
+005 !regina          -> newV5            36
+006 !brexx           -> newV6            36
+007 !call            -> newV7            32 32
+008 !kexx            -> newV8            36
+009 !cls             -> newV9            32
+010 !env             -> newV10           34 34 34
+011 !sys             -> newV11           35
+012 !fun             -> newV12           35
+013 !fid             -> newV13           35
+014 !ver             -> newV14           36
+015 !roo             -> newV15           36
+016 !os2             -> newV16           37
+017 !tso             -> newV17           37
+018 !vse             -> newV18           37
+019 !dos             -> newV19           37
+020 !crx             -> newV20           37
+021 !nt              -> newV21           32
+022 !fn              -> newV22           35 35 35 35
+023 !ft              -> newV23           35 35
+024 !fm              -> newV24           35 35
+025 !r4              -> newV25           36
+026 @.               -> newV26.          19 20 20 20 20 20 21 21 21 21 21 22 22 22 22
+027 !                -> newV27           2 32
+028 $                -> newV28           11
+029 _                -> newV29           35

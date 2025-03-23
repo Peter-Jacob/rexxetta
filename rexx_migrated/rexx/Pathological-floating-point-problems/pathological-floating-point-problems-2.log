@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX pgm (pathological FP problem): the chaotic bank society offering a new investment*/
+0002 e=2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713,
+0003 ||8217852516642742746639193200305992181741359662904357290033429526059563073813232862794,
+0004 ||3490763233829880753195251019011573834187930702154089149934884167509244761460668082264,
+0005 ||8001684774118537423454424371075390777449920695517027618386062613313845830007520449338
+0006 d = length(e)  -  length(.)                      /*subtract one for the decimal point.  */
+0007 parse arg digs show y .                          /*obtain optional arguments from the CL*/
+0008 if digs==''  |  digs==","  then digs=  d         /*Not specified?  Then use the default.*/
+0009 if show==''  |  show==","  then show= 20         /* "      "         "   "   "     "    */
+0010 if    y==''  |     y==","  then    y= 25         /* "      "         "   "   "     "    */
+0011 numeric digits digs                              /*have REXX use "digs" decimal digits. */
+0012 $= e - 1                                         /*subtract $1 from e, that's da deposit*/
+0013 /* [↑]  value of newly opened account. */
+0014 do n=1  for y         /*compute the value of the account/year*/
+0015 $= $*n  -  1          /*   "     "    "    "  "  account now.*/
+0016 end   /*n*/
+0017 @@@= 'With '     d      " decimal digits, the balance after "      y      ' years is: '
+0018 say @@@    '$'format($, , show) / 1              /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 digs             7 8
+002 show             7 9
+003 y                7 10
+004 n                14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @@@              -> newV1            17
+002 $                -> newV2            12 15

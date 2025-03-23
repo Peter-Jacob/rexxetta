@@ -1,0 +1,55 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX pgm displays   N   tau numbers,  an integer divisible by the # of its divisors). */
+0002 parse arg n cols .                               /*obtain optional argument from the CL.*/
+0003 if    n=='' |    n==","  then    n= 100          /*Not specified?  Then use the default.*/
+0004 if cols=='' | cols==","  then cols=  10          /*Not specified?  Then use the default.*/
+0005 w= max(8, length(n) )                            /*W:  used to align 1st output column. */
+0006 @tau= ' the first '  commas(n)   " tau numbers " /*the title of the tau numbers table.  */
+0007 say ' index │'center(@tau,  1 + cols*(w+1)     ) /*display the title of the output table*/
+0008 say '───────┼'center(""  ,  1 + cols*(w+1), '─') /*   "     " header  "  "     "     "  */
+0009 idx= 1;                  #= 0;           $=      /*idx: line;   #:  tau numbers;  $: #s */
+0010 do j=1  until #==n                    /*search for   N   tau numbers         */
+0011 if j//tau(j) \==0  then iterate       /*Is this a tau number?  No, then skip.*/
+0012 #= # + 1                              /*bump the count of tau numbers found. */
+0013 $= $  right( commas(j), w)            /*add a tau number to the output list. */
+0014 if #//cols\==0     then iterate       /*Not a multiple of cols?  Don't show. */
+0015 say center(idx, 7)'│'   substr($, 2)  /*display partial list to the terminal.*/
+0016 idx= idx + cols;               $=     /*bump idx by number of cols; nullify $*/
+0017 end   /*j*/
+0018 
+0019 if $\==''  then say center(idx, 7)"│"  substr($, 2)  /*possible display residual output.*/
+0020 say '───────┴'center(""  ,  1 + cols*(w+1), '─')
+0021 exit 0                                           /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 tau: procedure; parse arg x 1 y                  /*X  and  $  are both set from the arg.*/
+0026 if x<6  then return 2 + (x==4) - (x==1)     /*some low #s should be handled special*/
+0027 odd= x // 2                                 /*check if  X  is odd (remainder of 1).*/
+0028 if odd  then do;   #= 2;               end  /*Odd?    Assume divisor count of  2.  */
+0029 else do;   #= 4;   y= x % 2;   end  /*Even?      "      "      "    "  4.  */
+0030 /* [↑]  start with known number of divs*/
+0031 do j=3  for x%2-3  by 1+odd  while j<y   /*for odd number,  skip even numbers.  */
+0032 if x//j==0  then do                      /*if no remainder, then found a divisor*/
+0033 #= # + 2;   y= x % j    /*bump # of divisors;  calculate limit.*/
+0034 if j>=y  then do;   #= # - 1;   leave;   end   /*reached limit?*/
+0035 end                     /*                     ___             */
+0036 else if j*j>x  then leave    /*only divide up to   √ x              */
+0037 end   /*j*/                              /* [↑]  this form of DO loop is faster.*/
+0038 return #
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                25
+002 y                25 29 33
+003 odd              27
+004 j                31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @tau             -> newV1            6
+002 #                -> newV2            9 12 28 29 33 34
+003 $                -> newV3            9 13 16
+004 ?                -> newV4            23 23

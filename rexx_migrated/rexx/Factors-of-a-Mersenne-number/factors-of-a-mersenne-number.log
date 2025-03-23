@@ -1,0 +1,68 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program uses  exponent─and─mod  operator to test possible Mersenne numbers.      */
+0002 numeric digits 20                                /*this will be increased if necessary. */
+0003 parse arg N spec                                 /*obtain optional arguments from the CL*/
+0004 if    N=='' |    N==","  then    N=  88          /*Not specified?  Then use the default.*/
+0005 if spec=='' | spec==","  then spec= 920 970      /* "      "         "   "   "     "    */
+0006 do j=1;                  z= j              /*process a range, & then do some more.*/
+0007 if j==N             then j= word(spec, 1)  /*now, use  the high range of numbers. */
+0008 if j>word(spec, 2)  then leave             /*done with  "    "    "    "    "     */
+0009 if \isPrime(z)  then iterate               /*if  Z  isn't a prime,  keep plugging.*/
+0010 r= commas( testMer(z) );   L= length(r)    /*add commas;    get its new length.   */
+0011 if r==0  then say right('M'z, 10)     "──────── is a Mersenne prime."
+0012 else say right('M'z, 50)     "is composite, a factor:"right(r, max(L, 13) )
+0013 end   /*j*/
+0014 exit                                             /*stick a fork in it,  we're all done. */
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 commas: parse arg _;  do jc=length(_)-3  to 1  by -3; _=insert(',', _, jc); end;  return _
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 isPrime: procedure; parse arg x;             if wordpos(x, '2 3 5 7') \== 0  then return 1
+0019 if x<11  then return 0;             if x//2 == 0 | x//3       == 0  then return 0
+0020 do j=5  by 6;                  if x//j == 0 | x//(j+2)   == 0  then return 0
+0021 if j*j>x   then return 1                 /*◄─┐         ___                */
+0022 end   /*j*/                              /*  └─◄ Is j>√ x ?  Then return 1*/
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 iSqrt:   procedure; parse arg x;  #= 1;   r= 0;                 do while #<=x;    #= # * 4
+0025 end   /*while*/
+0026 do while #>1;      #= # % 4;   _= x-r-#;    r= r % 2
+0027 if _>=0  then do;  x= _;       r= r + #
+0028 end
+0029 end   /*while*/                             /*iSqrt ≡    integer square root.*/
+0030 return r                                      /*─────      ─       ──     ─  ─ */
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 testMer: procedure;  parse arg x;              p= 2**x /* [↓]  do we have enough digits?*/
+0033 $$=x2b( d2x(x) ) + 0
+0034 if pos('E',p)\==0  then do;  parse var p "E" _;   numeric digits _ + 2;   p= 2**x
+0035 end
+0036 !.= 1;   !.1= 0;   !.7= 0                     /*array used for a quicker test. */
+0037 R= iSqrt(p)                                   /*obtain integer square root of P*/
+0038 do k=2  by 2;         q= k*x  +  1 /*(shortcut) compute value of Q. */
+0039 m= q // 8                          /*obtain the remainder when ÷ 8. */
+0040 if !.m       then iterate          /*M  must be either one or seven.*/
+0041 parse var q '' -1 _;  if _==5  then iterate   /*last digit a five ? */
+0042 if q// 3==0  then iterate                     /*divisible by three? */
+0043 if q// 7==0  then iterate                     /*    "      " seven? */
+0044 if q//11==0  then iterate                     /*    "      " eleven?*/
+0045 /*      ____                     */
+0046 if q>R               then return 0 /*Is q>√2**x ?   A Mersenne prime*/
+0047 sq= 1;        $= $$                /*obtain binary version from  $. */
+0048 do  until $=='';      sq= sq*sq
+0049 parse var $  _  2  $           /*obtain 1st digit and the rest. */
+0050 if _  then sq= (sq+sq) // q
+0051 end   /*until*/
+0052 if sq==1  then return q            /*Not a prime?   Return a factor.*/
+0053 end   /*k*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 sq               50
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $$               -> newV1            33
+002 !.               -> newV2.           36 36 36
+003 _                -> newV3            16 16 26 34 41 49
+004 #                -> newV4            24 24 26
+005 $                -> newV5            47 49 49

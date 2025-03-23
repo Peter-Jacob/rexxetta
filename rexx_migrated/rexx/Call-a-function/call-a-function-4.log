@@ -1,0 +1,39 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*╔════════════════════════════════════════════════════════════════════╗
+0002 ║ Calling a function with a variable number of arguments.            ║
+0003 ║                                                                    ║
+0004 ║ This situation isn't any different then the previous example.      ║
+0005 ║ It's up to the programmer to code how to utilize the arguments.    ║
+0006 ╚════════════════════════════════════════════════════════════════════╝*/
+0007 
+0008 /*╔════════════════════════════════════════════════════════════════════╗
+0009 ║ Calling a function with named arguments.                           ║
+0010 ║                                                                    ║
+0011 ║ REXX allows almost anything to be passed, so the following is one  ║
+0012 ║ way this can be accomplished.                                      ║
+0013 ╚════════════════════════════════════════════════════════════════════╝*/
+0014 
+0015 what= parserFunc('name=Luna', "gravity=.1654", 'moon=yes')
+0016 say 'name='  common.name
+0017 gr= common.gr
+0018 say 'gravity=' gr
+0019 exit                                             /*stick a fork in it,  we're all done. */
+0020 
+0021 parseFunc: procedure expose common.
+0022 do j=1  for arg()
+0023 parse var  arg(j)   name  '='  val
+0024 upper name                         /*uppercase it.*/
+0025 call value 'COMMON.'name,val
+0026 end
+0027 return arg()
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 arg(j)           23
+002 name             23
+003 val              23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

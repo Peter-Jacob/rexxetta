@@ -1,0 +1,50 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:36
+-------------------------------------------------------------------------
+0001 /*REXX program to parse various queries on an XML document  (from a file).    */
+0002 iFID='XPATH.XML'                       /*name of the input  XML  file (doc).  */
+0003 $=                                     /*string will contain the file's text. */
+0004 do j=1  while  lines(iFID)\==0    /*read the entire file into a string.  */
+0005 $=$ linein(iFID)                  /*append the line to the  $  string.   */
+0006 end   /*j*/
+0007 /* [↓]  show 1st  ITEM  in the document*/
+0008 parse var $  '<item '  item  "</item>"
+0009 say center('first item:',length(space(item)),'─')     /*display a nice header.*/
+0010 say space(item)
+0011 /* [↓]  show all PRICES in the document*/
+0012 prices=                                /*nullify the list and add/append to it*/
+0013 $$=$                                   /*start with a fresh copy of document. */
+0014 do  until $$=''                   /* [↓]  keep parsing string until done.*/
+0015 parse var $$  '<price>'   price   '</price>' $$
+0016 prices=prices price               /*add/append the price to the list.    */
+0017 end   /*until*/
+0018 say
+0019 say center('prices:',length(space(prices)),'─')       /*display a nice header.*/
+0020 say space(prices)
+0021 /* [↓]  show all  NAMES in the document*/
+0022 names.=                                /*nullify the list and add/append to it*/
+0023 L=length(' names: ')                   /*maximum length of any one list name. */
+0024 $$=$                                   /*start with a fresh copy of document. */
+0025 do #=1  until $$=''               /* [↓]  keep parsing string until done.*/
+0026 parse var $$  '<name>'   names.#   '</name>'   $$
+0027 L=max(L,length(names.#))          /*L:  is used to find the widest name. */
+0028 end   /*#*/
+0029 
+0030 names.0=#-1;                  say      /*adjust the number of names (DO loop).*/
+0031 say center('names:',L,'─')             /*display a nicely formatted header.   */
+0032 do k=1  for names.0               /*display all the names in the list.   */
+0033 say names.k                       /*display a name from the  NAMES  list.*/
+0034 end   /*k*/
+0035 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 names.           26 30
+002 L                27
+003 k                32
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $$               -> newV1            13 15 15 24 26 26
+002 $                -> newV2            3 5 8
+003 #                -> newV3            25

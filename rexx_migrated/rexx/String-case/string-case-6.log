@@ -1,0 +1,22 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program  swaps the letter case of a string:  lower ──► upper  &  upper ──► lower.*/
+0002 abc = "abcdefghijklmnopqrstuvwxyz"               /*define all the  lowercase  letters.  */
+0003 abcU = translate(abc)                            /*   "    "   "   uppercase     "      */
+0004 
+0005 x = 'alphaBETA'                                  /*define a string to a REXX variable.  */
+0006 y = translate(x,  abc || abcU,  abcU || abc)     /*swap case of  X  and store it ───► Y */
+0007 say x
+0008 say y
+0009 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 abc              2
+002 abcU             3
+003 x                5
+004 y                6
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

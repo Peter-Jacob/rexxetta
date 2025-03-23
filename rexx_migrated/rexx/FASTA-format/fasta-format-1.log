@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program reads a (bio-informational) FASTA file and displays the contents. */
+0002 Parse Arg ifid .                       /* iFID:  the input file to be read       */
+0003 If ifid=='' Then
+0004 ifid='FASTA.IN'                      /* Not specified?  Then use the default   */
+0005 name=''                                /* the name of an output file (so far)    */
+0006 d=''                                   /* the value of the output file's         */
+0007 Do While lines(ifid)\==0               /* process the  FASTA  file contents      */
+0008 x=strip(linein(ifid),'T')            /* read a line (a record) from the input  */
+0009 /* and strip trailing blanks              */
+0010 If left(x,1)=='>' Then Do            /* a new file id                          */
+0011 Call out                           /* show output name and data              */
+0012 name=substr(x,2)                   /* and get the new (or first) output name */
+0013 d=''                               /* start with empty contents              */
+0014 End
+0015 Else                                 /* a line with data                       */
+0016 d=d||x                             /* append it to output                    */
+0017 End
+0018 Call out                               /* show output of last file used.         */
+0019 Exit
+0020 
+0021 out:
+0022 If d\=='' Then                         /* if there ara data                      */
+0023 Say name':' d                        /* show output name and data              */
+0024 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 name             5 12
+002 d                6 13 16
+003 While            7
+004 x                8
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

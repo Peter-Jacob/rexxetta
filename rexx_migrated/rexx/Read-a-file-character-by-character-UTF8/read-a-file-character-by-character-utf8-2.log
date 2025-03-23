@@ -1,0 +1,54 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 29.12.2013 Walter Pachl
+0003 * read one utf8 character at a time
+0004 * see http://de.wikipedia.org/wiki/UTF-8#Kodierung
+0005 *--------------------------------------------------------------------*/
+0006 oid='utf8.txt';'erase' oid /* first create file containing utf8 chars*/
+0007 Call charout oid,'79'x
+0008 Call charout oid,'C3A4'x
+0009 Call charout oid,'C2AE'x
+0010 Call charout oid,'E282AC'x
+0011 Call charout oid,'F09D849E'x
+0012 Call lineout oid
+0013 fid='utf8.txt'             /* then read it and show the contents     */
+0014 Do Until c8='EOF'
+0015 c8=get_utf8char(fid)
+0016 Say left(c8,4) c2x(c8)
+0017 End
+0018 Exit
+0019 
+0020 get_utf8char: Procedure
+0021 Parse Arg f
+0022 If chars(f)=0 Then
+0023 Return 'EOF'
+0024 c=charin(f)
+0025 b=c2b(c)
+0026 If left(b,1)=0 Then
+0027 Nop
+0028 Else Do
+0029 p=pos('0',b)
+0030 Do i=1 To p-2
+0031 If chars(f)=0 Then Do
+0032 Say 'illegal contents in file' f
+0033 Leave
+0034 End
+0035 c=c||charin(f)
+0036 End
+0037 End
+0038 Return c
+0039 
+0040 c2b: Return x2b(c2x(arg(1)))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 f                21
+002 c                24 35
+003 b                25
+004 p                29
+005 i                30
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

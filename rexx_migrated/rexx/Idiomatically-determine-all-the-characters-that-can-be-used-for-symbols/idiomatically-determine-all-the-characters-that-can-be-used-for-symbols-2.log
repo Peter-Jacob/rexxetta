@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program determines what characters are valid for REXX symbols.*/
+0002 /* version 1 adapted for general acceptance                          */
+0003 Parse Version v
+0004 Say v
+0005 symbol_characters=''                   /* start with no chars        */
+0006 do j=0 To 255                          /* loop through all the chars.*/
+0007 c=d2c(j)                             /* convert number to character*/
+0008 if datatype(c,'S') then              /* Symbol char                */
+0009 symbol_characters=symbol_characters || c  /* add to list.        */
+0010 end
+0011 say 'symbol characters:' symbol_characters /*display all        */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 Version          3
+002 v                3
+003 symbol_character 5 9
+004 j                6
+005 c                7
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

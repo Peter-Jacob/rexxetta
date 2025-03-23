@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 u= 'Halloween'                                   /*word to be sorted by (Latin)  letter.*/
+0002 upper u                                          /*fast method to uppercase a variable. */
+0003 L=length(u)                                      /*get the length of the word (in bytes)*/
+0004 say 'u=' u
+0005 say 'L=' L
+0006 _.=
+0007 do k=1  for L                             /*keep truckin'  for   L   characters. */
+0008 parse var u =(k) y +1                     /*get the  Kth  character in  U string.*/
+0009 xx='?'y                                   /*assign a prefixed character to   XX. */
+0010 _.xx=_.xx || y                            /*append it to all the  Y  characters. */
+0011 end   /*do k*/                            /*U now has the first character elided.*/
+0012 
+0013 /* [↓]  construct a sorted letter word.*/
+0014 
+0015 z=_.?a||_.?b||_.?c||_.?d||_.?e||_.?f||_.?g||_.?h||_.?i||_.?j||_.?k||_.?l||_.?m||,
+0016 _.?n||_.?o||_.?p||_.?q||_.?r||_.?s||_.?t||_.?u||_.?v||_.?w||_.?x||_.?y||_.?z
+0017 
+0018 say 'z=' z
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 u                8
+002 y                8
+003 xx               9
+004 z                15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 =(k)             -> newV1            8
+002 _.               -> newV2.           6 10

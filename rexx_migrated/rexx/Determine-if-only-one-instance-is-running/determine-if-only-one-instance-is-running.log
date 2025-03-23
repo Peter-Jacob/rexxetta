@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /* Simple ARexx program to open a port after checking if it's already open */
+0002 IF Show('PORTS','ROSETTA') THEN DO           /* Port is already open; exit */
+0003 SAY 'This program may only be run in a single instance at a time.'
+0004 EXIT 5                                    /* Exit with a mild warning   */
+0005 END
+0006 /* Open rexxsupport.library so that ports can be opened   */
+0007 IF ~Show('LIBRARIES','rexxsupport.library')
+0008 THEN CALL AddLib('rexxsupport.library',0,-30,0)
+0009 
+0010 IF ~OpenPort('ROSETTA')    THEN EXIT 10       /* Open port, end if it fails */
+0011 
+0012 SAY 'Program is now running.'
+0013 
+0014 DO FOREVER                                    /* Busyloop                   */
+0015 /* Program stuff here */
+0016 END
+0017 
+0018 EXIT 0
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

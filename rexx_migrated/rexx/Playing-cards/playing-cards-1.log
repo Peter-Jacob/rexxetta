@@ -1,0 +1,74 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 1) Build ordered Card deck
+0003 * 2) Create shuffled stack
+0004 * 3) Deal 5 cards to 4 players each
+0005 * 4) show what cards have been dealt and what's left on the stack
+0006 * 05.07.2012 Walter Pachl
+0007 **********************************************************************/
+0008 colors='S H C D'
+0009 ranks ='A 2 3 4 5 6 7 8 9 T J Q K'
+0010 i=0
+0011 cards=''
+0012 ss=''
+0013 Do c=1 To 4
+0014 Do r=1 To 13
+0015 i=i+1
+0016 card.i=word(colors,c)word(ranks,r)
+0017 cards=cards card.i
+0018 End
+0019 End
+0020 n=52                                   /* number of cards on deck    */
+0021 Do si=1 To 51                          /* pick 51 cards              */
+0022 x=random(0,n-1)+1                    /* take card x (in 1...n)     */
+0023 s.si=card.x                          /* card on shuffled stack     */
+0024 ss=ss s.si                           /* string of shuffled stack   */
+0025 card.x=card.n                        /* replace card taken         */
+0026 n=n-1                                /* decrement nr of cards      */
+0027 End
+0028 s.52=card.1                            /* pick the last card left    */
+0029 ss=ss s.52                             /* add it to the string       */
+0030 Say 'Ordered deck:'
+0031 Say '  'subword(cards,1,26)
+0032 Say '  'subword(cards,27,52)
+0033 Say 'Shuffled stack:'
+0034 Say '  'subword(ss,1,26)
+0035 Say '  'subword(ss,27,52)
+0036 si=52
+0037 deck.=''
+0038 Do ci=1 To 5                           /* 5 cards each               */
+0039 Do pli=1 To 4                        /* 4 players                  */
+0040 deck.pli.ci=s.si                   /* take top of shuffled deck  */
+0041 si=si-1                            /* decrement number           */
+0042 deck.pli=deck.pli deck.pli.ci      /* pli's cards as string      */
+0043 End
+0044 End
+0045 Do pli=1 To 4                          /* show the 4 dealt ...       */
+0046 Say pli':' deck.pli
+0047 End
+0048 Say 'Left on shuffled stack:'
+0049 Say '  'subword(ss,1,26)               /* and what's left on stack   */
+0050 Say '  'subword(ss,27,6)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 colors           8
+002 ranks            9
+003 i                10 15
+004 cards            11 17
+005 ss               12 24 29
+006 c                13
+007 r                14
+008 card.            16 25
+009 n                20 26
+010 si               21 36 41
+011 x                22
+012 s.               23 28
+013 deck.            37 40 42
+014 ci               38
+015 pli              39 45
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,17 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program shows something close to a  "topic variable" (for functions/subroutines).*/
+0002 parse arg N                                      /*obtain a variable from the cmd line. */
+0003 call  squareIt N                                 /*invoke a function to square da number*/
+0004 say   result       '  ◄───'                      /*display returned value from the func.*/
+0005 exit 0                                           /*stick a fork in it,  we're all done. */
+0006 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0007 squareIt:  return  arg(1) ** 2                   /*return the square of passed argument.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                2
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

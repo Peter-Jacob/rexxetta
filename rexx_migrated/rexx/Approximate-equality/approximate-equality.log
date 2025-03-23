@@ -1,0 +1,66 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program mimics an  "approximately equal to"  for comparing floating point numbers*/
+0002 numeric digits 15                                /*what other FP hardware normally uses.*/
+0003 @.=                                              /*assign default for the   @   array.  */
+0004 parse arg @.1                                    /*obtain optional argument from the CL.*/
+0005 if @.1=''  |  @.1==","  then do;   @.1= 100000000000000.01           100000000000000.011
+0006 @.2= 100.01                       100.011
+0007 @.3= 10000000000000.001 / 10000   1000000000.0000001000
+0008 @.4= 0.001                        0.0010000001
+0009 @.5= 0.00000000000000000000101    0.0
+0010 @.6=  sqrt(2) * sqrt(2)           2.0
+0011 @.7= -sqrt(2) * sqrt(2)           '-2.0'
+0012 @.8= 3.14159265358979323846       3.14159265358979324
+0013 /* added ───► */         @.9= 100000000000000003.0         100000000000000004.0
+0014 end
+0015 do j=1  while @.j\==''                      /*process CL argument or the array #s. */
+0016 say
+0017 say center(' processing pair ' j" ",71,'═') /*display a title for the pair of #s.  */
+0018 parse value  @.j  with  a  b                /*extract two values from a pair of #s.*/
+0019 say 'A='   a                                /*display the value of  A  to the term.*/
+0020 say 'B='   b                                /*   "     "    "    "  B   "  "    "  */
+0021 say right('A approximately equal to B?', 65)   word("false true", 1 + approxEQ(a,b) )
+0022 end   /*j*/                                 /* [↑]  right─justify text & true/false*/
+0023 exit                                             /*stick a fork in it,  we're all done. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 approxEQ: procedure; parse arg x,y;   return x=y /*floating point compare with 15 digits*/
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 sqrt: procedure; parse arg x;  if x=0  then return 0;  d=digits();  numeric digits;  h=d+6
+0028 numeric form; m.=9; parse value format(x,2,1,,0) 'E0' with g "E" _ .; g=g *.5'e'_ %2
+0029 do j=0  while h>9;      m.j=h;               h=h%2+1;       end  /*j*/
+0030 do k=j+5  to 0  by -1;  numeric digits m.k;  g=(g+x/g)*.5;  end  /*k*/; return g/1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                27
+002 d                27
+003 h                27 29
+004 m.               28 29
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 a                18
+012 b                18
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                28 28 30
+024 j                29
+025 k                30
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           3 4 5 6 7 8 9 10 11 12 13
+002 _                -> newV2            28

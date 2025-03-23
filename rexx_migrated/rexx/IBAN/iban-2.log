@@ -1,0 +1,79 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX pgm validates an IBAN (International Bank Account Number), including date ranges.*/
+0002 @.=;             @.1  =  'GB82 WEST 1234 5698 7654 32        '
+0003 @.2  =  'Gb82 West 1234 5698 7654 32        '
+0004 @.3  =  'GB82 TEST 1234 5698 7654 32        '
+0005 @.4  =  'GR16 0110 1250 0000 0001 2300 695  '
+0006 @.5  =  'GB29 NWBK 6016 1331 9268 19        '
+0007 @.6  =  'SA03 8000 0000 6080 1016 7519      '
+0008 @.7  =  'CH93 0076 2011 6238 5295 7         '
+0009 @.8  =  'IL62 0108 0000 0009 9999 999       '
+0010 @.9  =  'IL62-0108-0000-0009-9999-999       '
+0011 @.10 =  'US12 3456 7890 0987 6543 210       '
+0012 @.11 =  'GR16 0110 1250 0000 0001 2300 695X '
+0013 @.12 =  'GT11 2222 3333 4444 5555 6666 7777 '
+0014 @.13 =  'MK11 2222 3333 4444 555            '
+0015 parse arg @.0                                             /*get optional 1st arg from CL*/
+0016 do k=0 + (arg()==0)  while @.k\==''      /*either:   0  or  1  ──►  n  */
+0017 r = val_IBAN(@.k)
+0018 if r==0  then say '  valid IBAN:'    @.k
+0019 else say 'invalid IBAN:'    @.k      "  "      r
+0020 if k==0  then leave             /*User specified IBAN?  Then we're done*/
+0021 end   /*k*/
+0022 exit                                             /*stick a fork in it,  we're all done. */
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 val_IBAN:  procedure; arg x;  numeric digits 200 /*allow for big numbers in the IBAN's. */
+0025 x=space(x,0);                 L=length(x)        /*elide blanks;  determine the length. */
+0026 cc= 'AD 24 AE 23 AL 28 AT 20 AZ 28 BA 20 BE 16 BG 22 BH 22 BR 29 CH 21 CR 21 CY 28 CZ 24',
+0027 'DE 22 DK 18 DO 28 EE 20 ES 24 FI 18 FO 18 FR 27 GB 22 GE 22 GI 23 GL 18 GR 27 GT 28',
+0028 'HR 21 HU 28 IE 22 IL 23 IS 26 IT 27 KW 30 KZ 20 LB 28 LI 21 LT 20 LU 20 LV 21 MC 27',
+0029 'MD 24 ME 22 MK 19 MR 27 MT 31 MU 30 NL 18 NO 15 PK 24 PL 28 PS 29 PT 25 RO 24 RS 22',
+0030 'SA 24 SE 24 SI 19 SK 24 SM 27 TN 24 TR 26 VG 24'      /*a list of valid countries. */
+0031 @ABC# = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'   /*the Latin alphabet and decimal digits*/
+0032 cc_=left(x, 2);   kk=substr(x, 3, 2)             /*get IBAN country code and checkDigits*/
+0033 c#=wordpos(cc_, cc)                              /*find the country code index.         */
+0034 cL=word(cc, c# + 1)                              /*get the length of the country's IBAN.*/
+0035 e= '***error***  invalid IBAN'                   /*literal used when displaying an error*/
+0036 if c#==0               then return  e  'country code:'   cc_
+0037 if \datatype(x, 'A')   then return  e  'character:'      substr(x, verify(x, @ABC#), 1)
+0038 if cL\==L              then return  e  'length:'         L     ' (should be'   cL")"
+0039 if cc_=='BR' & date("S")<20130701  then return e "country, Brazil isn't valid until 1-July-2013."
+0040 if cc_=='GT' & date("S")<20140701  then return e "country, Guatemala isn't valid until 1-July-2014."
+0041 if cc_=='BA' & kk\==39             then return e "check digits for Bosnia and Herzegovina:"  kk
+0042 if cc_=='MK' & kk\==07             then return e "check digits for Macedonia:"               kk
+0043 if cc_=='ME' & kk\==25             then return e "check digits for Montenegro:"              kk
+0044 if cc_=='PT' & kk\==50             then return e "check digits for Portugal:"                kk
+0045 if cc_=='SI' & kk\==56             then return e "check digits for Slovenia:"                kk
+0046 y=substr(x, 5)left(x, 4)                         /*put four digs in front ───► the back.*/
+0047 z=                                               /* [↓]  translate characters ──► digits*/
+0048 do j=1  for L;      _=substr(y, j, 1)
+0049 if datatype(_, 'U')  then z=z || pos(_, @ABC#) + 9        /*if uppercase, then ··· */
+0050 else z=z || _
+0051 end   /*j*/
+0052 
+0053 if z//97==1  then return 0                       /*check if correct remainder (modulus).*/
+0054 return e    'check digits.'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 k                16
+002 r                17
+003 x                25
+004 L                25
+005 cc               26
+006 cc_              32
+007 kk               32
+008 c#               33
+009 cL               34
+010 e                35
+011 y                46
+012 z                47 49
+013 j                48
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @ABC#            -> newV1            31
+002 @.               -> newV2.           2 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+003 _                -> newV3            48

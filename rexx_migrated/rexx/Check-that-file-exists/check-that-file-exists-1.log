@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX program creates a new empty file and directory in current directory and root dir.*/
+0002 fn= 'input.txt'                                  /*default name of a file.              */
+0003 dn= 'docs'                                       /*default name of a directory (folder).*/
+0004 @.1= 'current directory';  @.2= 'root directory' /*messages used to indicate which pass.*/
+0005 parse upper version v                            /*obtain name of the REXX being used.  */
+0006 regina= pos('REGINA'  , v)\==0                   /*is this the Regina REXX being used?  */
+0007 r4    = pos('REXX-R4' , v)\==0                   /*is this the R4     REXX being used?  */
+0008 @doesnt= "doesn't exist in the"
+0009 @does  = "does exist in the"
+0010 
+0011 do j=1  for 2;    say                           /* [↑]  perform these statements twice.*/
+0012 if stream(fn, 'C', "QUERY EXISTS")==''  then say 'file '       fn   @doesnt   @.j
+0013 else say 'file '       fn   @does     @.j
+0014 
+0015 if j==2  then iterate
+0016 if stream(dn, 'C', "QUERY EXISTS")==''  then say 'directory'   dn   @doesnt   @.j
+0017 else say 'directory'   dn   @does     @.j
+0018 if j==1  then select
+0019 when regina  then call chdir    '\'    /*use Regina's version of  CHDIR. */
+0020 when r4      then call stream   '\', "C", 'CHDIR'        /*R4's version. */
+0021 otherwise         call doschdir '\'    /*PC/REXX & Personal REXX version.*/
+0022 end   /*select*/
+0023 end   /*j*/                                     /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 version          5
+002 v                5
+003 regina           6
+004 r4               7
+005 j                11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @doesnt          -> newV1            8
+002 @does            -> newV2            9
+003 @.               -> newV3.           4 4

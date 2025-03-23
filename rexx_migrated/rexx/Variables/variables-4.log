@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX pgm to do a "bad" assignment  (with an unassigned REXX variable).*/
+0002 
+0003 signal on noValue                      /*usually, placed at pgm start.  */
+0004 
+0005 xxx=aaaaa                              /*tries to assign aaaaa ───► xxx */
+0006 
+0007 say xxx 'or somesuch'
+0008 exit
+0009 
+0010 noValue:                               /*this can be dressed up better. */
+0011 badLine  =sigl                         /*REXX line number that failed.  */
+0012 badSource=sourceline(badLine)          /*REXX source line ···           */
+0013 badVar   =condition('D')               /*REXX var name that's ¬ defined.*/
+0014 say
+0015 say '*** error! ***'
+0016 say 'undefined variable' badvar "at REXX line number" badLine
+0017 say
+0018 say badSource
+0019 say
+0020 exit 13
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 xxx              5
+002 badLine          11
+003 badSource        12
+004 badVar           13
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

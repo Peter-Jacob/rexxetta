@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 28.06.2014 Walter Pachl
+0003 *--------------------------------------------------------------------*/
+0004 Call mklist 'ABC','AA','BB','CC'
+0005 Call test 'ABC'
+0006 Call mklist 'AAA','AA','AA','AA'
+0007 Call mklist 'ACB','AA','CC','BB'
+0008 Call test 'AAA'
+0009 Call test 'ACB'
+0010 Exit
+0011 
+0012 mklist:
+0013 list=arg(1)
+0014 do i=1 by 1 To arg()-1
+0015 call value list'.'i,arg(i+1)
+0016 End
+0017 Call value list'.0',i-1
+0018 Return
+0019 
+0020 test:
+0021 Parse Arg list
+0022 all_equal=1
+0023 increasing=1
+0024 Do i=1 To value(list'.0')-1 While all_equal | increasing
+0025 i1=i+1
+0026 Select
+0027 When value(list'.i1')==value(list'.i') Then increasing=0
+0028 When value(list'.i1')<<value(list'.i') Then Do
+0029 all_equal=0
+0030 increasing=0
+0031 End
+0032 When value(list'.i1')>>value(list'.i') Then all_equal=0
+0033 End
+0034 End
+0035 Select
+0036 When all_equal Then
+0037 Say 'List' value(list)': all elements are equal'
+0038 When increasing Then
+0039 Say 'List' value(list)': elements are in increasing order'
+0040 Otherwise
+0041 Say 'List' value(list)': neither equal nor in increasing order'
+0042 End
+0043 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 list             21
+002 all_equal        22 29
+003 increasing       23 30
+004 i                24
+005 i1               25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

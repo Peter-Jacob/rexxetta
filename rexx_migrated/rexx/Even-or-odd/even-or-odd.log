@@ -1,0 +1,87 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program tests and displays if an integer is  even or odd  using different styles.*/
+0002 !.=0;   do j=0  by 2  to 8;   !.j=1;   end       /*assign  0,2,4,6,8  to a "true" value.*/
+0003 /* [↑]  assigns even digits to  "true".*/
+0004 numeric digits 1000                              /*handle most huge numbers from the CL.*/
+0005 parse arg x _ .                                  /*get an argument from the command line*/
+0006 if x==''               then call terr "no integer input (argument)."
+0007 if _\=='' | arg()\==1  then call terr "too many arguments: "          _  arg(2)
+0008 if \datatype(x, 'N')   then call terr "argument isn't numeric: "      x
+0009 if \datatype(x, 'W')   then call terr "argument isn't an integer: "   x
+0010 y=abs(x)/1                                       /*in case  X  is negative or malformed,*/
+0011 /* [↑]  remainder of neg # might be -1.*/
+0012 /*malformed #s: 007  9.0  4.8e1  .21e2 */
+0013 call tell 'remainder method (oddness)'
+0014 if y//2  then say  x  'is odd'
+0015 else say  x  'is even'
+0016 /* [↑]  uses division to get remainder.*/
+0017 
+0018 call tell 'rightmost digit using BIF (not evenness)'
+0019 _=right(y, 1)
+0020 if pos(_, 86420)==0  then say x 'is odd'
+0021 else say x 'is even'
+0022 /* [↑]  uses 2 BIF (built─in functions)*/
+0023 
+0024 call tell 'rightmost digit using BIF (evenness)'
+0025 _=right(y, 1)
+0026 if pos(_, 86420)\==0  then say x 'is even'
+0027 else say x 'is odd'
+0028 /* [↑]  uses 2 BIF (built─in functions)*/
+0029 
+0030 call tell 'even rightmost digit using array (evenness)'
+0031 _=right(y, 1)
+0032 if !._  then say x 'is even'
+0033 else say x 'is odd'
+0034 /* [↑]  uses a BIF (built─in function).*/
+0035 
+0036 call tell 'remainder of division via function invoke (evenness)'
+0037 if even(y)  then say x 'is even'
+0038 else say x 'is odd'
+0039 /* [↑]  uses (even) function invocation*/
+0040 
+0041 call tell 'remainder of division via function invoke (oddness)'
+0042 if odd(y)  then say x 'is odd'
+0043 else say x 'is even'
+0044 /* [↑]  uses (odd)  function invocation*/
+0045 
+0046 call tell 'rightmost digit using BIF (not oddness)'
+0047 _=right(y, 1)
+0048 if pos(_, 13579)==0  then say x 'is even'
+0049 else say x 'is odd'
+0050 /* [↑]  uses 2 BIF (built─in functions)*/
+0051 
+0052 call tell 'rightmost (binary) bit (oddness)'
+0053 if right(x2b(d2x(y)), 1)  then say x 'is odd'
+0054 else say x 'is even'
+0055 /* [↑]  requires extra numeric digits. */
+0056 
+0057 call tell 'parse statement using BIF (not oddness)'
+0058 parse var  y   ''  -1  _                         /*obtain last decimal digit of the Y #.*/
+0059 if pos(_, 02468)==0  then say x 'is odd'
+0060 else say x 'is even'
+0061 /* [↑]  uses a BIF (built─in function).*/
+0062 
+0063 call tell 'parse statement using array (evenness)'
+0064 parse var  y   ''  -1  _                         /*obtain last decimal digit of the Y #.*/
+0065 if !._  then say  x  'is even'
+0066 else say  x  'is odd'
+0067 /* [↑]  this is the fastest algorithm. */
+0068 exit                                             /*stick a fork in it,  we're all done. */
+0069 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0070 even:                     return \( arg(1)//2 )  /*returns "evenness" of arg, version 1.*/
+0071 even:                     return    arg(1)//2==0 /*   "         "      "  "      "    2.*/
+0072 even: parse arg '' -1 _;  return !._             /*   "         "      "  "      "    3.*/
+0073 /*last version shown is the fastest.   */
+0074 odd:                      return   arg(1)//2     /*returns  "oddness" of the argument.  */
+0075 tell: say;   say center('using the' arg(1), 79, "═");                    return
+0076 terr: say;   say '***error***';     say;    say arg(1);    say;          exit 13
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           2 2
+002 _                -> newV2            5 19 25 31 47 58 64 72

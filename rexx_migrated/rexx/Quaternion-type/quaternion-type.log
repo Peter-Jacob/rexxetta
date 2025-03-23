@@ -1,0 +1,77 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX program performs some operations on  quaternion type numbers and displays results*/
+0002 q = 1 2 3 4    ;                     q1 = 2 3 4 5
+0003 r = 7          ;                     q2 = 3 4 5 6
+0004 call qShow  q                         ,     'q'
+0005 call qShow  q1                        ,     'q1'
+0006 call qShow  q2                        ,     'q2'
+0007 call qShow  r                         ,     'r'
+0008 call qShow  qNorm(q)                  ,     'norm q'                  ,        "task 1:"
+0009 call qShow  qNeg(q)                   ,     'negative q'              ,        "task 2:"
+0010 call qShow  qConj(q)                  ,     'conjugate q'             ,        "task 3:"
+0011 call qShow  qAdd( r, q  )             ,     'addition r+q'            ,        "task 4:"
+0012 call qShow  qAdd(q1, q2 )             ,     'addition q1+q2'          ,        "task 5:"
+0013 call qShow  qMul( q, r  )             ,     'multiplication q*r'      ,        "task 6:"
+0014 call qShow  qMul(q1, q2 )             ,     'multiplication q1*q2'    ,        "task 7:"
+0015 call qShow  qMul(q2, q1 )             ,     'multiplication q2*q1'    ,        "task 8:"
+0016 exit                                             /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 qConj: procedure; parse arg x;    call qXY;    return    x.1    (-x.2)    (-x.3)    (-x.4)
+0019 qNeg:  procedure; parse arg x;    call qXY;    return   -x.1    (-x.2)    (-x.3)    (-x.4)
+0020 qNorm: procedure; parse arg x;    call qXY;    return sqrt(x.1**2 +x.2**2 +x.3**2 +x.4**2)
+0021 qAdd:  procedure; parse arg x,y;  call qXY 2;  return x.1+y.1  x.2+y.2  x.3+y.3  x.4+y.4
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 qMul:  procedure; parse arg x,y;  call qXY y
+0024 return x.1*y.1 -x.2*y.2 -x.3*y.3 -x.4*y.4     x.1*y.2 +x.2*y.1 +x.3*y.4 -x.4*y.3 ,
+0025 x.1*y.3 -x.2*y.4 +x.3*y.1 +x.4*y.2     x.1*y.4 +x.2*y.3 -x.3*y.2 +x.4*y.1
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 qShow: procedure; parse arg x;          call qXY;                  $=
+0028 do m=1  for 4;  _= x.m;    if _==0  then iterate;     if _>=0  then _= '+'_
+0029 if m\==1  then _= _ || substr('∙ijk', m, 1);          $= strip($ || _, , "+")
+0030 end   /*m*/
+0031 say left(arg(3), 9)   right(arg(2), 20)       ' ──► '       $;           return $
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 qXY:                     do n=1  for 4; x.n= word( word(x, n) 0, 1)/1;  end /*n*/
+0034 if arg()==1  then do m=1  for 4; y.m= word( word(y, m) 0, 1)/1;  end /*m*/;  return
+0035 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0036 sqrt:  procedure; parse arg x;  if x=0  then return 0;   d= digits();   i=;   m.=9;  h=d+6
+0037 numeric digits; numeric form;    if x<0  then parse value  -x  'i'    with    x  i
+0038 parse value format(x, 2, 1, , 0) 'E0'   with   g  "E"  _  .;       g= g *.5'e'_ % 2
+0039 do j=0  while h>9;       m.j=h;                 h= h % 2   +  1;      end  /*j*/
+0040 do k=j+5  to 0  by -1;   numeric digits m.k;    g= (g + x/g)* .5;     end  /*k*/
+0041 numeric digits d;           return (g/1)i                 /*make complex if  X<0 */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                36 37
+002 d                36
+003 i                36 37
+004 m.               36 39
+005 h                36 39
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                38 38 40
+024 j                39
+025 k                40
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            27 29
+002 _                -> newV2            28 28 29 38

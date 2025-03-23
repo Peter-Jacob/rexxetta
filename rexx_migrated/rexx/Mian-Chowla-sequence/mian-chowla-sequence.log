@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX program computes and displays  any  range  of the  Mian─Chowla  integer sequence.*/
+0002 parse arg LO HI .                                /*obtain optional arguments from the CL*/
+0003 if LO=='' | LO==","  then LO=  1                 /*Not specified?  Then use the default.*/
+0004 if HI=='' | HI==","  then HI= 30                 /* "       "        "   "   "     "    */
+0005 r.= 0                                            /*initialize the rejects stemmed array.*/
+0006 #=  0                                            /*count of numbers in sequence (so far)*/
+0007 $=                                               /*the Mian─Chowla sequence  (so far).  */
+0008 do t=1  until #=HI;      @.= r.0              /*process numbers until range is filled*/
+0009 do i=1    for t;       if r.i  then iterate /*I  already rejected?  Then ignore it.*/
+0010 do j=i  for t-i+1;   if r.j  then iterate /*J     "        "        "     "    " */
+0011 _= i + j                                  /*calculate the sum of   I   and   J.  */
+0012 if @._  then do;  r.t= 1; iterate t;  end /*reject  T  from Mian─Chowla sequence.*/
+0013 @._= 1                                    /*mark  _  as one of the sequence sums.*/
+0014 end   /*j*/
+0015 end     /*i*/
+0016 #= # + 1                                      /*bump the counter of terms in the list*/
+0017 if #>=LO  then  if  #<=HI  then $= $ t        /*In the specified range?  Add to list.*/
+0018 end       /*t*/
+0019 /*stick a fork in it,  we're all done. */
+0020 say 'The Mian─Chowla sequence for terms '      LO      "──►"       HI      ' (inclusive):'
+0021 say strip($)                                     /*ignore the leading superfluous blank.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 LO               2 3
+002 HI               2 4
+003 r.               5 12
+004 t                8
+005 i                9
+006 j                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           8 13
+002 #                -> newV2            6 16
+003 $                -> newV3            7 17
+004 _                -> newV4            11

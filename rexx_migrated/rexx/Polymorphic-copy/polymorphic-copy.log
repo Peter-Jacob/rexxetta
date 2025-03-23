@@ -1,0 +1,18 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program to  copy  (polymorphically)  one variable's value into another variable. */
+0002 b= 'old value.'
+0003 a= 123.45
+0004 b= a                                             /*copy a variable's value into another.*/
+0005 if a==b  then say "copy did work."
+0006 else say "copy didn't work."            /*didn't work, maybe ran out of storage*/
+0007 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 b                2 4
+002 a                3
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

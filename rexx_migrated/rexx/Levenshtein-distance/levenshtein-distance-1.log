@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*REXX program  calculates and displays the  Levenshtein distance  between two strings. */
+0002 call Levenshtein   'kitten'                        ,     "sitting"
+0003 call Levenshtein   'rosettacode'                   ,     "raisethysword"
+0004 call Levenshtein   'Sunday'                        ,     "Saturday"
+0005 call Levenshtein   'Vladimir Levenshtein[1965]'    ,     "Vladimir Levenshtein[1965]"
+0006 call Levenshtein   'this algorithm is similar to'  ,     "Damerau─Levenshtein distance"
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 Levenshtein: procedure; parse arg o,t;  oL= length(o);   tL= length(t);     @.= 0
+0010 say '        original string  = '    o                          /*show   old  string*/
+0011 say '          target string  = '    t                          /*  "   target   "  */
+0012 do #=1  for tL;   @.0.#= #;   end  /*#*/       /*the   drop  array.*/
+0013 do #=1  for oL;   @.#.0= #;   end  /*#*/       /* "   insert   "   */
+0014 do    j=1  for tL;   jm= j-1;    q= substr(t, j, 1)        /*obtain character. */
+0015 do k=1  for oL;   km= k-1
+0016 if q==substr(o, k, 1)  then @.k.j= @.km.jm              /*use previous char.*/
+0017 else @.k.j= 1   +   min(@.km.j,  @.k.jm,  @.km.jm)
+0018 end   /*k*/
+0019 end      /*j*/                                             /* [↑]  best choice.*/
+0020 say '   Levenshtein distance  = '  @.oL.tL;    say;      return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 o                9
+002 t                9
+003 oL               9
+004 tL               9
+005 j                14
+006 jm               14
+007 q                14
+008 k                15
+009 km               15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           9 12 13 16
+002 #                -> newV2            12 13

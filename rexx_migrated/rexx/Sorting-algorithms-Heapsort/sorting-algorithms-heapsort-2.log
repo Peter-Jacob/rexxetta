@@ -1,0 +1,83 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Translated from PL/I
+0003 * 27.07.2013 Walter Pachl
+0004 **********************************************************************/
+0005 list='---letters of the modern Greek Alphabet---|'||,
+0006 '==========================================|'||,
+0007 'alpha|beta|gamma|delta|epsilon|zeta|eta|theta|'||,
+0008 'iota|kappa|lambda|mu|nu|xi|omicron|pi|'||,
+0009 'rho|sigma|tau|upsilon|phi|chi|psi|omega'
+0010 Do i=0 By 1 While list<>''
+0011 Parse Var list a.i '|' list
+0012 End
+0013 n=i-1
+0014 
+0015 Call showa 'before sort'
+0016 Call heapsort n
+0017 Call showa ' after sort'
+0018 Exit
+0019 
+0020 heapSort: Procedure Expose a.
+0021 Parse Arg count
+0022 Call heapify count
+0023 end=count-1
+0024 do while end>0
+0025 Call swap end,0
+0026 end=end-1
+0027 Call siftDown 0,end
+0028 End
+0029 Return
+0030 
+0031 heapify: Procedure Expose a.
+0032 Parse Arg count
+0033 start=(count-2)%2
+0034 Do while start>=0
+0035 Call siftDown start,count-1
+0036 start=start-1
+0037 End
+0038 Return
+0039 
+0040 siftDown: Procedure Expose a.
+0041 Parse Arg start,end
+0042 root=start
+0043 Do while root*2+1<= end
+0044 child=root*2+1
+0045 sw=root
+0046 if a.sw<a.child Then
+0047 sw=child
+0048 child_1=child+1
+0049 if child+1<=end & a.sw<a.child_1 Then
+0050 sw=child+1
+0051 if sw<>root Then Do
+0052 Call swap root,sw
+0053 root=sw
+0054 End
+0055 else
+0056 return
+0057 End
+0058 Return
+0059 
+0060 swap: Procedure Expose a.
+0061 Parse arg x,y
+0062 temp=a.x
+0063 a.x=a.y
+0064 a.y=temp
+0065 Return
+0066 
+0067 showa: Procedure Expose a. n
+0068 Parse Arg txt
+0069 Do j=0 To n-1
+0070 Say 'element' format(j,2) txt a.j
+0071 End
+0072 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 txt              68
+002 j                69
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,93 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 20.07.2014 Walter Pachl translated from Java
+0003 * 21.07.2014 WP allow for blanks in the string
+0004 *--------------------------------------------------------------------*/
+0005 Parse Arg str
+0006 default="TOBEORNOTTOBEORTOBEORNOT"
+0007 If str='' Then
+0008 str=default
+0009 /* str=space(str,0) */
+0010 Say 'str='str
+0011 compressed = compress(str)
+0012 Say compressed
+0013 If str=default Then Do
+0014 cx='[84, 79, 66, 69, 79, 82, 78, 79, 84, 256, 258, 260, 265, 259, 261, 263]'
+0015 If cx==compressed Then Say 'compression ok'
+0016 End
+0017 decompressed = decompress(compressed)
+0018 Say 'dec='decompressed
+0019 If decompressed=str Then Say 'decompression ok'
+0020 Exit
+0021 
+0022 compress: Procedure
+0023 Parse Arg uncompressed
+0024 dict.=''
+0025 Do i=0 To 255
+0026 z=d2c(i)
+0027 d.i=z
+0028 dict.z=i
+0029 End
+0030 dict_size=256
+0031 res='['
+0032 w=''
+0033 Do i=1 To length(uncompressed)
+0034 c=substr(uncompressed,i,1)
+0035 wc=w||c
+0036 If dict.wc<>'' Then
+0037 w=wc
+0038 Else Do
+0039 res=res||dict.w', '
+0040 dict.wc=dict_size
+0041 dict_size=dict_size+1
+0042 w=c
+0043 End
+0044 End
+0045 If w<>'' Then
+0046 res=res||dict.w', '
+0047 Return left(res,length(res)-2)']'
+0048 
+0049 decompress: Procedure
+0050 Parse Arg compressed
+0051 compressed=space(translate(compressed,'','[],'))
+0052 d.=''
+0053 Do i=0 To 255
+0054 z=d2c(i)
+0055 d.i=z
+0056 End
+0057 dict_size=256
+0058 Parse Var compressed w compressed
+0059 res=d.w
+0060 w=d.w
+0061 Do i=1 To words(compressed)
+0062 k=word(compressed,i)
+0063 Select
+0064 When d.k<>'' | d.k==' ' then /* allow for blank */
+0065 entry=d.k
+0066 When k=dict_size Then
+0067 entry=w||substr(w,1,1)
+0068 Otherwise
+0069 Say "Bad compressed k: "  k
+0070 End
+0071 res=res||entry
+0072 d.dict_size=w||substr(entry,1,1)
+0073 dict_size=dict_size+1
+0074 w=entry
+0075 End
+0076 Return res
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 compressed       58 58
+002 w                58 60 74
+003 res              59 71
+004 i                61
+005 k                62
+006 entry            65 67
+007 d.               72
+008 dict_size        73
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

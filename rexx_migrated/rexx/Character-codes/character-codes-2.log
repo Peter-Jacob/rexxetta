@@ -1,0 +1,24 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 yyy='c'               /*assign a lowercase   c to  YYY */
+0003 yyy='83'x             /*assign hexadecimal  83 to  YYY */
+0004 /*the  X  can be upper/lowercase.*/
+0005 yyy=x2c(83)           /* (same as above)               */
+0006 yyy='10000011'b       /* (same as above)               */
+0007 yyy='1000 0011'b      /* (same as above)               */
+0008 /*the  B  can be upper/lowercase.*/
+0009 yyy=d2c(129)          /*assign decimal code 129 to YYY */
+0010 
+0011 say yyy               /*displays the value of  YYY                   */
+0012 say c2x(yyy)          /*displays the value of  YYY in hexadecimal.   */
+0013 say c2d(yyy)          /*displays the value of  YYY in decimal.       */
+0014 say x2b(c2x(yyy))/*displays the value of YYY in binary (bit string). */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 yyy              2 3 5 6 7 9
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

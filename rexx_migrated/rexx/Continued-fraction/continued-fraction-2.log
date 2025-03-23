@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /* REXX **************************************************************
+0002 * Derived from PL/I with a little "massage"
+0003 * SQRT2=     1.41421356237309505              <- PL/I Result
+0004 *            1.41421356237309504880168872421  <- REXX Result 30 digits
+0005 * NAPIER=    2.71828182845904524
+0006 *            2.71828182845904523536028747135
+0007 * PI=        3.14159262280484695
+0008 *            3.14159262280484694855146925223
+0009 * 06.09.2012 Walter Pachl
+0010 **********************************************************************/
+0011 Numeric Digits 30
+0012 Parse Value '1 2 3 0 0' with Sqrt2 napier pi a b
+0013 Say left('SQRT2=' ,10) calc(sqrt2,  200)
+0014 Say left('NAPIER=',10) calc(napier, 200)
+0015 Say left('PI='    ,10) calc(pi,     200)
+0016 Exit
+0017 
+0018 Get_Coeffs: procedure Expose a b Sqrt2 napier pi
+0019 Parse Arg form, n
+0020 select
+0021 when form=Sqrt2 Then do
+0022 if n > 0 then a = 2; else a = 1
+0023 b = 1
+0024 end
+0025 when form=Napier Then do
+0026 if n > 0 then a = n; else a = 2
+0027 if n > 1 then b = n - 1; else b = 1
+0028 end
+0029 when form=pi Then do
+0030 if n > 0 then a = 6; else a = 3
+0031 b = (2*n - 1)**2
+0032 end
+0033 end
+0034 Return
+0035 
+0036 Calc: procedure Expose a b Sqrt2 napier pi
+0037 Parse Arg form,n
+0038 Temp=0
+0039 do ni = n to 1 by -1
+0040 Call Get_Coeffs form, ni
+0041 Temp = B/(A + Temp)
+0042 end
+0043 call Get_Coeffs  form, 0
+0044 return (A + Temp)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 form             37
+002 n                37
+003 Temp             38 41
+004 ni               39
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

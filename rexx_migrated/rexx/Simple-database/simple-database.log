@@ -1,0 +1,102 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 05.10.2014
+0003 *--------------------------------------------------------------------*/
+0004 x05='05'x
+0005 mydb='sidb.txt'
+0006 Say 'Enter your commands, ?, or end'
+0007 Do Forever
+0008 Parse Pull l
+0009 Parse Var l command text
+0010 Select
+0011 When command='?' Then
+0012 Call help
+0013 When command='add' Then Do
+0014 Parse Var text item ',' category ',' date
+0015 If date='' Then
+0016 date=date('S') /*yyyymmdd*/
+0017 Say 'adding item' item'/'category 'dated' date
+0018 Call lineout mydb,date item x05 category
+0019 End
+0020 When command='latest' Then Do
+0021 Call lineout mydb
+0022 Parse Var text category
+0023 hidt='00000000'
+0024 ol=''
+0025 Do While lines(mydb)>0
+0026 l=linein(mydb)
+0027 Parse Var l dt a (x05) b
+0028 If category=''|,
+0029 category='-' & b='' |,
+0030 b=category Then Do
+0031 If dt>>hidt Then Do
+0032 ol=l
+0033 hidt=dt
+0034 End
+0035 End
+0036 End
+0037 If ol>'' Then
+0038 Call o ol
+0039 Else
+0040 Say 'no matching item found'
+0041 End
+0042 When command='all' Then Do
+0043 Call lineout mydb
+0044 Parse Var text category
+0045 Do While lines(mydb)>0
+0046 l=linein(mydb)
+0047 Parse Var l a (x05) b
+0048 If category=''|,
+0049 category='-' & b=''|,
+0050 b=category Then
+0051 Call o l
+0052 End
+0053 End
+0054 When command='end' Then
+0055 Leave
+0056 Otherwise Do
+0057 Say 'invalid command ('command')'
+0058 Call help
+0059 End
+0060 End
+0061 End
+0062 Say 'Bye'
+0063 Exit
+0064 
+0065 o: Parse Value arg(1) With dt text
+0066 Say left(dt,8) text
+0067 Return
+0068 
+0069 help:
+0070 Say 'add item[,[category][,date]] to add an item'
+0071 Say 'latest category to list the latest item of a category'
+0072 Say 'latest to list the latest item'
+0073 Say 'all category to list all items of a category'
+0074 Say 'all to list all items'
+0075 Say 'end to end this program'
+0076 Say 'Use category - to list items without category'
+0077 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 l                47
+002 a                47
+003 b                47 50
+004 category         49
+005 category         29
+006 ol               32
+007 hidt             33
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 dt               65
+015 text             65
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 (x05)            -> newV1            27 47

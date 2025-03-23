@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program solves the  knight's tour  problem   for a  (general)   NxN   chessboard.*/
+0002 parse arg  N  sRank sFile .                      /*obtain optional arguments from the CL*/
+0003 if     N=='' |     N==","  then     N=8          /*No boardsize specified?  Use default.*/
+0004 if sRank=='' | sRank==","  then sRank=N          /*No starting rank given?   "      "   */
+0005 if sFile=='' | sFile==","  then sFile=1          /* "     "    file   "      "      "   */
+0006 NN=N**2;            NxN='a ' N"x"N ' chessboard' /*file [↓]           [↓]   r=rank      */
+0007 @.=;    do r=1  for N;  do f=1  for N;  @.r.f=.;  end  /*f*/;   end  /*r*/
+0008 beg= '-1-'                                       /*[↑]  create an empty  NxN chessboard.*/
+0009 Kr =  '2  1 -1 -2  -2 -1  1  2'   /*the legal "rank"  moves for a knight.*/
+0010 Kf =  '1  2  2  1  -1 -2 -2 -1'   /* "    "   "file"    "    "  "    "   */
+0011 kr.M=words(Kr)                                   /*number of possible moves for a Knight*/
+0012 parse var  Kr  Kr.1 Kr.2 Kr.3 Kr.4 Kr.5 Kr.6 Kr.7 Kr.8   /*parse the legal moves by hand*/
+0013 parse var  Kf  Kf.1 Kf.2 Kf.3 Kf.4 Kf.5 Kf.6 Kf.7 Kf.8   /*  "    "    "     "    "   " */
+0014 @.sRank.sFile= beg                               /*the knight's starting position.      */
+0015 @kt= "knight's tour"                             /*a handy-dandy literal for the  SAYs. */
+0016 if \move(2, sRank, sFile)  &  \(N==1)  then say 'No'   @kt   "solution for"         NxN'.'
+0017 else say 'A solution for the'   @kt   "on"   NxN':'
+0018 !=left('', 9 * (n<18) )                          /*used for indentation of chessboard.  */
+0019 _=substr(copies("┼───",N),2);   say;   say  ! translate('┌'_"┐", '┬', "┼")   /*a square.*/
+0020 /* [↓]  build a display for chessboard.*/
+0021 do   r=N  for N  by -1;    if r\==N  then say ! '├'_"┤";        L=@.
+0022 do f=1  for N; ?=@.r.f;  if ?==NN  then ?='end';  L=L'│'center(?, 3)  /*is "end"?*/
+0023 end   /*f*/                               /*done with   rank   of the chessboard.*/
+0024 say ! translate(L'│', , .)                  /*display a     "     "  "       "     */
+0025 end     /*r*/                               /*19x19 chessboard can be shown 80 cols*/
+0026 
+0027 say  !  translate('└'_"┘", '┴', "┼")             /*show the last rank of the chessboard.*/
+0028 exit                                             /*stick a fork in it,  we're all done. */
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 move: procedure expose @. Kr. Kf. NN;    parse arg #,rank,file  /*obtain move,rank,file.*/
+0031 do t=1  for Kr.M;   nr=rank+Kr.t;       nf=file+Kf.t   /*position of the knight*/
+0032 if @.nr.nf==.  then do;                 @.nr.nf=#      /*Empty? Knight can move*/
+0033 if #==NN            then return 1  /*is this the last move?*/
+0034 if move(#+1,nr,nf)  then return 1  /* "   "   "    "    "  */
+0035 @.nr.nf=.                          /*undo the above move.  */
+0036 end                                /*try different move.   */
+0037 end   /*t*/                                            /* [↑]  all moves tried.*/
+0038 return 0                                                  /*tour is not possible. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 rank             30
+002 file             30
+003 t                31
+004 nr               31
+005 nf               31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @kt              -> newV1            15
+002 @.               -> newV2.           7 7 14 32 35
+003 !                -> newV3            18
+004 _                -> newV4            19
+005 ?                -> newV5            22 22
+006 #                -> newV6            30

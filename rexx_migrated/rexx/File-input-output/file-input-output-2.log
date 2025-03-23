@@ -1,0 +1,19 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program to read a file and write contents to an output file*****
+0002 * 03.09.2012 Walter Pachl (without erase string would be appended)
+0003 **********************************************************************/
+0004 ifid='input.txt'                        /*name of the  input file.   */
+0005 ofid='output.txt'                       /*name of the output file.   */
+0006 'erase' ofid                            /* avoid appending           */
+0007 s=charin(ifid,,1000000)                 /* read the input file       */
+0008 Call charout ofid,s                     /* write to output file      */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 ofid             5
+002 s                7
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

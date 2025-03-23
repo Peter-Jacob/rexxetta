@@ -1,0 +1,100 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 20.06.2014 Walter Pachl
+0003 * 22.06.2014 WP add complex numbers such as 13-12j etc.
+0004 * (using 13e-12 or so is not (yet) supported)
+0005 *--------------------------------------------------------------------*/
+0006 Call test_integer 3.14
+0007 Call test_integer 1.00000
+0008 Call test_integer 33
+0009 Call test_integer 999999999
+0010 Call test_integer 99999999999
+0011 Call test_integer 1e272
+0012 Call test_integer 'AA'
+0013 Call test_integer '0'
+0014 Call test_integer '1.000-3i'
+0015 Call test_integer '1.000-3.3i'
+0016 Call test_integer '4j'
+0017 Call test_integer '2.00000000+0j'
+0018 Call test_integer '0j'
+0019 Call test_integer '333'
+0020 Call test_integer '-1-i'
+0021 Call test_integer '1+i'
+0022 Call test_integer '.00i'
+0023 Call test_integer 'j'
+0024 Call test_integer '0003-00.0j'
+0025 Exit
+0026 
+0027 test_integer:
+0028 Parse Arg xx
+0029 Numeric Digits 1000
+0030 Parse Value parse_number(xx) With x imag
+0031 If imag<>0 Then Do
+0032 Say left(xx,13) 'is not an integer (imaginary part is not zero)'
+0033 Return
+0034 End
+0035 Select
+0036 When datatype(x)<>'NUM' Then
+0037 Say left(xx,13) 'is not an integer (not even a number)'
+0038 Otherwise Do
+0039 If datatype(x,'W') Then
+0040 Say left(xx,13) 'is an integer'
+0041 Else
+0042 Say left(xx,13) 'isn''t an integer'
+0043 End
+0044 End
+0045 Return
+0046 parse_number: Procedure
+0047 Parse Upper Arg x
+0048 x=translate(x,'I','J')
+0049 If pos('I',x)>0 Then Do
+0050 pi=verify(x,'+-','M')
+0051 Select
+0052 When pi>1 Then Do
+0053 real=left(x,pi-1)
+0054 imag=substr(x,pi)
+0055 End
+0056 When pi=0 Then Do
+0057 real=0
+0058 imag=x
+0059 End
+0060 Otherwise /*pi=1*/Do
+0061 p2=verify(substr(x,2),'+-','M')
+0062 If p2>0 Then Do
+0063 real=left(x,p2)
+0064 imag=substr(x,p2+1)
+0065 End
+0066 Else Do
+0067 real=0
+0068 imag=x
+0069 End
+0070 End
+0071 End
+0072 End
+0073 Else Do
+0074 real=x
+0075 imag='0I'
+0076 End
+0077 pi=verify(imag,'+-','M')
+0078 If pi=0 Then Do
+0079 Parse Var imag imag_v 'I'
+0080 imag_sign='+'
+0081 End
+0082 Else
+0083 Parse Var imag imag_sign 2 imag_v 'I'
+0084 If imag_v='' Then
+0085 imag_v=1
+0086 imag=imag_sign||imag_v
+0087 
+0088 Return real imag
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 imag             83 86
+002 imag_sign        83
+003 imag_v           83 85
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

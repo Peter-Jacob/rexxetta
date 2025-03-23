@@ -1,0 +1,113 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /*REXX program displays:   hour,  sun hour angle,  dial hour line angle,  6am ───► 6pm. */
+0002 numeric digits length( pi() )    -    length(.)  /*in case sundial is in polar regions. */
+0003 parse arg lat lng .                              /*obtain optional arguments from the CL*/
+0004 /*     ┌───────────◄ None specified?  Then use the default*/
+0005 /*     │             of Jules Verne's Lincoln Island,     */
+0006 $= left('', 30)               /*     ↓             aka      Ernest Legouve Reef.        */
+0007 if lat=='' | lat==","  then lat=   -4.95         /*Not specified?  Then use the default.*/
+0008 if lng=='' | lng==","  then lng= -150.5          /* "      "         "   "   "     "    */
+0009 mer= format(lng/15, , 0)  *  15                  /*calculate legal meridian longitude.  */
+0010 sineLat= sin( d2r(lat) )                         /*calculate sine of (radian) latitude. */
+0011 w1= max( length('hour'     ), length("midnight"  ))  + 2   /*compute the max hour  width*/
+0012 w2= max( length('sun hour' ), length("angle"     ))  + 2   /*   "     "   " angle    "  */
+0013 w3= max( length('dial hour'), length("line angle"))  + 2   /*   "     "   " lineº    "  */
+0014 L=  max( length(lat), length(lng), length(mer) ) /*find the maximum length of 3 numbers.*/
+0015 say '       latitude:'    right(lat, L)     /*display the  latitude to the terminal*/
+0016 say '      longitude:'    right(lng, L)     /*   "     "  longitude  "  "     "    */
+0017 say ' legal meridian:'    right(mer, L)     /*   "    legal meridian "  "     "    */
+0018 say $  center('    ', w1)    center("sun hour", w2)      center('dial hour' , w3)
+0019 say $  center('hour', w1)    center(" angle"  , w2)      center('line angle', w3)
+0020 call sep                                         /*to help a one─eyed pirate's eyeball. */
+0021 do h=5  to 19  by .25                    /*Okey dokey then, now let's show stuff*/
+0022 hra= 15 * h   -   lng  +  mer - 180      /*calculate sun hour angle (in degrees)*/
+0023 hla= r2d( Atan(sineLat * tan(d2r(hra)))) /*this is the heavy lifting calculation*/
+0024 if abs(hra)>90  then hla= hla + 180 * sign(hra*lat)  /*adjust for negative angle*/
+0025 call civil                               /*convert the time─of─day to civil time*/
+0026 say $ center(hc, w1)   right(format(hra,,1), w2-2)@   right(format(hla,,1), w3-5)
+0027 end        /*h*/
+0028 call sep                                         /*to help a one─eyed pirate's eyeball. */
+0029 exit 0                                           /*stick a fork in it,  we're all done. */
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 pi:   pi= 3.1415926535897932384626433832795028841971693993751058209749445923078; return pi
+0032 d2d:  return arg(1)              // 360          /*normalize degrees ──► a unit circle. */
+0033 d2r:  return r2r( arg(1) * pi()   / 180)         /*convert degrees   ──► radians.       */
+0034 r2d:  return d2d( (arg(1) * 180   / pi() )  )    /*convert radians   ──► degrees.       */
+0035 r2r:  return arg(1)              //(pi() * 2)    /*normalize radians ──► a unit circle. */
+0036 sep:  say $  copies('═', w1)  copies("═", w2)   copies('═', w3);   @= left('',3);   return
+0037 tan:  procedure; parse arg x;  _= cos(x);   if _=0  then call tanErr;      return sin(x)/_
+0038 tellErr: say;    say '*** error ***';       say;        say arg(1);      say;      exit 13
+0039 AsinErr: call tellErr 'Asin(x),  X  must be in the range of  -1 ──► +1,  X='   x
+0040 AcosErr: call tellErr 'Acos(x),  X  must be in the range of  -1 ──► +1,  X='   x
+0041 tanErr:  call tellErr 'tan(' || x") causes division by zero,  X="              x
+0042 Acos: procedure; arg x;  if x<-1 | x>1  then call AcosErr;      return .5 * pi() - Asin(x)
+0043 Atan: procedure; parse arg x; if abs(x)=1 then return pi()*x/4; return Asin(x/sqrt(1+x*x))
+0044 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0045 Asin: procedure; parse arg x;   if x<-1 | x>1  then call AsinErr;    s= x*x
+0046 if abs(x)>=sqrt(2)*.5  then return sign(x) * Acos(sqrt(1-s));  z= x;  o= x;     p= z
+0047 do j=2 by 2; o= o*s*(j-1)/j; z=z+o/(j+1); if z=p  then leave; p= z;  end; return z
+0048 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0049 sin:  procedure; parse arg x;        x= r2r(x);          numeric fuzz min(5, digits() - 3)
+0050 if abs(x)=pi  then return;              return .sinCos(x, x, 1)
+0051 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0052 cos:  procedure; parse arg x;        x= r2r(x);          a= abs(x);          hpi= pi * .5
+0053 numeric fuzz min(6, digits() - 3);      if a=pi      then return -1
+0054 if a=hpi | a=hpi*3  then return 0;      if a=pi/3    then return .5
+0055 if a=pi * 2 / 3     then return '-.5';  return .sinCos(1, 1, '-1')
+0056 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0057 .sinCos: parse arg z,!,i;                  x= x*x;                     p= z
+0058 do #=2 by 2; != -!*x/(#*(#+i)); z= z+!; if z=p  then leave; p= z; end; return z
+0059 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0060 civil:      select                               /* [↓]  Maybe below  Antarctic circle, */
+0061 when h== 0  then hc= 'midnight'      /*        or  above     Arctic    "    */
+0062 when h <12  then hc=    h  'am'      /*convert da hour for human beans (sic)*/
+0063 when h==12  then hc= 'noon'          /*   ···  easier to understand now.    */
+0064 when h >0   then hc=    h  'pm'      /*   ···  even more meaningful.        */
+0065 end   /*select*/
+0066 parse var hc  hh ampm .;    if \datatype(hh, 'N')  then return     /*not numeric? */
+0067 hh= hh / 1;   if hh>12  then hh= hh - 12                           /*civil time ? */
+0068 if pos(., hh)==0  then do; hc= right(hh, 2)'   ' ampm; return; end /*exact hour ? */
+0069 parse var  hh   hr '.' -0 mn;  if hr==0  then hr= 12               /*get MN; noon?*/
+0070 mn= mn * 60 / 1;  hc= right(hr, 2)":"right(mn, 2, 0) ampm; return  /*reformat time*/
+0071 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0072 sqrt: procedure; parse arg x;  if x=0  then return 0;  d=digits();  numeric digits;  h=d+6
+0073 m.=9; numeric form; parse value format(x,2,1,,0) 'E0' with g 'E' _ .; g=g*.5'e'_ % 2
+0074 do j=0  while h>9;      m.j= h;             h= h % 2 + 1;    end  /*j*/
+0075 do k=j+5  to 0  by -1;  numeric digits m.k; g= (g+x/g) *.5;  end  /*k*/;  return g
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                72
+002 d                72
+003 h                72 74
+004 m.               73 74
+005 p                46 47
+006 j                47 74
+007 w3               13
+008 L                14
+009 h                21
+010 hra              22
+011 hla              23 24
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                73 73 75
+024 k                75
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            6
+002 @                -> newV2            36
+003 _                -> newV3            37 73
+004 !                -> newV4            57 58
+005 #                -> newV5            58

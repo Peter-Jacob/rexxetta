@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 09.08.2012 Walter Pachl translated Pascal algorithm to Rexx
+0003 **********************************************************************/
+0004 s=' -1 -2  3  5  6 -2 -1  4 -4  2 -1'
+0005 maxSum   = 0
+0006 seqStart = 0
+0007 seqEnd   = -1
+0008 do i = 1 To words(s)
+0009 seqSum = 0
+0010 Do j = i to words(s)
+0011 seqSum = seqSum + word(s,j)
+0012 if seqSum > maxSum then Do
+0013 maxSum   = seqSum
+0014 seqStart = i
+0015 seqEnd   = j
+0016 end
+0017 end
+0018 end
+0019 Say 'Sequence:'
+0020 Say s
+0021 Say 'Subsequence with greatest sum: '
+0022 If seqend<seqstart Then
+0023 Say 'empty'
+0024 Else Do
+0025 ol=copies('   ',seqStart-1)
+0026 Do i = seqStart to seqEnd
+0027 ol=ol||right(word(s,i),3)
+0028 End
+0029 Say ol
+0030 Say 'Sum:' maxSum
+0031 End
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                4
+002 maxSum           5 13
+003 seqStart         6 14
+004 seqEnd           7 15
+005 i                8 26
+006 seqSum           9 11
+007 j                10
+008 ol               25 27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

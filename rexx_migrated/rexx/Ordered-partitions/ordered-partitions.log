@@ -1,0 +1,73 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 //*REXX program displays the  ordered partitions  as:   orderedPartitions(i, j, k, ···). */
+0002 call orderedPartitions  2,0,2                    /*Note:      2,,2      will also work. */
+0003 call orderedPartitions  1,1,1
+0004 call orderedPartitions  1,2,0,1                  /*Note:      1,2,,1    will also work. */
+0005 exit                                             /*stick a fork in it,  we're all done. */
+0006 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0007 orderedPartitions: procedure;  #=arg();   bot.=;   top.=;   low=;    high=;    d=123456789
+0008 t=0                                              /*T:   is the sum of all the arguments.*/
+0009 do i=1  for #;       t=t + arg(i)      /*sum all the highest numbers in parts.*/
+0010 end   /*i*/                            /* [↑]  may have an omitted argument.  */
+0011 hdr= ' partitions for: '                         /*define the start of the header text. */
+0012 do j=1  for #;               _= arg(j)         /*  _:  is the    Jth   argument.      */
+0013 len.j=max(1, _)                                /*LEN:  length of args.  «0 is special»*/
+0014 bot.j=left(d, _);         if _==0 then bot.j=0 /*define the  bottom  number for range.*/
+0015 top.j=right(left(d,t),_); if _==0 then top.j=0 /*  "     "     top      "    "    "   */
+0016 @.j=left(d, t);           if _==0 then   @.j=0 /*define the digits used for  VERIFY.  */
+0017 hdr=hdr _                                      /*build (by appending)  display header.*/
+0018 low=low || bot.j;         high=high || top.j   /*the low and high numbers for DO below*/
+0019 end   /*j*/
+0020 /* [↓]  same as:   okD=left('0'd, t+1) */
+0021 /*define the legal digits to be used.  */
+0022 okD=left(0 || d,  t + 1)                         /*define the legal digits to be used.  */
+0023 say;   hdr=center(hdr" ",  60, '═');     say hdr /*display centered title for the output*/
+0024 say                                              /*show a blank line  (as a separator). */
+0025 do g=low  to high                            /* [↑]  generate the ordered partitions*/
+0026 if verify(g, okD) \==0  then iterate         /*filter out unwanted partitions (digs)*/
+0027 p=1                                          /*P:  is the position of a decimal dig.*/
+0028 $=                                           /*$:  will be the transformed numbers. */
+0029 do k=1  for #;   _=substr(g, p, len.k)    /*verify the partitions numbers.       */
+0030 if verify(_, @.k) \==0  then iterate g    /*is the decimal digit not valid ?     */
+0031 !=                                        /* [↓]  validate the decimal number.   */
+0032 if @.k\==0  then do j=1  for length(_);     z=substr(_, j, 1)        /*get a dig.*/
+0033 if pos(z, $)\==0               then iterate g       /*previous ?*/
+0034 !=!','z                                             /*add comma.*/
+0035 if j==1                        then iterate         /*is firstt?*/
+0036 if z<=substr(_, j-1, 1)        then iterate g       /*ordered  ?*/
+0037 if pos(z, _, 1 +pos(z, _))\==0 then iterate g       /*duplicate?*/
+0038 end   /*j*/
+0039 p=p + len.k                               /*point to the next decimal digit (num)*/
+0040 $=$ '  {'strip(translate(!, ,0), ,",")'}' /*dress number up by suppessing LZ ··· */
+0041 end   /*k*/
+0042 say center($, length(hdr) )                  /*display numbers in ordered partition.*/
+0043 end      /*g*/
+0044 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 bot.             7 14 14
+002 top.             7 15 15
+003 low              7 18
+004 high             7 18
+005 d                7
+006 t                8 9
+007 i                9
+008 hdr              11 17 23
+009 j                12 32
+010 len.             13
+011 okD              22
+012 g                25
+013 p                27 39
+014 k                29
+015 z                32
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           16 16
+002 #                -> newV2            7
+003 _                -> newV3            12 29
+004 $                -> newV4            28 40
+005 !                -> newV5            31 34

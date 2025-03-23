@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program  displays  an  ASCII plot   (character plot)   of a  Julia set.          */
+0002 parse arg real imag fine .                       /*obtain optional arguments from the CL*/
+0003 if real=='' | real==","  then real= -0.8         /*Not specified?  Then use the default.*/
+0004 if imag=='' | imag==","  then imag=  0.156       /* "      "         "   "   "     "    */
+0005 if fine=='' | fine==","  then fine= 50           /* "      "         "   "   "     "    */
+0006 _=scrsize(); parse var _ sd sw; sd=sd-4; sw=sw-1 /*obtain useable area for the terminal.*/
+0007 /*$:  the plot line that is constructed*/
+0008 do   v= -sd%2  to sd%2;     $=          /*step through  vertical   axis values.*/
+0009 do h= -sw%2  to sw%2                  /*  "     "    horizontal    "     "   */
+0010 x=h/sw*2                              /*calculate the initial   X   value.   */
+0011 y=v/sd*2                              /*    "      "     "      Y     "      */
+0012 @='■';    do fine                     /*FINE: is the "fineness" for the plot.*/
+0013 zr=x*x - y*y + real         /*calculate a new   real   Julia point.*/
+0014 zi=x*y*2     + imag         /*    "     "  "  imaginal   "     "   */
+0015 if zr**2>10000  then do; @=' '; leave; end    /*is  ZR  too large? */
+0016 x=zr;    y=zi                                 /*use this new point.*/
+0017 end   /*50*/
+0018 $=$ || @                              /*append the plot char to the plot line*/
+0019 end            /*h*/
+0020 if $\=''  then say strip($, 'T')        /*only display a plot line if non-blank*/
+0021 end   /*v*/                             /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 sd               6 6
+002 sw               6 6
+003 v                8
+004 h                9
+005 x                10 16
+006 y                11 16
+007 zr               13
+008 zi               14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            6 6
+002 $                -> newV2            8 18
+003 @                -> newV3            12 15

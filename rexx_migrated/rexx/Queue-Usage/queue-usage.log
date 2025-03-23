@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates four  queueing  operations:   push,  pop,  empty,  query.   */
+0002 say '══════════════════════════════════ Pushing five values to the stack.'
+0003 do j=1  for 4                            /*a  DO  loop to  PUSH  four values.   */
+0004 call push  j * 10                        /*PUSH   (aka:   enqueue to the stack).*/
+0005 say 'pushed value:'    j * 10            /*echo the pushed value.               */
+0006 if j\==3  then iterate                   /*Not equal 3?   Then use a new number.*/
+0007 call push                                /*PUSH   (aka:   enqueue to the stack).*/
+0008 say 'pushed a "null" value.'             /*echo what was  pushed  to the stack. */
+0009 end   /*j*/
+0010 say '══════════════════════════════════ Quering the stack  (number of entries).'
+0011 say  queued()  ' entries in the stack.'
+0012 say '══════════════════════════════════ Popping all values from the stack.'
+0013 do k=1  while  \empty()                  /*EMPTY (returns  TRUE  [1]  if empty).*/
+0014 call pop                                 /*POP   (aka:  dequeue from the stack).*/
+0015 say k': popped value='  result           /*echo the popped value.               */
+0016 end   /*k*/
+0017 say '══════════════════════════════════ The stack is now empty.'
+0018 exit                                             /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 push:   queue arg(1);              return        /*(The  REXX  QUEUE   is FIFO.)        */
+0021 pop:    procedure;  parse pull x;  return x      /*REXX   PULL   removes a stack item.  */
+0022 empty:  return queued()==0                       /*returns the status of the stack.     */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             21
+002 x                21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

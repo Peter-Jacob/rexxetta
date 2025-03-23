@@ -1,0 +1,98 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX program  (state name puzzle)  rearranges two state's names ──► two new states.   */
+0002 !='Alabama,  Alaska, Arizona,  Arkansas, California,    Colorado, Connecticut,       Delaware, Florida, Georgia,',
+0003 'Hawaii,   Idaho,  Illinois, Indiana,  Iowa, Kansas,  Kentucky, Louisiana,  Maine, Maryland, Massachusetts,   ',
+0004 'Michigan, Minnesota, Mississippi, Missouri, Montana, Nebraska, Nevada, New Hampshire, New Jersey, New Mexico,',
+0005 'New York, North Carolina,  North Dakota,  Ohio, Oklahoma, Oregon, Pennsylvania, Rhode Island, South Carolina,',
+0006 'South Dakota,  Tennessee,  Texas,  Utah,  Vermont,   Virginia, Washington, West Virginia, Wisconsin,  Wyoming'
+0007 parse arg xtra;    !=! ',' xtra                     /*add optional  (fictitious)  names.*/
+0008 @abcU= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';     !=space(!) /*!: the state list, no extra blanks*/
+0009 deads=0;    dups=0;    L.=0;     !orig=!;      @@.= /*initialize some REXX variables.   */
+0010 z=0                                                 /* [↑]  elide  dend─end (DE) states.*/
+0011 do de=0  for 2;              !=!orig            /*use original state list for each. */
+0012 @.=
+0013 do states=0  by 0  until !==''              /*parse until the cows come home.   */
+0014 parse var !  x  ','  !;       x=space(x)    /*remove all blanks from state name.*/
+0015 if @.x\==''  then do                        /*was state was already specified?  */
+0016 if de  then iterate       /*don't tell error if doing 2nd pass*/
+0017 dups=dups + 1             /*bump the duplicate counter.       */
+0018 say 'ignoring the 2nd naming of the state: '    x;      iterate
+0019 end
+0020 @.x=x                                       /*indicate this state name exists.  */
+0021 y=space(x,0);    upper y;    yLen=length(y) /*get upper name with no spaces; Len*/
+0022 if de  then do                              /*Is the firstt pass?  Then process.*/
+0023 do j=1  for yLen           /*see if it's a dead─end state name.*/
+0024 _=substr(y, j, 1)          /* _:  is some state name character.*/
+0025 if L._ \== 1  then iterate /*Count ¬ 1?  Then state name is OK.*/
+0026 say 'removing dead─end state  [which has the letter '   _"]: "  x
+0027 deads=deads + 1            /*bump number of dead─ends states.  */
+0028 iterate states             /*go and process another state name.*/
+0029 end   /*j*/
+0030 z=z+1                           /*bump counter of the state names.  */
+0031 #.z=y;  ##.z=x                  /*assign state name;  also original.*/
+0032 end
+0033 else do k=1  for yLen                /*inventorize letters of state name.*/
+0034 _=substr(y,k,1);   L._=L._ + 1  /*count each letter in state name.  */
+0035 end   /*k*/
+0036 end   /*states*/                            /*the index STATES isn't incremented*/
+0037 end       /*de*/
+0038 call list                                           /*list state names in order given.  */
+0039 say z     'state name's(z)                "are useable."
+0040 if dups \==0  then say dups  'duplicate of a state's(dups)   'ignored.'
+0041 if deads\==0  then say deads 'dead─end state's(deads)        'deleted.'
+0042 sols=0                                              /*number of solutions found (so far)*/
+0043 say                                                 /*[↑]  look for mix and match states*/
+0044 do j=1  for z     /* ◄──────────────────────────────────────────────────────────┐  */
+0045 do k=j+1  to z                               /* ◄─── state K,  state J  ►─────┘  */
+0046 if #.j<<#.k  then JK=#.j || #.k              /*is the state in the proper order? */
+0047 else JK=#.k || #.j              /*No,  then use the new state name. */
+0048 do m=1  for z; if m==j | m==k then iterate /*no state  overlaps  are allowed.  */
+0049 if verify(#.m, jk) \== 0      then iterate /*is this state name even possible? */
+0050 nJK=elider(JK, #.m)                        /*a new JK, after eliding #.m chars.*/
+0051 do n=m+1  to z; if n==j | n==k then iterate      /*no overlaps are allowed.  */
+0052 if verify(#.n, nJK) \== 0      then iterate      /*is it possible?           */
+0053 if elider(nJK, #.n) \== ''     then iterate      /*any leftovers letters?    */
+0054 if #.m<<#.n  then MN=#.m || #.n                  /*is it in the proper order?*/
+0055 else MN=#.n || #.m                  /*we found a new state name.*/
+0056 if @@.JK.MN\=='' | @@.MN.JK\==""  then iterate   /*was it done before?       */
+0057 say 'found: '      ##.j','     ##.k       "  ───►  "        ##.m','      ##.n
+0058 @@.JK.MN=1                            /*indicate this solution as being found*/
+0059 sols=sols+1                           /*bump the number of solutions found.  */
+0060 end   /*n*/
+0061 end     /*m*/
+0062 end       /*k*/
+0063 end         /*j*/
+0064 say                                              /*show a blank line for easier reading.*/
+0065 if sols==0  then sols= 'No'                      /*use mucher gooder (sic) Englishings. */
+0066 say sols  'solution's(sols)    "found."          /*display the number of solutions found*/
+0067 exit                                             /*stick a fork in it,  we're all done. */
+0068 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0069 elider: parse arg hay,pins                       /*remove letters (pins) from haystack. */
+0070 do e=1  for length(pins);    p=pos( substr( pins, e, 1),  hay)
+0071 if p==0  then iterate   ;    hay=overlay(' ', hay, p)
+0072 end   /*e*/          /* [↑]  remove a letter from haystack. */
+0073 return space(hay, 0)                     /*remove blanks from the haystack.     */
+0074 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0075 list:   say;   do i=1  for z;   say right(i, 9)   ##.i;   end;            say;      return
+0076 s:      if arg(1)==1  then return arg(3);    return word(arg(2) 's', 1)    /*pluralizer.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 hay              69 71
+002 pins             69
+003 e                70
+004 p                70
+005 i                75
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @abcU            -> newV1            8
+002 !orig            -> newV2            9
+003 @@.              -> newV3.           9 58
+004 ##.              -> newV4.           31
+005 @.               -> newV5.           12 20
+006 #.               -> newV6.           31
+007 !                -> newV7            2 7 8 11 14 14
+008 _                -> newV8            24 34

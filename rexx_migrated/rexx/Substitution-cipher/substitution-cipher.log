@@ -1,0 +1,55 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program implements & demonstrates a substitution cipher for the records in a file*/
+0002 parse arg fid.1 fid.2 fid.3 fid.4 .              /*obtain optional arguments from the CL*/
+0003 if fid.1==''  then fid.1= "CIPHER.IN"            /*Not specified?  Then use the default.*/
+0004 if fid.2==''  then fid.2= "CIPHER.OUT"           /* "      "         "   "   "     "    */
+0005 if fid.3==''  then fid.3= "CIPHER.KEY"           /* "      "         "   "   "     "    */
+0006 if fid.4==''  then fid.4= "CIPHER.ORI"           /* "      "         "   "   "     "    */
+0007 say '    input file: '   fid.1                   /*display the fileID used for  input.  */
+0008 say '   output file: '   fid.2                   /*   "     "     "     "   "  output.  */
+0009 say '   cipher file: '   fid.3                   /*   "     "     "     "   " cipher-key*/
+0010 say 'decrypted file: '   fid.4                   /*   "     "     "     "   "  decrypted*/
+0011 call closer                                      /*close all files in case they're open.*/
+0012 do c=1  while lines(fid.3)\==0        /*read (hopefully 2 records) from key. */
+0013 @.c= space( linein(fid.3), 0)         /*assign input record to an  @.  array.*/
+0014 end   /*c*/
+0015 c= c - 1                                         /*adjust the number of records (for DO)*/
+0016 if c==0                       then call ser fid.3,  'not found or is empty.'
+0017 if c>2                        then call ser fid.3,  'has too many records  (>2).'
+0018 if c<2                        then call ser fid.3,  'has too few records   (<2).'
+0019 if length(@.1)\==length(@.2)  then call ser fid.3,  'has unequal length records.'
+0020 call encrypt  fid.1, fid.2                       /*encrypt the input file  ───►  output.*/
+0021 _=@.1;    @.1=@.2;   @.2=_                       /*switch the cipher keys for decryption*/
+0022 call encrypt  fid.2, fid.4                       /*decrypt the output file ───► decrypt.*/
+0023 call show     'cipher file ('fid.3")" , fid.3    /*display the cipher─key file.         */
+0024 call show      'input file ('fid.1")" , fid.1    /*   "     "     input     "           */
+0025 call show     'output file ('fid.2")" , fid.2    /*   "     "    output     "           */
+0026 call show ' decrypted file ('fid.4")" , fid.4    /*   "     "   decrypted   "           */
+0027 exit                                             /*stick a fork in it,  we're all done. */
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 closer:  do f=1  for 4;   call lineout fid.f;    end  /*f*/;            say;      return
+0030 ser:     say  '***error!***  file '     arg(1)" "    arg(2);                      exit
+0031 show:    say;   say center( arg(1), 79, '═');        "TYPE"  arg(2);              return
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 encrypt: parse arg @in,@out                      /* [↓] effectively deletes @out file by*/
+0034 call lineout @out,,1                    /*setting pointer to rec#1 for the file*/
+0035 do j=0  while lines(@in)\==0       /*read the input file*/
+0036 call lineout @out, translate( linein(@in), @.2, @.1)
+0037 end   /*j*/
+0038 if j==0  then call ser @in, 'is empty.' /*was the file not found or was empty? */
+0039 say @in  ' records processed: '   j     /*show the number of records processed.*/
+0040 call closer                             /*close all the files to be neat & safe*/
+0041 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                35
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @out             -> newV1            33
+002 @in              -> newV2            33
+003 @.               -> newV3.           13 21 21
+004 _                -> newV4            21

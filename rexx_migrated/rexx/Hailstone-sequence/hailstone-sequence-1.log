@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program tests a  number  and also a  range for  hailstone  (Collatz)  sequences. */
+0002 numeric digits 20                                /*be able to handle gihugeic numbers.  */
+0003 parse arg x y .                                  /*get optional arguments from the C.L. */
+0004 if x=='' | x==","   then x=     27               /*No  1st  argument?  Then use default.*/
+0005 if y=='' | y==","   then y= 100000 - 1           /* "  2nd      "        "   "     "    */
+0006 $= hailstone(x)     /*▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒task 1▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒*/
+0007 say  x   ' has a hailstone sequence of '      words($)
+0008 say      '    and starts with: '              subword($, 1, 4)    " ∙∙∙"
+0009 say      '    and  ends  with:  ∙∙∙'          subword($, max(5, words($)-3))
+0010 if y==0  then exit  /*▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒task 2▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒*/
+0011 say
+0012 w= 0;         do j=1  for y;  call hailstone j   /*traipse through the range of numbers.*/
+0013 if #hs<=w  then iterate            /*Not big 'nuff?   Then keep traipsing.*/
+0014 bigJ= j;   w= #hs                  /*remember what # has biggest hailstone*/
+0015 end   /*j*/
+0016 say '(between 1 ──►'   y") "       bigJ      ' has the longest hailstone sequence: '   w
+0017 exit                                             /*stick a fork in it,  we're all done. */
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 hailstone: procedure expose #hs; parse arg n 1 s /*N and S: are set to the 1st argument.*/
+0020 do #hs=1   while  n\==1     /*keep loop while   N   isn't  unity.  */
+0021 if n//2  then n= n * 3  + 1 /*N is odd ?   Then calculate  3*n + 1 */
+0022 else n= n % 2      /*"  " even?   Then calculate  fast ÷  */
+0023 s= s n                      /* [↑]  %   is REXX integer division.  */
+0024 end   /*#hs*/               /* [↑]  append  N  to the sequence list*/
+0025 return s                              /*return the  S  string to the invoker.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                19 21
+002 s                19 23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #hs              -> newV1            20
+002 $                -> newV2            6

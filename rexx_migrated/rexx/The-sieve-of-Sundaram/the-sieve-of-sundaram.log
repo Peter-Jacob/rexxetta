@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program finds & displays  N  Sundaram primes, or displays the Nth Sundaram prime.*/
+0002 parse arg n cols .                               /*get optional number of primes to find*/
+0003 if    n=='' |    n==","  then    n= 100          /*Not specified?   Then assume default.*/
+0004 if cols=='' | cols==","  then cols=  10          /* "      "          "     "       "   */
+0005 @.= .;                             lim= 16 * n   /*default value for array; filter limit*/
+0006 do    j=1  for n;   do k=1  for n  until _>lim;  _= j + k + 2*j*k;  @._=
+0007 end   /*k*/
+0008 end      /*j*/
+0009 w= 10                                            /*width of a number in any column.     */
+0010 title= 'a list of '   commas(N)   " Sundaram primes"
+0011 if cols>0  then say ' index │'center(title,  1 + cols*(w+1)     )
+0012 if cols>0  then say '───────┼'center(""   ,  1 + cols*(w+1), '─')
+0013 #= 0;                         idx= 1             /*initialize # of Sundaram primes & IDX*/
+0014 $=                                               /*a list of Sundaram primes  (so far). */
+0015 do j=1  until #==n                        /*display the output (if cols > 0).    */
+0016 if @.j\==.  then iterate                  /*Is the number not prime?  Then skip. */
+0017 #= # + 1                                  /*bump number of Sundaram primes found.*/
+0018 a= j                                      /*save J for calculating the Nth prime.*/
+0019 if cols<=0  then iterate                  /*Build the list  (to be shown later)? */
+0020 c= commas(j + j + 1)                      /*maybe add commas to  Sundaram  prime.*/
+0021 $= $  right(c, max(w, length(c) ) )       /*add Sundaram prime──►list, allow big#*/
+0022 if #//cols\==0  then iterate              /*have we populated a line of output?  */
+0023 say center(idx, 7)'│'  substr($, 2);  $=  /*display what we have so far  (cols). */
+0024 idx= idx + cols                           /*bump the  index  count for the output*/
+0025 end   /*j*/
+0026 
+0027 if $\==''  then say center(idx, 7)"│"  substr($, 2)  /*possible display residual output.*/
+0028 if cols>0  then say '───────┴'center(""   ,  1 + cols*(w+1), '─')
+0029 say
+0030 say 'found ' commas(#)  " Sundaram primes, and the last Sundaram prime is "  commas(a+a+1)
+0031 exit 0                                           /*stick a fork in it,  we're all done. */
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 jc               33
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           5 6
+002 _                -> newV2            6
+003 #                -> newV3            13 17
+004 $                -> newV4            14 21 23
+005 ?                -> newV5            33 33

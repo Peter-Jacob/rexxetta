@@ -1,0 +1,26 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * If source and stripchars don't contain a hex 00 character, this works
+0003 * 06.07.2012 Walter Pachl
+0004 * 19.06.2013 -"- space(result,0) -> space(result,0,' ')
+0005 *                space(result,0) removes WHITESPACE not only blanks
+0006 **********************************************************************/
+0007 Say 'Sh ws  soul strppr. Sh took my hrt! -- expected'
+0008 Say stripchars("She was a soul stripper. She took my heart!","aei")
+0009 Exit
+0010 stripchars: Parse Arg string,stripchars
+0011 result=translate(string,'00'x,' ')      /* turn blanks into '00'x   */
+0012 result=translate(result,' ',stripchars) /* turn stripchars into ' ' */
+0013 result=space(result,0,' ')              /* remove all blanks        */
+0014 Return translate(result,' ','00'x)      /* '00'x back to blanks     */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 string           10
+002 stripchars       10
+003 result           11 12 13
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:36
+-------------------------------------------------------------------------
+0001 /*REXX program  extracts  student names  from an  XML  string(s).                       */
+0002 g.=
+0003 g.1 = '<Students>                                                             '
+0004 g.2 = '  <Student Name="April" Gender="F" DateOfBirth="1989-01-02" />         '
+0005 g.3 = '  <Student Name="Bob" Gender="M"  DateOfBirth="1990-03-04" />          '
+0006 g.4 = '  <Student Name="Chad" Gender="M"  DateOfBirth="1991-05-06" />         '
+0007 g.5 = '  <Student Name="Dave" Gender="M"  DateOfBirth="1992-07-08">           '
+0008 g.6 = '    <Pet Type="dog" Name="Rover" />                                    '
+0009 g.7 = '  </Student>                                                           '
+0010 g.8 = '  <Student DateOfBirth="1993-09-10" Gender="F" Name="&#x00C9;mily" />  '
+0011 g.9 = '</Students>                                                            '
+0012 
+0013 do j=1  while g.j\==''
+0014 g.j=space(g.j)
+0015 parse var   g.j   'Name="'   studname   '"'
+0016 if studname\==''  then say studname
+0017 end   /*j*/                                    /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 g.               15
+002 studname         15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

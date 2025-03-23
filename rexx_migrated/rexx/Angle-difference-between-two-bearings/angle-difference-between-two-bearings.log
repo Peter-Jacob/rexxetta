@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX pgm calculates difference between two angles (in degrees), normalizes the result.*/
+0002 numeric digits 25                                    /*use enough dec. digits for angles*/
+0003 call show      20,                    45             /*display angular difference (deg).*/
+0004 call show     -45,                    45             /*   "       "        "        "   */
+0005 call show     -85,                    90             /*   "       "        "        "   */
+0006 call show     -95,                    90             /*   "       "        "        "   */
+0007 call show     -45,                   125             /*   "       "        "        "   */
+0008 call show      45,                   145             /*   "       "        "        "   */
+0009 call show      29.4803,              -88.6361        /*   "       "        "        "   */
+0010 call show     -78.3251,             -159.036         /*   "       "        "        "   */
+0011 call show  -70099.74233810938,     29840.67437876723 /*   "       "        "        "   */
+0012 call show -165313.6666297357,      33693.9894517456  /*   "       "        "        "   */
+0013 call show    1174.8380510598456, -154146.66490124757 /*   "       "        "        "   */
+0014 call show   60175.773067955546,    42213.07192354373 /*   "       "        "        "   */
+0015 exit                                                 /*stick a fork in it,  we're done. */
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 show: parse arg a,b;    d=digits();     $='º'    /*obtain the 2 angles (are in degrees).*/
+0018 x=format( ( ( ((b-a) // 360) + 540) // 360) - 180, 4, d)   /*compute and format.  */
+0019 if pos(., x)\==0  then x=strip( strip(x, 'T', 0), "T", .)  /*strip trailing chaff.*/
+0020 say center(a || $, d)      '─'      center(b || $, d)       " ────► "      x || $
+0021 return                                     /* [↑]  display the angular difference.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                17
+002 b                17
+003 d                17
+004 x                18 19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            17

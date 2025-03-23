@@ -1,0 +1,80 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program  expresses numbers  from  intersecting number wheels  (or wheel sets).   */
+0002 @.=                                              /*initialize array to hold the wheels. */
+0003 parse arg lim @.1                                /*obtain optional arguments from the CL*/
+0004 if lim='' | lim=","  then lim= 20                /*Not specified?  Then use the default.*/
+0005 if @.1='' | @.1=","  then do;  @.1= ' A:  1 2 3 '
+0006 @.2= ' A:  1 B 2,    B:  3 4 '
+0007 @.3= ' A:  1 D D,    D:  6 7 8 '
+0008 @.4= ' A:  1 B C,    B:  3 4,    C:  5 B '
+0009 end
+0010 do i=1  while @.i\='';  call run          /*construct wheel set and "execute" it.*/
+0011 end   /*i*/
+0012 exit 0                                           /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 error: procedure; say;  say;    say '***error***'   arg(1);          say;   say;   exit 12
+0015 isLet: procedure; parse arg y;  return datatype(y, 'M') & length(y)==1   /*is a letter? */
+0016 isNum: procedure; parse arg y;  return datatype(y, 'N')                  /*is a number? */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 run: @wn= 'wheel name';     first=;      @noColon= "wheel name not followed by a colon:"
+0019 @gn= 'gear name' ;     gear.=;      say copies("═", 79)
+0020 say 'building wheel group for: '    @.i;    wheels= space(@.i);        upper wheels
+0021 do #=1  while wheels\='';  parse var wheels  w gears "," wheels;    L= length(w)
+0022 if L==2  then do;  !.#= left(w, 1)       /*obtain the one─character gear name.  */
+0023 if right(w, 1)\==':'  then call error @noColon  w
+0024 if \isLet(!.#)        then call error @wn "not a letter:"  w
+0025 end
+0026 else call error "first token isn't a"   @wn':'     w
+0027 if #==1  then first= !.1                 /*Is this is the 1st wheel set?  Use it*/
+0028 if first==''  then call error "no wheel name was specified."
+0029 n= !.#                                   /*obtain the name of the 1st wheel set.*/
+0030 gear.n.0= 1                              /*initialize default 1st gear position.*/
+0031 say '   setting gear.name:'     n     "    gears=" gears
+0032 do g=1  for words(gears);         _= word(gears, g)
+0033 if isNum(_)  |  isLet(_)  then do;  gear.n.g= _;  iterate;  end
+0034 call error  @gn  "isn't a number or a gear name:"  _
+0035 end   /*g*/
+0036 end      /*#*/
+0037 say;                  say center(' running the wheel named '  first" ", 79, '─');   $=
+0038 do dummy=0  by 0  until words($)==lim;           n= first
+0039 z= gear.n.0;               x= gear.n.z;          z= z + 1
+0040 gear.n.0= z;      if gear.n.z==''  then gear.n.0= 1
+0041 if isNum(x)  then do;     $= $ x;    iterate;    end   /*found a number, use it.*/
+0042 xx= x                                    /*different gear, keep switching 'til X*/
+0043 do forever;            nn= xx
+0044 if gear.nn.0==''  then call error "a gear is using an unknown gear name:"  x
+0045 zz= gear.nn.0;         xx= gear.nn.zz
+0046 zz= zz + 1;   gear.nn.0= zz;   if gear.nn.zz==''  then gear.nn.0= 1
+0047 if isNum(xx)  then do;  $= $ xx;  iterate dummy;  end
+0048 end   /*forever*/                     /* [↑]  found a number,  now use FIRST.*/
+0049 end      /*dummy*/                       /*"DUMMY"  is needed for the  ITERATE. */
+0050 say '('lim "results): "  strip($);      say;          say;          return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 wheels           21 21
+002 w                21
+003 gears            21
+004 L                21
+005 first            27
+006 n                29 38
+007 gear.            30 33 40 40 46 46
+008 g                32
+009 dummy            38
+010 z                39 39
+011 x                39
+012 xx               42 45
+013 nn               43
+014 zz               45 46
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @noColon         -> newV1            18
+002 @gn              -> newV2            19
+003 @.               -> newV3.           2 3 5 6 7 8
+004 !.               -> newV4.           22
+005 #                -> newV5            21
+006 _                -> newV6            32
+007 $                -> newV7            37 41 47

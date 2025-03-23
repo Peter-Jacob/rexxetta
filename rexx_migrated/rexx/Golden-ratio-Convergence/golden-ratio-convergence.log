@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /* REXX
+0002 * Compute the Golden Ratio using iteration
+0003 * 20230604 Walter Pachl
+0004 */
+0005 Numeric Digits 16
+0006 Parse Value '1 1 1e-5' With oldPhi phi limit
+0007 Do iterations=1 By 1 Until delta<=limit
+0008 phi=1+1/oldPhi                      /* next approximation        */
+0009 delta=abs(phi-oldPhi)               /* difference to previous    */
+0010 If delta>limit Then                 /* not small enough          */
+0011 oldPhi=phi                        /* proceed with new value    */
+0012 End
+0013 actualPhi=(1+sqrt(5,16))/2            /* compute the real value    */
+0014 Say 'Final value of phi  : ' phi      /* our approximation         */
+0015 Say 'Actual value        : ' actualPhi      /* the real value      */
+0016 Say 'Error (approx)      :' (phi-actualPhi) /* the difference      */
+0017 Say 'Number of iterations:' iterations
+0018 Exit
+0019 
+0020 sqrt: Procedure
+0021 /* REXX *************************************************************
+0022 * Return sqrt(x,precision) -- with the specified precision
+0023 ********************************************************************/
+0024 Parse Arg x,xprec
+0025 If x<0 Then                         /* a negative argument       */
+0026 Return 'nan'                      /* has no real square root   */
+0027 iprec=xprec+10                      /* increase precision        */
+0028 Numeric Digits iprec                /* for very safe results     */
+0029 r0= x
+0030 r = 1                               /* start value               */
+0031 Do Until r=r0                       /* loop until no change of r */
+0032 r0 = r                            /* previous value            */
+0033 r = (r + x/r) / 2                 /* next approximation        */
+0034 End
+0035 Numeric Digits xprec                /* reset to desired precision*/
+0036 Return (r+0)                        /* normalize the result      */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                24
+002 xprec            24
+003 iprec            27
+004 r0               29 32
+005 r                30 33
+006 Until            31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

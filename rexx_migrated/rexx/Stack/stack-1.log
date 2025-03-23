@@ -1,0 +1,18 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 y=123                        /*define a REXX variable, value is 123  */
+0002 push y                       /*pushes   123   onto the stack.        */
+0003 pull g                       /*pops last value stacked & removes it. */
+0004 q=empty()                    /*invokes the  EMPTY  subroutine (below)*/
+0005 exit                         /*stick a fork in it, we're done.       */
+0006 
+0007 empty: return queued()       /*subroutine returns # of stacked items.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                1
+002 q                4
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

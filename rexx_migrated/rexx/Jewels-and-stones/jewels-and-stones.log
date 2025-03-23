@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX pgm counts how many letters (in the 1st string) are in common with the 2nd string*/
+0002 say  count('aAAbbbb', "aA")
+0003 say  count('ZZ'     , "z" )
+0004 exit                                /*stick a fork in it,  we're all done. */
+0005 /*──────────────────────────────────────────────────────────────────────────*/
+0006 count: procedure
+0007 parse arg stones,jewels  /*obtain the two strings specified.    */
+0008 number= 0                                     /*initialize number  to  zero.*/
+0009 do j=1  for length(stones)           /*scan STONES for matching JEWELS chars*/
+0010 x= substr(stones, j, 1)            /*obtain a character of the STONES var.*/
+0011 if datatype(x, 'M')  then if pos(x, jewels)\==0  then number=number + 1
+0012 end   /*j*/                    /* [↑]  if a letter and a match, bump number */
+0013 return number                        /*return the number of common letters. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 stones           7
+002 jewels           7
+003 number           8 11
+004 j                9
+005 x                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

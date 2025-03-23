@@ -1,0 +1,55 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX program  generates and displays  three forms of an   NxN   Pascal matrix.        */
+0002 numeric digits 50                                /*be able to calculate huge factorials.*/
+0003 parse arg N .                                    /*obtain the optional matrix size  (N).*/
+0004 if N==''  | N==","  then N= 5                    /*Not specified?  Then use the default.*/
+0005 call show  N,  upp(N),  'Pascal upper triangular matrix'
+0006 call show  N,  low(N),  'Pascal lower triangular matrix'
+0007 call show  N,  sym(N),  'Pascal symmetric matrix'
+0008 exit                                             /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 upp:  procedure; parse arg N;  $=                /*gen Pascal upper triangular matrix.  */
+0011 do i=0  for N;  do j=0  for N; $=$ comb(j,   i);   end; end;   return $
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 low:  procedure; parse arg N;  $=                /*gen Pascal lower triangular matrix.  */
+0014 do i=0  for N;  do j=0  for N; $=$ comb(i,   j);   end; end;   return $
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 sym:  procedure; parse arg N;  $=                /*generate  Pascal symmetric  matrix.  */
+0017 do i=0  for N;  do j=0  for N; $=$ comb(i+j, i);   end; end;   return $
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 !:    procedure; parse arg x;  !=1;    do j=2  to x;  != !*j;  end;        return !
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 comb: procedure; parse arg x,y;        if x=y  then return 1                /* {=} case.*/
+0022 if y>x  then return 0                /* {>} case.*/
+0023 if x-y<y  then y= x-y;  _= 1;    do j=x-y+1  to x;  _= _*j;  end;    return _ / !(y)
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 show: procedure; parse arg s,@;   w=0;    #=0                               /*get args. */
+0026 do x=1  for s**2;  w= max(w, 1 + length( word(@,x) ) );    end
+0027 say;   say center( arg(3), 50, '─')                                   /*show title*/
+0028 do    r=1  for s;  if r==1  then $= '[['             /*row  1    */
+0029 else $= ' ['             /*rows 2   N*/
+0030 do c=1  for s;  #= #+1;   e= (c==s)               /*e ≡ "end".*/
+0031 $=$ || right( word(@, #), w) || left(',', \e) || left("]", e)
+0032 end   /*c*/                                       /* [↑]  row.*/
+0033 say $ || left(',', r\==s)left("]", r==s)             /*show row. */
+0034 end     /*r*/
+0035 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                25
+002 w                25 26
+003 x                26
+004 r                28
+005 c                30
+006 e                30
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            10 11 13 14 16 17 28 31
+002 !                -> newV2            19 19
+003 _                -> newV3            23 23
+004 @                -> newV4            25
+005 #                -> newV5            25 30

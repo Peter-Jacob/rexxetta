@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX program  sorts  a  stemmed array  using the   selection─sort   algorithm.        */
+0002 call init                                        /*assign some values to an array:   @. */
+0003 call show   'before sort'                        /*show the   before   array elements.  */
+0004 say  copies('▒', 65)                        /*show a nice separator line  (fence). */
+0005 call selectionSort   #                           /*invoke selection sort (and # items). */
+0006 call show   ' after sort'                        /*show the    after   array elements.  */
+0007 exit 0                                           /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 init: @.=;                  @.1 = '---The seven hills of Rome:---'
+0010 @.2 = '==============================';      @.6 = 'Virminal'
+0011 @.3 = 'Caelian'                       ;      @.7 = 'Esquiline'
+0012 @.4 = 'Palatine'                      ;      @.8 = 'Quirinal'
+0013 @.5 = 'Capitoline'                    ;      @.9 = 'Aventine'
+0014 do #=1  until @.#=='';   end       /*find the number of items in the array*/
+0015 #= #-1;         return                     /*adjust  #  (because of  DO  index).  */
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 selectionSort: procedure expose @.;  parse arg n
+0018 do j=1  for n-1;                 _= @.j;             p= j
+0019 do k=j+1  to n;      if @.k>=_  then iterate
+0020 _= @.k;      p= k      /*this item is out─of─order, swap later*/
+0021 end   /*k*/
+0022 if p==j  then iterate      /*if the same, the order of items is OK*/
+0023 _= @.j;  @.j= @.p;  @.p= _ /*swap 2 items that're out─of─sequence.*/
+0024 end       /*j*/
+0025 return
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 show:  do i=1  for #;  say '       element' right(i,length(#)) arg(1)":" @.i; end;  return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                17
+002 j                18
+003 p                18 20
+004 k                19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           9 10 10 11 11 12 12 13 13 23 23
+002 #                -> newV2            14 15
+003 _                -> newV3            18 20 23

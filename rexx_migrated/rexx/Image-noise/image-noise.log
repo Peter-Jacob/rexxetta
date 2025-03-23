@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program times (elapsed) the generation of 100 frames of random black&white image.*/
+0002 parse arg sw sd im .                             /*obtain optional args from the C.L.   */
+0003 if sw=='' | sw==","  then sw=320                 /*SW  specified?  No, then use default.*/
+0004 if sd=='' | sd==","  then sd=240                 /*SD      "        "    "   "      "   */
+0005 if im=='' | im==","  then im=100                 /*IM      "        "    "   "      "   */
+0006 call time 'R'                                    /*reset the REXX elapsed (clock) timer.*/
+0007 do   im                            /*generate    IM     number of images. */
+0008 call genFrame  sw, sd              /*generate single image of size SW x SD*/
+0009 /*■■■ display frame here ■■■*/     /*do (or don't) display the frame num. */
+0010 end   /*im*/                       /*generate, but don't display the image*/
+0011 /*measures  ↓  elapsed time in seconds.*/
+0012 say 'The average frames/second: '    format(im/time("E"), , 2)     /*show frames/second.*/
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 genFrame:  parse arg x,y;   @.0= 'ff000000'x                   /*hex: the color  black. */
+0016 @.1= 'ffFFffFF'x                   /* "    "    "    white. */
+0017 $=                                                  /*nullify image string.  */
+0018 do y;  _=                                    /*nullify an output row. */
+0019 do x;  ?=random(0,1);  _=_ || @.?  /*color is black │ white.*/
+0020 end   /*x*/                        /* [↑]  build a whole row*/
+0021 $=$ || _                                     /*append row to $ string.*/
+0022 end             /*y*/                        /* [↑]  build the image. */
+0023 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                15
+002 y                15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           15 16
+002 $                -> newV2            17 21
+003 _                -> newV3            18 19
+004 ?                -> newV4            19

@@ -1,0 +1,56 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program uses a   disjointed sublist   to  sort  a  random list  of values.       */
+0002 parse arg old ',' idx                            /*obtain the optional lists from the CL*/
+0003 if old=''  then old= 7 6 5 4 3 2 1 0             /*Not specified:  Then use the default.*/
+0004 if idx=''  then idx= 7 2 8                       /* "      "         "   "   "     "    */
+0005 say '  list of indices:'  idx;   say             /*    [↑]  is for one─based lists.     */
+0006 say '    unsorted list:'  old                    /*display the  old  list of numbers.   */
+0007 say '      sorted list:'  disjoint_sort(old,idx) /*sort 1st list using 2nd list indices.*/
+0008 exit                                             /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 disjoint_sort: procedure;    parse arg x,ix;   y=;    z=;    p= 0
+0011 ix= sortL(ix)                           /*ensure the index list is sorted*/
+0012 do i=1  for  words(ix)             /*extract indexed values from  X.*/
+0013 z= z   word(x, word(ix, i) )       /*pick the correct value from  X.*/
+0014 end   /*j*/
+0015 z= sortL(z)                             /*sort extracted (indexed) values*/
+0016 do m=1  for words(x)               /*re─build (re-populate)  X list.*/
+0017 if wordpos(m, ix)==0  then y=y  word(x,m)    /*is the same  or  new?*/
+0018 else do;  p= p + 1;        y= y word(z, p)
+0019 end
+0020 end   /*m*/
+0021 return strip(y)
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 sortL: procedure; parse arg L;    n= words(L);       do j=1  for n;        @.j= word(L,j)
+0024 end   /*j*/
+0025 do k=1  for n-1                               /*sort a list using a slow method*/
+0026 do m=k+1  to n;   if @.m<@.k  then parse value   @.k  @.m    with  @.m  @.k
+0027 end   /*m*/
+0028 end     /*k*/                                 /* [↑]  use  PARSE  for swapping.*/
+0029 $= @.1;               do j=2  to n;   $= $ @.j
+0030 end   /*j*/
+0031 return $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 L                23
+002 n                23
+003 j                23 29
+004 k                25
+005 m                26
+006 i                12
+007 m                16
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           23 26 26
+002 $                -> newV2            29 29

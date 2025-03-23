@@ -1,0 +1,56 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program shows  plausibility  of  "I before E"  when not preceded by C,  and      */
+0002 /*───────────────────────────────────── "E before I"  when     preceded by C.           */
+0003 parse arg iFID .                                 /*obtain optional argument from the CL.*/
+0004 if iFID=='' | iFID=="," then iFID='UNIXDICT.TXT' /*Not specified?  Then use the default.*/
+0005 #.=0                                             /*zero out the various word counters.  */
+0006 do r=0  while  lines(iFID)\==0              /*keep reading the dictionary 'til done*/
+0007 u=space( lineIn(iFID), 0);      upper u     /*elide superfluous blanks and tabs.   */
+0008 if u==''  then iterate                      /*Is it a blank line?   Then ignore it.*/
+0009 #.words=#.words + 1                         /*keep running count of number of words*/
+0010 if pos('EI', u)\==0 & pos('IE', u)\==0  then #.both=#.both + 1  /*the word has both*/
+0011 call find  'ie'                                                 /*look for   ie    */
+0012 call find  'ei'                                                 /*  "   "    ei    */
+0013 end   /*r*/                                 /*at exit of DO loop,   R = # of lines.*/
+0014 
+0015 L=length(#.words)                                /*use this to align the output numbers.*/
+0016 say 'lines in the  '         iFID         " dictionary: "            r
+0017 say 'words in the  '         iFID         " dictionary: "            #.words
+0018 say
+0019 say 'words with "IE" and "EI" (in same word): '    right(#.both, L)
+0020 say 'words with "IE" and     preceded by "C": '    right(#.ie.c ,L)
+0021 say 'words with "IE" and not preceded by "C": '    right(#.ie.z ,L)
+0022 say 'words with "EI" and     preceded by "C": '    right(#.ei.c ,L)
+0023 say 'words with "EI" and not preceded by "C": '    right(#.ei.z ,L)
+0024 say;                         mantra= 'The spelling mantra  '
+0025 p1=#.ie.z / max(1, #.ei.z);  phrase= '"I before E when not preceded by C"'
+0026 say mantra phrase   ' is '   word("im", 1 + (p1>2) )'plausible.'
+0027 p2=#.ie.c / max(1, #.ei.c);  phrase= '"E before I when     preceded by C"'
+0028 say mantra phrase   ' is '   word("im", 1 + (p2>2) )'plausible.'
+0029 po=(p1>2 & p2>2);            say 'Overall, it is'    word("im", 1 + po)'plausible.'
+0030 exit                                             /*stick a fork in it,  we're all done. */
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 find: arg x;  s=1;  do forever;           _=pos(x, u, s);          if _==0  then return
+0033 if substr(u, _ - 1 + (_==1)*999, 1)=='C'  then #.x.c=#.x.c + 1
+0034 else #.x.z=#.x.z + 1
+0035 s=_ + 1                      /*handle the cases of multiple finds.  */
+0036 end   /*forever*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 r                6
+002 u                7
+003 L                15
+004 mantra           24
+005 p1               25
+006 phrase           25 27
+007 p2               27
+008 po               29
+009 s                32 35
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #.               -> newV1.           5 9 10 33
+002 _                -> newV2            32

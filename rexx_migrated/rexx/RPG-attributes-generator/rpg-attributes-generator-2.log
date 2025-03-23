@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program generates values for six core attributes for a  RPG  (Role Playing Game).*/
+0002 do  until  m>=2 & $$>=75;   $$= 0;     list=  /*do rolls until requirements are met. */
+0003 m= 0                                          /*the number of values ≥ 15   (so far).*/
+0004 do 6;                  $= 0              /*6 values (meet criteria); attrib. sum*/
+0005 do d=1  for 4;    @.d= random(1, 6) /*roll four random dice (six sided die)*/
+0006 $= $ + @.d                          /*also obtain their sum  (of die pips).*/
+0007 end   /*d*/                         /* [↓]  use of MIN  BIF avoids sorting.*/
+0008 $= $  -  min(@.1, @.2, @.3, @.4)         /*obtain the sum of the highest 3 rolls*/
+0009 list= list  $;         $$= $$ + $        /*append $──►list; add $ to overall $$.*/
+0010 $$= $$ + $                               /*add the  $  sum  to the overall sum. */
+0011 m= m + ($>=15)                           /*get # of rolls that meet the minimum.*/
+0012 end       /*do 6*/                       /* [↑]  gen six core attribute values. */
+0013 end            /*until*/                      /*stick a fork in it,  we're all done. */
+0014 say 'The total for '     list      "  is ──► "       $$', '     m     " entries are ≥ 15."
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 until            2
+002 list             2 9
+003 m                3 11
+004 d                5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $$               -> newV1            2 9 10
+002 @.               -> newV2.           5
+003 $                -> newV3            4 6 8

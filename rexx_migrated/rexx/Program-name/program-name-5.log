@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX pgm displays the name (& possible path) of the REXX program name.*/
+0002 parse version _version
+0003 parse source _system _howInvoked _path
+0004 
+0005 say right(_version '◄──►' space(arg(1) arg(2)), 79, '─')   /*show title.*/
+0006 say "     REXX's name of system being used:"  _system
+0007 say '     how the REXX program was invoked:'  _howInvoked
+0008 say '    name of the REXX program and path:'  _path
+0009 
+0010 if arg()>1  then return 0              /*don't let this program recurse.*/
+0011 /*Mama said that cursing is a sin*/
+0012 /*invoke ourself with a  2nd arg.*/
+0013 call prog_nam  , 'subroutine'          /*call ourself as a  subroutine. */
+0014 zz = prog_nam( , 'function')           /*  "     "     " "  function.   */
+0015 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 source           3
+002 zz               14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _howInvoked      -> newV1            3
+002 _version         -> newV2            2
+003 _system          -> newV3            3
+004 _path            -> newV4            3

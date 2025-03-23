@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program shows exponentition with an  infix operator  (implied and/or specified).*/
+0002 _= '─';   ! = '║';   mJunct= '─╫─';   bJunct= '─╨─'       /*define some special glyphs. */
+0003 
+0004 say @('  x  ', 5)  @("  p  ", 5)        !
+0005 say @('value', 5)  @("value", 5) copies(!        @('expression',10)  @("result",6)" ",  4)
+0006 say @(''  , 5, _)  @("",   5, _)copies(mJunct || @('',       10, _)  @("",   6, _)   ,  4)
+0007 
+0008 do    x=-5  to 5  by 10                       /*assign   -5    and    5    to    X.  */
+0009 do p= 2  to 3                              /*assign    2    and    3    to    P.  */
+0010 
+0011 a =  -x**p ;   b =  -(x)**p ;   c =  (-x)**p ;   d =  -(x**p)
+0012 ae= '-x**p';   be= "-(x)**p";   ce= '(-x)**p';   de= "-(x**p)"
+0013 say @(x,5)  @(p,5) ! @(ae, 10)    right(a, 5)" " ,
+0014 ! @(be, 10)    right(b, 5)" " ,
+0015 ! @(ce, 10)    right(c, 5)" " ,
+0016 ! @(de, 10)    right(d, 5)
+0017 end   /*p*/
+0018 end      /*x*/
+0019 
+0020 say @(''  , 5, _)  @('',   5, _)copies(bJunct || @('',       10, _)  @('',   6, _)   ,  4)
+0021 exit 0                                           /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 @:    parse arg txt, w, fill;  if fill==''  then fill= ' ';   return center( txt, w, fill)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 txt              23
+002 w                23
+003 fill             23 23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            2
+002 !                -> newV2            2

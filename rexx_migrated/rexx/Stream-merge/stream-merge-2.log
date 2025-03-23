@@ -1,0 +1,29 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX pgm reads sorted files (1.TXT, 2.TXT, ···),  and writes sorted data ───► ALL.TXT */
+0002 @.=copies('ff'x, 1e4); call lineout 'ALL.TXT',,1 /*no value should be larger than this. */
+0003 do n=1  until @.n==@.;   call rdr n;   end  /*read any number of appropriate files.*/
+0004 n=n-1                                            /*fix N 'cause read a non─existent file*/
+0005 do forever;              y=@.;   #=0        /*find the lowest value for  N  values.*/
+0006 do k=1  for n; if @.k==@. then call rdr k /*Not defined?  Then read a file record*/
+0007 if @.k<<y   then do;   y=@.k;  #=k;  end  /*Lowest so far?  Mark this as minimum.*/
+0008 end   /*k*/                               /* [↑]  note use of  << (exact compare)*/
+0009 if #==0  then exit                          /*stick a fork in it,  we're all done. */
+0010 call lineout  'ALL.TXT', @.#;    say @.#    /*write value to a file;  also display.*/
+0011 call rdr #                                  /*re─populate a value from the # file. */
+0012 end   /*forever*/                           /*keep reading/merging until exhausted.*/
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 rdr: arg z;    @.z= @.;    f= z'.TXT';    if lines(f)\==0  then @.z= linein(f);     return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                3 4
+002 y                5 7
+003 k                6
+004 f                14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 14 14
+002 #                -> newV2            5 7

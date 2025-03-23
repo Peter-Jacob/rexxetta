@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program finds the   mode   (most occurring element)  of a  vector.               */
+0002 /*      ════════vector═══════════      ═══show vector═══    ═════show result═════       */
+0003 v= 1 8 6 0 1 9 4 6 1 9 9 9    ;   say 'vector='v;      say 'mode='mode(v);       say
+0004 v= 1 2 3 4 5 6 7 8 9 11 10    ;   say 'vector='v;      say 'mode='mode(v);       say
+0005 v= 8 8 8 2 2 2                ;   say 'vector='v;      say 'mode='mode(v);       say
+0006 v='cat kat Cat emu emu Kat'   ;   say 'vector='v;      say 'mode='mode(v);       say
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 sort: procedure expose @.;  parse arg # 1 h      /* [↓]  this is an  exchange sort.     */
+0010 do  while h>1;                h=h%2   /*In REXX,   %    is an integer divide.*/
+0011 do i=1  for #-h;     j=i;   k=h+i   /* [↓]  perform exchange for elements. */
+0012 do  while @.k<@.j & h<j;  _=@.j;   @.j=@.k;   @.k=_;   j=j-h;  k=k-h;   end
+0013 end   /*i*/
+0014 end     /*while h>1*/;        return
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 mode: procedure expose @.; parse arg x;  freq=1  /*function finds the  MODE  of a vector*/
+0017 #=words(x)                                 /*#:  the number of elements in vector.*/
+0018 do k=1  for #;  @.k=word(x,k);  end   /* ◄──── make an array from the vector.*/
+0019 call Sort  #                               /*sort the elements in the array.      */
+0020 ?=@.1                                      /*assume the first element is the mode.*/
+0021 do j=1  for #;        _=j-freq    /*traipse through the elements in array*/
+0022 if @.j==@._  then do; freq=freq+1 /*is this element the same as previous?*/
+0023 ?=@.j       /*this element is the mode (···so far).*/
+0024 end
+0025 end   /*j*/
+0026 return ?                                   /*return the mode of vector to invoker.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                16
+002 freq             16 22
+003 k                18
+004 j                21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           12 12 18
+002 #                -> newV2            9 17
+003 _                -> newV3            12 21
+004 ?                -> newV4            20 23

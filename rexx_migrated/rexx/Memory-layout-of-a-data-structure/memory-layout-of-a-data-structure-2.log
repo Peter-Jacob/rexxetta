@@ -1,0 +1,59 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX program  displays  which  pins  are active of a  9  or  24  pin  RS-232  plug.   */
+0002 call rs_232  24,  127                            /*the value for an RS-232  24 pin plug.*/
+0003 call rs_232  24, '020304x'                       /* "    "    "   "   "      "  "    "  */
+0004 call rs_232   9, '10100000b'                     /* "    "    "   "   "      9  "    "  */
+0005 exit                                             /*stick a fork in it,  we're all done. */
+0006 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0007 rs_232: arg ,x;    parse arg pins,ox             /*X  is  uppercased  when using  ARG.  */
+0008 @.      = '??? unassigned pin'           /*assign a default for all the pins.   */
+0009 @.24.1  = 'PG  protective ground'
+0010 @.24.2  = 'TD  transmitted data'            ;     @.9.3 = @.24.2
+0011 @.24.3  = 'RD  received data'               ;     @.9.2 = @.24.3
+0012 @.24.4  = 'RTS request to send'             ;     @.9.7 = @.24.4
+0013 @.24.5  = 'CTS clear to send'               ;     @.9.8 = @.24.5
+0014 @.24.6  = 'DSR data set ready'              ;     @.9.6 = @.24.6
+0015 @.24.7  = 'SG  signal ground'               ;     @.9.5 = @.24.7
+0016 @.24.8  = 'CD  carrier detect'              ;     @.9.1 = @.24.8
+0017 @.24.9  = '+   positive voltage'
+0018 @.24.10 = '-   negative voltage'
+0019 @.24.12 = 'SCD secondary CD'
+0020 @.24.13 = 'SCS secondary CTS'
+0021 @.24.14 = 'STD secondary td'
+0022 @.24.15 = 'TC  transmit clock'
+0023 @.24.16 = 'SRD secondary RD'
+0024 @.24.17 = 'RC  receiver clock'
+0025 @.24.19 = 'SRS secondary RTS'
+0026 @.24.20 = 'DTR data terminal ready'         ;     @.9.4 = @.24.20
+0027 @.24.21 = 'SQD signal quality detector'
+0028 @.24.22 = 'RI  ring indicator'              ;     @.9.9 = @.24.22
+0029 @.24.23 = 'DRS data rate select'
+0030 @.24.24 = 'XTC external clock'
+0031 
+0032 select
+0033 when right(x, 1)=='B'  then bits=    strip(x, 'T', "B")
+0034 when right(x, 1)=='X'  then bits=x2b(strip(x, 'T', "X"))
+0035 otherwise                   bits=x2b( d2x(x) )
+0036 end   /*select*/
+0037 say
+0038 bits=right(bits, pins, 0)                /*right justify pin readings (values). */
+0039 say '───────── For a'    pins    "pin RS─232 plug, with a reading of: "   ox
+0040 say
+0041 do j=1  for pins;     z=substr(bits, j, 1);         if z==0  then iterate
+0042 say right(j, 5)     'pin is "on": '     @.pins.j
+0043 end   /*j*/
+0044 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pins             7
+002 ox               7
+003 bits             38
+004 j                41
+005 z                41
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           8 9 10 10 11 11 12 12 13 13 14 14 15 15 16 16 17 18 19 20 21 22 23 24 25 26 26 27 28 28 29 30

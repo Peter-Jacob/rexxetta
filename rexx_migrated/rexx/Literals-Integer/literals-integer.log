@@ -1,0 +1,52 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*REXX pgm displays an  integer  (expressed in the pgm as a literal)  in different bases*/
+0002 /*────────── expressing decimal numbers ──────────*/
+0003 ddd =  123                            /*a decimal number  (expressed as a literal).     */
+0004 ddd = '123'                           /*this is exactly the same as above.              */
+0005 ddd = "123"                           /*this is exactly the same as above also.         */
+0006 /*────────── expressing hexadecimal numbers ──────*/
+0007 hhh = '7b'x                           /*a value,  expressed as a hexadecimal literal.   */
+0008 hhh = '7B'x                           /* (same as above)  using a capital  "B".         */
+0009 hhh = '7B'X                           /* (same as above)  using a capital  "X".         */
+0010 cow = 'dead beef'x                    /*another value,    with a blank for the eyeballs.*/
+0011 cow = 'de ad be ef'x                  /* (same as above)  with  blanks for the eyeballs.*/
+0012 /*────────── expressing binary numbers ───────────*/
+0013 bbb =  '1111011'b                     /*a value,  expressed as a binary literal.        */
+0014 bbb = '01111011'b                     /* (same as above)  with a full 8 binary digits.  */
+0015 bbb = '0111 1011'b                    /* (same as above)  with a blank for the eyeballs.*/
+0016 
+0017 say '    base  10='            ddd
+0018 say '    base   2='  x2b( d2x( ddd ) )
+0019 say '    base  16='       d2x( ddd )
+0020 say '    base 256='       d2c( ddd )  /*the output displayed is ASCII (or maybe EBCDIC).*/
+0021 
+0022 thingy1=  +123                        /*╔══════════════════════════════════════════════╗*/
+0023 thingy2= '+123'                       /*║ All of the THINGYs variables aren't strictly ║*/
+0024 thingy3= ' 123'                       /*║ (exactly)  equal to the  DDD  variable,  but ║*/
+0025 thingy4=   123.                       /*║ they do compare numerically equal.   When    ║*/
+0026 thingy5=    12.3e+1                   /*║ compared numerically, numbers are rounded to ║*/
+0027 thingy6=  1230e-1                     /*║ the current setting of  NUMERIC DIGITS.  The ║*/
+0028 thingy7=  1230E-0001                  /*║ default for  (decimal)  NUMERIC DIGITS is  9 ║*/
+0029 thingy8= ' +     123  '               /*╚══════════════════════════════════════════════╝*/
+0030 
+0031 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 ddd              3 4 5
+002 hhh              7 8 9
+003 cow              10 11
+004 bbb              13 14 15
+005 thingy1          22
+006 thingy2          23
+007 thingy3          24
+008 thingy4          25
+009 thingy5          26
+010 thingy6          27
+011 thingy7          28
+012 thingy8          29
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

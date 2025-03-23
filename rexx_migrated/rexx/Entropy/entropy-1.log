@@ -1,0 +1,118 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 28.02.2013 Walter Pachl
+0003 * 12.03.2013 Walter Pachl  typo in log corrected. thanx for testing
+0004 * 22.05.2013 -"- extended the logic to accept other strings
+0005 * 25.05.2013 -"- 'my' log routine is apparently incorrect
+0006 * 25.05.2013 -"- problem identified & corrected
+0007 **********************************************************************/
+0008 Numeric Digits 30
+0009 Parse Arg s
+0010 If s='' Then
+0011 s="1223334444"
+0012 occ.=0
+0013 chars=''
+0014 n=0
+0015 cn=0
+0016 Do i=1 To length(s)
+0017 c=substr(s,i,1)
+0018 If pos(c,chars)=0 Then Do
+0019 cn=cn+1
+0020 chars=chars||c
+0021 End
+0022 occ.c=occ.c+1
+0023 n=n+1
+0024 End
+0025 do ci=1 To cn
+0026 c=substr(chars,ci,1)
+0027 p.c=occ.c/n
+0028 /* say c p.c */
+0029 End
+0030 e=0
+0031 Do ci=1 To cn
+0032 c=substr(chars,ci,1)
+0033 e=e+p.c*log(p.c,30,2)
+0034 End
+0035 Say 'Version 1:' s 'Entropy' format(-e,,12)
+0036 Exit
+0037 
+0038 log: Procedure
+0039 /***********************************************************************
+0040 * Return log(x) -- with specified precision and a specified base
+0041 * Three different series are used for the ranges  0 to 0.5
+0042 *                                                 0.5 to 1.5
+0043 *                                                 1.5 to infinity
+0044 * 03.09.1992 Walter Pachl
+0045 * 25.05.2013 -"- 'my' log routine is apparently incorrect
+0046 * 25.05.2013 -"- problem identified & corrected
+0047 ***********************************************************************/
+0048 Parse Arg x,prec,b
+0049 If prec='' Then prec=9
+0050 Numeric Digits (2*prec)
+0051 Numeric Fuzz   3
+0052 Select
+0053 When x<=0 Then r='*** invalid argument ***'
+0054 When x<0.5 Then Do
+0055 z=(x-1)/(x+1)
+0056 o=z
+0057 r=z
+0058 k=1
+0059 Do i=3 By 2
+0060 ra=r
+0061 k=k+1
+0062 o=o*z*z
+0063 r=r+o/i
+0064 If r=ra Then Leave
+0065 End
+0066 r=2*r
+0067 End
+0068 When x<1.5 Then Do
+0069 z=(x-1)
+0070 o=z
+0071 r=z
+0072 k=1
+0073 Do i=2 By 1
+0074 ra=r
+0075 k=k+1
+0076 o=-o*z
+0077 r=r+o/i
+0078 If r=ra Then Leave
+0079 End
+0080 End
+0081 Otherwise /* 1.5<=x */ Do
+0082 z=(x+1)/(x-1)
+0083 o=1/z
+0084 r=o
+0085 k=1
+0086 Do i=3 By 2
+0087 ra=r
+0088 k=k+1
+0089 o=o/(z*z)
+0090 r=r+o/i
+0091 If r=ra Then Leave
+0092 End
+0093 r=2*r
+0094 End
+0095 End
+0096 If b<>'' Then
+0097 r=r/log(b,prec)
+0098 Numeric Digits (prec)
+0099 r=r+0
+0100 Return r
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                48
+002 prec             48 49
+003 b                48
+004 z                55 69 82
+005 o                56 62 70 76 83 89
+006 r                57 63 66 71 77 84 90 93 97 99
+007 k                58 61 72 75 85 88
+008 i                59 73 86
+009 ra               60 74 87
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

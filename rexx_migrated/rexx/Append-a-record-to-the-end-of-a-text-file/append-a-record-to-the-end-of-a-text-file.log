@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program  writes (appends) two records,  closes the file,  appends another record.*/
+0002 tFID= 'PASSWD.TXT'                               /*define the name of the  output  file.*/
+0003 call lineout tFID                                /*close the output file,  just in case,*/
+0004 /*   it could be open from calling pgm.*/
+0005 call writeRec tFID,,                             /*append the  1st record  to the file. */
+0006 'jsmith',"x", 1001, 1000, 'Joe Smith,Room 1007,(234)555-8917,(234)555-0077,jsmith@rosettacode.org', "/home/jsmith", '/bin/bash'
+0007 
+0008 call writeRec tFID,,                             /*append the  2nd record  to the file. */
+0009 'jdoe',  "x", 1002, 1000, 'Jane Doe,Room 1004,(234)555-8914,(234)555-0044,jdoe@rosettacode.org',    "/home/jsmith", '/bin/bash'
+0010 
+0011 call lineout fid                                 /*close the outfile  (just to be tidy).*/
+0012 
+0013 call writeRec tFID,,                             /*append the  3rd record  to the file. */
+0014 'xyz',   "x", 1003, 1000, 'X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org',         "/home/xyz",    '/bin/bash'
+0015 /*─account─pw────uid───gid──────────────fullname,office,extension,homephone,Email────────────────────────directory───────shell──*/
+0016 
+0017 call lineout fid                                 /*"be safe" programming: close the file*/
+0018 exit                                             /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 s:   if arg(1)==1  then return arg(3);       return word(arg(2) 's', 1)     /*pluralizer*/
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 writeRec: parse arg fid,_                        /*get the fileID, and also the 1st arg.*/
+0023 sep=':'                                /*field delimiter used in file, it ··· */
+0024 /*      ··· can be unique and any size.*/
+0025 do i=3  to arg()          /*get each argument and append it to   */
+0026 _=_ || sep || arg(i)      /*  the previous arg, with a   :   sep.*/
+0027 end   /*i*/
+0028 
+0029 do tries=0  for 11        /*keep trying for  66  seconds.        */
+0030 r=lineout(fid, _)         /*write (append)  the new record.      */
+0031 if r==0  then return      /*Zero?   Then record was written.     */
+0032 call sleep tries          /*Error?  So try again after a delay.  */
+0033 end   /*tries*/           /*Note:  not all REXXes have  SLEEP.   */
+0034 
+0035 say '***error***';  say r  'record's(r)   "not written to file"   fid;   exit 13
+0036 /*some error causes: no write access, disk is full, file lockout, no authority*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 fid              22
+002 sep              23
+003 i                25
+004 tries            29
+005 r                30
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            22 26

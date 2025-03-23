@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /*ª*REXX program  demonstrates using    Horner's rule    for   polynomial evaluation.     */
+0002 numeric digits 30                                /*ª*use extra numeric precision.         */
+0003 parse  arg  x poly                               /*ª*get value of X and the coefficients. */
+0004 newV1=                                               /*ª*start with a clean slate equation.   */
+0005 do deg=0  until  poly==''                 /*ª*get the equation's coefficients.     */
+0006 parse var poly c.deg poly;  c.deg=c.deg/1 /*ª*get equation coefficient & normalize.*/
+0007 if c.deg>=0  then c.deg= '+'c.deg         /*ª*if Â¬ negative, then prefix with a  + */
+0008 newV1=newV1  c.deg                                /*ª*concatenate it to the equation.      */
+0009 if deg\==0 & c.deg\=0  then newV1=newV1'âˆ™x^'deg   /*ª*Â¬1st coefficient & Â¬0?  Append X pow.*/
+0010 newV1=newV1 '  '                                  /*ª*insert some blanks, make it look nice*/
+0011 end   /*ª*deg*/
+0012 say '         x = '   x
+0013 say '    degree = '  deg
+0014 say '  equation = '   newV1
+0015 a=c.deg                                          /*ª*A:  is the accumulator  (or answer). */
+0016 do j=deg-1  by -1  for deg;   a=a*x+c.j /*ª*apply Horner's rule to the equations.*/
+0017 end   /*ª*j*/
+0018 say                                              /*ª*display a blank line for readability.*/
+0019 say '    answer = ' a                            /*ª*stick a fork in it,  we're all done. */
+0020 /* -------------------------------------------------------------------------
+0021 * REXX C:\Users\PeterJ\rexxetta\rexx\Horners-rule-for-polynomial-evaluation/horners-rule-for-polynomial-evaluation-1.rexx was migrated on 22 Mar 2025 at 19:42:59
+0022 * -------------------------------------------------------------------------
+0023 */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 poly             6 6
+002 c.               6 6 7
+003 newV1            8 9 10
+004 a                15 16
+005 j                16
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

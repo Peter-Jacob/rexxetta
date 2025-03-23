@@ -1,0 +1,24 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates null strings, and also undefined values. */
+0002 
+0003 if symbol('ABC')=="VAR" then say 'variable ABC is defined, value='abc"<<<"
+0004 else say "variable ABC isn't defined."
+0005 xyz=47
+0006 if symbol('XYZ')=="VAR" then say 'variable XYZ is defined, value='xyz"<<<"
+0007 else say "variable XYZ isn't defined."
+0008 drop xyz
+0009 if symbol('XYZ')=="VAR" then say 'variable XYZ is defined, value='xyz"<<<"
+0010 else say "variable XYZ isn't defined."
+0011 cat=''
+0012 if symbol('CAT')=="VAR" then say 'variable CAT is defined, value='cat"<<<"
+0013 else say "variable CAT isn't defined."
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 xyz              5
+002 cat              11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

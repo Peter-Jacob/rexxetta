@@ -1,0 +1,117 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program displays the  current (local) time  as a  digital clock  on the terminal.*/
+0002 trace off                                        /*turn off tracing/possible host errors*/
+0003 parse arg !                                      /*obtain optional arguments from the CL*/
+0004 if !all(arg())  then exit                        /*was there a request for some help?   */
+0005 if !cms         then address ''                  /*If CMS,  then initialize ADDRESS name*/
+0006 
+0007 signal on halt                                   /*initialize target label when HALTed. */
+0008 signal on noValue                                /*     "        "     "     "  noValue.*/
+0009 signal on syntax                                 /*     "        "     "     "  syntax. */
+0010 
+0011 parse var ! ops                                  /*obtain optional arguments from the CL*/
+0012 ops = space(ops)                                 /*elide superfluous blanks from options*/
+0013 blinkSecs = 1                                    /*amount of time between displays.     */
+0014 creep     = 1                                    /*moves the output "around" the screen.*/
+0015 tops      = '.C=blue .BC=░ .BS=1 .BLOCK=12'      /*options to be specified for  $T.REXX */
+0016 
+0017 do while ops\==''                              /*process all the specified options.   */
+0018 parse var ops _1 2 1 _ . 1 y ops               /*extract various information from opt.*/
+0019 upper _                                        /*uppercase the    _    REXX variavle. */
+0020 select
+0021 when _==','                    then nop              /*ignore any comma used.*/
+0022 when _1==.  &  pos("=",_)\==0  then tops= tops y     /*add this value to TOPS*/
+0023 when abbn('BLINKSECs')         then blinksecs= no()  /*use/not use BLINKSECs.*/
+0024 when abbn('CREEPs')            then creep= no()      /* "   "   "  CREEPs.   */
+0025 otherwise                      call er 55,y          /*whoops! Invalid option*/
+0026 end   /*select*/
+0027 end            /*while ops¬==''*/
+0028 
+0029 if \!pcrexx  then  blinkSecs= 0                  /*Not PC/REXX?  Then turn off BLINKSECS*/
+0030 tops= space(tops)                                /*elide superfluous blanks in  TOPS.   */
+0031 parse value  scrsize()  with  sd sw .            /*obtain the terminal screen dimensions*/
+0032 oldTime=                                         /*blank out the OLDTIME for comparison.*/
+0033 do until queued()\==0                 /*if user entered some text, then QUIT.*/
+0034 ct= time()                            /*obtain the current  (system)  time.  */
+0035 mn= substr(ct, 4, 2)                  /*extract the minutes part of the time.*/
+0036 ss= right(ct, 2)                      /*   "     "  seconds   "  "   "    "  */
+0037 i_= 0                                 /*REXX variable used for display creep.*/
+0038 p_= 0                                 /*  "      "      "   "     "      "   */
+0039 call blinksec
+0040 if ct==oldTime  then  if !cms  then 'CP SLEEP'       /*sleep for one second. */
+0041 else call delay 1     /*  "    "   "     "    */
+0042 
+0043 if creep  then do;            p_ = 3  + right(mn, 1) /*perform display creep.*/
+0044 if sd>26  then p_ = p_ +  left(mn, 1)
+0045 if sd>33  then p_ = p_ +  left(mn, 1)
+0046 if sd>44  then p_ = p_ +  left(mn, 1) + right(mn, 1)
+0047 end
+0048 _p= - p_                              /*change the sign of the  P_  number.  */
+0049 i_= 2 + left(ct, 1)                   /*obtain indentation size base on  HH. */
+0050 if sw>108  then ctt= ct               /*maybe use wider  format for the clock*/
+0051 else ctt= left(ct, 5)      /*maybe use narrow    "    "   "    "  */
+0052 r= $t('.P='_p  ".I="i_  tops  ctt)    /*where the rubber meets the road.     */
+0053 if r\==0   then leave                 /*Had an error in  $T ?   Then quit.   */
+0054 oldTime= time()                       /*save the new time, it may be the same*/
+0055 end   /*forever*/
+0056 exit 0                                           /*stick a fork in it,  we're all done. */
+0057 
+0058 /*═════════════════════════════general 1-line subs══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════*/
+0059 !all:  !!=!;!=space(!);upper !;call !fid;!nt=right(!var('OS'),2)=='NT';!cls=word('CLS VMFCLEAR CLRSCREEN',1+!cms+!tso*2);if arg(1)\==1 then return 0;if wordpos(!,'? ?SAMPLES ?AUTHOR ?FLOW')==0 then return 0;!call=']$H';call '$H' !fn !;!call=;return 1
+0060 !cal:     if symbol('!CALL')\=="VAR"  then !call=;      return !call
+0061 !env:     !env= 'ENVIRONMENT';    if !sys=="MSDOS"  |  !brexx  |  !r4  |  !roo  then !env= 'SYSTEM';    if !os2  then !env= "OS2"!env;    !ebcdic= 3=='f3'x;    if !crx  then !env= "DOS";      return
+0062 !fid:     parse upper source !sys !fun !fid . 1 . . !fn !ft !fm .;   call !sys;   if !dos  then do;   _= lastpos('\', !fn);   !fm= left(!fn, _);   !fn= substr(!fn, _+1);   parse var !fn !fn '.' !ft;   end;   return word(0 !fn !ft !fm, 1 +('0'arg(1)))
+0063 !rex:     parse upper version !ver !vernum !verdate .; !brexx= 'BY'==!vernum; !kexx= "KEXX"==!ver; !pcrexx= 'REXX/PERSONAL'==!ver | "REXX/PC"==!ver; !r4= 'REXX-R4'==!ver; !regina="REXX-REGINA"==left(!ver, 11); !roo='REXX-ROO'==!ver; call !env; return
+0064 !sys:     !cms= !sys=='CMS';    !os2= !sys=="OS2";    !tso= !sys=='TSO'  |  !sys=="MVS";    !vse= !sys=='VSE';    !dos= pos("DOS", !sys)\==0  |  pos('WIN', !sys)\==0  |  !sys=="CMD";    !crx= left(!sys, 6)=='DOSCRX';    call !rex;              return
+0065 !var:     call !fid;   if !kexx  then return space( dosenv( arg(1) ) );                      return space( value( arg(1), , !env))
+0066 $t:       !call= ']$T';  call "$T"  arg(1);   !call=;                                        return result
+0067 abb:      parse upper arg abbu;     parse arg abb;      return abbrev(abbu, _, abbl(abb) )
+0068 abbl:     @abc = 'abcdefghijklmnopqrstuvwxyz';          return verify(arg(1)'a', @abc, 'M') - 1
+0069 abbn:     parse arg abbn;                               return abb(abbn) | abb('NO'abbn)
+0070 blinksec: if \blinksecs  then return;      bsec= ' ';      ss2= right(ss, 2);      if sw<=80  then bsec= copies(" ", 2 + ss2)  ss2;      call scrwrite 1 + right(mn, 1), 1, bsec, , , 1;      call cursor sd - right(mn, 1), sw - length(bsec);     return
+0071 er:       parse arg _1,_2;  call '$ERR'  "14"p(_1)  p(word(_1, 2)  !fid(1))  _2;  if _1<0  then return _1;    exit result
+0072 err:      call er '-'arg(1),arg(2);                     return ''
+0073 erx:      call er '-'arg(1),arg(2);                     exit 0
+0074 halt:     call er .1
+0075 no:       if arg(1)\==''  then call er 01,arg(2);        return left(_, 2) \== 'NO'
+0076 noValue:  !sigl= sigl;         call er 17,!fid(2)  !fid(3)  !sigl          condition('D')  sourceline(!sigl)
+0077 p:        return word( arg(1), 1)
+0078 syntax:   !sigl= sigl;         call er 13,!fid(2)  !fid(3)  !sigl  !cal()  condition('D')  sourceline(!sigl)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !verdate         -> newV1            63
+002 !ebcdic          -> newV2            61
+003 !vernum          -> newV3            63
+004 !pcrexx          -> newV4            63
+005 !regina          -> newV5            63
+006 !brexx           -> newV6            63
+007 !call            -> newV7            59 59 66
+008 !kexx            -> newV8            63
+009 !cls             -> newV9            59
+010 !env             -> newV10           61 61 61
+011 !sys             -> newV11           62
+012 !fun             -> newV12           62
+013 !fid             -> newV13           62
+014 !ver             -> newV14           63
+015 !roo             -> newV15           63
+016 !os2             -> newV16           64
+017 !tso             -> newV17           64
+018 !vse             -> newV18           64
+019 !dos             -> newV19           64
+020 !crx             -> newV20           64
+021 !nt              -> newV21           59
+022 !fn              -> newV22           62 62 62 62
+023 !ft              -> newV23           62 62
+024 !fm              -> newV24           62 62
+025 !r4              -> newV25           63
+026 _1               -> newV26           18 71
+027 _p               -> newV27           48
+028 _2               -> newV28           71
+029 !                -> newV29           3 11 59
+030 _                -> newV30           18 62

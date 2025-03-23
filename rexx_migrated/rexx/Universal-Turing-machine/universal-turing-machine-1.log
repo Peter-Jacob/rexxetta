@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program executes a  Turing machine  based on   initial state,  tape, and rules.  */
+0002 state = 'q0'                                     /*the initial Turing machine state.    */
+0003 term  = 'qf'                                     /*a state that is used for a  halt.    */
+0004 blank = 'B'                                      /*this character is a  "true"  blank.  */
+0005 call Turing_rule  'q0 1 1 right q0'              /*define a rule for the Turing machine.*/
+0006 call Turing_rule  'q0 B 1 stay  qf'              /*   "   "   "   "   "     "      "    */
+0007 call Turing_init   1 1 1                         /*initialize the tape to some string(s)*/
+0008 call TM                                          /*go and invoke the  Turning  machine. */
+0009 exit                                             /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 TM:  !=1;   bot=1;   top=1;   @er= '***error***' /*start at  the tape location   1.     */
+0012 say                                         /*might as well display a blank line.  */
+0013 do cycle=1  until  state==term         /*process Turing machine  instructions.*/
+0014 do k=1  for rules                   /*   "       "       "        rules.   */
+0015 parse var rule.k rState rTape rWrite rMove rNext .          /*pick pieces. */
+0016 if state\==rState | @.!\==rTape  then iterate               /*wrong rule ? */
+0017 @.!=rWrite                          /*right rule;  write it ───► the tape. */
+0018 if rMove== 'left'  then !=!-1       /*Are we moving left?   Then subtract 1*/
+0019 if rMove=='right'  then !=!+1       /* "   "    "   right?    "    add    1*/
+0020 bot=min(bot, !);   top=max(top, !)  /*find the  tape  bottom and top.      */
+0021 state=rNext;       iterate cycle    /*use this for the next  state;  and   */
+0022 end   /*k*/
+0023 say @er 'unknown state:' state;  leave /*oops, we have an unknown state error.*/
+0024 end   /*cycle*/
+0025 $=                                          /*start with empty string  (the tape). */
+0026 do t=bot  to top;        _=@.t
+0027 if _==blank  then _=' '                /*do we need to translate a true blank?*/
+0028 $=$ || pad || _                        /*construct char by char, maybe pad it.*/
+0029 end   /*t*/                            /* [↑]  construct  the  tape's contents*/
+0030 L=length($)                                 /*obtain length of  "     "       "    */
+0031 if L==0     then $= "[tape is blank.]"      /*make an  empty tape  visible to user.*/
+0032 if L>1000   then $=left($, 1000) ...        /*truncate tape to 1k bytes, append ···*/
+0033 say "tape's contents:"  $                   /*show the tape's contents (or 1st 1k).*/
+0034 say "tape's   length: " L                   /*  "   "     "   length.              */
+0035 say 'Turning machine used '    rules    " rules in "    cycle    ' cycles.'
+0036 return
+0037 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0038 Turing_init:  @.=blank;  parse arg x;    do j=1  for words(x);  @.j=word(x,j);  end  /*j*/
+0039 return
+0040 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0041 Turing_rule:  if symbol('RULES')=="LIT"  then rules=0;       rules=rules+1
+0042 pad=left('', length( word( arg(1),2 ) ) \==1 )          /*padding for rule*/
+0043 rule.rules=arg(1);         say right('rule' rules, 20)   "═══►"   rule.rules
+0044 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                38
+002 j                38
+003 rules            41
+004 pad              42
+005 rule.            43
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @er              -> newV1            11
+002 @.               -> newV2.           17 38
+003 !                -> newV3            18 19
+004 $                -> newV4            25 28 31 32
+005 _                -> newV5            26 27

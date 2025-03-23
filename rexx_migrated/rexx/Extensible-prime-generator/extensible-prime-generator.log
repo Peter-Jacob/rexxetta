@@ -1,0 +1,76 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program calculates and displays primes using an extendible prime number generator*/
+0002 parse arg f .;    if f==''  then f= 20           /*allow specifying number for  1 ──► F.*/
+0003 _i= ' (inclusive) ';  _b= 'between ';  _tnp= 'the number of primes' _b;  _tn= 'the primes'
+0004 call primes f;      do j=1  for f;      $= $ @.j;    end  /*j*/
+0005 say 'the first '    f    " primes are: "        $
+0006 say
+0007 call primes -150;   do j=100  to 150;   if !.j==1  then $= $ j;  end  /*j*/
+0008 say _tn  _b  '100  to  150'  _i  "are: "        $
+0009 say
+0010 call primes -8000;  do j=7700  to 8000; if !.j==1  then $= $ j;  end  /*j*/
+0011 say _tnp  '7,700  and  8,000'  _i  "is: " words($)
+0012 say
+0013 call primes 10000
+0014 say 'the 10,000th prime is: '    @.10000
+0015 exit 0                                           /*stick a fork in it,  we're all done. */
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 primes: procedure expose !. @. $ #;      parse arg H,,$;           Hneg= H<0;    H= abs(H)
+0018 if symbol('#')=="LIT"  then call .primI  /*1st time here?  Then initialize stuff*/
+0019 if Hneg  then  if  H<=@.#  then return   /*do we have a high enough  P  already?*/
+0020 else nop      /*this is used to match the above THEN.*/
+0021 else  if  H<=#    then return   /*are there enough primes currently ?  */
+0022 /* [↓]  gen more primes within range.  */
+0023 do j=@.#+2   by 2; parse var j '' -1 _ /*find primes until have   H   Primes. */
+0024 if     _==5  then iterate              /*is the right─most digit a 5  (five)? */
+0025 if j// 3==0  then iterate              /*is  J  divisible by  three?  (& etc.)*/
+0026 if j// 7==0  then iterate;  if j//11==0  then iterate; if j//13==0  then iterate
+0027 if j//17==0  then iterate;  if j//19==0  then iterate; if j//23==0  then iterate
+0028 if j//29==0  then iterate;  if j//31==0  then iterate; if j//37==0  then iterate
+0029 if j//41==0  then iterate;  if j//43==0  then iterate; if j//47==0  then iterate
+0030 if j//53==0  then iterate;  if j//59==0  then iterate; if j//61==0  then iterate
+0031 if j//67==0  then iterate;  if j//71==0  then iterate; if j//73==0  then iterate
+0032 if j//79==0  then iterate;  if j//83==0  then iterate; if j//89==0  then iterate
+0033 if j//97==0  then iterate;  if j//101==0 then iterate; if j//103==0 then iterate
+0034 x= j;          r= 0;  q= 1;   do while q<=x;  q= q*4;  end  /*R:  the sqrt(J).*/
+0035 do while q>1; q=q%4; _=x-r-q; r=r%2; if _>=0 then do;x=_;r=r+q; end; end
+0036 do k=@.lowP   while @.k<=r   /*÷ by the known odd primes (hardcoded)*/
+0037 if j//@.k==0  then iterate j /*J ÷ by a prime?  Then not prime.  ___*/
+0038 end   /*k*/                  /* [↑]  divide by odd primes up to √ J */
+0039 #= # + 1                               /*bump the number of primes found.     */
+0040 @.#= j;                       !.j= 1   /*assign to sparse array;  prime²;  P#.*/
+0041 if Hneg  then if H<=@.#  then leave    /*is this a high enough prime?         */
+0042 else nop      /*used to match the above  THEN.       */
+0043 else if H<=#    then leave    /*have enough primes been generated?   */
+0044 end   /*j*/                            /* [↑]  keep generating until enough.  */
+0045 return                                   /*return to invoker with more primes.  */
+0046 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0047 .primI: !.=0;   @.=0;                            /*!.x= a prime or not;  @.n= Nth prime.*/
+0048 L= 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97 101 103
+0049 do #=1  for words(L);   p= word(L, #);   @.#= p;   !.p=1;    end   /*#*/
+0050 #= # - 1;       @.lowP= #;      return   /*#:   # primes;  @.lowP:   start of ÷ */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                23
+002 x                34 35
+003 r                34 35 35
+004 q                34 34 35
+005 while            34
+006 k                36
+007 L                48
+008 p                49
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _tnp             -> newV1            3
+002 _tn              -> newV2            3
+003 _i               -> newV3            3
+004 _b               -> newV4            3
+005 @.               -> newV5.           40 47 49 50
+006 !.               -> newV6.           40 49
+007 $                -> newV7            4 7 10 17
+008 _                -> newV8            23 35
+009 #                -> newV9            39 49 50

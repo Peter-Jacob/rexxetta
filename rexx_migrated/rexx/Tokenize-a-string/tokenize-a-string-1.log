@@ -1,0 +1,26 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program separates a string of comma─delimited words, and echoes them ──► terminal*/
+0002 original = 'Hello,How,Are,You,Today'             /*some words separated by commas (,).  */
+0003 say  'The input string:'  original               /*display original string ──► terminal.*/
+0004 new= original                                    /*make a copy of the string.           */
+0005 do #=1  until  new==''          /*keep processing until  NEW  is empty.*/
+0006 parse var  new   @.#  ','  new  /*parse words delineated by a comma (,)*/
+0007 end   /*#*/                     /* [↑]  the new array is named   @.    */
+0008 say                                              /* NEW  is destructively parsed.   [↑] */
+0009 say center(' Words in the string ', 40, "═")     /*display a nice header for the list.  */
+0010 do j=1  for #                   /*display all the words (one per line),*/
+0011 say @.j || left(., j\==#)       /*maybe append a period (.) to a word. */
+0012 end   /*j*/                     /* [↑]  don't append a period if last. */
+0013 say center(' End─of─list ', 40, "═")             /*display a (EOL) trailer for the list.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 new              6 6
+002 j                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           6
+002 #                -> newV2            5

@@ -1,0 +1,74 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX program constructs/shows Floyd's triangle for any number of rows in any base ≤90.*/
+0002 parse arg N radx .                               /*obtain optional arguments from the CL*/
+0003 if    N=='' |    N==","  then    N= 5            /*Not specified?  Then use the default.*/
+0004 if radx=='' | radx==","  then radx=10            /* "      "         "   "   "     "    */
+0005 mx=N * (N+1) % 2  -  N                           /*calculate maximum value of any value.*/
+0006 say 'displaying a '  N   " row Floyd's triangle in base"  radx':'  /*display the header.*/
+0007 say
+0008 #=1;  do     r=1  for N;   i=0;            _=    /*construct Floyd's triangle row by row*/
+0009 do #=#  for r;    i=i+1                 /*start to construct a row of triangle.*/
+0010 _=_ right(base(#, radx),  length( base(mx+i, radx) ) )    /*build triangle row.*/
+0011 end   /*#*/
+0012 say substr(_, 2)                           /*remove 1st leading blank in the line,*/
+0013 end      /*r*/                             /* [↑]   introduced by first abutment. */
+0014 exit                                             /*stick a fork in it,  we're all done. */
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 base: procedure; parse arg x 1 ox,toB,inB              /*obtain number, toBase, inBase. */
+0017 @abc= 'abcdefghijklmnopqrstuvwxyz'               /*lowercase Latin alphabet.      */
+0018 @abcU=@abc;        upper @abcU                   /*go whole hog and extend 'em.   */
+0019 @@@= '0123456789'@abc || @abcU                   /*prefix 'em with numeric digits.*/
+0020 @@@=@@@'<>[]{}()?~!@#$%^&*_=|\/;:¢¬≈'            /*add some special chars as well.*/
+0021 /* [↑]  handles up to base 90,  all chars must be viewable.*/
+0022 numeric digits 3000                              /*what the hey, support gihugeics*/
+0023 mxB=length(@@@)                                  /*max base (radix) supported here*/
+0024 if toB=='' | toB=="," then toB=10                /*if skipped, assume default (10)*/
+0025 if inB=='' | inB=="," then inB=10                /* "    "        "      "      " */
+0026 if inB<2   | inb>mxB  then call erb 'inBase',inB /*invalid/illegal arg:   inBase. */
+0027 if toB<2   | tob>mxB  then call erb 'toBase',toB /*    "      "     "     toBase. */
+0028 if x==''              then call erm              /*    "      "     "     number. */
+0029 sigX=left(x, 1)                           /*obtain a possible leading sign.*/
+0030 if pos(sigX, '-+')\==0  then x=substr(x, 2)      /*X  number has a leading sign?  */
+0031 else sigX=               /*           ··· no leading sign.*/
+0032 #=0
+0033 do j=1  for length(x);  _=substr(x, j, 1)  /*convert X, base inB ──► base 10*/
+0034 v=pos(_, @@@)                              /*get the value of this "digit". */
+0035 if v==0 | v>inB  then call erd x,j,inB     /*is this an illegal "numeral" ? */
+0036 #=# * inB + v - 1                          /*construct new num, dig by dig. */
+0037 end   /*j*/
+0038 y=
+0039 do  while  # >= toB                        /*convert #, base 10 ──► base toB*/
+0040 y=substr(@@@, (# // toB) + 1, 1)y          /*construct the number for output*/
+0041 #=# % toB                                  /* ··· and whittle  #  down also.*/
+0042 end   /*while*/
+0043 
+0044 y=sigX || substr(@@@, #+1, 1)y                   /*prepend the sign if it existed.*/
+0045 return y                                         /*return the number in base  toB.*/
+0046 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0047 erb:  call ser  'illegal'   arg(2)   "base: "   arg(1)   "must be in range:  2──► "    mxB
+0048 erd:  call ser  'illegal "digit" in'            x":"     _
+0049 erm:  call ser  'no argument specified.'
+0050 ser:  say; say  '***error***';             say arg(1);     say;      exit 13
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                16 30
+002 ox               16
+003 toB              16 24
+004 inB              16 25
+005 mxB              23
+006 sigX             29
+007 j                33
+008 v                34
+009 y                38 40 44
+010 while            39
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @abcU            -> newV1            18
+002 @abc             -> newV2            17
+003 @@@              -> newV3            19 20
+004 #                -> newV4            8 9 32 36 41
+005 _                -> newV5            8 10 33

@@ -1,0 +1,23 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 parse version  x  1  whatLang  level  dd  mon  yyyy  .
+0002 if level<4  then do
+0003 say
+0004 say 'version' level "is too old!"
+0005 say x                                  /*this displays everything.*/
+0006 exit                                   /*or maybe:   EXIT 13      */
+0007 end
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 version          1
+002 x                1
+003 whatLang         1
+004 level            1
+005 dd               1
+006 mon              1
+007 yyyy             1
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,87 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX program displays combination sets for X things taken Y at a time.         */
+0002 Parse Arg things size chars .  /* get optional arguments from the command line   */
+0003 If things='?' Then Do
+0004 Say 'rexx combi things size characters'
+0005 Say ' defaults: 5      3    123456789...'
+0006 Say 'example rexx combi , , xyzuvw'
+0007 Say 'size<0 shows only the number of possible combinations'
+0008 Exit
+0009 End
+0010 If things==''|things=="," Then things=5  /* No things specified? Then use default*/
+0011 If size==''  |size==","   Then size=3    /* No size   specified? Then use default*/
+0012 If chars==''|chars=="," Then             /* No chars  specified? Then Use default*/
+0013 chars='123456789abcdefghijklmnopqrstuvwxyz'||,
+0014 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'||,
+0015 "~!@#chars%^&*()_+`{}|[]\:;<>?,./¦++++±==˜·" /*some extended chars             */
+0016 
+0017 show_details=sign(size)                  /* -1: Don't show details               */
+0018 size=abs(size)
+0019 If things<size Then
+0020 Call exit 'Not enough things ('things') for size ('size').'
+0021 Say '------------' things 'things taken' size 'times at a time:'
+0022 Say '------------' combn(things,size) 'combinations.'
+0023 Exit                                           /* stick a fork in it,  we're all */
+0024 /*-------------------------------------------------------------------------------*/
+0025 combn: Procedure Expose chars show_details
+0026 Parse Arg things,size
+0027 thingsp=things+1
+0028 thingsm=thingsp-size
+0029 index.=0
+0030 If things=0|size=0 Then
+0031 Return 'no'
+0032 Do i=1 For size
+0033 index.i=i
+0034 End
+0035 done=0
+0036 Do combi=1 By 1 Until done
+0037 combination=''
+0038 Do d=1 To size
+0039 combination=combination substr(chars,index.d,1)
+0040 End
+0041 If show_details=1 Then
+0042 Say combination
+0043 index.size=index.size+1
+0044 If index.size==thingsp Then
+0045 done=.combn(size-1)
+0046 End
+0047 Return combi
+0048 /*---------------------------------------------------------------------------------*/
+0049 .combn: Procedure Expose index. size thingsm
+0050 Parse Arg d
+0051 --Say '.combn' d thingsm show()
+0052 If d==0 Then
+0053 Return 1
+0054 p=index.d
+0055 Do u=d To size
+0056 index.u=p+1
+0057 If index.u==thingsm+u Then
+0058 Return .combn(u-1)
+0059 p=index.u
+0060 End
+0061 Return 0
+0062 
+0063 show:
+0064 list=''
+0065 Do k=1 To size
+0066 list=list index.k
+0067 End
+0068 Return list
+0069 
+0070 exit:
+0071 Say '*****error*****' arg(1)
+0072 Exit 13
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 d                50
+002 p                54 59
+003 u                55
+004 index.           56
+005 list             64 66
+006 k                65
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

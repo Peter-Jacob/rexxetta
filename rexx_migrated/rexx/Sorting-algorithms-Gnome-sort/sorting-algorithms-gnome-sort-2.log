@@ -1,0 +1,61 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 28.06.2014 Walter Pachl  cf ooRexx version 2
+0003 * only style changes (reformatting) and adapt for ooRexx compatibility
+0004 * NOTE that leading blanks are ignored in the comparison ('  Justice')
+0005 * unless strict comparison is used  (i.e., 'If x.km<<=x.k Then')
+0006 * 30.06.2014 WP added the missing else clause
+0007 *--------------------------------------------------------------------*/
+0008 /* generate the array elements.   */
+0009 Call gen '---the seven virtues---','=======================',,
+0010 'Faith','Hope','Charity  [Love]','Fortitude','  Justice',,
+0011 'Prudence','Temperance'
+0012 Call show 'before sort'          /* show  "before"  array elements.*/
+0013 Call gnomeSort                   /* invoke the infamous gnome sort.*/
+0014 Call show ' after sort'          /* show  "after"   array elements.*/
+0015 Exit                             /* done.                          */
+0016 
+0017 gnomesort: Procedure Expose x.
+0018 k=2
+0019 Do j=3 While k<=x.0
+0020 km=k-1
+0021 If x.km<=x.k Then
+0022 k=j
+0023 Else Do
+0024 t=x.km; x.km=x.k; x.k=t      /* swap two entries in the array. */
+0025 k=k-1
+0026 If k==1 Then
+0027 k=j
+0028 Else
+0029 j=j-1
+0030 End
+0031 End
+0032 Return
+0033 
+0034 gen: Procedure Expose x.
+0035 Do i=1 To arg()
+0036 x.i=arg(i)
+0037 End
+0038 x.0=arg()
+0039 Return
+0040 
+0041 show:  Procedure Expose x.
+0042 Say arg(1)
+0043 Do i=1 To x.0
+0044 Say 'element' right(i,2) x.i
+0045 End
+0046 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 k                18 22 25 27
+002 j                19 29
+003 km               20
+004 t                24
+005 x.               24 24 36 38
+006 i                35 43
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

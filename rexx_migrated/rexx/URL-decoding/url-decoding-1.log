@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /* Rexx */
+0002 
+0003 Do
+0004 X = 0
+0005 url. = ''
+0006 X = X + 1; url.0 = X; url.X = 'http%3A%2F%2Ffoo%20bar%2F'
+0007 X = X + 1; url.0 = X; url.X = 'mailto%3A%22Ivan%20Aim%22%20%3Civan%2Eaim%40email%2Ecom%3E'
+0008 X = X + 1; url.0 = X; url.X = '%6D%61%69%6C%74%6F%3A%22%49%72%6D%61%20%55%73%65%72%22%20%3C%69%72%6D%61%2E%75%73%65%72%40%6D%61%69%6C%2E%63%6F%6D%3E'
+0009 
+0010 Do u_ = 1 to url.0
+0011 Say url.u_
+0012 Say DecodeURL(url.u_)
+0013 Say
+0014 End u_
+0015 
+0016 Return
+0017 End
+0018 Exit
+0019 
+0020 DecodeURL:
+0021 Procedure
+0022 Do
+0023 Parse Arg encoded
+0024 decoded = ''
+0025 PCT = '%'
+0026 
+0027 Do while length(encoded) > 0
+0028 Parse Var encoded head (PCT) +1 code +2 tail
+0029 decoded = decoded || head
+0030 Select
+0031 When length(strip(code, 'T')) = 2 & datatype(code, 'X') then Do
+0032 code = x2c(code)
+0033 decoded = decoded || code
+0034 End
+0035 When length(strip(code, 'T')) \= 0 then Do
+0036 decoded = decoded || PCT
+0037 tail = code || tail
+0038 End
+0039 Otherwise Do
+0040 Nop
+0041 End
+0042 End
+0043 encoded = tail
+0044 End
+0045 
+0046 Return decoded
+0047 End
+0048 Exit
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 encoded          28 43
+002 head             28
+003 code             28 32
+004 tail             28 37
+005 decoded          29 33 36
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 (PCT)            -> newV1            28

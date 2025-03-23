@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX program displays a char's ASCII code/value (or EBCDIC if run on an EBCDIC system)*/
+0002 yyy= 'c'                               /*assign a lowercase       c        to   YYY.    */
+0003 yyy= "c"                               /* (same as above)                               */
+0004 say  'from char, yyy code=' yyy
+0005 
+0006 yyy= '63'x                             /*assign hexadecimal      63        to   YYY.    */
+0007 yyy= '63'X                             /* (same as above)                               */
+0008 say  'from  hex, yyy code=' yyy
+0009 
+0010 yyy= x2c(63)                           /*assign hexadecimal      63        to   YYY.    */
+0011 say  'from  hex, yyy code=' yyy
+0012 
+0013 yyy= '01100011'b                       /*assign a binary      0011 0100    to   YYY.    */
+0014 yyy= '0110 0011'b                      /* (same as above)                               */
+0015 yyy= '0110 0011'B                      /*   "   "    "                                  */
+0016 say  'from  bin, yyy code=' yyy
+0017 
+0018 yyy= d2c(99)                           /*assign decimal code     99        to   YYY.    */
+0019 say  'from  dec, yyy code=' yyy
+0020 
+0021 say                                    /*     [↓]    displays the value of  YYY  in ··· */
+0022 say  'char code: '   yyy               /* character code  (as an 8-bit ASCII character).*/
+0023 say  ' hex code: '   c2x(yyy)          /*    hexadecimal                                */
+0024 say  ' dec code: '   c2d(yyy)          /*        decimal                                */
+0025 say  ' bin code: '   x2b( c2x(yyy) )   /*         binary  (as a bit string)             */
+0026 /*stick a fork in it, we're all done with display*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 yyy              2 3 6 7 10 13 14 15 18
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

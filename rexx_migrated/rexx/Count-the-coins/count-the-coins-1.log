@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*REXX program counts the number of ways to make change with coins from an given amount.*/
+0002 numeric digits 20                                /*be able to handle large amounts of $.*/
+0003 parse arg N $                                    /*obtain optional arguments from the CL*/
+0004 if N='' | N=","     then N= 100                  /*Not specified?  Then Use $1  (≡100¢).*/
+0005 if $='' | $=","     then $= 1 5 10 25            /*Use penny/nickel/dime/quarter default*/
+0006 if left(N, 1)=='$'  then N= 100 * substr(N, 2)   /*the count was specified in  dollars. */
+0007 coins= words($)                                  /*the number of coins specified.       */
+0008 NN= N;              do j=1  for coins            /*create a fast way of accessing specie*/
+0009 _= word($, j)                /*define an array element for the coin.*/
+0010 if _=='1/2'  then _=.5       /*an alternate spelling of a half-cent.*/
+0011 if _=='1/4'  then _=.25      /* "     "         "     " " quarter-¢.*/
+0012 $.j= _                       /*assign the value to a particular coin*/
+0013 end   /*j*/
+0014 _= n//100;                       cnt=' cents'    /* [↓]  is the amount in whole dollars?*/
+0015 if _=0  then do;    NN= '$' || (NN%100);   cnt=  /*show the amount in dollars, not cents*/
+0016 end                                 /*show the amount in dollars, not cents*/
+0017 say 'with an amount of '      comma(NN)cnt",  there are "         comma( MKchg(N, coins) )
+0018 say 'ways to make change with coins of the following denominations: '    $
+0019 exit                                             /*stick a fork in it,  we're all done. */
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 comma: procedure; parse arg _;     n= _'.9';      #= 123456789;      b= verify(n, #, "M")
+0022 e= verify(n, #'0', , verify(n, #"0.", 'M'))  -  4
+0023 do j=e  to b  by -3;   _= insert(',', _, j);    end  /*j*/;          return _
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 MKchg: procedure expose $.;        parse arg a,k /*this function is invoked recursively.*/
+0026 if a==0    then return 1                  /*unroll for a special case of  zero.  */
+0027 if k==1    then return 1                  /*   "    "  "    "      "   "  unity. */
+0028 if k==2    then f= 1                      /*handle this special case   of  two.  */
+0029 else f= MKchg(a, k-1)          /*count,  and then recurse the amount. */
+0030 if a==$.k  then return f+1                /*handle this special case of A=a coin.*/
+0031 if a <$.k  then return f                  /*   "     "     "      "   " A<a coin.*/
+0032 return f+MKchg(a-$.k,k)   /*use diminished amount ($) for change.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                25
+002 k                25
+003 f                28
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $.               -> newV1.           12
+002 $                -> newV2            3 5
+003 _                -> newV3            9 10 11 14 21 23
+004 #                -> newV4            21

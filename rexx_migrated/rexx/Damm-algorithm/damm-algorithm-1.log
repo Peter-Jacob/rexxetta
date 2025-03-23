@@ -1,0 +1,56 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 Call init
+0003 Call test 5724
+0004 Call test 5727
+0005 Call test 112946
+0006 Call test 112940
+0007 Exit
+0008 
+0009 test:
+0010 Parse Arg number
+0011 int_digit=0
+0012 Do p=1 To length(number)
+0013 d=substr(number,p,1)
+0014 int_digit=grid.int_digit.d
+0015 If p<length(number) Then cd=int_digit
+0016 End
+0017 If int_digit=0 Then
+0018 Say number 'is ok'
+0019 Else
+0020 Say number 'is not ok, check-digit should be' cd '(instead of' d')'
+0021 Return
+0022 
+0023 init:
+0024 i=-2
+0025 Call setup '* 0 1 2 3 4 5 6 7 8 9'
+0026 Call setup '0 0 3 1 7 5 9 8 6 4 2'
+0027 Call setup '1 7 0 9 2 1 5 4 8 6 3'
+0028 Call setup '2 4 2 0 6 8 7 1 3 5 9'
+0029 Call setup '3 1 7 5 0 9 8 3 4 2 6'
+0030 Call setup '4 6 1 2 3 0 4 5 9 7 8'
+0031 Call setup '5 3 6 7 4 2 0 9 5 8 1'
+0032 Call setup '6 5 8 6 9 7 2 0 1 3 4'
+0033 Call setup '7 8 9 4 5 3 6 2 0 1 7'
+0034 Call setup '8 9 4 3 8 6 1 7 2 0 5'
+0035 Call setup '9 2 5 8 1 4 3 6 7 9 0'
+0036 Return
+0037 setup:
+0038 Parse Arg list
+0039 i=i+1
+0040 Do col=-1 To 9
+0041 grid.i.col=word(list,col+2)
+0042 End
+0043 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 list             38
+002 i                39
+003 col              40
+004 grid.            41
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

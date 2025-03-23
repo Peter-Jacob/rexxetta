@@ -1,0 +1,72 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Short(er) solution focussed at the task's description
+0003 * Only 7 months can have 5 full weekends
+0004 * and it's enough to test if the 1st day of the month is a Friday
+0005 * 30.08.2012 Walter Pachl
+0006 **********************************************************************/
+0007 Numeric digits 20
+0008 nr5fwe=0
+0009 years_without_5fwe=0
+0010 mnl='Jan Mar May Jul Aug Oct Dec'
+0011 ml='1 3 5 7 8 10 12'
+0012 Do j=1900 to 2100
+0013 year_has_5fwe=0
+0014 Do mi=1 To words(ml)
+0015 m=word(ml,mi)
+0016 jd=greg2jul(j m 1)
+0017 IF jd//7=4 Then Do              /* 1st m j is a Friday */
+0018 nr5fwe=nr5fwe+1
+0019 year_has_5fwe=1
+0020 If j<=1905 | 2095<=j Then
+0021 Say word(mnl,mi) j 'has 5 full weekends'
+0022 End
+0023 End
+0024 If j=1905 Then Say '...'
+0025 if year_has_5fwe=0 Then years_without_5fwe=years_without_5fwe+1
+0026 End
+0027 Say ' '
+0028 Say nr5fwe 'occurrences of 5 full weekends in a month'
+0029 Say years_without_5fwe 'years without 5 full weekends'
+0030 exit
+0031 
+0032 greg2jul: Procedure
+0033 /***********************************************************************
+0034 * Converts a Gregorian date to the corresponding Julian day number
+0035 * 19891101 Walter Pachl REXXified algorithm published in CACM
+0036 *                (Fliegel & vanFlandern, CACM Vol.11 No.10 October 1968)
+0037 * 19891125 PA copy leapyear test into this to avoid the dependency
+0038 ***********************************************************************/
+0039 numeric digits 12
+0040 Parse Arg yy mm d
+0041 If mm<1 | 12<mm Then Call err 'month ('mm') not within 1 to 12'
+0042 mdl='31' (28+leapyear(yy)) '31 30 31 30 31 31 30 31 30 31'
+0043 md=word(mdl,mm)
+0044 If d<1 | md<d  Then Call err 'day ('d') not within 1 to' md
+0045 /***********************************************************************
+0046 * The published formula:
+0047 * res=d-32075+1461*(yy+4800+(mm-14)%12)%4+,
+0048 *     367*(mm-2-((mm-14)%12)*12)%12-3*((yy+4900+(mm-14)%12)%100)%4
+0049 ***********************************************************************/
+0050 mma=(mm-14)%12
+0051 yya=yy+4800+mma
+0052 result=d-32075+1461*yya%4+367*(mm-2-mma*12)%12-3*((yya+100)%100)%4
+0053 Return result                   /* return the result              */
+0054 
+0055 leapyear: Return ( (arg(1)//4=0) & (arg(1)//100<>0) ) | (arg(1)//400=0)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 yy               40
+002 mm               40
+003 d                40
+004 mdl              42
+005 md               43
+006 mma              50
+007 yya              51
+008 result           52
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

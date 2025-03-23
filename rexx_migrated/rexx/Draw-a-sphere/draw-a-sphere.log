@@ -1,0 +1,74 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program expresses a  lighted sphere  with  simple characters  used for shading.  */
+0002 call drawSphere  19,  4,   2/10,  '30 30 -50'    /*draw a sphere with a radius of  19.  */
+0003 call drawSphere  10,  2,   4/10,  '30 30 -50'    /*  "  "    "     "  "    "    "  ten. */
+0004 exit                                             /*stick a fork in it,  we're all done. */
+0005 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0006 ceil:  procedure;   parse arg x;  _= trunc(x);                    return _ +(x>0) * (x\=_)
+0007 floor: procedure;   parse arg x;  _= trunc(x);                    return _ -(x<0) * (x\=_)
+0008 norm:  parse arg $a $b $c;        _= sqrt($a**2 + $b**2 + $c**2); return  $a/_  $b/_  $c/_
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 drawSphere: procedure;  parse arg r, k, ambient, lightSource /*obtain the four arguments*/
+0011 if 8=='f8'x  then shading= ".:!*oe&#%@"               /* EBCDIC dithering chars. */
+0012 else shading= "·:!°oe@░▒▓"               /* ASCII      "       "    */
+0013 parse value  norm(lightSource)    with    s1  s2  s3  /*normalize light source.  */
+0014 shadeLen= length(shading) - 1;    rr= r**2;   r2= r+r /*handy─dandy variables.   */
+0015 
+0016 do   i=floor(-r )  to ceil(r );   x= i       + .5;       xx= x**2;       $=
+0017 do j=floor(-r2)  to ceil(r2);   y= j * .5  + .5;       yy= y**2;       z= xx+yy
+0018 if z<=rr  then do                                 /*is point within sphere ? */
+0019 parse value  norm(x  y  sqrt(rr - xx - yy) )   with   v1  v2  v3
+0020 dot= min(0, s1*v1 + s2*v2 + s3*v3) /*the dot product of above.*/
+0021 b= -dot**k  +  ambient             /*calculate the brightness.*/
+0022 if b<=0  then brite= shadeLen
+0023 else brite= max(0,  (1-b) * shadeLen)  % 1
+0024 $= $ || substr(shading, brite + 1,  1)
+0025 end                                /* [↑]  build display line.*/
+0026 else $= $' '                            /*append a blank to line.  */
+0027 end   /*j*/                                       /*[↓] strip trailing blanks*/
+0028 say strip($, 'T')                                   /*show a line of the sphere*/
+0029 end     /*i*/                                       /* [↑]  display the sphere.*/
+0030 return
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 sqrt:  procedure; parse arg x;  if x=0  then return 0; d= digits(); numeric digits; h= d+6
+0033 numeric form; m.=9; parse value format(x,2,1,,0) 'E0' with g "E" _ .; g= g*.5'e'_%2
+0034 do j=0  while h>9;      m.j=h;              h=h%2+1;        end  /*j*/
+0035 do k=j+5  to 0  by -1;  numeric digits m.k; g=(g+x/g)*.5;   end  /*k*/;  return g
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                32
+002 d                32
+003 h                32 34
+004 m.               33 34
+005 shading          11
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                33 33 35
+024 j                34
+025 k                35
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $a               -> newV1            8
+002 $b               -> newV2            8
+003 $c               -> newV3            8
+004 _                -> newV4            6 7 8 33
+005 $                -> newV5            16 24

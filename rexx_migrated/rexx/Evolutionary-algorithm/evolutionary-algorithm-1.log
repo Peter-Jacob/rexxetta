@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates  an  evolutionary algorithm  (by using mutation).          */
+0002 parse arg  children  MR  seed .                  /*get optional arguments from the C.L. */
+0003 if children=='' | children=="," then children=10 /*# children produced each generation. */
+0004 if MR      =='' | MR      =="," then MR= "4%"    /*the character Mutation Rate each gen.*/
+0005 if right(MR,1)=='%'  then MR= strip(MR,,"%")/100 /*expressed as a percent?  Then adjust.*/
+0006 if seed\==''  then call random ,,seed            /*SEED allow the runs to be repeatable.*/
+0007 abc   = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ '  ;     Labc= length(abc)
+0008 target= 'METHINKS IT IS LIKE A WEASEL' ;     Ltar= length(target)
+0009 parent= mutate( left('', Ltar), 1)               /*gen rand string,same length as target*/
+0010 say center('target string', Ltar, "─")    'children'        "mutationRate"
+0011 say target  center(children, 8)   center((MR*100/1)'%', 12);                      say
+0012 say center('new string'    ,Ltar, "─")    "closeness"       'generation'
+0013 
+0014 do gen=0  until  parent==target;                      close= fitness(parent)
+0015 almost= parent
+0016 do  children;                        child= mutate(parent,MR)
+0017 _= fitness(child);                   if _<=close  then iterate
+0018 close= _;                            almost= child
+0019 say almost  right(close, 9)   right(gen, 10)
+0020 end   /*children*/
+0021 parent= almost
+0022 end   /*gen*/
+0023 exit                                             /*stick a fork in it,  we're all done. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 fitness: parse arg x; $=0;  do k=1 for Ltar; $= $+(substr(x,k,1)==substr(target,k,1)); end
+0026 return $
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 mutate:  parse arg x,rate;  $=                   /*set  X  to 1st argument, RATE to 2nd.*/
+0029 do j=1  for Ltar;       r= random(1, 100000)  /*REXX's max for RANDOM*/
+0030 if .00001*r<=rate  then $= $  ||  substr(abc, r//Labc+1, 1)
+0031 else $= $  ||  substr(x  , j        , 1)
+0032 end   /*j*/
+0033 return $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                28
+002 rate             28
+003 j                29
+004 r                29
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            17
+002 $                -> newV2            25 25 28 30

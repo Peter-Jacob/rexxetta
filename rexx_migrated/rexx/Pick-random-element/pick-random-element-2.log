@@ -1,0 +1,19 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 18.10.2012 Walter Pachl Not only the list of elements shortened:-)
+0003 **********************************************************************/
+0004 wl='hydrogen helium lithium beryllium boron carbon nitrogen oxygen',
+0005 'fluorine neon sodium magnesium aluminum silicon phosphorous sulfur',
+0006 '...',
+0007 'meitnerium darmstadtium roentgenium copernicium Ununtrium'
+0008 
+0009 Say word(wl,random(1,words(wl)))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 wl               4
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

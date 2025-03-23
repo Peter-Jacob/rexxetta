@@ -1,0 +1,17 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program  creates a  directory (folder)  and all its  parent paths  as necessary. */
+0002 trace off                                              /*suppress possible warning msgs.*/
+0003 
+0004 dPath = 'path\to\dir'                                  /*define directory (folder) path.*/
+0005 
+0006 'MKDIR'  dPath  "2>nul"                                /*alias could be used:  MD dPath */
+0007 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 dPath            4
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*REXX program counts in octal until the number exceeds the number of program statements*/
+0002 
+0003 /*┌────────────────────────────────────────────────────────────────────┐
+0004 │ Count all the protons  (and electrons!)  in the universe.          │
+0005 │                                                                    │
+0006 │ According to Sir Arthur Eddington in 1938 at his Tamer Lecture at  │
+0007 │ Trinity College (Cambridge),  he postulated that there are exactly │
+0008 │                                                                    │
+0009 │                              136 ∙ 2^256                           │
+0010 │                                                                    │
+0011 │ protons in the universe,  and the same number of electrons,  which │
+0012 │ is equal to around  1.57477e+79.                                   │
+0013 │                                                                    │
+0014 │ [Although, a modern estimate is around  10^80.]                    │
+0015 └────────────────────────────────────────────────────────────────────┘*/
+0016 
+0017 numeric digits 100000                            /*handle almost any sized big numbers. */
+0018 numIn= right('number in', 20)                    /*used for indentation of the output.  */
+0019 w= length( sourceline() )                        /*used for formatting width of numbers.*/
+0020 
+0021 do #=0  to 136 * (2**256)                      /*Sir Eddington, here we come !        */
+0022 != x2b( d2x(#) )
+0023 _= right(!,  3 * (length(_) % 3 + 1),  0)
+0024 o=
+0025 do k=1  to length(_)  by 3
+0026 o= o'0'substr(_, k, 3)
+0027 end   /*k*/
+0028 
+0029 say numIn  'base ten = '   right(#,w) numIn    "octal = "   right( b2x(o) + 0, w + w)
+0030 if #>sourceline()  then leave                  /*stop if # of protons > pgm statements*/
+0031 end   /*#*/
+0032 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 numIn            18
+002 w                19
+003 o                24 26
+004 k                25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            21
+002 !                -> newV2            22
+003 _                -> newV3            23

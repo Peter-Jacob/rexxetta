@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program implements the   HQ9+   language. ───────────────────────────────────────*/
+0002 arg pgm .                                                    /*obtain optional argument.*/
+0003 accumulator=0                                                /*assign default to accum. */
+0004 
+0005 do instructions=1  for length(pgm);               ?=substr(pgm, instructions, 1)
+0006 select
+0007 when ?=='H' then say "Hello, world!"              /*text varies on definition*/
+0008 when ?=='Q' then do j=1  for sourceline();   say sourceline(j);   end  /*j*/
+0009 when ?== 9  then call 99
+0010 when ?=='+' then accumulator=accumulator+1
+0011 otherwise say 'invalid HQ9+ instruction:' ?
+0012 end   /*select*/
+0013 end        /*instructions*/
+0014 exit                                             /*stick a fork in it,  we're all done. */
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 99:           do j=99  by -1  to 1
+0017 say j 'bottle's(j)  "of beer the wall,"
+0018 say j 'bottle's(j)  "of beer."
+0019 say 'Take one down, pass it around,'
+0020 n=j-1
+0021 if n==0 then n='no'                                 /*cheating to use  0. */
+0022 say n  'bottle's(j-1)  "of beer the wall."
+0023 say
+0024 end   /*j*/
+0025 say 'No more bottles of beer on the wall,'                    /*finally, last verse.*/
+0026 say 'no more bottles of beer.'
+0027 say 'Go to the store and buy some more,'
+0028 say '99 bottles of beer on the wall.'
+0029 return
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 s:  if arg(1)==1  then return '';             return "s"          /*a simple pluralizer.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 accumulator      3
+002 instructions     5
+003 n                20 21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 ?                -> newV1            5

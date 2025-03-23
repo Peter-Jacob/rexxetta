@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program calculates and displays the equilibrium index for a numeric array (list).*/
+0002 parse arg x                                      /*obtain the optional arguments from CL*/
+0003 if x=''  then x= copies(" 7 -7", 50)   7         /*Not specified?  Then use the default.*/
+0004 say '         array list: '     space(x)         /*echo the array list to the terminal. */
+0005 #= words(x)                                      /*the number of elements in the X list.*/
+0006 do j=0  for #;   @.j= word(x, j+1) /*zero─start is for zero─based array.  */
+0007 end   /*j*/                        /* [↑]  assign   @.0   @.1   @.3  ···  */
+0008 say                                              /*  ··· and also display a blank line. */
+0009 answer= equilibriumIDX();       w= words(answer) /*calculate the  equilibrium index.    */
+0010 say 'equilibrium'  word("(none) index: indices:",   1 + (w>0) + (w>1))        answer
+0011 exit                                             /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 equilibriumIDX: $=;     do i=0  for #;           sum= 0
+0014 do k=0  for #;   sum= sum  +  @.k * sign(k-i);   end /*k*/
+0015 if sum==0  then $= $ i
+0016 end   /*i*/              /* [↑] Zero? Found an equilibrium index*/
+0017 return $                         /*return equilibrium list (may be null)*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                2 3
+002 j                6
+003 answer           9
+004 w                9
+005 i                13
+006 sum              13 14
+007 k                14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           6
+002 #                -> newV2            5
+003 $                -> newV3            15

@@ -1,0 +1,78 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates  (see the penultimate statement)  how to    */
+0002 /*     to find the  size  (length)  of the value of a REXX variable.    */
+0003 
+0004 /*REXX doesn't reserve any storage for any variables, as all variables  */
+0005 /*are stored as character strings, including boolean.   Storage is      */
+0006 /*obtained as necessary when REXX variables are assigned (or reassigned)*/
+0007 
+0008 a = 456                                /*length of  A   is    3         */
+0009 b = "heptathlon"                       /*length of  B   is   10         */
+0010 c = "heptathlon (7 events)"            /*length of  C   is   21         */
+0011 d = ''                                 /*length of  D   is    0         */
+0012 d = ""                                 /*same as above.                 */
+0013 d = left('space junk' ,0)              /*same as above.                 */
+0014 d =                                    /*same as above.                 */
+0015 e = 99-9                               /*length of  E   is    2  (e=90) */
+0016 f = copies(a,100)                      /*length of  F   is  300  (a=456)*/
+0017 g.1 = -1                               /*length of  G.1 is    2         */
+0018 g.2 = -1.0000                          /*length of  G.2 is    7         */
+0019 /*length of  HHH is    3         */
+0020 
+0021 /*Note that when a REXX variable */
+0022 /*isn't SET, then the value of it*/
+0023 /*is the uppercased name itself, */
+0024 /*so in this case (upper):   HHH */
+0025 
+0026 something = copies(a, random(100))     /*length is something, all right,*/
+0027 /*could be 3 to 300 bytes, by gum*/
+0028 thingLen  = length(something)          /*use LENGTH bif to find its len.*/
+0029 say 'length of SOMETHING =' thingLen   /*display the length of SOMETHING*/
+0030 
+0031 /*┌────────────────────────────────────────────────────────────────────┐
+0032 │ Note that the variable's data (value) isn't the true cost of the   │
+0033 │ size of the variable's value.  REXX also keeps the   name   of     │
+0034 │ the (fully qualified) variable as well.                            │
+0035 │                                                                    │
+0036 │ Most REXX interpreters keep (at a miminum):                        │
+0037 │                                                                    │
+0038 │   ∙  a four-byte field which contains the length of the value      │
+0039 │   ∙  a four-byte field which contains the length of the var name   │
+0040 │   ∙  an   N-byte field which contains the name of the variable     │
+0041 │   ∙  an   X-byte field which contains the variable's value         │
+0042 │   ∙  a  one-byte field which contains the status of the variable   │
+0043 │                                                                    │
+0044 │ [Note that PC/REXX uses a two-byte field for the first two fields] │
+0045 │                                                                    │
+0046 │                                                                    │
+0047 │ Consider the following two DO loops assigning a million variables: │
+0048 │                                                                    │
+0049 │                            do j=1 to 1000000                       │
+0050 │                            integer_numbers.j=j                     │
+0051 │                            end                                     │
+0052 │                        ════════ and ════════                       │
+0053 │                            do k=1 to 1000000                       │
+0054 │                            #.k=k                                   │
+0055 │                            end                                     │
+0056 │                                                                    │
+0057 │ The  "j" loop uses  35,777,792  bytes for the compound variables,  │
+0058 │ The  "k" loop uses  21,777,792  bytes for the compound variables,  │
+0059 │ (excluding the DO loop indices  [j and k]  themselves).            │
+0060 └────────────────────────────────────────────────────────────────────┘*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                8
+002 b                9
+003 c                10
+004 d                11 12 13 14
+005 e                15
+006 f                16
+007 g.               17 18
+008 something        26
+009 thingLen         28
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

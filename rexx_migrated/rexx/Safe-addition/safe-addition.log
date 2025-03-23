@@ -1,0 +1,15 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 numeric digits 1000           /*defines precision to be 1,000 decimal digits. */
+0002 
+0003 y=digits()                    /*sets  Y  to existing number of decimal digits.*/
+0004 
+0005 numeric digits y + y%10       /*increase the  (numeric) decimal digits by 10%.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                3
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

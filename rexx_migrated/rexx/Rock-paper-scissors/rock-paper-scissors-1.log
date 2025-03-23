@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program plays rock─paper─scissors with a human;  tracks what human tends to use. */
+0002 != '────────';  err=! "***error***";    @.=0     /*some constants for this program.     */
+0003 prompt= ! 'Please enter one of:     Rock   Paper   Scissors      (or Quit)'
+0004 $.p= 'paper' ;  $.s= "scissors";   $.r= 'rock'   /*list of the choices in this program. */
+0005 t.p= $.r     ;  t.s= $.p       ;   t.r= $.s      /*thingys that beats  stuff.           */
+0006 w.p= $.s     ;  w.s= $.r       ;   w.r= $.p      /*stuff     "    "   thingys.          */
+0007 b.p= 'covers';  b.s= "cuts"    ;   b.r= 'breaks' /*verbs:   how the choice wins.        */
+0008 
+0009 do forever;     say;      say prompt;     say  /*prompt the CBLF; then get a response.*/
+0010 c= word($.p $.s $.r,      random(1, 3) )       /*choose the computer's first pick.    */
+0011 m= max(@.r, @.p, @.s);    c= w.r               /*prepare to examine the choice history*/
+0012 if @.p==m  then c= w.p                         /*emulate JC's:  The Amazing Karnac.   */
+0013 if @.s==m  then c= w.s                         /*   "     "      "     "       "      */
+0014 c1= left(c, 1)                                 /*C1  is used for faster comparing.    */
+0015 parse pull u;             a= strip(u)          /*get the CBLF's choice/pick (answer). */
+0016 upper a c1  ;            a1= left(a, 1)        /*uppercase choices, get 1st character.*/
+0017 ok= 0                                          /*indicate answer isn't OK  (so far).  */
+0018 select                                    /*process/verify the  CBLF's  choice.  */
+0019 when words(u)==0           then           say  err   'nothing entered'
+0020 when words(u)>1            then say  err   'too many choices: '  u
+0021 when abbrev('QUIT',    a)  then do;  say ! "quitting.";      exit;    end
+0022 when abbrev('ROCK',    a) |,
+0023 abbrev('PAPER',   a) |,
+0024 abbrev('SCISSORS',a)  then ok=1      /*Yes?  This is a valid answer by CBLF.*/
+0025 otherwise                  say err  'you entered a bad choice: '    u
+0026 end   /*select*/
+0027 
+0028 if \ok          then iterate                   /*answer ¬OK?  Then get another choice.*/
+0029 @.a1= @.a1 + 1                                 /*keep a history of the CBLF's choices.*/
+0030 say !  'computer chose: '    c
+0031 if   a1==  c1  then do;  say !  'draw.';   iterate;  end
+0032 if $.a1==t.c1  then say  !  'the computer wins. '    !  $.c1  b.c1  $.a1
+0033 else say  !  'you win! '              !  $.a1  b.a1  $.c1
+0034 end   /*forever*/                              /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             15
+002 u                15
+003 a                15
+004 a1               16
+005 ok               17
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 29
+002 $.               -> newV2.           4 4 4
+003 !                -> newV3            2

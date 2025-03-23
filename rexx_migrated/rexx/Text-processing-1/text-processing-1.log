@@ -1,0 +1,80 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program to process  instrument data  from a  data file.                */
+0002 numeric digits 20                      /*allow for bigger (precision) numbers.*/
+0003 ifid='READINGS.TXT'                    /*the name of the    input    file.    */
+0004 ofid='READINGS.OUT'                    /* "    "   "  "     output     "      */
+0005 grandSum=0                             /*the grand sum of whole file.         */
+0006 grandFlg=0                             /*the grand number of flagged data.    */
+0007 grandOKs=0
+0008 Lflag=0                                /*the longest period of flagged data.  */
+0009 Cflag=0                                /*the longest continous flagged data.  */
+0010 w=16                                   /*the width of fields when displayed.  */
+0011 
+0012 do recs=1  while lines(ifid)\==0     /*keep reading records until finished. */
+0013 rec=linein(ifid)                     /*read the next record (line) of file. */
+0014 parse var rec datestamp Idata        /*pick off the dateStamp and the data. */
+0015 sum=0
+0016 flg=0
+0017 OKs=0
+0018 
+0019 do j=1  until Idata=''             /*process the  instrument  data.       */
+0020 parse var Idata data.j flag.j Idata
+0021 
+0022 if flag.j>0 then do                /*process good data ···                */
+0023 OKs=OKs+1
+0024 sum=sum+data.j
+0025 if Cflag>Lflag  then do
+0026 Ldate=datestamp
+0027 Lflag=Cflag
+0028 end
+0029 Cflag=0
+0030 end
+0031 else do                /*process flagged data ···             */
+0032 flg=flg+1
+0033 Cflag=Cflag+1
+0034 end
+0035 end   /*j*/
+0036 
+0037 if OKs\==0  then avg=format(sum/OKs,,3)
+0038 else avg='[n/a]'
+0039 grandOKs=grandOKs+OKs
+0040 _=right(commas(avg),w)
+0041 grandSum=grandSum+sum
+0042 grandFlg=grandFlg+flg
+0043 if flg==0  then call sy datestamp ' average='_
+0044 else call sy datestamp ' average='_ '  flagged='right(flg,2)
+0045 end   /*recs*/
+0046 
+0047 recs=recs-1                            /*adjust for reading the end─of─file.  */
+0048 if grandOKs\==0 then Gavg=format(grandSum/grandOKs,,3)
+0049 else Gavg='[n/a]'
+0050 call sy
+0051 call sy copies('═',60)
+0052 call sy '      records read:'   right(commas(recs),     w)
+0053 call sy '     grand     sum:'   right(commas(grandSum), w+4)
+0054 call sy '     grand average:'   right(commas(Gavg),     w+4)
+0055 call sy '     grand OK data:'   right(commas(grandOKs), w)
+0056 call sy '     grand flagged:'   right(commas(grandFlg), w)
+0057 if Lflag\==0 then call sy '   longest flagged:' right(commas(Lflag),w) " ending at " Ldate
+0058 call sy copies('═',60)
+0059 exit                                   /*stick a fork in it,  we're all done. */
+0060 /*────────────────────────────────────────────────────────────────────────────*/
+0061 commas: procedure;  parse arg _;   n=_'.9';    #=123456789;    b=verify(n,#,"M")
+0062 e=verify(n,#'0',,verify(n,#"0.",'M'))-4
+0063 do j=e  to b  by -3;   _=insert(',',_,j);    end  /*j*/;     return _
+0064 /*────────────────────────────────────────────────────────────────────────────*/
+0065 sy:     say arg(1);               call lineout ofid,arg(1);             return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                61
+002 b                61
+003 e                62
+004 j                63
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            40 61 63
+002 #                -> newV2            61

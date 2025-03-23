@@ -1,0 +1,64 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX program implements a sleep sort (with numbers entered from the command line (CL).*/
+0002 numeric digits 300                               /*over the top,  but what the hey!     */
+0003 /*  (above)  ··· from vaudeville.      */
+0004 @.=                                              /*placeholder for the array of numbers.*/
+0005 stuff= 1e9 50 5 40 4 1 100 30 3 12 2 8 9 7 6 6 10 20 0      /*alphabetically ··· so far.*/
+0006 parse arg numbers                                /*obtain optional arguments from the CL*/
+0007 if numbers=''  then numbers= stuff               /*Not specified?  Then use the default.*/
+0008 N= words(numbers)                                /*N  is the number of numbers in list. */
+0009 w= length(N)                                     /*width of  N  (used for nice output). */
+0010 parse upper version !ver .                       /*obtain which REXX we're running under*/
+0011 !regina= ('REXX-REGINA'==left(!ver, 11) )        /*indicate (or not) if this is Regina. */
+0012 say N  'numbers to be sorted:'   numbers         /*informative informational information*/
+0013 /*from department of redundancy depart.*/
+0014 do j=1  for N                                /*let's start to boogie─woogie da sort.*/
+0015 @.j= word(numbers, j)                        /*plug in a single number at a time.   */
+0016 if datatype(@.j, 'N')  then @.j= @.j / 1     /*normalize it if it's a numeric number*/
+0017 if !regina  then call fork                   /*only REGINA REXX supports  FORK  BIF.*/
+0018 call sortItem j                              /*start a sort for an array number.    */
+0019 end   /*j*/
+0020 
+0021 do forever  while \inOrder(N)              /*wait for the sorts to complete.      */
+0022 call delay 1                               /*one second is minimum effective time.*/
+0023 end    /*forever while*/                   /*well heck,  other than zero seconds. */
+0024 
+0025 m= max(length(@.1), length(@.N) )                /*width of smallest or largest number. */
+0026 say;                        say  'after sort:'   /*display a blank line and a title.    */
+0027 
+0028 do k=1  for N                              /*list the  (sorted)  array's elements.*/
+0029 say left('', 20)     'array element'      right(k, w)      '───►'      right(@.k, m)
+0030 end   /*k*/
+0031 exit                                             /*stick a fork in it,  we're all done. */
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 sortItem: procedure expose @.;   parse arg ?     /*sorts a single  (numeric)  item.     */
+0034 do Asort=1  until \switched        /*sort unsorted array until it's sorted*/
+0035 switched= 0                        /*it's all hunky─dorey, happy─dappy ···*/
+0036 do i=1   while   @.i\==''  &  \switched
+0037 if @.? >= @.i then iterate     /*item is in order. */
+0038 parse value   @.?  @.i     with     @.i  @.?
+0039 switched= 1                    /* [↑]  swapped one.*/
+0040 end   /*i*/
+0041 if Asort//?==0  then call delay switched              /*sleep if last item*/
+0042 end   /*Asort*/
+0043 return               /*Sleeping Beauty awakes.  Not to worry:  (c)=circa 1697.*/
+0044 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0045 inOrder: procedure expose @.;  parse arg howMany /*is the array in numerical order?     */
+0046 do m=1  for howMany-1;  next= m+1;  if @.m>@.next  then return 0 /*¬ in order*/
+0047 end   /*m*/                           /*keep looking for fountain of youth.  */
+0048 return 1                                /*yes, indicate with an indicator.     */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 howMany          45
+002 m                46
+003 next             46
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !regina          -> newV1            11
+002 !ver             -> newV2            10
+003 @.               -> newV3.           4 15 16 38 38
+004 ?                -> newV4            33

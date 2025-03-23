@@ -1,0 +1,88 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program to add a  (either metric or "binary" metric)  suffix to a decimal number.*/
+0002 @.=                                              /*default value for the stemmed array. */
+0003 parse arg @.1                                    /*obtain optional arguments from the CL*/
+0004 if @.1==''  then do;   @.1=   '   87,654,321                              '
+0005 @.2=   '  -998,877,665,544,332,211,000    3        '
+0006 @.3=   '  +112,233                        0        '
+0007 @.4=   '   16,777,216                     1        '
+0008 
+0009 @.5=   '   456,789,100,000,000            2        '
+0010 @.5=   '   456,789,100,000,000                     '
+0011 
+0012 @.6=   '   456,789,100,000,000            2    10  '
+0013 @.7=   '   456,789,100,000,000            5     2  '
+0014 @.8=   '   456,789,100,000.000e+00        0    10  '
+0015 @.9=   '   +16777216                      ,     2  '
+0016 @.10=  '   1.2e101                                 '
+0017 @.11=  '   134,112,411,648                1        '    /*via DIR*/
+0018 end                             /*@.11≡  amount of free space on my C: */
+0019 
+0020 do i=1  while @.i\==''; say copies("─", 60) /*display a separator betweenst values.*/
+0021 parse var  @.i  x  f  r  .                  /*get optional arguments from the list.*/
+0022 say '     input number='          x         /*show original number     to the term.*/
+0023 say '    fraction digs='             f      /*  "  specified fracDigs   "  "    "  */
+0024 say '  specified radix='                r   /*  "  specified radix      "  "    "  */
+0025 say '       new number='  suffize(x, f, r)  /*maybe append an "alphabetic" suffix. */
+0026 end   /*i*/
+0027 exit                                             /*stick a fork in it,  we're all done. */
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 suffize: procedure; arg s 2 1 n,  f,  b          /*obtain:  sign, N, fractionDigs, base.*/
+0030 if digits()<99  then numeric digits 500 /*use enough dec. digs for arithmetic. */
+0031 @err = '***error*** (from SUFFIZE)  '   /*literal used when returning err msg. */
+0032 if b==''  then b= 10;              o= b /*assume a base  (ten)  if omitted.    */
+0033 n= space( translate(n,,','), 0);   m= n /*elide commas from the  1st  argument.*/
+0034 f= space( translate(f,,','), 0)         /*elide commas from the  2nd  argument.*/
+0035 if \datatype(n, 'N')  then return @err "1st argument isn't numeric."
+0036 if f==''  then f= length(space(translate(n,,.), 0)) /*F omitted?  Use full len.*/
+0037 if \datatype(f, 'W')  then return @err "2nd argument isn't an integer: "     f
+0038 if f<0                then return @err "2nd argument can't be negative. "    f
+0039 if \datatype(b, 'W')  then return @err "3rd argument isn't an integer. "     b
+0040 if b\==10  &  b\==2   then return @err "3rd argument isn't a  10  or  2."    b
+0041 if arg()>3            then return @err "too many arguments were specified."
+0042 @=  ' KMGTPEZYXWVU'                     /*metric uppercase suffixes, with blank*/
+0043 !.=;    !.2= 'i'                        /*set default suffix;  "binary" suffix.*/
+0044 i= 3;   b= abs(b);  if b==2  then i= 10 /*a power of ten; or a power of  2**10 */
+0045 if \datatype(n, 'N') | pos('E', n/1)\==0  then return m   /* ¬num or has an "E"*/
+0046 sig=;    if s=='-' | s=="+"  then sig=s /*preserve the number's sign if present*/
+0047 n= abs(n)                               /*possibly round number, & remove sign.*/
+0048 
+0049 do while n>=1e100 & b==10;  x=n/1e100 /*is N ≥ googol and base=10?  A googol?*/
+0050 if pos(., x)\==0 & o<0  then leave    /*does # have a dec. point  or is B<0? */
+0051 return sig  ||  x'googol'             /*maybe prepend the sign,  add GOOGOL. */
+0052 end   /*while*/
+0053 
+0054 do j=length(@)-1  to 1  by -1  while n>0  /*see if #  is a multiple of 1024. */
+0055 $= b ** (i*j)                             /*compute base raised to a power.  */
+0056 if n<$  then iterate                      /*N not big enough?   Keep trying. */
+0057 n= format(n/$, , min( digits(), f) ) / 1  /*reformat number with a fraction. */
+0058 if pos(., n)\==0 & o<0  then return m     /*has a decimal point  or  is B<0? */
+0059 leave                                     /*leave this DO loop at this point.*/
+0060 end   /*j*/
+0061 
+0062 if n=0  then j=0                            /*N = 0?    Don't use any suffix.  */
+0063 return sig||strip(n||substr(@, j+1,1))!.b   /*add sign, suffixes, strip blanks.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                21 49
+002 f                21 34 36
+003 r                21
+004 b                32 44
+005 o                32
+006 n                33 47 57
+007 m                33
+008 i                44 44
+009 sig              46 46
+010 while            49
+011 j                54 62
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @err             -> newV1            31
+002 @.               -> newV2.           2 3 4 5 6 7 9 10 12 13 14 15 16 17 21
+003 !.               -> newV3.           43 43
+004 @                -> newV4            42
+005 $                -> newV5            55

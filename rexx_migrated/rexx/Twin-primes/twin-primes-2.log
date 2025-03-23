@@ -1,0 +1,54 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX pgm counts the number of twin prime pairs under a specified number N (or a list).*/
+0002 parse arg $ .                                    /*get optional number of primes to find*/
+0003 if $='' | $=","  then $= 100 1000 10000 100000 1000000 10000000    /*No $?  Use default.*/
+0004 w= length( commas( word($, words($) ) ) )        /*get length of the last number in list*/
+0005 @found= ' twin prime pairs found under '         /*literal used in the showing of output*/
+0006 
+0007 do i=1  for words($);       x= word($, i) /*process each N─limit in the  $  list.*/
+0008 say right( commas(genP(x)), 20)     @found     right(commas(x), max(length(x), w) )
+0009 end   /*i*/
+0010 exit 0                                           /*stick a fork in it,  we're all done. */
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 commas:  parse arg _;  do ?=length(_)-3  to 1  by -3; _=insert(',', _, ?); end;   return _
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 genP: arg y; _= 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97 101
+0015 tp=8;          #= words(_); sq.103=103*103 /*#: number of prims; TP: # twin pairs.*/
+0016 do aa=1  for #;  @.aa= word(_, aa)       /*assign some low primes for quick ÷'s.*/
+0017 end   /*aa*/
+0018 
+0019 do j=@.#+2  by 2  while j<y              /*continue with the next prime past 101*/
+0020 parse var  j  ''  -1  _                  /*obtain the last digit of the  J  var.*/
+0021 if _    ==5       then iterate           /*is this integer a multiple of five?  */
+0022 if j//3 ==0       then iterate           /* "   "     "    "     "     " three? */
+0023 
+0024 do a=4  for 23                        /*divide low primes starting with seven*/
+0025 if j//@.a ==0  then iterate j         /*is integer a multiple of a low prime?*/
+0026 end           /*a*/
+0027 /* [↓]  divide by the primes.   ___    */
+0028 do k=27  to #  while sq.k<= j /*divide  J  by other primes ≤ √ J     */
+0029 if j//@.k ==0  then iterate j /*÷ by prev. prime?  ¬prime     ___    */
+0030 end   /*k*/                   /* [↑]   only divide up to     √ J     */
+0031 prev= @.#;  #= #+1;  sq.#= j*j;   @.#= j /*save prev. P; bump # primes; assign P*/
+0032 if j-2==prev  then tp= tp + 1            /*This & previous prime twins? Bump TP.*/
+0033 end              /*j*/;        return tp
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                20
+002 a                24
+003 k                28
+004 prev             31
+005 sq.              31
+006 tp               32
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @found           -> newV1            5
+002 @.               -> newV2.           16 31
+003 $                -> newV3            2 3
+004 _                -> newV4            12 12 14 20
+005 ?                -> newV5            12
+006 #                -> newV6            15 31

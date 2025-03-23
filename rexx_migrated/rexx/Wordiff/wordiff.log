@@ -1,0 +1,124 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program acts as a host and allows two or more people to play the   WORDIFF  game.*/
+0002 signal on halt                                   /*allow the user(s) to halt the game.  */
+0003 parse arg iFID seed .                            /*obtain optional arguments from the CL*/
+0004 if iFID=='' | iFID=="," then iFID='unixdict.txt' /*Not specified?  Then use the default.*/
+0005 if datatype(seed, 'W')  then call random ,,seed  /*If      "         "   "   "    seed. */
+0006 call read
+0007 call IDs
+0008 first= random(1, min(100000, starters) )         /*get a random start word for the game.*/
+0009 list= $$$.first
+0010 say;                say eye  "OK, let's play the  WORDIFF  game.";   say;   say
+0011 do round=1
+0012 do player=1  for players
+0013 call show;   ou= o;   upper ou
+0014 call CBLF  word(names, player)
+0015 end   /*players*/
+0016 end              /*round*/
+0017 
+0018 halt: say;  say;  say eye 'The  WORDIFF  game has been halted.'
+0019 done: exit 0                                     /*stick a fork in it,  we're all done. */
+0020 quit: say;  say;  say eye 'The  WORDDIF  game is quitting.';   signal done
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 isMix: return datatype(arg(1), 'M')              /*return unity if arg has mixed letters*/
+0023 ser:   say;   say eye '***error*** ' arg(1).;   say;    return  /*issue error message.  */
+0024 last:  parse arg y;      return word(y, words(y) )              /*get last word in list.*/
+0025 over:  call ser 'word ' _ x _ arg(1);  say eye 'game over,' you; signal done /*game over*/
+0026 show:  o= last(list);   say;  call what;  say;   L= length(o);    return
+0027 verE:  m= 0;  do v=1  for L; m= m + (substr(ou,v,1)==substr(xu,v,1)); end;   return m==L-1
+0028 verL:  do v=1  for L;  if space(overlay(' ', ou, v), 0)==xu  then return 1; end;  return 0
+0029 verG:  do v=1  for w;  if space(overlay(' ', xu, v), 0)==ou  then return 1; end;  return 0
+0030 what:  say eye 'The current word in play is: '   _   o   _;       return
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 CBLF:  parse arg you                             /*ask carbon-based life form for a word*/
+0033 do getword=0  by 0  until x\==''
+0034 say eye "What's your word to be played, " you'?'
+0035 parse pull x;  x= space(x);   #= words(x);  if #==0  then iterate;  w= length(x)
+0036 if #>1  then do;  call ser 'too many words given: '   x
+0037 x=;  iterate getword
+0038 end
+0039 if \isMix(x)  then do;  call ser 'the name'   _  x  _  " isn't alphabetic"
+0040 x=;   iterate getword
+0041 end
+0042 end   /*getword*/
+0043 
+0044 if wordpos(x, list)>0  then call over " has already been used"
+0045 xu= x;  upper xu                          /*obtain an uppercase version of word. */
+0046 if \@.xu  then call over  " doesn't exist in the dictionary: " iFID
+0047 if length(x) <3            then call over  " must be at least three letters long."
+0048 if w <L  then  if \verL()  then call over  " isn't a legal letter deletion."
+0049 if w==L  then  if \verE()  then call over  " isn't a legal letter substitution."
+0050 if w >L  then  if \verG()  then call over  " isn't a legal letter addition."
+0051 list= list  x                             /*add word to the list of words used.  */
+0052 return
+0053 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0054 IDs:   ?= "Enter the names of the people that'll be playing the WORDIFF game   (or Quit):"
+0055 names=                                    /*start with a clean slate (of names). */
+0056 do getIDs=0  by 0  until words(names)>1
+0057 say;  say eye ?
+0058 parse pull ids;  ids= space( translate(ids, , ',') )      /*elide any commas. */
+0059 if ids==''  then iterate;  q= ids;  upper q               /*use uppercase QUIT*/
+0060 if abbrev('QUIT', q, 1)  then signal quit
+0061 do j=1  for words(ids);    x= word(ids, j)
+0062 if \isMix(x)  then do;  call ser 'the name'    _ x _  " isn't alphabetic"
+0063 names=;   iterate getIDs
+0064 end
+0065 if wordpos(x, names)>0  then do; call ser 'the name' _ x _ " is already taken"
+0066 names=;   iterate getIDs
+0067 end
+0068 names= space(names x)
+0069 end   /*j*/
+0070 end     /*getIDs*/
+0071 say
+0072 players= words(names)
+0073 do until ans\==''
+0074 say eye 'The '    players     " player's names are: "    names
+0075 say eye 'Is this correct?';   pull ans;  ans= space(ans)
+0076 end   /*until*/
+0077 yeahs= 'yah yeah yes ja oui si da';   upper yeahs
+0078 do ya=1  for words(yeahs)
+0079 if abbrev( word(yeahs, ya), ans, 2) | ans=='Y'  then return
+0080 end   /*ya*/
+0081 call IDS;                                               return
+0082 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0083 read: _= '───';       eye= copies('─', 8)        /*define a couple of eye catchers.     */
+0084 say;   say eye eye eye  'Welcome to the  WORDIFF  word game.'  eye eye eye;    say
+0085 @.= 0;           starters= 0
+0086 do r=1  while lines(iFID)\==0        /*read each word in the file  (word=X).*/
+0087 x= strip(linein(iFID))               /*pick off a word from the input line. */
+0088 if \isMix(x)  then iterate           /*Not a suitable word for WORDIFF? Skip*/
+0089 y= x;    upper x                     /*pick off a word from the input line. */
+0090 @.x= 1;  L= length(x)                /*set a semaphore for uppercased word. */
+0091 if L<3 | L>4  then iterate           /*only use short words for the start.  */
+0092 starters= starters + 1               /*bump the count of starter words.     */
+0093 $$$.starters= y                      /*save short words for the starter word*/
+0094 end   /*#*/
+0095 if r>100  &  starters> 10  then return     /*is the dictionary satisfactory ?     */
+0096 call ser 'Dictionary file ' _ iFID _ "wasn't found or isn't satisfactory.";  exit 13
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             58
+002 ids              58 58
+003 q                59
+004 j                61
+005 x                61 87
+006 names            63 66 68
+007 players          72
+008 until            73
+009 ans              75
+010 yeahs            77
+011 ya               78
+012 eye              83
+013 starters         85 92
+014 r                86
+015 y                89
+016 L                90
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $$$.             -> newV1.           93
+002 @.               -> newV2.           85 90
+003 #                -> newV3            35

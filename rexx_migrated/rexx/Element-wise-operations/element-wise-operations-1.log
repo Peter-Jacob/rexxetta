@@ -1,0 +1,52 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program  multiplies two matrices together, displays the  matrices and the result.*/
+0002 m= (1 2 3)  (4 5 6)  (7 8 9)
+0003 w= words(m);                   do rows=1;       if rows*rows>=w  then leave
+0004 end   /*rows*/
+0005 cols= rows
+0006 call showMat  M, 'M matrix'
+0007 answer= matAdd(m, 2  );   call showMat answer, 'M matrix, added 2'
+0008 answer= matSub(m, 7  );   call showMat answer, 'M matrix, subtracted 7'
+0009 answer= matMul(m, 2.5);   call showMat answer, 'M matrix, multiplied by 2½'
+0010 answer= matPow(m, 3  );   call showMat answer, 'M matrix, cubed'
+0011 answer= matDiv(m, 4  );   call showMat answer, 'M matrix, divided by 4'
+0012 answer= matIdv(m, 2  );   call showMat answer, 'M matrix, integer halved'
+0013 answer= matMod(m, 3  );   call showMat answer, 'M matrix, modulus 3'
+0014 exit 0                                           /*stick a fork in it,  we're all done. */
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 matAdd:   parse arg @,#;  call mat#;   do j=1  for w;  !.j= !.j+#;     end;  return mat@()
+0017 matSub:   parse arg @,#;  call mat#;   do j=1  for w;  !.j= !.j-#;     end;  return mat@()
+0018 matMul:   parse arg @,#;  call mat#;   do j=1  for w;  !.j= !.j*#;     end;  return mat@()
+0019 matDiv:   parse arg @,#;  call mat#;   do j=1  for w;  !.j= !.j/#;     end;  return mat@()
+0020 matIdv:   parse arg @,#;  call mat#;   do j=1  for w;  !.j= !.j%#;     end;  return mat@()
+0021 matPow:   parse arg @,#;  call mat#;   do j=1  for w;  !.j= !.j**#;    end;  return mat@()
+0022 matMod:   parse arg @,#;  call mat#;   do j=1  for w;  !.j= !.j//#;    end;  return mat@()
+0023 mat#:     w= words(@);                 do j=1  for w;  !.j= word(@,j); end;  return
+0024 mat@:     @= !.1;                      do j=2   to w;  @=@ !.j;        end;  return @
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 showMat:  parse arg @, hdr;                    L= 0;                                 say
+0027 do j=1  for w;  L= max(L, length( word(@,j) ) ); end
+0028 say  center(hdr, max( length(hdr)+4, cols * (L+1)+4), "─")
+0029 n= 0
+0030 do     r=1  for rows;           _=
+0031 do c=1  for cols;  n= n+1;  _= _ right( word(@, n), L);   end; say _
+0032 end
+0033 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 hdr              26
+002 L                26 27
+003 j                27
+004 n                29 31
+005 r                30
+006 c                31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           16 17 18 19 20 21 22 23
+002 @                -> newV2            16 17 18 19 20 21 22 24 26
+003 #                -> newV3            16 17 18 19 20 21 22
+004 _                -> newV4            30 31

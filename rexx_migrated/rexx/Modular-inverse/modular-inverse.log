@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX program calculates and displays the  modular inverse  of an integer  X  modulo Y.*/
+0002 parse arg x y .                                  /*obtain two integers from the C.L.    */
+0003 if x=='' | x==","  then x=   42                  /*Not specified?  Then use the default.*/
+0004 if y=='' | y==","  then y= 2017                  /* "      "         "   "   "     "    */
+0005 say  'modular inverse of '      x       " by "       y        ' ───► '         modInv(x,y)
+0006 exit                                             /*stick a fork in it,  we're all done. */
+0007 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0008 modInv: parse arg a,b 1 ob;     z= 0             /*B & OB are obtained from the 2nd arg.*/
+0009 $= 1                                     /*initialize modular inverse to unity. */
+0010 if b\=1  then do  while a>1
+0011 parse value   a/b  a//b  b  z       with      q  b  a  t
+0012 z= $  -  q * z
+0013 $= trunc(t)
+0014 end   /*while*/
+0015 
+0016 if $<0  then $= $ + ob                   /*Negative?  Then add the original  B. */
+0017 return $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                8 11
+002 b                8 11
+003 ob               8
+004 z                8 12
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 q                11
+021 t                11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            9 13 16

@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates  Sun Tzu's  (or Sunzi's)  Chinese Remainder  Theorem.       */
+0002 parse arg Ns As .                                /*get optional arguments from the C.L. */
+0003 if Ns=='' | Ns==","  then Ns= '3,5,7'            /*Ns not specified?   Then use default.*/
+0004 if As=='' | As==","  then As= '2,3,2'            /*As  "      "          "   "      "   */
+0005 say 'Ns: '  Ns
+0006 say 'As: '  As;             say
+0007 Ns= space( translate(Ns, , ','));  #= words(Ns)  /*elide any superfluous blanks from N's*/
+0008 As= space( translate(As, , ','));  _= words(As)  /*  "    "       "        "      "  A's*/
+0009 if #\==_   then do;  say  "size of number sets don't match.";   exit 131;    end
+0010 if #==0    then do;  say  "size of the  N  set isn't valid.";   exit 132;    end
+0011 if _==0    then do;  say  "size of the  A  set isn't valid.";   exit 133;    end
+0012 N= 1                                             /*the product─to─be  for  prod(n.j).   */
+0013 do j=1  for #                              /*process each number for  As  and Ns. */
+0014 n.j= word(Ns, j);   N= N * n.j             /*get an  N.j  and calculate product.  */
+0015 a.j= word(As, j)                           /* "   "  A.j  from the  As  list.     */
+0016 end      /*j*/
+0017 
+0018 do    x=1  for N                           /*use a simple algebraic method.       */
+0019 do i=1  for #                           /*process each   N.i  and  A.i  number.*/
+0020 if x//n.i\==a.i  then iterate x         /*is modulus correct for the number X ?*/
+0021 end   /*i*/                             /* [↑]  limit solution to the product. */
+0022 say 'found a solution with X='   x         /*display one possible solution.       */
+0023 exit 0                                     /*stick a fork in it,  we're all done. */
+0024 end      /*x*/
+0025 
+0026 say 'no solution found.'                         /*oops, announce that solution ¬ found.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 Ns               2 3 7
+002 As               2 4 8
+003 N                12 14
+004 j                13
+005 n.               14
+006 a.               15
+007 x                18
+008 i                19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            7
+002 _                -> newV2            8

@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates  array usage:   sparse and disjointed.     */
+0002 yyy = -55                            /*REXX must use this mechanism···*/
+0003 a.yyy = 1e9                            /*··· when assigning neg indices.*/
+0004 
+0005 a.1 = 1000
+0006 a.2 = 2000.0001
+0007 a.7 = 7000
+0008 a.2012 = 'out here in left field.'
+0009 a.cat = 'civet, but not a true cat ─── belonging to the family Viverridae'
+0010 a.civet = "A.K.A.: toddycats"
+0011 /*┌────────────────────────────────────────────────────────────────────┐
+0012 │ Array elements need not be continuous (nor even defined).   They   │
+0013 │ can hold any manner of numbers,  or strings (which can include any │
+0014 │ characters,  including    null    or    '00'x   characters).       │
+0015 │                                                                    │
+0016 │ Array elements need not be numeric, as the above code demonstrates.│
+0017 │ Indeed, the element "name" can be ANYTHING,  even non-displayable  │
+0018 │ characters.    To illustrate  [↓]:                                 │
+0019 └────────────────────────────────────────────────────────────────────┘*/
+0020 stuff=')g.u.t.s(  or  ½ of an intestine!'
+0021 a.stuff=44
+0022 /*┌────────────────────────────────────────────────────────────────────┐
+0023 │ where the element name has special characters:  blanks,  and the   │
+0024 │ glyph of  one-half (½),  as well as the symbol used in REXX to     │
+0025 │ identify stemmed arrays (the period).                              │
+0026 └────────────────────────────────────────────────────────────────────┘*/
+0027 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 yyy              2
+002 a.               3 5 6 7 8 9 10 21
+003 stuff            20
+004 b�������栠�� 24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

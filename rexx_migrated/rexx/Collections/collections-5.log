@@ -1,0 +1,66 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 pr.   = 0                      /*define a default for all elements for the array.*/
+0002 pr.2  = 1
+0003 pr.3  = 1
+0004 pr.5  = 1
+0005 pr.7  = 1
+0006 pr.11 = 1
+0007 pr.13 = 1
+0008 pr.17 = 1
+0009 pr.19 = 1
+0010 pr.23 = 1
+0011 pr.29 = 1
+0012 pr.31 = 1
+0013 pr.37 = 1
+0014 pr.41 = 1
+0015 pr.43 = 1
+0016 pr.47 = 1
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 primes=0
+0019 do j=1  for 10000                       /*this method isn't very efficient.    */
+0020 if \pr.j  then iterate                  /*Not prime?   Then skip this element. */
+0021 primes = primes + 1                     /*bump the number of primes  (counter).*/
+0022 end   /*j*/
+0023 /*note that the  10000  is a small "∞".*/
+0024 say '# of primes in list:'  primes
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 #primes=0
+0027 do j=1  for 10000                       /*this method is not very efficient.   */
+0028 if pr.j\==0  then #primes = #primes + 1 /*Not zero?  Bump the number of primes.*/
+0029 end   /*j*/                             /* [↑]  not as idiomatic as 1st program*/
+0030 
+0031 say '# of primes in the list:'  #primes
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 Ps=0
+0034 do k=1  for 10000                       /*and yet another inefficient method.  */
+0035 if pr.k==0  then iterate                /*Not a prime?  Then skip this element.*/
+0036 Ps = Ps + 1                             /*bump the counter for the # of primes.*/
+0037 say 'prime'  Ps  "is:"  k               /*might as well echo this prime number.*/
+0038 end   /*k*/
+0039 
+0040 say 'The number of primes found in the list is '     Ps
+0041 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0042 pr.0 = 47                                        /*hardcode the highest prime in array. */
+0043 # = 0
+0044 do k=2  to  pr.0                        /*and much more efficient method.      */
+0045 if \pr.k  then iterate                  /*Not a prime?  Then skip this element.*/
+0046 # = # + 1                               /*bump the counter for the # of primes.*/
+0047 say 'prime'  Ps  "is:"  k               /*might as well echo this prime number.*/
+0048 end   /*k*/
+0049 
+0050 say 'The number of primes found in the list is: '    #
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pr.              1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 42
+002 primes           18 21
+003 j                19 27
+004 Ps               33 36
+005 k                34 44
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #primes          -> newV1            26 28
+002 #                -> newV2            43 46

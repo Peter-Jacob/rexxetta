@@ -1,0 +1,69 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program displays the specified first (lowest) taxicab numbers (for three ranges).*/
+0002 parse arg  L.1  H.1      L.2 H.2      L.3 H.3 .  /*obtain optional arguments from the CL*/
+0003 if L.1=='' | L.1==","  then L.1=   1          /*L1  is the low  part of 1st range.   */
+0004 if H.1=='' | H.1==","  then H.1=  25          /*H1   "  "  high   "   "  "    "      */
+0005 if L.2=='' | L.2==","  then L.2= 454          /*L2   "  "  low    "   " 2nd   "      */
+0006 if H.2=='' | H.2==","  then H.2= 456          /*H2   "  "  high   "   "  "    "      */
+0007 if L.3=='' | L.3==","  then L.3=2000          /*L3   "  "  low    "   " 3rd   "      */
+0008 if H.3=='' | H.3==","  then H.3=2006          /*H3   "  "  high   "   "  "    "      */
+0009 mx= max(H.1,    H.2,    H.3)                     /*find how many taxicab numbers needed.*/
+0010 mx= mx   + mx % 10                               /*cushion;  compensate for the triples.*/
+0011 ww= length(mx) * 3;           w= ww % 2          /*widths used for formatting the output*/
+0012 numeric digits max(9, ww)                        /*prepare to use some larger numbers.  */
+0013 @.=.;    #= 0;     @@.= 0;    @and= "  ──and── " /*set some REXX vars and handy literals*/
+0014 $.=                                              /* [↓]  generate extra taxicab numbers.*/
+0015 do j=1  until #>=mx;            C= j**3      /*taxicab numbers may not be in order. */
+0016 !.j= C                                       /*use memoization for cube calculation.*/
+0017 do k=1  for j-1;              s= C + !.k   /*define a whole bunch of cube sums.   */
+0018 if @.s==.  then do;  @.s= j;  b.s= k       /*Cube not defined?   Then process it. */
+0019 iterate               /*define  @.S  and  B.S≡sum  of 2 cubes*/
+0020 end                        /* [↑]  define one cube sum at a time. */
+0021 has= @@.s                                  /*has this number been defined before? */
+0022 if has  then $.s= $.s @and U(j,'   +')U(k) /* ◄─ build a display string. [↓]      */
+0023 else $.s= right(s,ww)  '───►'   U(@.s,"   +")U(b.s)   @and   U(j,'   +')U(k)
+0024 @@.s= 1                                    /*mark taxicab number as a sum of cubes*/
+0025 if has   then iterate                      /*S  is a triple (or sometimes better).*/
+0026 #= # + 1;    #.#= s                        /*bump taxicab counter; define taxicab#*/
+0027 end   /*k*/                                /* [↑]  build the cubes one─at─a─time. */
+0028 end      /*j*/                               /* [↑]  complete with overage numbers. */
+0029 A.=
+0030 do k=1  for mx;   _= #.k;    A.k= $._     /*re─assign disjoint $. elements to A. */
+0031 end   /*k*/
+0032 call Esort  mx                                   /*sort taxicab #s with an exchange sort*/
+0033 do grp=1  for 3;  call tell L.grp, H.grp  /*display the three grps of numbers. */
+0034 end   /*grp*/
+0035 exit                                             /*stick a fork in it,  we're all done. */
+0036 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0037 tell:  do t=arg(1)  to arg(2);    say right(t, 9)':'   A.t;     end;        say;    return
+0038 U:     return right(arg(1), w)'^3'arg(2)         /*right─justify a number,  append "^3" */
+0039 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0040 Esort: procedure expose A.; parse arg N;         h= N    /*Esort when items have blanks.*/
+0041 do  while h>1;     h= h % 2
+0042 do i=1  for N-h;           k=h + i;   j= i
+0043 do forever;   parse var A.k xk .;  parse var A.j xj .;  if xk>=xj then leave
+0044 _= A.j;       A.j= A.k; A.k= _             /*swap two elements of A. array*/
+0045 if h>=j  then leave;    j=j - h;   k= k - h
+0046 end   /*forever*/
+0047 end      /*i*/
+0048 end        /*while h>1*/;               return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 A.               43 44 44
+002 xj               43
+003 j                45
+004 k                45
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @and             -> newV1            13
+002 @@.              -> newV2.           13 24
+003 @.               -> newV3.           13 18
+004 $.               -> newV4.           14 22
+005 !.               -> newV5.           16
+006 #.               -> newV6.           26
+007 #                -> newV7            13 26
+008 _                -> newV8            30 44

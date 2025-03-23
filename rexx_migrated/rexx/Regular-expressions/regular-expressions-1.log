@@ -1,0 +1,21 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates   testing      (modeled after Perl example).*/
+0002 $string="I am a string"
+0003 say 'The string is:'  $string
+0004 x="string" ;  if right($string,length(x))=x  then say 'It ends with:'  x
+0005 y="You"    ;  if left($string,length(y))\=y  then say 'It does not start with:'  y
+0006 z="ring"   ;  if pos(z,$string)\==0          then say 'It contains the string:'  z
+0007 z="ring"   ;  if wordpos(z,$string)==0       then say 'It does not contain the word:'  z
+0008 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                4
+002 y                5
+003 z                6 7
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $string          -> newV1            2

@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 u= 'Halloween'                                   /*word to be sorted by (Latin)  letter.*/
+0002 upper u                                          /*fast method to uppercase a variable. */
+0003 /*another:       u = translate(u)      */
+0004 /*another:       parse upper var u u   */
+0005 /*another:       u = upper(u)          */
+0006 /*not always available [↑]             */
+0007 say 'u=' u
+0008 _.=
+0009 do  until  u==''                          /*keep truckin' until  U  is  null.    */
+0010 parse var u y +1 u                        /*get the next (first) character in  U.*/
+0011 xx='?'y                                   /*assign a prefixed character to   XX. */
+0012 _.xx=_.xx || y                            /*append it to all the  Y  characters. */
+0013 end   /*until*/                           /*U now has the first character elided.*/
+0014 /*Note:  the variable  U  is destroyed.*/
+0015 
+0016 /* [↓]  constructs a sorted letter word*/
+0017 
+0018 z=_.?a||_.?b||_.?c||_.?d||_.?e||_.?f||_.?g||_.?h||_.?i||_.?j||_.?k||_.?l||_.?m||,
+0019 _.?n||_.?o||_.?p||_.?q||_.?r||_.?s||_.?t||_.?u||_.?v||_.?w||_.?x||_.?y||_.?z
+0020 
+0021 /*Note:  the  ?  is prefixed to the letter to avoid  */
+0022 /*collisions with other REXX one-character variables.*/
+0023 say 'z=' z
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 u                10 10
+002 y                10
+003 xx               11
+004 z                18
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _.               -> newV1.           8 12

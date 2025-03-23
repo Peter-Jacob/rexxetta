@@ -1,0 +1,47 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program  finds  (and maybe displays)  Smith  (or joke)  numbers up to a given  N.*/
+0002 parse arg N .                                    /*obtain optional argument from the CL.*/
+0003 if N=='' | N==","  then N=10000                  /*Not specified?  Then use the default.*/
+0004 tell= (N>0);            N=abs(N) - 1             /*use the  │N│  for computing  (below).*/
+0005 w=length(N)                                      /*W:  used for aligning Smith numbers. */
+0006 #=0                                              /*#:  Smith numbers found  (so far).   */
+0007 @=;  do j=4  to  N;                              /*process almost all numbers up to  N. */
+0008 if sumD(j) \== sumfactr(j)  then iterate    /*Not a Smith number?   Then ignore it.*/
+0009 #=#+1                                       /*bump the Smith number counter.       */
+0010 if \tell  then iterate                      /*Not showing the numbers? Keep looking*/
+0011 @=@ right(j, w);         if length(@)>199  then do;    say substr(@, 2);    @=;   end
+0012 end   /*j*/                                 /* [↑]  if N>0,  then display Smith #s.*/
+0013 
+0014 if @\==''  then say substr(@, 2)                 /*if any residual Smith #s, display 'em*/
+0015 say                                              /* [↓]  display the number of Smith #s.*/
+0016 say #    ' Smith numbers found  ≤ '   N"."       /*display number of Smith numbers found*/
+0017 exit                                             /*stick a fork in it,  we're all done. */
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 sumD:     parse arg x 1 s 2;   do d=2  for length(x)-1; s=s+substr(x,d,1); end;   return s
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 sumFactr: procedure;  parse arg z;       $=0;    f=0             /*obtain the Z number. */
+0022 do  while z//2==0;  $=$+2;  f=f+1;  z=z% 2;  end    /*maybe add factor of 2*/
+0023 do  while z//3==0;  $=$+3;  f=f+1;  z=z% 3;  end    /*  "    "     "    " 3*/
+0024 /*                  ___*/
+0025 do j=5  by 2  while j<=z  &  j*j<=n                 /*minimum of Z or  √ N */
+0026 if j//3==0  then iterate                            /*skip factors that ÷ 3*/
+0027 do while z//j==0; f=f+1; $=$+sumD(j); z=z%j; end /*maybe reduce  Z by J */
+0028 end   /*j*/                                         /* [↓]  Z:  what's left*/
+0029 if z\==1  then do;      f=f+1; $=$+sumD(z);        end /*Residual?  Then add Z*/
+0030 if f<2    then return 0                                /*Prime?   Not a Smith#*/
+0031 return $                                /*else return sum digs.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                21 22 23 27
+002 f                21 22 23 27 29
+003 while            22 23 27
+004 j                25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            6 9
+002 @                -> newV2            7 11 11
+003 $                -> newV3            21 22 23 27 29

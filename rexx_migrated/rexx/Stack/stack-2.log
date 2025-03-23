@@ -1,0 +1,55 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * supports push, pull, and peek
+0003 * 11.08.2013 Walter Pachl
+0004 **********************************************************************/
+0005 stk.=0
+0006 Call push 123
+0007 Say empty()
+0008 say peek()
+0009 say pull()
+0010 Say empty()
+0011 say peek()
+0012 say push(456)
+0013 say peek()
+0014 Exit
+0015 
+0016 push: Procedure Expose stk.
+0017 Parse Arg v
+0018 z=stk.0+1
+0019 stk.z=v
+0020 stk.0=z
+0021 Return v
+0022 
+0023 peek: Procedure Expose stk.
+0024 If stk.0=0 Then
+0025 Return 'stack is empty'
+0026 Else Do
+0027 z=stk.0
+0028 Return stk.z
+0029 End
+0030 
+0031 pull: Procedure Expose stk.
+0032 If stk.0=0 Then
+0033 Return 'stack is empty'
+0034 Else Do
+0035 z=stk.0
+0036 res=stk.z
+0037 stk.0=stk.0-1
+0038 Return res
+0039 End
+0040 
+0041 empty: Procedure Expose stk.
+0042 Return stk.0=0
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 v                17
+002 z                18 27 35
+003 stk.             19 20 37
+004 res              36
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

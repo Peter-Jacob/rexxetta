@@ -1,0 +1,47 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX program to test range extraction. ******************************
+0002 * 07.08.2012 Walter Pachl
+0003 **********************************************************************/
+0004 aaa='0 1 2 4 6 7 8 11 12 14 15 16 17 18 19 20 21 22 23 24 25 27 28 29',
+0005 '30 31 32 33 35 36 37 38 39'
+0006 say 'old='aaa;
+0007 aaa=aaa 1e99                        /* artificial number at the end  */
+0008 i=0                                 /* initialize index              */
+0009 ol=''                               /* initialize output string      */
+0010 comma=''                            /* will become a ',' lateron     */
+0011 inrange=0
+0012 Do While i<=words(aaa)              /* loop for all numbers          */
+0013 i=i+1                             /* index of next number          */
+0014 n=word(aaa,i)                     /* the now current number        */
+0015 If n=1e99 Then Leave              /* we are at the end             */
+0016 If inrange Then Do                /* range was opened              */
+0017 If word(aaa,i+1)<>n+1 Then Do   /* following word not in range   */
+0018 ol=ol||n                      /* so this number is the end     */
+0019 inrange=0                     /* and the range is over         */
+0020 End                           /* else ignore current number    */
+0021 End
+0022 Else Do                           /* not in a range                */
+0023 ol=ol||comma||n                 /* add number (with comma)       */
+0024 comma=','                       /* to the output string          */
+0025 If word(aaa,i+2)=n+2 Then Do    /* if the nr after the next fits */
+0026 inrange=1                     /* open a range                  */
+0027 ol=ol'-'                      /* append the range connector    */
+0028 End
+0029 End
+0030 End
+0031 Say 'new='ol
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 aaa              4 7
+002 i                8 13
+003 ol               9 18 23 27
+004 comma            10 24
+005 inrange          11 19 26
+006 While            12
+007 n                14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

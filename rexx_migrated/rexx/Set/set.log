@@ -1,0 +1,79 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates some  common   SET   functions.                            */
+0002 truth.0= 'false';            truth.1= "true"    /*two common names for a truth table.   */
+0003 set.=                                           /*the  order  of sets isn't important.  */
+0004 
+0005 call setAdd 'prime',2 3 2 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97
+0006 call setSay 'prime'                             /*a small set of some  prime numbers.   */
+0007 
+0008 call setAdd 'emirp',97 97 89 83 79 73 71 67 61 59 53 47 43 41 37 31 29 23 19 17 13 11 7 5 3 2
+0009 call setSay 'emirp'                             /*a small set of  backward  primes.     */
+0010 
+0011 call setAdd 'happy',1 7 10 13 19 23 28 31 32 44 49 68 70 79 82 86 91 100 94 97 97 97 97 97
+0012 call setSay 'happy'                             /*a small set of some  happy  numbers.  */
+0013 
+0014 do j=11  to 100  by 10                    /*see if  PRIME  contains some numbers. */
+0015 call setHas  'prime', j
+0016 say '             prime contains'     j":"     truth.result
+0017 end   /*j*/
+0018 
+0019 call setUnion  'prime','happy','eweion';  call setSay 'eweion'                /* (sic). */
+0020 call setCommon 'prime','happy','common';  call setSay 'common'
+0021 call setDiff   'prime','happy','diff'  ;  call setSay 'diff';        _=left('', 12)
+0022 call setSubset 'prime','happy'         ;  say _ 'prime is a subset of happy:' truth.result
+0023 call setEqual  'prime','emirp'         ;  say _ 'prime is  equal   to emirp:' truth.result
+0024 exit                                                   /*stick a fork in it, we're done.*/
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 setHas:    procedure expose set.; arg _ .,! .; return wordpos(!, set._)\==0
+0027 setAdd:    return set$('add'    , arg(1), arg(2))
+0028 setDiff:   return set$('diff'   , arg(1), arg(2), arg(3))
+0029 setSay:    return set$('say'    , arg(1), arg(2))
+0030 setUnion:  return set$('union'  , arg(1), arg(2), arg(3))
+0031 setCommon: return set$('common' , arg(1), arg(2), arg(3))
+0032 setEqual:  return set$('equal'  , arg(1), arg(2))
+0033 setSubset: return set$('subSet' , arg(1), arg(2))
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 set$: procedure expose set.;   arg $,_1,_2,_3;   set_=set._1;   t=_3;   s=t;   !=1
+0036 if $=='SAY'    then do;   say "[set."_1']= 'set._1;   return set._1;   end
+0037 if $=='UNION'  then do
+0038 call set$ 'add', _3, set._1
+0039 call set$ 'add', _3, set._2
+0040 return set._3
+0041 end
+0042 add=$=='ADD';  common=$=='COMMON'; diff=$=='DIFF'; eq=$=='EQUAL'; subset=$=='SUBSET'
+0043 if common | diff | eq | subset  then s=_2
+0044 if add  then do;  set_=_2;  t=_1;  s=_1;  end
+0045 
+0046 do j=1  for words(set_);       _=word(set_, j);       has=wordpos(_, set.s)\==0
+0047 if (add    & \has) |,
+0048 (common &  has) |,
+0049 (diff   & \has)       then set.t=space(set.t _)
+0050 if (eq | subset) & \has  then return 0
+0051 end    /*j*/
+0052 
+0053 if subset  then return 1
+0054 if eq      then  if arg()>3  then return 1
+0055 else return set$('equal', _2, _1, 1)
+0056 return set.t
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 truth.           2 2
+002 set.             3
+003 j                14 46
+004 set_             35 44
+005 t                35 44
+006 s                35 43 44
+007 add              42
+008 common           42
+009 diff             42
+010 eq               42
+011 subset           42
+012 has              46
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            21 46
+002 !                -> newV2            35

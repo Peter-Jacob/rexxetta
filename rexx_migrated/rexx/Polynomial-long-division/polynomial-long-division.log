@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /* REXX needed by some... */
+0002 z='1 -12 0 -42'  /* Numerator   */
+0003 n='1 -3'         /* Denominator */
+0004 zx=z
+0005 nx=n copies('0 ',words(z)-words(n))
+0006 qx=''            /* Quotient    */
+0007 Do Until words(zx)<words(n)
+0008 Parse Value div(zx,nx) With q zx
+0009 qx=qx q
+0010 nx=subword(nx,1,words(nx)-1)
+0011 End
+0012 Say '('show(z)')/('show(n)')=('show(qx)')'
+0013 Say 'Remainder:' show(zx)
+0014 Exit
+0015 div: Procedure
+0016 Parse Arg z,n
+0017 q=word(z,1)/word(n,1)
+0018 zz=''
+0019 Do i=1 To words(z)
+0020 zz=zz word(z,i)-q*word(n,i)
+0021 End
+0022 Return q subword(zz,2)
+0023 
+0024 show: Procedure
+0025 Parse Arg poly
+0026 d=words(poly)-1
+0027 res=''
+0028 Do i=1 To words(poly)
+0029 Select
+0030 When d>1 Then fact='*x**'d
+0031 When d=1 Then fact='*x'
+0032 Otherwise     fact=''
+0033 End
+0034 Select
+0035 When word(poly,i)=0  Then p=''
+0036 When word(poly,i)=1  Then p='+'substr(fact,2)
+0037 When word(poly,i)=-1 Then p='-'substr(fact,2)
+0038 When word(poly,i)<0  Then p=word(poly,i)||fact
+0039 Otherwise                 p='+'word(poly,i)||fact
+0040 End
+0041 res=res p
+0042 d=d-1
+0043 End
+0044 Return strip(space(res,0),'L','+')
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 poly             25
+002 d                26 42
+003 res              27 41
+004 i                28
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

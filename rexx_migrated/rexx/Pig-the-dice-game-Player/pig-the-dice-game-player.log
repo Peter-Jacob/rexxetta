@@ -1,0 +1,122 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program plays "pig the dice game"  (any number of CBLFs and/or silicons or HALs).*/
+0002 sw= linesize() - 1                               /*get the width of the terminal screen,*/
+0003 parse arg  hp  cp  win  die  _  .  '(' names ")" /*obtain optional arguments from the CL*/
+0004 /*names with blanks should use an  _   */
+0005 if _\==''  then  call  err  'too many arguments were specified: ' _
+0006 @nhp  = 'number of human players'   ;         hp = scrutinize( hp, @nhp , 0,  0,   0)
+0007 @ncp  = 'number of computer players';         cp = scrutinize( cp, @ncp , 0,  0,   2)
+0008 @sn2w = 'score needed to win'       ;         win= scrutinize(win, @sn2w, 1, 1e6, 60)
+0009 @nsid = 'number of sides in die'    ;         die= scrutinize(die, @nsid, 2, 999,  6)
+0010 if hp==0  &  cp==0   then cp= 2                  /*if both counts are zero, two HALs.   */
+0011 if hp==1  &  cp==0   then cp= 1                  /*if one human, then use   one HAL.    */
+0012 name.=                                           /*nullify all names  (to a blank).     */
+0013 L= 0                                             /*maximum length of a player name.     */
+0014 do i=1  for hp+cp                         /*get the player's names,  ...  maybe. */
+0015 if i>hp  then @= 'HAL_'i"_the_computer"   /*use this for default name.           */
+0016 else @= 'player_'i               /* "    "   "     "      "             */
+0017 name.i = translate( word( strip( word( names, i) ) @, 1), , '_')
+0018 L= max(L, length( name.i) )               /*use   L   for nice name formatting.  */
+0019 end   /*i*/                               /*underscores are changed ──► blanks.  */
+0020 
+0021 hpn=hp;  if hpn==0   then hpn= 'no'              /*use normal English for the display.  */
+0022 cpn=cp;  if cpn==0   then cpn= 'no'              /* "     "      "     "   "     "      */
+0023 
+0024 say 'Pig (the dice game) is being played with:'  /*the introduction to pig-the-dice-game*/
+0025 
+0026 if cpn\==0  then  say  right(cpn, 9)     'computer player's(cp)
+0027 if hpn\==0  then  say  right(hpn, 9)     'human player's(hp)
+0028 !.=
+0029 say 'and the'         @sn2w         "is: "         win         '   (or greater).'
+0030 dieNames= 'ace deuce trey square nickle boxcar'  /*some slangy vernacular die─face names*/
+0031 !w=0                                             /*note:  snake eyes is for two aces.   */
+0032 do i=1  for die                   /*assign the vernacular die─face names.*/
+0033 !.i= ' ['word(dieNames,i)"]"      /*pick a word from die─face name lists.*/
+0034 !w= max(!w, length(!.i) )         /*!w ──► maximum length die─face name. */
+0035 end   /*i*/
+0036 s.= 0                                            /*set all player's scores to zero.     */
+0037 !w= !w + length(die) + 3                         /*pad the die number and die names.    */
+0038 @= copies('─', 9)                                /*eyecatcher (for the prompting text). */
+0039 @jra= 'just rolled a '                           /*a nice literal to have laying 'round.*/
+0040 @ati= 'and the inning'                           /*"   "     "     "   "     "      "   */
+0041 /*═══════════════════════════════════════════════════let's play some pig.*/
+0042 do game=1;     in.= 0;       call score       /*set each inning's score to 0; display*/
+0043 
+0044 do j=1  for hp+cp;         say              /*let each player roll their dice.     */
+0045 say copies('─', sw)                         /*display a fence for da ole eyeballs. */
+0046 it= name.j
+0047 say it',  your total score (so far) in this pig game is: '        s.j"."
+0048 
+0049 do  until  stopped                        /*keep prompting/rolling 'til stopped. */
+0050 r= random(1, die)                         /*get a random die face (number).      */
+0051 != left(space(r !.r','),  !w)             /*for color, use a die─face name.      */
+0052 in.j= in.j + r                            /*add die─face number to the inning.   */
+0053 
+0054 if r==1  then  do;  say it @jra ! || @ati "is a bust.";  leave;   end
+0055 say it @jra ! || @ati "total is: "    in.j
+0056 
+0057 stopped= what2do(j)                       /*determine or ask  to stop rolling.   */
+0058 if j>hp & stopped  then say ' and'      name.j      "elected to stop rolling."
+0059 end   /*until stopped*/
+0060 
+0061 if r\==1     then s.j= s.j + in.j           /*if not a bust, then add to the inning*/
+0062 if s.j>=win  then leave game                /*we have a winner,  so the game ends. */
+0063 end     /*j*/                               /*that's the end of the players.       */
+0064 end       /*game*/
+0065 
+0066 call score;    say;    say;    say;    say;          say center(''name.j "won! ", sw, '═')
+0067 say;    say;            exit      /*stick a fork in it,  we're all done. */
+0068 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0069 s: if arg(1)==1  then return arg(3);           return word(arg(2) 's',1)   /*pluralizer.*/
+0070 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0071 score:  say;           say copies('█', sw)       /*display a fence for da ole eyeballs. */
+0072 do k=1  for hp+cp                      /*display the scores  (as a recap).    */
+0073 say 'The score for '    left(name.k, L)     " is "     right(s.k, length(win) ).
+0074 end  /*k*/
+0075 say copies('█', sw);           return    /*display a fence for da ole eyeballs. */
+0076 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0077 scrutinize: parse arg ?,what,min,max             /*?  is the number,  ... or maybe not. */
+0078 if ?==''  |  ?==','   then return arg(5)
+0079 if \datatype(?, 'N')  then call err what "isn't numeric: "    ?;         ?=?/1
+0080 if \datatype(?, 'W')  then call err what "isn't an integer: " ?
+0081 if ?==0  & min>0      then call err what "can't be zero."
+0082 if ?<min              then call err what "can't be less than"     min': '  ?
+0083 if ?==0  & max>0      then call err what "can't be zero."
+0084 if ?>max & max\==0    then call err what "can't be greater than"  max': '  ?
+0085 return ?
+0086 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0087 what2do: parse arg who                                 /*"who" is a human or a computer.*/
+0088 if j>hp & s.j+in.j>=win    then  return 1     /*an  easy  choice  for HAL.     */
+0089 if j>hp &     in.j>=win%4  then  return 1     /*a simple strategy for HAL.     */
+0090 if j>hp                    then  return 0     /*HAL says, keep truckin'!       */
+0091 say @ name.who', what do you want to do?        (a QUIT will stop the game),'
+0092 say @ 'press  ENTER  to roll again,  or anything else to STOP rolling.'
+0093 pull action;      action=space(action)        /*remove any superfluous blanks. */
+0094 if \abbrev('QUIT', action, 1)  then return action\==''
+0095 say;    say;    say center(' quitting. ', sw, '─');    say;     say;      exit
+0096 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0097 err:     say;    say;    say center(' error! ', max(40, linesize() % 2), "*");     say
+0098 do j=1  for arg();    say arg(j);    say;    end;    say;    exit 13
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 who              87
+002 action           93
+003 j                98
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @sn2w            -> newV1            8
+002 @nsid            -> newV2            9
+003 @nhp             -> newV3            6
+004 @ncp             -> newV4            7
+005 @jra             -> newV5            39
+006 @ati             -> newV6            40
+007 !.               -> newV7.           28 33
+008 !w               -> newV8            31 34 37
+009 _                -> newV9            3
+010 @                -> newV10           15 38
+011 !                -> newV11           51
+012 ?                -> newV12           77 79

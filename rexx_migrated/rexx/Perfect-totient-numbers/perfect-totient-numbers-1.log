@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program  calculates and displays  the first   N   perfect totient  numbers.      */
+0002 parse arg N .                                    /*obtain optional argument from the CL.*/
+0003 if N==''  |  N==","  then N= 20                  /*Not specified?  Then use the default.*/
+0004 @.= .                                            /*memoization array of totient numbers.*/
+0005 p= 0                                             /*the count of perfect    "       "    */
+0006 $=                                               /*list of the     "       "       "    */
+0007 do j=3  by 2  until p==N;   s= phi(j)        /*obtain totient number for a number.  */
+0008 a= s                                         /* [↓]  search for a perfect totient #.*/
+0009 do until a==1;           a= phi(a);            s= s + a
+0010 end   /*until*/
+0011 if s\==j  then iterate                       /*Is  J  not a perfect totient number? */
+0012 p= p + 1                                     /*bump count of perfect totient numbers*/
+0013 $= $ j                                       /*add to perfect totient numbers list. */
+0014 end   /*j*/
+0015 
+0016 say 'The first '  N  " perfect totient numbers:" /*display the header to the terminal.  */
+0017 say strip($)                                     /*   "     "  list.   "  "     "       */
+0018 exit 0                                           /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 gcd: parse arg x,y;   do  until y==0;  parse value  x//y  y   with   y  x;  end;  return x
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 phi: procedure expose @.; parse arg z;   if @.z\==.  then return @.z /*was found before?*/
+0023 #= z==1;         do m=1  for z-1;   if gcd(m, z)==1  then #= # + 1;    end  /*m*/
+0024 @.z= #;   return #                                              /*use memoization. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                22
+002 m                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           4 24
+002 $                -> newV2            6 13
+003 #                -> newV3            23 23

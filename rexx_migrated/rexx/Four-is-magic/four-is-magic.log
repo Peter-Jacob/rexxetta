@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX pgm converts a # to English into the phrase:  a is b, b is c, ... four is magic. */
+0002 numeric digits 3003                              /*be able to handle gihugic numbers.   */
+0003 parse arg x                                      /*obtain optional numbers from the C.L.*/
+0004 if x=''  then x= -164 0 4 6 11 13 75 100 337 9223372036854775807   /*use these defaults?*/
+0005 @.= .                                            /*stemmed array used for memoization.  */
+0006 do j=1  for words(x)                      /*process each of the numbers in list. */
+0007 say 4_is( word(x, j) )                    /*display phrase that'll be returned.  */
+0008 say                                       /*display a blank line between outputs.*/
+0009 end   /*j*/
+0010 exit                                             /*stick a fork in it,  we're all done. */
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 4_is:  procedure expose @.;     parse arg #,,$                /*obtain the start number.*/
+0013 if #\==4  then do  until L==4                          /*Not 4?   Process number.*/
+0014 @.#= $spell#(#  'quiet minus negative') /*spell number in English.*/
+0015 #= @.#;           L= length(#)          /*get the length of spelt#*/
+0016 if @.L==.  then @.L= $spell#(L 'quiet') /*¬spelt before? Spell it.*/
+0017 $= $   #   "is"   @.L','                /*add phrase to the answer*/
+0018 #= L                                    /*use the new number, ··· */
+0019 end   /*until*/                         /* ··· which will be spelt*/
+0020 $= strip($ 'four is magic.')              /*finish the sentence with the finale. */
+0021 parse var $ first 2 other;  upper first   /*capitalize the first letter of output*/
+0022 return first  ||  other                   /*return the sentence to the invoker.  */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 first            21
+002 other            21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           5 14 16
+002 #                -> newV2            12 15 18
+003 $                -> newV3            12 17 20 21

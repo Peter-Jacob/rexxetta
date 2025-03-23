@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 roman: procedure
+0002 arg number
+0003 
+0004 /* handle only 1 to 3999, else return ? */
+0005 if number >= 4000 | number <= 0 then return "?"
+0006 
+0007 romans = "   M  CM   D  CD   C  XC  L  XL  X IX  V IV  I"
+0008 arabic = "1000 900 500 400 100  90 50  40 10  9  5  4  1"
+0009 
+0010 result = ""
+0011 do i = 1 to words(romans)
+0012 do while number >= word(arabic,i)
+0013 result = result || word(romans,i)
+0014 number = number - word(arabic,i)
+0015 end
+0016 end
+0017 return result
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 romans           7
+002 arabic           8
+003 result           10 13
+004 i                11
+005 while            12
+006 number           14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

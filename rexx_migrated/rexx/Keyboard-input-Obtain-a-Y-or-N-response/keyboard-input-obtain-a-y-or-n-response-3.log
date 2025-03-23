@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program tests for a    Y  or  N    key when entered from keyboard after a prompt.*/
+0002 prompt = 'Please enter   Y  or  N   for verification:'   /*this is the  PROMPT  message.*/
+0003 
+0004 do  until  pos(ans, 'NY')\==0                   /*keep prompting 'til user answers Y│N */
+0005 say;       say prompt                         /*display blank line;  display prompt. */
+0006 ans=inKey('wait');  upper ans                  /*get the answer(s);  and uppercase it.*/
+0007 end   /*until*/
+0008 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 prompt           2
+002 until            4
+003 ans              6
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

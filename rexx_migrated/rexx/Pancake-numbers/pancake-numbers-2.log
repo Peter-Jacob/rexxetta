@@ -1,0 +1,107 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /* REXX Driver for pancake.test */
+0002 do n=2 To 10
+0003 Call pancake n
+0004 End
+0005 pancake: Procedure
+0006 /**********************************************************************
+0007 * REXX pancake.rex
+0008 * The task is to determine p(n) for n = 1 to 9,
+0009 * and for each show an example requiring p(n) flips.
+0010 * inspired by java and output like Phix
+0011 * 20230531 Walter Pachl
+0012 **********************************************************************/
+0013 Call time 'R'
+0014 parse arg n                          -- Number of pancakes
+0015 init=left('123456789abc',n)          -- ordered pancakes
+0016 Call o 'heureka' n
+0017 q.=0                                 -- implements the queue
+0018 qp=1
+0019 ex=0
+0020 call qadd init
+0021 stackFlips.=-1                       -- initialize map
+0022 stackFlips.init=0                    -- stackFlips.v: number of flips
+0023 -- from init to v
+0024 cnt.=0
+0025 cnt.1=1
+0026 max=0
+0027 Do while qp<=q.0                     -- as long we can flip
+0028 s=qget()                           -- get head of queue
+0029 flips=stackFlips.s+1               -- flips for the successors
+0030 cnt.flips=cnt.flips+1              -- count them
+0031 If flips>max Then ex=0             -- a new maximum
+0032 max=max(max,flips)
+0033 Do i=2 To n                        -- process n-1 successors
+0034 t=flip(s,i)                      -- one of them
+0035 If stackFlips.t=-1 Then Do       -- not set so far
+0036 stackFlips.t=flips             -- flips from init to t
+0037 Call qadd t                    -- append it to the queue
+0038 If ex<3 Then Do                -- show the first 3 examples
+0039 call o flips t
+0040 If ex>=0 Then Do             -- record the data to be shown
+0041 example=''                 -- as an example (see o2)
+0042 Do While t<>''
+0043 Parse Var t c +1 t
+0044 Select
+0045 When c='a' Then c=10
+0046 When c='b' Then c=11
+0047 When c='c' Then c=12
+0048 Otherwise Nop
+0049 End
+0050 example=example||c||','
+0051 End
+0052 exf=flips
+0053 example=strip(example,'T',',')
+0054 End
+0055 ex=ex+1
+0056 End
+0057 End
+0058 End
+0059 End
+0060 Call o 'max cnt.max:' max cnt.max
+0061 te=time('E')                         -- elapsed time
+0062 te=strip(format(te,8,1))
+0063 Call o te 'seconds'
+0064 Call o ''
+0065 Call o2 'p('n') = 'exf', example: {'example'} (of' cnt.max', 'te's)'
+0066 Return
+0067 
+0068 flip: Procedure
+0069 Parse Arg s,k                        -- cf. flipStack in java
+0070 Return substr(s,k,1)reverse(left(s,k-1))||substr(s,k+1)
+0071 
+0072 qadd:                                -- add an element to the queue
+0073 Parse Arg e
+0074 z=q.0+1
+0075 q.z=e
+0076 q.0=z
+0077 Return
+0078 
+0079 qget:                                -- get top element from the queue
+0080 e=q.qp                               -- and remove it from the queue
+0081 qp=qp+1
+0082 Return e
+0083 
+0084 o: -- investigation and debug output
+0085 Return
+0086 Say arg(1)
+0087 Return lineout('heureka.txt',arg(1))
+0088 
+0089 o2: -- result to be shown in rosettacode
+0090 Say arg(1)
+0091 Call lineout 'heureka.out',arg(1)
+0092 Call lineout 'heureka.out'
+0093 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 e                73 80
+002 z                74
+003 q.               75 76
+004 qp               81
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 --               -> newV1            14 69

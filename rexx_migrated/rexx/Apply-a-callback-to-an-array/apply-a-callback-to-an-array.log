@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program applies a  callback  to an array  (using factorials for a demonstration).*/
+0002 numeric digits 100                               /*be able to display some huge numbers.*/
+0003 parse arg # .                                    /*obtain an optional value from the CL.*/
+0004 a.=                                              /*initialize the array  A  to all nulls*/
+0005 if #=='' | #==","  then #= 12                    /*Not assigned?  Then use default value*/
+0006 do j=0  to #;   a.j= j   /*assign the integer   J  ───►   A.j   */
+0007 end   /*j*/              /*array  A  will have N values: 0 ──► #*/
+0008 
+0009 call listA   'before callback'                   /*display  A  array before the callback*/
+0010 say                                              /*display a blank line for readability.*/
+0011 say '      ··· applying callback to array A ···' /*display what is about to happen to B.*/
+0012 say                                              /*display a blank line for readability.*/
+0013 call bangit  'a'                                 /*factorialize (the values) of A array.*/
+0014 /*    store the results  ───►  array B.*/
+0015 call listA   ' after callback'                   /*display  A  array after the callback.*/
+0016 exit 0                                           /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 bangit:   do v=0;  $= value(arg(1)'.'v);  if $=='' then return  /*No value?  Then return*/
+0019 call value arg(1)'.'v, fact($)         /*assign a value (a factorial) to array*/
+0020 end    /*i*/
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 fact:   procedure; arg x;   != 1;         do f=2  to x;  != !*f;  end; /*f*/;     return !
+0023 listA:    do k=0  while a.k\=='';  say arg(1)  'a.'k"="  a.k;     end  /*k*/;     return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a.               4 6
+002 j                6
+003 f                22
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            3 5
+002 $                -> newV2            18
+003 !                -> newV3            22 22

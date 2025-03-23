@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program  displays  the  moves  to solve  the  Tower of Hanoi  (with  N  disks).  */
+0002 parse arg N .                                    /*get optional number of disks from CL.*/
+0003 if N=='' | N==","  then N=3                      /*Not specified?  Then use the default.*/
+0004 #= 0                                             /*#:  the number of disk moves (so far)*/
+0005 z= 2**N  -  1                                    /*Z:   "     "    " minimum # of moves.*/
+0006 call mov  1, 3, N                                /*move the top disk,  then recurse ··· */
+0007 say                                              /* [↓]  Display the minimum # of moves.*/
+0008 say 'The minimum number of moves to solve a '      N"─disk  Tower of Hanoi is "     z
+0009 exit                                             /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 mov: procedure expose # z; parse arg  @1,@2,@3;          L= length(z)
+0012 if @3==1  then do;  #= # + 1                /*bump the (disk) move counter by one. */
+0013 say 'step'   right(#, L)":  move disk on tower"   @1  '───►'   @2
+0014 end
+0015 else do;  call mov @1,               6 -@1 -@2,         @3 -1
+0016 call mov @1,               @2,                  1
+0017 call mov 6 - @1 - @2,      @2,                @3 -1
+0018 end
+0019 return                                      /* [↑]  this subroutine uses recursion.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 L                11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @1               -> newV1            11
+002 @2               -> newV2            11
+003 @3               -> newV3            11
+004 #                -> newV4            4 12

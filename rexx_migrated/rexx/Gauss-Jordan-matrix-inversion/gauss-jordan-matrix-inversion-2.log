@@ -1,0 +1,52 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program performs a  (square)  matrix inversion  using the  Gauss─Jordan  method. */
+0002 data=  8 3 7 5 9 12 10 11 6 2 4 13 14 15 16 17   /*the matrix element values.           */
+0003 call build  4                                    /*assign data elements to the matrix.  */
+0004 call show '@', 'The matrix of order '  n  " is:" /*display the (square) matrix.         */
+0005 call aux                                         /*define the auxiliary (identity) array*/
+0006 call invert                                      /*invert the matrix, store result in X.*/
+0007 call show 'X', "The inverted matrix is:"         /*display (inverted) auxiliary matrix. */
+0008 exit 0                                           /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 aux:   x.= 0;                do i=1  for n;   x.i.i= 1;   end;        return
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 build: arg n;  #=0;  w=0;    do    r=1  for n                /*read a row of the matrix.*/
+0013 do c=1  for n;  #= # + 1     /*  "  " col  "  "     "   */
+0014 @.r.c= word(data, #);  w= max(w, length(@.r.c) )
+0015 end   /*c*/                  /*W:  max width of a number*/
+0016 end      /*r*/;    return
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 invert: do k=1  for n;                      t= @.k.k   /*divide each matrix row by  T.  */
+0019 do c=1  for n; @.k.c= @.k.c / t          /*process row of original matrix.*/
+0020 x.k.c= x.k.c / t          /*   "     "   " auxiliary   "   */
+0021 end   /*c*/
+0022 do r=1  for n;    if r==k  then iterate     /*skip if R is the same row as K.*/
+0023 t= @.r.k
+0024 do c=1  for n; @.r.c= @.r.c - t*@.k.c    /*process row of original matrix.*/
+0025 x.r.c= x.r.c - t*x.k.c    /*   "     "   " auxiliary    "  */
+0026 end   /*c*/
+0027 end      /*r*/
+0028 end         /*k*/;                      return
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 show: parse arg ?, title;  say;  say title;  f= 4     /*F:  fractional digits precision.*/
+0031 do   r=1  for n; _=
+0032 do c=1  for n; if ?=='@' then _= _ right(       @.r.c, w)
+0033 else _= _ right(format(x.r.c, w, f), w + f + length(.))
+0034 end   /*c*/;   say _
+0035 end     /*r*/;                          return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 title            30
+002 f                30
+003 r                31
+004 c                32
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           14 19 24
+002 #                -> newV2            12 13
+003 ?                -> newV3            30
+004 _                -> newV4            31 32

@@ -1,0 +1,89 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program computes and displays a specified range of happy numbers.         */
+0002 Call time 'R'
+0003 linesize=80
+0004 Parse Arg low high                        /* obtain range of happy numbers       */
+0005 If low='?' Then Call help
+0006 If low='' Then low=10
+0007 If high='' Then
+0008 Parse Value 1 low With low high
+0009 Do i=0 To 9                               /*build a squared decimal digit table. */
+0010 square.i=i*i
+0011 End
+0012 happy.=0                                  /* happy.m=1 - m is a happy number     */
+0013 unhappy.=0                                /* unhappy.n=1 - n is an unhappy number*/
+0014 hapn=0                                    /* count of the happy numbers          */
+0015 ol=''
+0016 Do n=1 While hapn<high                    /* test integers starting with 1       */
+0017 If unhappy.n Then                       /* if n  is unhappy,                   */
+0018 Iterate                               /* then try next number                */
+0019 work=n
+0020 suml=''                                 /* list of computed sums               */
+0021 Do Forever
+0022 sum=0
+0023 Do length(work)                       /* compute sum of squared digits       */
+0024 Parse Var work digit +1 work
+0025 sum=sum+square.digit
+0026 End
+0027 Select
+0028 When unhappy.sum |,                 /* sum is known to be unhappy          */
+0029 wordpos(sum,suml)>0 Then Do    /* or was already encountered          */
+0030 --     If wordpos(sum,suml)>0 Then say 'Loop' n':' suml sum
+0031 --     If n<7 Then say n':' suml sum
+0032 unhappy.n=1                       /* n is unhappy                        */
+0033 Call set suml                     /* amd so are all sums so far          */
+0034 Iterate n
+0035 End
+0036 When sum=1 Then Do                  /* we reached sum=1                    */
+0037 hapn+=1                           /* increment number of happy numbers   */
+0038 happy.n=1                         /* n is happy                          */
+0039 If hapn>=low Then                 /* if it is in specified range         */
+0040 Call out n                      /* output it                           */
+0041 If hapn=high Then                 /* end of range reached                */
+0042 Leave n                         /* we are done                         */
+0043 Iterate n                         /* otherwise proceed                   */
+0044 End
+0045 Otherwise Do                        /* otherwise                           */
+0046 suml=suml sum                     /* add sum to list of sums             */
+0047 work=sum                          /* proceed with the new sum            */
+0048 End
+0049 End
+0050 End
+0051 End
+0052 If ol>'' Then                             /* more output data                    */
+0053 Say strip(ol)                           /* write to console                    */
+0054 -- Say time('E')
+0055 Exit
+0056 
+0057 set:                                      /* all intermediate sums are unhappy   */
+0058 Parse Arg list
+0059 Do While list<>''
+0060 Parse Var list s list
+0061 unhappy.s=1
+0062 End
+0063 Return
+0064 
+0065 out:                                      /* output management                   */
+0066 Parse Arg hn                            /* the happy number                    */
+0067 If length(ol hn)>linesize Then Do       /* if it does not fit                  */
+0068 Say strip(ol)                         /* output the line                     */
+0069 ol=hn                                 /* and start a new line                */
+0070 End
+0071 Else                                    /* otherwise                           */
+0072 ol=ol hn                              /* append is to the output line        */
+0073 Return
+0074 
+0075 help:
+0076 Say 'rexx hno n compute and show the first n happy numbers'
+0077 Say 'rexx hno low high      show happy numbers from index low to high'
+0078 Exit
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 hn               66
+002 ol               69 72
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

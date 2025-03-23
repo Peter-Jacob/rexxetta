@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program  solves  a  riddle  of 5 sailors, a pile of coconuts, and a monkey.      */
+0002 parse arg L H .;        if L==''  then L= 5      /*L  not specified?   Then use default.*/
+0003 if H==''  then H= 6      /*H   "      "          "   "  default.*/
+0004 /*{Tars is an old name for sailors.}   */
+0005 do n=L  to H                              /*traipse through a number of sailors. */
+0006 do $=0  while \valid(n, $) /*perform while not valid coconuts.    */
+0007 end   /*$*/
+0008 say 'sailors='n           "  coconuts="$  /*display number of sailors & coconuts.*/
+0009 end  /*n*/
+0010 exit 0                                           /*stick a fork in it,  we're all done. */
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 valid: procedure;  parse arg n,nuts              /*obtain the number sailors & coconuts.*/
+0013 do k=n  by -1  for n            /*step through the possibilities.      */
+0014 if nuts//n \== 1  then return 0 /*Not one coconut left?   No solution. */
+0015 nuts=nuts  -  (1  +  nuts % n)  /*subtract number of coconuts from pile*/
+0016 end   /*k*/
+0017 return (nuts \== 0)  &  \(nuts//n \== 0)  /*see if number coconuts>0 & remainder.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                12
+002 nuts             12 15
+003 k                13
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            6

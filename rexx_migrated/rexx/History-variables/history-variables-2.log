@@ -1,0 +1,54 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Demonstrate how the history of assignments can be kept and shown
+0003 * 13.07.2012 Walter Pachl  Rewrite of Version 1 for (my) readability
+0004 *   varset.i.varu contains the ith value assigned to var
+0005 *   varset.0.varu contains the number of assignments so far
+0006 **********************************************************************/
+0007 varset.=0                          /*initialize the assignment count */
+0008 
+0009 call varset 'fluid',min(0,-5/2,-1)   ; say 'fluid=' fluid
+0010 call varset 'fluid',3.14159          ; say 'fluid=' fluid
+0011 call varset 'fluid',3.14159          ; say 'fluid=' fluid
+0012 call varset 'fluid',' Santa  Claus'  ; say 'fluid=' fluid
+0013 call varset 'FLUID',' Easter Rabbit' ; say 'fluid=' fluid
+0014 
+0015 say 'There were' varset('fluid',,'L'),
+0016 'assignments (sets) for the FLUID variable.'
+0017 exit
+0018 
+0019 varset: Procedure Expose varset.
+0020 /**********************************************************************
+0021 * record values assigned to var (=varu as Rexx is case insensitive)
+0022 * Invoke with list<>'' to list the sequence of assigned values
+0023 * and return the number of assignments made (using this routine)
+0024 **********************************************************************/
+0025 Parse Upper Arg varu              /* name of variable in uppercase */
+0026 Parse arg var,value,list          /*varName, value, optional-List. */
+0027 
+0028 if list='' then do                /*not list, so set the X variable*/
+0029 z=varset.0.varu+1               /*bump the history count (SETs). */
+0030 varset.z.varu=value             /* ... and store it in "database"*/
+0031 varset.0.varu=z                 /*the new history count          */
+0032 call value var,value            /*now assign the value to var    */
+0033 end
+0034 else Do
+0035 Say ''                          /*show blank line for readability*/
+0036 do i=1 to varset.0.varu         /*list the assignment history    */
+0037 say 'history entry' i "for var" var":" varset.i.varu
+0038 end
+0039 end
+0040 Return varset.0.varu           /*return the number of assignments. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 value            26
+002 list             26
+003 z                29
+004 varset.          30 31
+005 i                36
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

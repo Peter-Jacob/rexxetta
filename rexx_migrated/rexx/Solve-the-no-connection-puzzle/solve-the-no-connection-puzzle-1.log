@@ -1,0 +1,79 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program  solves  the  "no─connection"  puzzle   (the puzzle has eight pegs).     */
+0002 parse arg limit .    /*number of solutions wanted.*/   /* ╔═══════════════════════════╗ */
+0003 if limit=='' | limit==","  then limit= 1               /* ║          A    B           ║ */
+0004 /* ║         /│\  /│\          ║ */
+0005 @.  =                                                  /* ║        / │ \/ │ \         ║ */
+0006 @.1 = 'A   C D E'                                      /* ║       /  │ /\ │  \        ║ */
+0007 @.2 = 'B   D E F'                                      /* ║      /   │/  \│   \       ║ */
+0008 @.3 = 'C   A D G'                                      /* ║     C────D────E────F      ║ */
+0009 @.4 = 'D   A B C E G'                                  /* ║      \   │\  /│   /       ║ */
+0010 @.5 = 'E   A B D F H'                                  /* ║       \  │ \/ │  /        ║ */
+0011 @.6 = 'F   B E H'                                      /* ║        \ │ /\ │ /         ║ */
+0012 @.7 = 'G   C D E'                                      /* ║         \│/  \│/          ║ */
+0013 @.8 = 'H   D E F'                                      /* ║          G    H           ║ */
+0014 cnt= 0                                                 /* ╚═══════════════════════════╝ */
+0015 do pegs=1  while  @.pegs\=='';    _= word(@.pegs, 1)
+0016 subs= 0
+0017 do #=1  for  words(@.pegs) -1  /*create list of node paths.*/
+0018 __= word(@.pegs, # + 1);    if __>_  then iterate
+0019 subs= subs + 1;             !._.subs= __
+0020 end  /*#*/
+0021 !._.0= subs                    /*assign the number of the node paths. */
+0022 end   /*pegs*/
+0023 pegs= pegs - 1                                   /*the number of pegs to be seated.     */
+0024 _= '    '                      /*_   is used for indenting the output.*/
+0025 do               a=1  for pegs;     if ?('A')  then iterate
+0026 do             b=1  for pegs;     if ?('B')  then iterate
+0027 do           c=1  for pegs;     if ?('C')  then iterate
+0028 do         d=1  for pegs;     if ?('D')  then iterate
+0029 do       e=1  for pegs;     if ?('E')  then iterate
+0030 do     f=1  for pegs;     if ?('F')  then iterate
+0031 do   g=1  for pegs;     if ?('G')  then iterate
+0032 do h=1  for pegs;     if ?('H')  then iterate
+0033 say _ 'a='a _ "b="||b _ 'c='c _ "d="d _ 'e='e _ "f="f _ 'g='g _ "h="h
+0034 cnt= cnt + 1;         if cnt==limit  then leave a
+0035 end   /*h*/
+0036 end     /*g*/
+0037 end       /*f*/
+0038 end         /*e*/
+0039 end           /*d*/
+0040 end             /*c*/
+0041 end               /*b*/
+0042 end                 /*a*/
+0043 say                                              /*display a blank line to the terminal.*/
+0044 s= left('s', cnt\==1)                            /*handle the case of plurals  (or not).*/
+0045 say 'found '     cnt     " solution"s'.'         /*display the number of solutions found*/
+0046 exit                                             /*stick a fork in it,  we're all done. */
+0047 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0048 ?: parse arg node;           nn= value(node)
+0049 nH= nn+1
+0050 do cn=c2d('A')  to c2d(node)-1;   if value( d2c(cn) )==nn  then return 1
+0051 end   /*cn*/                       /* [↑]  see if there any are duplicates.*/
+0052 nL= nn-1
+0053 do ch=1  for !.node.0              /* [↓]  see if there any  ¬= ±1  values.*/
+0054 $= !.node.ch;       fn= value($)   /*the node name  and  its current peg #.*/
+0055 if nL==fn | nH==fn  then return 1  /*if ≡ ±1,  then the node can't be used.*/
+0056 end   /*ch*/                       /* [↑]  looking for suitable number.    */
+0057 return 0                                     /*the subroutine arg value passed is OK.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 node             48
+002 nn               48
+003 nH               49
+004 cn               50
+005 nL               52
+006 ch               53
+007 fn               54
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           5 6 7 8 9 10 11 12 13
+002 __               -> newV2            18
+003 !.               -> newV3.           19 21
+004 _                -> newV4            15 24
+005 #                -> newV5            17
+006 $                -> newV6            54

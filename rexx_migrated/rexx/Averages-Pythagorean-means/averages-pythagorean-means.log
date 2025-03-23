@@ -1,0 +1,62 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program  computes and displays the   Pythagorean means  [Amean,  Gmean,  Hmean]. */
+0002 numeric digits 20                                /*use a little extra for the precision.*/
+0003 parse arg n .                                    /*obtain the optional argument from CL.*/
+0004 if n=='' | n==","  then n= 10                    /*None specified?  Then use the default*/
+0005 sum= 0;  prod= 1;  rSum= 0                       /*initialize sum/product/reciprocal sum*/
+0006 $=;                       do #=1  for n;  $= $ # /*generate list by appending # to list.*/
+0007 sum = sum   +   #      /*compute the sum of all the elements. */
+0008 prod= prod  *   #      /*compute the product of all elements. */
+0009 rSum= rSum  + 1/#      /*compute the sum of the reciprocals.  */
+0010 end   /*#*/
+0011 say ' list ='$                                   /*display the list of numbers used.    */
+0012 say 'Amean ='  sum / n                           /*calculate & display  arithmetic mean.*/
+0013 say 'Gmean ='  Iroot(prod, n)                    /*    "     "     "    geometric    "  */
+0014 if result=="[n/a]"  then say '***error***: root' y "can't be even if 1st argument is < 0."
+0015 say 'Hmean ='  n   / rSum                        /*    "     "     "    harmonic     "  */
+0016 exit 0                                           /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 Iroot: procedure; parse arg x 1 ox, y 1 oy       /*get both args, and also a copy of X&Y*/
+0019 if x=0 | x=1 | y=1  then return x         /*handle special case of zero and unity*/
+0020 if y=0              then return 1         /*   "      "      "   " a   zero root.*/
+0021 if x<0 & y//2==0    then return  '[n/a]'  /*indicate result is "not applicable". */
+0022 x= abs(x);          y= abs(y);   m= y - 1 /*use the absolute value for  X and Y. */
+0023 oDigs= digits();    a= oDigs + 5          /*save original digits;  add five digs.*/
+0024 g= (x+1) / y*2                            /*use this as the first guesstimate.   */
+0025 d= 5                                      /*start with 5 dec digs, saves CPU time*/
+0026 do  until d==a;      d= min(d + d, a) /*keep going as digits are increased.  */
+0027 numeric digits d;    f= d - 2         /*limit digits to  original digits + 5.*/
+0028 og=                                   /*use a non─guess for the old G (guess)*/
+0029 do forever;       gm= g**m         /*keep computing at the   Yth   root.  */
+0030 _= format( (m*g*gm + x)/(y*gm),,f) /*this is the nitty─gritty calculation.*/
+0031 if _=g  |  _=og  then leave        /*are we close enough yet?             */
+0032 og= g;            g= _             /*save guess ──► OG; set the new guess.*/
+0033 end   /*forever*/
+0034 end      /*until  */
+0035 
+0036 g= g * sign(ox);  if oy<0  then  g= 1 / g /*adjust for original X sign; neg. root*/
+0037 numeric digits oDigs;      return   g / 1 /*normalize to original decimal digits.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                18 22
+002 ox               18
+003 y                18 22
+004 oy               18
+005 m                22
+006 oDigs            23
+007 a                23
+008 g                24 32 36 36
+009 d                25 26
+010 until            26
+011 f                27
+012 og               28 32
+013 gm               29
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            6 6
+002 #                -> newV2            6
+003 _                -> newV3            30

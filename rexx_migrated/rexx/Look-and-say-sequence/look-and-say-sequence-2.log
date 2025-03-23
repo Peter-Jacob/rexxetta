@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*REXX program displays the sequence (and/or lengths) for the    look and say    series.*/
+0002 parse arg N ! .                                  /*obtain optional arguments from the CL*/
+0003 if N=='' | N==","  then N= 20                    /*Not specified?  Then use the default.*/
+0004 if !=='' | !==","  then !=  1                    /* "      "         "   "   "     "    */
+0005 /* [↑]  !:   starting char for the seq.*/
+0006 do j=1  for abs(N)                          /*repeat a number of times to show NUMS*/
+0007 if j\==1  then != lookNsay(!)               /*invoke function to calculate next #. */
+0008 if N<0    then say 'length['j"]:" length(!) /*Also,  display the sequence's length.*/
+0009 else say '['j"]:"      !          /*display the number to the terminal.  */
+0010 end   /*j*/
+0011 exit 0                                           /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 lookNsay: procedure; parse arg x,,$ !            /*obtain the (passed) argument  {X}.   */
+0014 chSize= 1000                           /*define a sensible chunk size.        */
+0015 fin = '0'x                             /*use unique character to end scanning.*/
+0016 x= x || fin                            /*append the  FIN  character to string.*/
+0017 do k=1  by 0                      /*now,  process the given sequence.    */
+0018 y=  substr(x, k, 1)            /*pick off one character to examine.   */
+0019 if y==fin  then return $          /*if we're at the end, then we're done.*/
+0020 _= verify(x, y, , k)  - k         /*see how many characters we have of Y.*/
+0021 $= $  ||  _  ||  y                /*build the  "look and say"  sequence. */
+0022 k= k + _                          /*now, point to the next character.    */
+0023 if length($)<chSize  then iterate /*Less than chunkSize?  Then keep going*/
+0024 != !  ||  $                       /*append   $   to the  !  string.      */
+0025 $=                                /*now,  start   $   from scratch.      */
+0026 chSize= chSize + 100              /*bump the  chunkSize (length) counter.*/
+0027 end   /*k*/
+0028 return ! || $                           /*return the ! string plus the $ string*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                13 16
+002 chSize           14 26
+003 fin              15
+004 k                17 22
+005 y                18
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !                -> newV1            2 4 7 13 24
+002 $                -> newV2            13 21 25
+003 _                -> newV3            20

@@ -1,0 +1,31 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program test if a (REXX)  variable is  defined  or  not defined.       */
+0002 tlaloc = "rain god of the Aztecs."     /*assign a value to the Aztec rain god.*/
+0003 /*check if the  rain god  is defined.  */
+0004 y= 'tlaloc'
+0005 if symbol(y)=="VAR"  then say y  ' is   defined.'
+0006 else say y  "isn't defined."
+0007 
+0008 /*check if the  fire god  is defined.  */
+0009 
+0010 y= 'xiuhtecuhtli'                      /*assign a value to the Aztec file god.*/
+0011 if symbol(y)=="VAR"  then say y  ' is   defined.'
+0012 else say y  "isn't defined."
+0013 
+0014 
+0015 drop tlaloc                            /*un─define the  TLALOC  REXX variable.*/
+0016 /*check if the  rain god  is defined.  */
+0017 y= 'tlaloc'
+0018 if symbol(y)=="VAR"  then say y  ' is  defined.'
+0019 else say y  "isn't defined."
+0020 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 tlaloc           2
+002 y                4 10 17
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

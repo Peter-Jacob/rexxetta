@@ -1,0 +1,34 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program multiplies two integers by the  Ethiopian  (or Russian peasant)  method. */
+0002 numeric digits 3000                              /*handle some gihugeic integers.       */
+0003 parse arg a b .                                  /*get two numbers from the command line*/
+0004 say  'a=' a                                      /*display a formatted value of  A.     */
+0005 say  'b='   b                                    /*   "    "     "       "    "  B.     */
+0006 say  'product='    eMult(a, b)                   /*invoke eMult & multiple two integers.*/
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 eMult:   procedure;  parse arg x,y;  s=sign(x)   /*obtain the two arguments; sign for X.*/
+0010 $=0                                     /*product of the two integers (so far).*/
+0011 do  while x\==0            /*keep processing while   X   not zero.*/
+0012 if \isEven(x)  then $=$+y  /*if odd,  then add   Y   to product.  */
+0013 x= halve(x)                /*invoke the  HALVE   function.        */
+0014 y=double(y)                /*   "    "   DOUBLE      "            */
+0015 end   /*while*/            /* [↑]  Ethiopian multiplication method*/
+0016 return $*s/1                            /*maintain the correct sign for product*/
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 double:  return  arg(1)  * 2                     /*   *   is REXX's  multiplication.    */
+0019 halve:   return  arg(1)  % 2                     /*   %    "   "     integer division.  */
+0020 isEven:  return  arg(1) // 2 == 0                /*   //   "   "     division remainder.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                9 13
+002 y                9 14
+003 s                9
+004 while            11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            10 12

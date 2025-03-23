@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*REXX pgm calculates/displays base ten  long primes  (AKA golden primes, proper primes,*/
+0002 /*───────────────────── maximal period primes, long period primes, full reptend primes).*/
+0003 parse arg a                                      /*obtain optional argument from the CL.*/
+0004 if a='' | a=","  then a= '500 -500 -1000 -2000 -4000 -8000 -16000' ,  /*Not specified?  */
+0005 '-32000 -64000 -128000 -512000 -1024000'     /*Then use default*/
+0006 do k=1  for words(a);     H=word(a, k)       /*step through the list of high limits.*/
+0007 neg= H<1                                     /*used as an indicator to display count*/
+0008 H= abs(H)                                    /*obtain the absolute value of  H.     */
+0009 $=                                           /*the list of  long primes   (so far). */
+0010 do j=7  to H  by 2;  parse var j '' -1 _  /*start with 7,  just use odd integers.*/
+0011 if     _==5  then iterate /*last digit a five?  Then not a prime.*/
+0012 if j// 3==0  then iterate /*Is divisible by  3?   "   "  "   "   */
+0013 if j\==11  then if j//11==0  then iterate /* "     "      " 11?   "   "  "   "   */
+0014 if j\==13  then if j//13==0  then iterate /* "     "      " 13?   "   "  "   "   */
+0015 if j\==17  then if j//17==0  then iterate /* "     "      " 17?   "   "  "   "   */
+0016 if j\==19  then if j//19==0  then iterate /* "     "      " 19?   "   "  "   "   */
+0017 if .len(j) + 1 \== j  then iterate        /*Period length wrong?   Then skip it. */
+0018 $=$ j                                     /*add the   long prime   to the $ list.*/
+0019 end   /*j*/
+0020 say
+0021 if neg  then do;  say 'number of long primes ≤ '    H     " is: "     words($);    end
+0022 else do;  say   'list of long primes ≤ '    H":";         say strip($);    end
+0023 end      /*k*/
+0024 exit                                             /*stick a fork in it,  we're all done. */
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 .len: procedure; parse arg x;  r=1;   do x;                   r= 10*r // x;     end  /*x*/
+0027 rr=r;   do p=1  until r==rr;    r= 10*r // x;     end  /*p*/
+0028 return p
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                26
+002 r                26 26 27
+003 rr               27
+004 p                27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            9 18
+002 _                -> newV2            10

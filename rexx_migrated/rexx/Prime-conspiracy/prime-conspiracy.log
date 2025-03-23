@@ -1,0 +1,78 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX pgm shows a table of which last digit follows the previous last digit   */
+0002 /* for N primes                                                                */
+0003 Call time 'R'
+0004 Numeric Digits 12
+0005 Parse Arg n .                      /* N:  the number of primes to be looked at */
+0006 If n==''|n=="," Then               /* Not specified?                           */
+0007 n=1000000                        /* Use the default                          */
+0008 w=length(n-1)                      /* W:  width used for formatting o*/
+0009 
+0010 h=n*(2**max(4,(w%2+1)))            /* used as a rough limit for the sieve      */
+0011 h=h*1.2                            /* make sure it is large enough             */
+0012 prime.=1                           /* assume all numbers are prime             */
+0013 nn=1                               /* primes found so far {2 is the firt prime)*/
+0014 Do j=3 By 2 while nn<n
+0015 If prime.j Then Do
+0016 nn=nn+1                        /* bump the prime number counter.           */
+0017 Do m=j*j To h By j+j
+0018 prime.m=0                    /* strike odd multiples as composite        */
+0019 End
+0020 End
+0021 End
+0022 Say 'Sieve of Eratosthenes finished' time('E') 'seconds'
+0023 Call time 'R'
+0024 frequency.=0                       /* initialize all the frequency counts      */
+0025 Say 'For' n 'primes used in this study:'
+0026 /*show hdr information about this run. */
+0027 r=2                                /* the last digit of the very 1st prime (2) */
+0028 nn=1                               /* the number of primes looked at           */
+0029 cnt.=0
+0030 cnt.2=1
+0031 Do i=3 By 2 While nn<n+1           /* Inspect all odd numbers                  */
+0032 If prime.i Then Do               /* it is a prime number                     */
+0033 nn=nn+1
+0034 Parse Var i ''-1 x             /* get last digit of current prime          */
+0035 cnt.x+=1                       /* bump last digit counter                  */
+0036 frequency.r.x=frequency.r.x+1  /* bump the frequency counter               */
+0037 r=x                            /* current becomes previous                 */
+0038 End
+0039 End
+0040 Say 'i='i 'largest prime'
+0041 Say 'h='h
+0042 Say                                /* display the results                      */
+0043 Do d=1 For 9
+0044 If d//2|d==2 Then
+0045 Say ''                         /* display a blank line (if appropriate)    */
+0046 Do f=1 For 9
+0047 If frequency.d.f>0 Then
+0048 Say 'digit ' d '-->' f ' has a count of: ' right(frequency.d.f,w)||,
+0049 ',  frequency of:' right(format(frequency.d.f/n*100,,4)'%.',10)
+0050 End
+0051 End
+0052 Say 'Frequency analysis:' time('E') 'seconds'
+0053 sum=0
+0054 Say 'last digit Number of occurrences'
+0055 Do i=1 To 9
+0056 If cnt.i>0 Then
+0057 Say '         'i format(cnt.i,8)
+0058 sum+=cnt.i
+0059 End
+0060 Say '         'format(sum,10)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 i                34 55
+002 x                34
+003 cnt.             35
+004 frequency.       36
+005 r                37
+006 d                43
+007 f                46
+008 sum              53
+009 sum+             58
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

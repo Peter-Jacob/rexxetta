@@ -1,0 +1,56 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program spits out decimal digits of pi  (one digit at a time)  until  Ctrl-Break.*/
+0002 signal on halt                                   /*───► HALT when Ctrl─Break is pressed.*/
+0003 parse arg digs oFID .                            /*obtain optional argument from the CL.*/
+0004 if digs=='' | digs==","  then digs= 300          /*Not specified?  Then use the default.*/
+0005 if oFID=='' | oFID==","  then oFID='PI_SPIT2.OUT' /* "     "         "   "   "      "   */
+0006 numeric digits digs                              /*with bigger digs, spitting is slower.*/
+0007 q=1;   r=0;   t=1;   k=1;   n=3;   L=3;   z=0    /*define some REXX variables.          */
+0008 dot=1                                            /*DOT≡a flag when a dot in pi is shown.*/
+0009 do until z==digs;            qq= q+q       /*  qq     is a fast version of:  q*2  */
+0010 tn= t*n                                    /*  t*n    is used twice  (below).     */
+0011 if qq+qq+r-t < tn  then do;  z= z+1        /*  qq+qq  is faster than   qq*2       */
+0012 call charout     , n
+0013 call charout oFID, n
+0014 if dot  then do;    dot=0;    call charout     , .
+0015 call charout oFID, .
+0016 end
+0017 nr= (r - tn) * 10
+0018 n = ((( (qq+q+r) * 10) / t) - n*10)  %1
+0019 q = q*10
+0020 end
+0021 else do;  nr= (qq+r) * L
+0022 tL= t*L
+0023 n = (q * (k*7 + 2)  +  r*L) / tL  %1
+0024 q = q*k
+0025 t = tL
+0026 L = L+2
+0027 k = k+1
+0028 end                /* %1≡fast way doing TRUNC of a number.*/
+0029 r=nr
+0030 end   /*forever*/
+0031 exit                                             /*stick a fork in it,  we're all done. */
+0032 halt: say;     say  'PI_SPIT2 halted via use of Ctrl-Break.';           exit
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 digs             3 4
+002 oFID             3 5
+003 q                7 19 24
+004 r                7 29
+005 t                7 25
+006 k                7 27
+007 n                7 18 23
+008 L                7 26
+009 z                7 11
+010 dot              8 14
+011 until            9
+012 qq               9
+013 tn               10
+014 nr               17 21
+015 tL               22
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

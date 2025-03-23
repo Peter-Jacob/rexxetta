@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program calculates and demonstrates  arbitrary precision numbers (using powers). */
+0002 numeric digits 5                                 /*just use enough digits for 1st time. */
+0003 
+0004 #=5** (4** (3** 2) )           /*calculate multiple exponentiations.  */
+0005 
+0006 parse var  #  'E'  pow  .                        /*POW   might be null,  so   N  is OK. */
+0007 
+0008 if pow\==''  then do                             /*general case:   POW  might be < zero.*/
+0009 numeric digits  abs(pow) + 9   /*recalculate with more decimal digits.*/
+0010 #=5** (4** (3** 2) )           /*calculate multiple exponentiations.  */
+0011 end                            /* [↑]  calculation is the real McCoy. */
+0012 
+0013 true=62060698786608744707...92256259918212890625 /*what answer is supposed to look like.*/
+0014 rexx= left(#, 20)'...'right(#, 20)               /*the left and right 20 decimal digits.*/
+0015 
+0016 say  '  true:'    true                           /*show what the  "true"  answer is.    */
+0017 say  '  REXX:'    rexx                           /*  "    "   "    REXX      "    "     */
+0018 say  'digits:'    length(#)                      /*  "    "   "   length  of answer is. */
+0019 say
+0020 if true == rexx   then say 'passed!'             /*either it passed,  ···               */
+0021 else say 'failed!'             /*    or it didn't.                    */
+0022 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pow              6
+002 true             13
+003 rexx             14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            4 6 10

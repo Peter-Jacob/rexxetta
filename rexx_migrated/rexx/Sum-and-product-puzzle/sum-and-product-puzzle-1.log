@@ -1,0 +1,243 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 debug=0
+0002 If debug Then Do
+0003 oid='sppn.txt'; 'erase' oid
+0004 End
+0005 Call time 'R'
+0006 all_pairs=''
+0007 cnt.=0
+0008 i=0
+0009 /* first take all possible pairs 2<=x<y with x+y<=100 */
+0010 /* and compute the respective sums and products       */
+0011 /* count the number of times a sum or product occurs  */
+0012 Do x=2 To 98
+0013 Do y=x+1 To 100-x
+0014 x=right(x,2,0)
+0015 y=right(y,2,0)
+0016 all_pairs=all_pairs x'/'y
+0017 i=i+1
+0018 x.i=x
+0019 y.i=y
+0020 sum=x+y
+0021 prd=x*y
+0022 cnt.0s.sum=cnt.0s.sum+1
+0023 cnt.0p.prd=cnt.0p.prd+1
+0024 End
+0025 End
+0026 n=i
+0027 /* now compute the possible pairs for each sum sum_d.sum */
+0028 /*                                 and product prd_d.prd */
+0029 /* also the list of possible sums and products suml, prdl*/
+0030 sum_d.=''
+0031 prd_d.=''
+0032 suml=''
+0033 prdl=''
+0034 Do i=1 To n
+0035 x=x.i
+0036 y=y.i
+0037 x=right(x,2,0)
+0038 y=right(y,2,0)
+0039 sum=x+y
+0040 prd=x*y
+0041 cnt.0s.x.y=cnt.0s.sum
+0042 cnt.0p.x.y=cnt.0p.prd
+0043 sum_d.sum=sum_d.sum x'/'y
+0044 prd_d.prd=prd_d.prd x'/'y
+0045 If wordpos(sum,suml)=0 Then suml=suml sum
+0046 If wordpos(prd,prdl)=0 Then prdl=prdl prd
+0047 End
+0048 Say n 'possible pairs'
+0049 Call o 'SUM'
+0050 suml=wordsort(suml)
+0051 prdl=wordsort(prdl)
+0052 sumlc=suml
+0053 si=0
+0054 pi=0
+0055 Do While sumlc>''
+0056 Parse Var sumlc sum sumlc
+0057 si=si+1
+0058 sum.si=sum
+0059 si.sum=si
+0060 If sum=17 Then sx=si
+0061 temp=prdl
+0062 Do While temp>''
+0063 Parse Var temp prd temp
+0064 If si=1 Then Do
+0065 pi=pi+1
+0066 prd.pi=prd
+0067 pi.prd=pi
+0068 If prd=52 Then px=pi
+0069 End
+0070 A.prd.sum='+'
+0071 End
+0072 End
+0073 sin=si
+0074 pin=pi
+0075 Call o 'SUM'
+0076 Do si=1 To sin
+0077 Call o f5(si) f3(sum.si)
+0078 End
+0079 Call o 'PRD'
+0080 Do pi=1 To pin
+0081 Call o f5(pi) f6(prd.pi)
+0082 End
+0083 a.='-'
+0084 Do pi=1 To pin
+0085 prd=prd.pi
+0086 Do si=1 To sin
+0087 sum=sum.si
+0088 Do sj=1 To words(sum_d.sum)
+0089 If wordpos(word(sum_d.sum,sj),prd_d.prd)>0 Then
+0090 Parse Value word(sum_d.sum,sj) with x '/' y
+0091 prde=x*y
+0092 sume=x+y
+0093 pa=pi.prde
+0094 sa=si.sume
+0095 a.pa.sa='+'
+0096 End
+0097 End
+0098 End
+0099 Call show '1'
+0100 
+0101 Do pi=1 To pin
+0102 prow=''
+0103 cnt=0
+0104 Do si=1 To sin
+0105 If a.pi.si='+' Then Do
+0106 cnt=cnt+1
+0107 pj=pi
+0108 sj=si
+0109 End
+0110 End
+0111 If cnt=1 Then
+0112 a.pj.sj='1'
+0113 End
+0114 Call show '2'
+0115 
+0116 Do si=1 To sin
+0117 Do pi=1 To pin
+0118 If a.pi.si='1' Then Leave
+0119 End
+0120 If pi<=pin Then Do
+0121 Do pi=1 To pin
+0122 If a.pi.si='+' Then
+0123 a.pi.si='2'
+0124 End
+0125 End
+0126 End
+0127 Call show '3'
+0128 
+0129 Do pi=1 To pin
+0130 prow=''
+0131 Do si=1 To sin
+0132 prow=prow||a.pi.si
+0133 End
+0134 If count('+',prow)>1 Then Do
+0135 Do si=1 To sin
+0136 If a.pi.si='+' Then
+0137 a.pi.si='3'
+0138 End
+0139 End
+0140 End
+0141 Call show '4'
+0142 
+0143 Do si=1 To sin
+0144 scol=''
+0145 Do pi=1 To pin
+0146 scol=scol||a.pi.si
+0147 End
+0148 If count('+',scol)>1 Then Do
+0149 Do pi=1 To pin
+0150 If a.pi.si='+' Then
+0151 a.pi.si='4'
+0152 End
+0153 End
+0154 End
+0155 Call show '5'
+0156 
+0157 sol=0
+0158 Do pi=1 To pin
+0159 Do si=1 To sin
+0160 If a.pi.si='+' Then Do
+0161 Say sum.si prd.pi
+0162 sum=sum.si
+0163 prd=prd.pi
+0164 sol=sol+1
+0165 End
+0166 End
+0167 End
+0168 Say sol 'solution(s)'
+0169 Say '            possible pairs'
+0170 Say 'Product='prd prd_d.52
+0171 Say '    Sum='sum sum_d.17
+0172 Say 'The only pair in both lists is 04/13.'
+0173 Say 'Elapsed time:' time('E') 'seconds'
+0174 Exit
+0175 show:
+0176 If debug Then Do
+0177 Call o 'show' arg(1)
+0178 Do pi=1 To 60
+0179 ol=''
+0180 Do si=1 To 60
+0181 ol=ol||a.pi.si
+0182 End
+0183 Call o ol
+0184 End
+0185 Say 'a.'px'.'sx'='a.px.sx
+0186 End
+0187 Return
+0188 
+0189 Exit
+0190 o: Return lineout(oid,arg(1))
+0191 f3: Return format(arg(1),3)
+0192 f4: Return format(arg(1),4)
+0193 f5: Return format(arg(1),5)
+0194 f6: Return format(arg(1),6)
+0195 
+0196 count: Procedure
+0197 Parse Arg c,s
+0198 s=translate(s,c,c||xrange('00'x,'ff'x))
+0199 s=space(s,0)
+0200 Return length(s)
+0201 wordsort: Procedure
+0202 /**********************************************************************
+0203 * Sort the list of words supplied as argument. Return the sorted list
+0204 **********************************************************************/
+0205 Parse Arg wl
+0206 wa.=''
+0207 wa.0=0
+0208 Do While wl<>''
+0209 Parse Var wl w wl
+0210 Do i=1 To wa.0
+0211 If wa.i>w Then Leave
+0212 End
+0213 If i<=wa.0 Then Do
+0214 Do j=wa.0 To i By -1
+0215 ii=j+1
+0216 wa.ii=wa.j
+0217 End
+0218 End
+0219 wa.i=w
+0220 wa.0=wa.0+1
+0221 End
+0222 swl=''
+0223 Do i=1 To wa.0
+0224 swl=swl wa.i
+0225 End
+0226 /* Say swl */
+0227 Return strip(swl)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 wl               209 209
+002 w                209
+003 i                210 223
+004 j                214
+005 ii               215
+006 wa.              216 219 220
+007 swl              222 224
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

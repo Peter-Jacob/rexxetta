@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX pgm demonstrates various jumps (GOTOs).  In REXX, it's a SIGNAL. */
+0002 say 'starting...'
+0003 signal aJump
+0004 say 'this statement is never executed.'
+0005 
+0006 aJump:  say 'and here we are at aJump.'
+0007 do j=1  to 10
+0008 say  'j=' j
+0009 if j==7 then signal bJump
+0010 end  /*j*/
+0011 bJump:  say 'and here we are at bJump.'
+0012 
+0013 signal cJump
+0014 say 'this statement is never executed.'
+0015 do k=1 to 10
+0016 say 'k=' k
+0017 cJump:  say 'and here we are at cJump.'
+0018 exit
+0019 end  /*k*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                7
+002 k                15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

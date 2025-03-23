@@ -1,0 +1,91 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /* REXX **************************************************************
+0002 * While REXX can multiply arbitrary large integers
+0003 * here is the algorithm asked for by the task description
+0004 * 13.05.2013 Walter Pachl
+0005 *********************************************************************/
+0006 cnt.=0
+0007 Numeric Digits 100
+0008 Call test 123 123
+0009 Call test 12 12
+0010 Call test 123456789012 44444444444
+0011 Call test 2**64 2**64
+0012 Call test 0 0
+0013 say cnt.0ok 'ok'
+0014 say cnt.0nok 'not ok'
+0015 Exit
+0016 test:
+0017 Parse Arg a b
+0018 soll=a*b
+0019 haben=multiply(a b)
+0020 Say 'soll =' soll
+0021 Say 'haben=' haben
+0022 If haben<>soll Then
+0023 cnt.0nok=cnt.0nok+1
+0024 Else
+0025 cnt.0ok=cnt.0ok+1
+0026 Return
+0027 
+0028 multiply: Procedure
+0029 /* REXX **************************************************************
+0030 * Multiply(a b) -> a*b
+0031 *********************************************************************/
+0032 Parse Arg a b
+0033 Call s2a 'a'
+0034 Call s2a 'b'
+0035 r.=0
+0036 rim=1
+0037 r0=0
+0038 Do bi=1 To b.0
+0039 Do ai=1 To a.0
+0040 ri=ai+bi-1
+0041 p=a.ai*b.bi
+0042 Do i=ri by 1 Until p=0
+0043 s=r.i+p
+0044 r.i=s//10
+0045 p=s%10
+0046 End
+0047 rim=max(rim,i)
+0048 End
+0049 End
+0050 res=strip(a2s('r'),'L','0')
+0051 If res='' Then
+0052 res='0'
+0053 Return res
+0054 
+0055 s2a:
+0056 /**********************************************************************
+0057 * copy characters of a string into a corresponding array
+0058 * digits are numbered 1 to n fron right to left
+0059 **********************************************************************/
+0060 Parse arg name
+0061 string=value(name)
+0062 lstring=length(string)
+0063 do z=1 to lstring
+0064 Call value name'.'z,substr(string,lstring-z+1,1)
+0065 End
+0066 Call value name'.0',lstring
+0067 Return
+0068 
+0069 a2s:
+0070 /**********************************************************************
+0071 * turn the array of digits into a string
+0072 **********************************************************************/
+0073 call trace 'o'
+0074 Parse Arg name
+0075 ol=''
+0076 Do z=rim To 1 By -1
+0077 ol=ol||value(name'.z')
+0078 End
+0079 Return ol
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 name             74
+002 ol               75 77
+003 z                76
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

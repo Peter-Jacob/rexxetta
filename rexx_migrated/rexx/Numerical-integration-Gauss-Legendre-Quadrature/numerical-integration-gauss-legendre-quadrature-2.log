@@ -1,0 +1,69 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program does numerical integration using an N─point Gauss─Legendre quadrature rule.   */
+0002 pi= pi();     digs= length(pi) - length(.);          numeric digits digs;       reps= digs % 2
+0003 
+0004 !.= .;        b= 3;        a= -b;       bma= b - a;          bmaH= bma / 2;     tiny= '1e-'digs
+0005 trueV= exp(b)-exp(a);                   bpa= b + a;          bpaH= bpa / 2
+0006 hdr= 'iterate value       (with '   digs   " decimal digits being used)"
+0007 say ' step '  center(hdr, digs+3)    '  difference'                  /*show hdr*/
+0008 sep='──────'  copies("─", digs+3)    '─────────────';      say sep   /*  "  sep*/
+0009 
+0010 do #=1  until dif>0;  p0z= 1;  p0.1= 1;  p1z= 2;  p1.1= 1;  p1.2= 0;  ##= # + .5;  r.= 0
+0011 /*█*/   do k=2  to #;  km= k - 1
+0012 /*█*/                     do y=1  for p1z;   T.y= p1.y;                           end  /*y*/
+0013 /*█*/   T.y= 0;  TT.= 0;          do L=1  for p0z;   _= L + 2;   TT._= p0.L;      end  /*L*/
+0014 /*█*/   kkm= k + km;      do j=1  for p1z  +1;       T.j= (kkm*T.j - km*TT.j)/k;  end  /*j*/
+0015 /*█*/   p0z= p1z;         do n=1  for p0z;           p0.n= p1.n                ;  end  /*n*/
+0016 /*█*/   p1z= p1z + 1;     do p=1  for p1z;           p1.p= T.p                 ;  end  /*p*/
+0017 /*█*/   end   /*k*/
+0018 /*▓*/       do !=1  for #;             x= cos( pi * (! - .25)  /  ## )
+0019 /*▓*/           /*░*/   do reps  until abs(dx) <= tiny
+0020 /*▓*/           /*░*/   f= p1.1;  df= 0;   do u=2  to p1z; df= f +  x*df
+0021 /*▓*/           /*░*/                                       f= p1.u +x*f
+0022 /*▓*/           /*░*/                      end   /*u*/
+0023 /*▓*/           /*░*/   dx= f / df;   x= x - dx
+0024 /*▓*/           /*░*/   end             /*reps ···*/
+0025 /*▓*/       r.1.!= x
+0026 /*▓*/       r.2.!= 2 / ( (1 - x*x) * df*df)
+0027 /*▓*/       end   /*!*/
+0028 $= 0
+0029 /*▒*/ do m=1  for #;   $=$ + r.2.m * exp(bpaH + r.1.m*bmaH);    end  /*m*/
+0030 z= bmaH * $                                                    /*calculate target value (Z)*/
+0031 dif= z - trueV;            z= format(z, 3, digs - 2)           /*    "     difference.     */
+0032 Ndif= translate( format(dif, 3, 4, 2, 0),  'e',  "E")
+0033 if #\==1  then  say center(#, 6)      z' '      Ndif           /*no display if not computed*/
+0034 end   /*#*/
+0035 
+0036 say sep;  xdif= compare( strip(z), trueV);                       say right("↑", 6 + 1 + xdif)
+0037 say  left('', 6 + 1)      trueV         " {exact value}";        say
+0038 say 'Using '      digs      " digit precision, the" ,
+0039 'N-point Gauss─Legendre quadrature (GLQ) had an accuracy of '      xdif-2       " digits."
+0040 exit 0                                                /*stick a fork in it,  we're all done. */
+0041 /*───────────────────────────────────────────────────────────────────────────────────────────*/
+0042 e:   return 2.718281828459045235360287471352662497757247093699959574966967627724076630353547595
+0043 pi:  return 3.141592653589793238462643383279502884197169399375105820974944592307816406286286209
+0044 /*───────────────────────────────────────────────────────────────────────────────────────────*/
+0045 cos: procedure  expose !.; parse arg x;   if !.x\==.  then return !.x;   _= 1;   z=1;  y= x*x
+0046 do k=2  by 2  until p==z; p=z; _= -_*y/(k*(k-1)); z=z+_; end;  !.x=z;  return z
+0047 /*───────────────────────────────────────────────────────────────────────────────────────────*/
+0048 exp: procedure; parse arg x; ix= x % 1;  if abs(x-ix)>.5  then ix= ix + sign(x); x= x-ix;  z= 1
+0049 _=1;  do j=1  until p==z; p=z;  _= _*x/j;  z= z+_;   end;    return z * e()**ix
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                48 48
+002 ix               48 48
+003 z                48 49
+004 j                49
+005 p                49
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           4 46
+002 ##               -> newV2            10
+003 #                -> newV3            10
+004 _                -> newV4            13 45 46 49 49
+005 !                -> newV5            18
+006 $                -> newV6            28 29

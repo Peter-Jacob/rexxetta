@@ -1,0 +1,49 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * Extra credit
+0003 * Instead of using the datatype built-in function one could use this
+0004 *--------------------------------------------------------------------*/
+0005 Call testi 25.000000
+0006 Call testi 24.999999
+0007 Call testi 25.000100
+0008 Call testi  0.9999999
+0009 Call testi -0.9999999
+0010 Exit
+0011 
+0012 testi:
+0013 Parse Arg x
+0014 If pos('.',x)>0 Then Do
+0015 xx=abs(x)
+0016 Parse Value abs(xx) With '.' d
+0017 d5=left(d,5,0)
+0018 End
+0019 Else d5=''
+0020 If d5='' | wordpos(d5,'00000 99999')>0 Then
+0021 Say x 'is an integer'
+0022 Else
+0023 Say x 'isn''t an integer'
+0024 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                13
+002 xx               15
+003 NORMAL.3         
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 d                16
+016 d5               17
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

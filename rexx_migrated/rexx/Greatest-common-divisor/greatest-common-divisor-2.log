@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * using PL/I code extended to many arguments
+0003 * 17.08.2012 Walter Pachl
+0004 * 18.08.2012 gcd(0,0)=0
+0005 **********************************************************************/
+0006 numeric digits 300                  /*handle up to 300 digit numbers.*/
+0007 Call test  7,21     ,'7 '
+0008 Call test  4,7      ,'1 '
+0009 Call test 24,-8     ,'8'
+0010 Call test 55,0      ,'55'
+0011 Call test 99,15     ,'3 '
+0012 Call test 15,10,20,30,55,'5'
+0013 Call test 496,8128  ,'16'
+0014 Call test 496,8128  ,'8'            /* test wrong expectation        */
+0015 Call test 0,0       ,'0'            /* by definition                 */
+0016 Exit
+0017 
+0018 test:
+0019 /**********************************************************************
+0020 * Test the gcd function
+0021 **********************************************************************/
+0022 n=arg()                             /* Number of arguments           */
+0023 gcde=arg(n)                         /* Expected result               */
+0024 gcdx=gcd(arg(1),arg(2))             /* gcd of the first 2 numbers    */
+0025 Do i=2 To n-2                       /* proceed with all the others   */
+0026 If arg(i+1)<>0 Then
+0027 gcdx=gcd(gcdx,arg(i+1))
+0028 End
+0029 If gcdx=arg(arg()) Then             /* result is as expected         */
+0030 tag='as expected'
+0031 Else                                /* result is not correct         */
+0032 Tag='*** wrong. expected:' gcde
+0033 numbers=arg(1)                      /* build string to show the input*/
+0034 Do i=2 To n-1
+0035 numbers=numbers 'and' arg(i)
+0036 End
+0037 say left('the GCD of' numbers 'is',45) right(gcdx,3) tag
+0038 Return
+0039 
+0040 GCD: procedure
+0041 /**********************************************************************
+0042 * Recursive procedure as shown in PL/I
+0043 **********************************************************************/
+0044 Parse Arg a,b
+0045 if b = 0 then return abs(a)
+0046 return GCD(b,a//b)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                44
+002 b                44
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

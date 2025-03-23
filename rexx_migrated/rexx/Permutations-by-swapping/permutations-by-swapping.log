@@ -1,0 +1,76 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program  generates all  permutations  of   N   different objects by  swapping.   */
+0002 parse arg things bunch .                         /*obtain optional arguments from the CL*/
+0003 if things=='' | things==","  then things=4       /*Not specified?  Then use the default.*/
+0004 if bunch =='' | bunch ==","  then bunch =things  /* "      "         "   "   "     "    */
+0005 call permSets things, bunch                      /*invoke permutations by swapping sub. */
+0006 exit                                             /*stick a fork in it,  we're all done. */
+0007 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0008 !:        procedure;  !=1;        do j=2  to arg(1);    !=!*j;     end;           return !
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 permSets: procedure; parse arg x,y               /*take   X  things   Y   at a time.    */
+0011 !.=0;      pad=left('', x*y)           /*X can't be > length of below str (62)*/
+0012 z=left('123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', x);  q=z
+0013 #=1                                    /*the number of permutations  (so far).*/
+0014 !.z=1;    s=1;   times=!(x) % !(x-y)   /*calculate (#) TIMES  using factorial.*/
+0015 w=max(length(z), length('permute') )   /*maximum width of  Z and also PERMUTE.*/
+0016 say center('permutations for '   x   ' things taken '   y   " at a time",60,'═')
+0017 say
+0018 say   pad    'permutation'       center("permute", w, '─')         "sign"
+0019 say   pad    '───────────'       center("───────", w, '─')         "────"
+0020 say   pad    center(#, 11)       center(z        , w)              right(s, 4-1)
+0021 
+0022 do $=1   until  #==times            /*perform permutation until # of times.*/
+0023 do   k=1    for x-1               /*step thru things for  things-1 times.*/
+0024 do m=k+1  to  x;      ?=        /*this method doesn't use  adjacency.  */
+0025 do n=1  for x               /*build the new permutation by swapping*/
+0026 if n\==k & n\==m  then               ? =  ?  ||  substr(z, n, 1)
+0027 else if n==k  then ? =  ?  ||  substr(z, m, 1)
+0028 else ? =  ?  ||  substr(z, k, 1)
+0029 end   /*n*/
+0030 z=?                             /*save this permutation for next swap. */
+0031 if !.?  then iterate m          /*if defined before, then try next one.*/
+0032 _=0                             /* [↓]  count number of swapped symbols*/
+0033 do d=1  for x  while $\==1;  _= _ + (substr(?,d,1)\==substr(prev,d,1))
+0034 end   /*d*/
+0035 if _>2  then do;        _=z
+0036 a=$//x+1;  q=q + _ /* [← ↓]  this swapping tries adjacency*/
+0037 b=q//x+1;  if b==a  then b=a + 1;       if b>x  then b=a - 1
+0038 z=overlay( substr(z,b,1), overlay( substr(z,a,1), _, b),  a)
+0039 iterate $          /*now, try this particular permutation.*/
+0040 end
+0041 #=#+1;  s= -s;   say pad   center(#, 11)    center(?, w)    right(s, 4-1)
+0042 !.?=1;  prev=?;      iterate $  /*now, try another swapped permutation.*/
+0043 end   /*m*/
+0044 end     /*k*/
+0045 end       /*$*/
+0046 return                                 /*we're all finished with permutating. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                10
+002 y                10
+003 pad              11
+004 z                12 30 38
+005 q                12 36
+006 s                14 41
+007 times            14
+008 w                15
+009 k                23
+010 m                24
+011 n                25
+012 d                33
+013 a                36
+014 b                37 37 37
+015 prev             42
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           11 14 42
+002 !                -> newV2            8 8
+003 #                -> newV3            13 41
+004 $                -> newV4            22
+005 ?                -> newV5            24 26
+006 _                -> newV6            32 33 35

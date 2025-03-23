@@ -1,0 +1,47 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program reorders a set of random colored balls into a correct order, which is the*/
+0002 /*────────────────────────────────── order of colors on the Dutch flag:  red white blue.*/
+0003 parse arg N colors                               /*obtain optional arguments from the CL*/
+0004 if N='' |  N=","  then N=15                      /*Not specified?  Then use the default.*/
+0005 if colors=''      then colors= "RWB"             /*use default:  R=red, W=white, B=blue */
+0006 #=length(colors)                                 /*count the number of colors specified.*/
+0007 @=right(colors, 1)left(colors, 1)                /*ensure balls aren't already in order.*/
+0008 
+0009 do g=3  to N                                 /*generate a random # of colored balls.*/
+0010 @=@ ||substr( colors, random(1, #), 1)       /*append a color (1char) to the @ list.*/
+0011 end   /*g*/
+0012 
+0013 say 'number of colored balls generated = '    N      ;    say
+0014 say center(' original ball order ', max(30,2*#), "─")
+0015 say @                                                ;    say
+0016 $=;                          do j=1  for #;             _=substr(colors, j, 1)
+0017 #=length(@) - length( space( translate(@, , _),   0) )
+0018 $=$ || copies(_, #)
+0019 end   /*j*/
+0020 say center(' sorted  ball order ', max(30, 2*#), "─")
+0021 say $
+0022 say
+0023 do k=2  to N                                 /*verify the balls are in correct order*/
+0024 if pos(substr($,k,1), colors) >= pos(substr($,k-1,1), colors)  then iterate
+0025 say "The list of sorted balls isn't in proper order!";         exit 13
+0026 end   /*k*/
+0027 say
+0028 say 'The sorted colored ball list has been confirmed as being sorted correctly.'
+0029 exit                                             /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                3 4
+002 colors           3 5
+003 g                9
+004 j                16
+005 k                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            6 17
+002 @                -> newV2            7 10
+003 $                -> newV3            16 18
+004 _                -> newV4            16

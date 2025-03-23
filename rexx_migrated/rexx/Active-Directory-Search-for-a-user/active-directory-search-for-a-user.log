@@ -1,0 +1,49 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /* Rexx */
+0002 do
+0003 LDAP_URL        = 'ldap://localhost:11389'
+0004 LDAP_DN_STR     = 'uid=admin,ou=system'
+0005 LDAP_CREDS      = '********'
+0006 LDAP_BASE_DN    = 'ou=users,o=mojo'
+0007 LDAP_SCOPE      = 'sub'
+0008 LDAP_FILTER     = '"(&(objectClass=person)(&(uid=*mil*)))"'
+0009 LDAP_ATTRIBUTES = '"dn" "cn" "sn" "uid"'
+0010 
+0011 ldapCommand =               ,
+0012 'ldapsearch'              ,
+0013 '-s base'                 ,
+0014 '-H' LDAP_URL             ,
+0015 '-LLL'                    ,
+0016 '-x'                      ,
+0017 '-v'                      ,
+0018 '-s' LDAP_SCOPE           ,
+0019 '-D' LDAP_DN_STR          ,
+0020 '-w' LDAP_CREDS           ,
+0021 '-b' LDAP_BASE_DN         ,
+0022 LDAP_FILTER               ,
+0023 LDAP_ATTRIBUTES           ,
+0024 ''
+0025 
+0026 say ldapCommand
+0027 address command,
+0028 ldapCommand
+0029 
+0030 return
+0031 end
+0032 exit
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 LDAP_URL         3
+002 LDAP_DN_STR      4
+003 LDAP_CREDS       5
+004 LDAP_BASE_DN     6
+005 LDAP_SCOPE       7
+006 LDAP_FILTER      8
+007 LDAP_ATTRIBUTES  9
+008 ldapCommand      11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

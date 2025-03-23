@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program  generates and displays a Mandelbrot set as an ASCII art character image.*/
+0002 @ = '█▓▒░@9876543210=.-,+*)(·&%$#"!'             /*the characters used in the display.  */
+0003 parse arg Xsize Ysize .                          /*obtain optional arguments from the CL*/
+0004 if Xsize==''  then Xsize=linesize() - 1          /*X:  the (usable) linesize  (minus 1).*/
+0005 if Ysize==''  then Ysize=Xsize%2 + (Xsize//2==1) /*Y:  half the linesize (make it even).*/
+0006 minRE = -2;     maxRE = +1;       stepX = (maxRE-minRE) / Xsize
+0007 minIM = -1;     maxIM = +1;       stepY = (maxIM-minIM) / Ysize
+0008 
+0009 do y=0  for ysize;      im=minIM + stepY*y
+0010 $=
+0011 do x=0  for Xsize;   re=minRE + stepX*x;    zr=re;    zi=im
+0012 
+0013 do n=0  for 30;  a=zr**2;   b=zi**2;    if a+b>4  then leave
+0014 zi=zr*zi*2 + im;            zr=a-b+re
+0015 end   /*n*/
+0016 
+0017 $=$ || substr(@, n+1, 1)                 /*append number (as a char) to $ string*/
+0018 end       /*x*/
+0019 say $                                          /*display a line of  character  output.*/
+0020 end             /*y*/                          /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 Xsize            3 4
+002 Ysize            3 5
+003 minRE            6
+004 maxRE            6
+005 stepX            6
+006 minIM            7
+007 maxIM            7
+008 stepY            7
+009 y                9
+010 im               9
+011 x                11
+012 re               11
+013 zr               11 14
+014 zi               11 14
+015 n                13
+016 a                13
+017 b                13
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            2
+002 $                -> newV2            10 17

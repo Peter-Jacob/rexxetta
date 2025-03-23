@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 17.05.2013 Walter Pachl
+0003 * should work with every REXX.
+0004 * I use 0xxx for the tail because this can't be modified
+0005 **********************************************************************/
+0006 USA.=''; USA.0=0
+0007 Call add_usa 'Boston','MA','51 Franklin Street',,'FSF Inc.',,
+0008 '02110-1301'
+0009 Call add_usa 'Washington','DC','The Oval Office',,
+0010 '1600 Pennsylvania Avenue NW','The White House',20500
+0011 call list_usa
+0012 Exit
+0013 
+0014 add_usa:
+0015 z=usa.0+1
+0016 Parse Arg usa.z.0city,,
+0017 usa.z.0state,,
+0018 usa.z.0addr,,
+0019 usa.z.0addr2,,
+0020 usa.z.0name,,
+0021 usa.z.0zip
+0022 usa.0=z
+0023 Return
+0024 
+0025 list_usa:
+0026 Do z=1 To usa.0
+0027 Say '  name -->' usa.z.0name
+0028 Say '  addr -->' usa.z.0addr
+0029 If usa.z.0addr2<>'' Then Say ' addr2 -->' usa.z.0addr2
+0030 Say '  city -->' usa.z.0city
+0031 Say ' state -->' usa.z.0state
+0032 Say '   zip -->' usa.z.0zip
+0033 Say copies('-',40)
+0034 End
+0035 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 usa.             16 22
+002 z                26
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

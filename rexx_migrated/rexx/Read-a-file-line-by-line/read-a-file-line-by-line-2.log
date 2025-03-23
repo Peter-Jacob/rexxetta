@@ -1,0 +1,24 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /* Also works with Regina if you state OPTIONS AREXX_BIFS ; OPTIONS AREXX_SEMANTICS */
+0002 filename='file.txt'
+0003 contents=''
+0004 IF Open(filehandle,filename,'READ')
+0005 THEN DO UNTIL EOF(filehandle)
+0006 line=ReadLn(filehandle)
+0007 SAY line
+0008 contents=contents || line || '0a'x
+0009 END
+0010 ELSE EXIT 20
+0011 CALL Close filehandle
+0012 EXIT 0
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 filename         2
+002 contents         3 8
+003 line             6
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

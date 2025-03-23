@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX pgm shows current date:  yyyy-mm-dd  &  Dayofweek, Month dd, yyyy*/
+0002 x = date('S')                       /*get current date as  yyyymmdd  */
+0003 yyyy = left(x,4)                       /*pick off year         (4 digs).*/
+0004 dd = right(x,2)                      /*pick off day-of-month (2 digs).*/
+0005 mm = substr(x,5,2)                   /*pick off month number (2 digs).*/
+0006 say yyyy'-'mm"-"dd                     /*yyyy-mm-dd with leading zeroes.*/
+0007 
+0008 weekday = date('W')                    /*dayofweek (Monday or somesuch).*/
+0009 month   = date('M')                    /*Month     (August or somesuch).*/
+0010 zdd     = dd+0                         /*remove leading zero from  DD   */
+0011 say weekday',' month zdd"," yyyy       /*format date as:  Month dd, yyyy*/
+0012 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                2
+002 yyyy             3
+003 dd               4
+004 mm               5
+005 weekday          8
+006 month            9
+007 zdd              10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,60 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program plays the NIM game with a human opponent; the pot size can be specified. */
+0002 parse arg pot _ . 1 __                           /*obtain optional argument from the CL.*/
+0003 if pot=='' | pot==","  then pot= 12              /*Not specified?  Then use the default.*/
+0004 if _\==''       then do; call ser "Too many arguments entered: "    __;     exit 13;   end
+0005 if \isNum(pot)  then do; call ser "argument isn't numeric: "       pot;     exit 13;   end
+0006 if \isInt(pot)  then do; call ser "argument isn't an integer: "    pot;     exit 13;   end
+0007 if pot<4        then do; call ser "The pot number is too small: "  pot;     exit 13;   end
+0008 if pot>100      then do; call ser "The pot number is too large: "  pot;     exit 13;   end
+0009 pad= copies('─', 8)                              /*literal used as an eyecatcher in msgs*/
+0010 pot= pot/1                                       /*normalize the pot  (number).         */
+0011 t= pot//4
+0012 if pot>12 & t\==0  then do;        say pad 'The computer takes '      t      " token"s(t).
+0013 pot= pot - t
+0014 end
+0015 
+0016 do forever;   call show pot
+0017 do  until ok;                   ok= 1;              say
+0018 say pad "How many tokens do you want to take away  (1, 2, or 3)    (or QUIT)?"
+0019 parse pull t _ . 1 q 1 __;      upper q;            say
+0020 if abbrev('QUIT',q,1)  then do;  say pad 'Quitting.';         exit 1;      end
+0021 if t=''                then call ser "No arguments entered."
+0022 if _\==''              then call ser "Too many arguments entered: "        __
+0023 if \isNum(t)           then call ser "Argument isn't numeric: "             t
+0024 if \isInt(t)           then call ser "Argument isn't an integer: "          t
+0025 if t<1                 then call ser "Argument can't be less than 1: "      t
+0026 if t>3                 then call ser "Argument can't be greater than 3: "   t
+0027 end   /*while*/
+0028 t= t/1                                      /*Normalize the number:  001   2.  +3  */
+0029 #= max(1, 4-t)                              /*calculate the computer's take─away.  */
+0030 say pad 'The computer takes '    #    " token"s(#).
+0031 pot= pot - t - #                            /*calculate the number of tokens in pot*/
+0032 if pot==0  then do;   say pad 'No tokens left.'       /*No tokens left in the pot? */
+0033 say pad "The computer wins!"    /*Display a braggart message.*/
+0034 exit                            /*exit this computer program.*/
+0035 end
+0036 end   /*forever*/                           /*keep looping until there's a winner. */
+0037 exit                                             /*stick a fork in it,  we're all done. */
+0038 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0039 isNum: return datatype( arg(1), 'N')             /*verify that the arg is a  number.    */
+0040 isInt: return datatype( arg(1), 'W')             /*   "     "   "   "   " an integer.   */
+0041 show:  say;  say pad "Tokens remaining: "  arg(1)' ' pad;  say;  return
+0042 s:     if arg(1)==1  then return arg(3);                         return word(arg(2) 's',1)
+0043 ser:   if ok  then say pad '***error***' arg(1);       ok= 0;    return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             19
+002 t                19 28
+003 q                19
+004 pot              31
+005 ok               43
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 __               -> newV1            2 19
+002 _                -> newV2            2 19
+003 #                -> newV3            29

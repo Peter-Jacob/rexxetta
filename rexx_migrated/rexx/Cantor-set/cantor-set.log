@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX program displays an ASCII diagram of a Canter Set as a set of (character) lines. */
+0002 w= linesize()                                    /*obtain the width of the display term.*/
+0003 if w==0  then w= 81                              /*Can't obtain width?  Use the default.*/
+0004 do lines=0;   _ = 3 ** lines  /*calculate powers of three  (# lines).*/
+0005 if _>w  then leave            /*Too large?  We passed the max value. */
+0006 #=_                           /*this value of a width─of─line is OK. */
+0007 end   /*lines*/               /* [↑]  calculate a useable line width.*/
+0008 w= #                                             /*use the (last) useable line width.   */
+0009 $= copies('■', #)                                /*populate the display line with blocks*/
+0010 do j=0  until #==0            /*show Cantor set as a line of chars.  */
+0011 if j>0  then do k=#+1  by  #+#  to w         /*skip 1st line blanking*/
+0012 $= overlay( left('', #), $, k)  /*blank parts of a line.*/
+0013 end   /*j*/
+0014 say $                         /*display a line of the Cantor Set.    */
+0015 #= # % 3                      /*the part (thirds) to be blanked out. */
+0016 end   /*j*/                   /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 w                2 3 8
+002 lines            4
+003 j                10
+004 k                11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            4
+002 #                -> newV2            6 15
+003 $                -> newV3            9 12

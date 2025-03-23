@@ -1,0 +1,39 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program finds the largest  hexadecimal  integer divisible by all its hex digits. */
+0002 numeric digits 20                                /*be able to handle the large hex nums.*/
+0003 bigH= 'fedcba987654321'                          /*biggest number possible, hexadecimal.*/
+0004 bigN= x2d(bigH)                                  /*   "       "       "     decimal.    */
+0005 $= 15 * 14 * 13 * 12 * 11                        /*a # that it must divide the found #. */
+0006 t= 0                                             /*the number of divisibility trials.   */
+0007 do #=bigN % $ * $       by -$               /*search from largest poss. # downwards*/
+0008 if # // $    \==0  then iterate             /*Not divisible?   Then keep searching.*/
+0009 h= d2x(#)                                   /*convert decimal number to hexadecimal*/
+0010 if pos(0, h) \==0  then iterate             /*does hexadecimal number contain a 0? */
+0011 t= t+1                                      /*curiosity's sake, track # of trials. */
+0012 do j=1  for length(h) - 1            /*look for a possible duplicated digit.*/
+0013 if pos( substr(h, j, 1),  h, j+1) \==0  then iterate #
+0014 end   /*j*/                          /* [↑]  Not unique? Then keep searching*/
+0015 
+0016 do v=1  for length(h)                /*verify the # is divisible by all digs*/
+0017 if # // x2d(substr( h, v, 1)  )   \==0  then iterate #
+0018 end   /*v*/                          /* [↑]  ¬divisible?  Then keep looking.*/
+0019 leave                                       /*we found a number, so go display it. */
+0020 end          /*#*/
+0021 
+0022 say 'found '    h    "  (in "    t    ' trials)' /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 bigH             3
+002 bigN             4
+003 t                6 11
+004 h                9
+005 j                12
+006 v                16
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            5
+002 #                -> newV2            7

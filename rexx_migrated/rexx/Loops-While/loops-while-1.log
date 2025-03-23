@@ -1,0 +1,17 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates a  DO WHILE  with index reduction construct.*/
+0002 j=1024                                 /*define the initial value of  J.*/
+0003 do  while  j>0                 /*test if made at the top of  DO.*/
+0004 say j
+0005 j=j%2                          /*in REXX, % is integer division.*/
+0006 end
+0007 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                2 5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

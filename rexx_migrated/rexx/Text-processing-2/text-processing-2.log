@@ -1,0 +1,156 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program to process  instrument data  from a  data file.                */
+0002 numeric digits 20                      /*allow for bigger numbers.            */
+0003 ifid='READINGS.TXT'                    /*name of the   input  file.           */
+0004 ofid='READINGS.OUT'                    /*  "   "  "   output    "             */
+0005 grandSum=0                             /*grand sum of the whole file.         */
+0006 grandFlg=0                             /*grand number of flagged data.        */
+0007 grandOKs=0
+0008 Lflag=0                                /*longest period of flagged data.      */
+0009 Cflag=0                                /*longest continuous flagged data.     */
+0010 oldDate =0                             /*placeholder of penultimate date.     */
+0011 w       =16                            /*width of fields when displayed.      */
+0012 dupDates=0                             /*count of duplicated timestamps.      */
+0013 badFlags=0                             /*count of bad flags  (not integer).   */
+0014 badDates=0                             /*count of bad dates  (bad format).    */
+0015 badData =0                             /*count of bad data   (not numeric).   */
+0016 ignoredR=0                             /*count of ignored records, bad records*/
+0017 maxInstruments=24                      /*maximum number of instruments.       */
+0018 yyyyCurr=right(date(),4)               /*get the current year (today).        */
+0019 monDD.  =31                            /*number of days in every month.       */
+0020 /*# days in Feb. is figured on the fly.*/
+0021 monDD.4 =30
+0022 monDD.6 =30
+0023 monDD.9 =30
+0024 monDD.11=30
+0025 
+0026 do records=1  while lines(ifid)\==0  /*read until finished.                 */
+0027 rec=linein(ifid)                     /*read the next record (line).         */
+0028 parse var rec datestamp Idata        /*pick off the the dateStamp and data. */
+0029 if datestamp==oldDate  then do       /*found a duplicate timestamp.         */
+0030 dupDates=dupDates+1   /*bump the dupDate counter*/
+0031 call sy datestamp copies('~',30),
+0032 'is a duplicate of the',
+0033 "previous datestamp."
+0034 ignoredR=ignoredR+1     /*bump # of ignoredRecs.*/
+0035 iterate  /*ignore this duplicate record.        */
+0036 end
+0037 
+0038 parse var datestamp yyyy '-' mm '-' dd   /*obtain YYYY, MM, and the DD.     */
+0039 monDD.2=28+leapyear(yyyy)            /*how long is February in year  YYYY ? */
+0040 /*check for various bad formats.       */
+0041 if verify(yyyy||mm||dd,1234567890)\==0 |,
+0042 length(datestamp)\==10   |,
+0043 length(yyyy)\==4         |,
+0044 length(mm  )\==2         |,
+0045 length(dd  )\==2         |,
+0046 yyyy<1970                |,
+0047 yyyy>yyyyCurr            |,
+0048 mm=0  | dd=0             |,
+0049 mm>12 | dd>monDD.mm  then do
+0050 badDates=badDates+1
+0051 call sy datestamp copies('~'),
+0052 'has an illegal format.'
+0053 ignoredR=ignoredR+1  /*bump number ignoredRecs.*/
+0054 iterate              /*ignore this bad record. */
+0055 end
+0056 oldDate=datestamp                    /*save datestamp for the next read.    */
+0057 sum=0
+0058 flg=0
+0059 OKs=0
+0060 
+0061 do j=1  until Idata=''             /*process the instrument data.         */
+0062 parse var Idata data.j flag.j Idata
+0063 
+0064 if pos('.',flag.j)\==0 |,          /*does flag have a decimal point  -or- */
+0065 \datatype(flag.j,'W')  then do  /* ··· is the flag not a whole number? */
+0066 badFlags=badFlags+1 /*bump badFlags counter*/
+0067 call sy datestamp copies('~'),
+0068 'instrument' j "has a bad flag:",
+0069 flag.j
+0070 iterate       /*ignore it and it's data.   */
+0071 end
+0072 
+0073 if \datatype(data.j,'N')  then do  /*is the flag not a whole number?*/
+0074 badData=badData+1      /*bump counter.*/
+0075 call sy datestamp copies('~'),
+0076 'instrument' j "has bad data:",
+0077 data.j
+0078 iterate       /*ignore it & it's flag.*/
+0079 end
+0080 
+0081 if flag.j>0  then do               /*if good data, ~~~                    */
+0082 OKs=OKs+1
+0083 sum=sum+data.j
+0084 if Cflag>Lflag  then do
+0085 Ldate=datestamp
+0086 Lflag=Cflag
+0087 end
+0088 Cflag=0
+0089 end
+0090 else do               /*flagged data ~~~                     */
+0091 flg=flg+1
+0092 Cflag=Cflag+1
+0093 end
+0094 end   /*j*/
+0095 
+0096 if j>maxInstruments then do
+0097 badData=badData+1       /*bump the badData counter.*/
+0098 call sy datestamp copies('~'),
+0099 'too many instrument datum'
+0100 end
+0101 
+0102 if OKs\==0  then avg=format(sum/OKs,,3)
+0103 else avg='[n/a]'
+0104 grandOKs=grandOKs+OKs
+0105 _=right(commas(avg),w)
+0106 grandSum=grandSum+sum
+0107 grandFlg=grandFlg+flg
+0108 if flg==0  then  call sy datestamp ' average='_
+0109 else  call sy datestamp ' average='_ '  flagged='right(flg,2)
+0110 end   /*records*/
+0111 
+0112 records=records-1                      /*adjust for reading the  end─of─file. */
+0113 if grandOKs\==0  then grandAvg=format(grandsum/grandOKs,,3)
+0114 else grandAvg='[n/a]'
+0115 call sy
+0116 call sy copies('=',60)
+0117 call sy '      records read:'  right(commas(records ),w)
+0118 call sy '   records ignored:'  right(commas(ignoredR),w)
+0119 call sy '     grand     sum:'  right(commas(grandSum),w+4)
+0120 call sy '     grand average:'  right(commas(grandAvg),w+4)
+0121 call sy '     grand OK data:'  right(commas(grandOKs),w)
+0122 call sy '     grand flagged:'  right(commas(grandFlg),w)
+0123 call sy '   duplicate dates:'  right(commas(dupDates),w)
+0124 call sy '         bad dates:'  right(commas(badDates),w)
+0125 call sy '         bad  data:'  right(commas(badData ),w)
+0126 call sy '         bad flags:'  right(commas(badFlags),w)
+0127 if Lflag\==0 then call sy '   longest flagged:' right(commas(LFlag),w) " ending at " Ldate
+0128 call sy copies('=',60)
+0129 exit                                   /*stick a fork in it,  we're all  done.*/
+0130 /*────────────────────────────────────────────────────────────────────────────*/
+0131 commas: procedure;  parse arg _;   n=_'.9';    #=123456789;    b=verify(n,#,"M")
+0132 e=verify(n,#'0',,verify(n,#"0.",'M'))-4
+0133 do j=e  to b  by -3;   _=insert(',',_,j);    end  /*j*/;     return _
+0134 /*────────────────────────────────────────────────────────────────────────────*/
+0135 leapyear: procedure; arg y             /*year could be:  Y,  YY,  YYY, or YYYY*/
+0136 if length(y)==2 then y=left(right(date(),4),2)y      /*adjust for   YY   year.*/
+0137 if y//4\==0     then return 0          /* not divisible by 4?   Not a leapyear*/
+0138 return y//100\==0 | y//400==0          /*apply the 100  and the 400 year rule.*/
+0139 /*────────────────────────────────────────────────────────────────────────────*/
+0140 sy:     say arg(1);               call lineout ofid,arg(1);             return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                131
+002 b                131
+003 e                132
+004 j                133
+005 y                136
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            105 131 133
+002 #                -> newV2            131

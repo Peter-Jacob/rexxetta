@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program loops through a two-dimensional array to search for a  '20'    (twenty). */
+0002 parse arg rows cols targ .                       /*obtain optional arguments from the CL*/
+0003 if rows=='' | rows==","  then rows=60            /*Rows not specified?  Then use default*/
+0004 if cols=='' | cols==","  then cols=10            /*Cols  "      "         "   "     "   */
+0005 if targ=='' | targ==","  then targ=20            /*Targ  "      "         "   "     "   */
+0006 w=max(length(rows), length(cols), length(targ))  /*W:  used for formatting the output.  */
+0007 not= 'not'                                       /* [↓]  construct the 2─dimension array*/
+0008 do     row=1  for rows                 /*ROW  is the 1st dimension of array.  */
+0009 do col=1  for cols                 /*COL   "  "  2nd     "      "   "     */
+0010 @.row.col=random(1, targ)          /*create some positive random integers.*/
+0011 end   /*row*/
+0012 end       /*col*/
+0013 
+0014 do     r=1  for rows    /* ◄───────────────── now, search for the target {20}.*/
+0015 do c=1  for cols
+0016 say left('@.'r"."c, 3+w+w) '=' right(@.r.c, w)    /*show an array element.*/
+0017 if @.r.c==targ  then do; not=; leave r; end       /*found the targ number?*/
+0018 end   /*c*/
+0019 end       /*r*/
+0020 
+0021 say right( space( 'Target'  not  "found:" )    targ, 33, '─')
+0022 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 rows             2 3
+002 cols             2 4
+003 targ             2 5
+004 w                6
+005 not              7 17
+006 row              8
+007 col              9
+008 r                14
+009 c                15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           10

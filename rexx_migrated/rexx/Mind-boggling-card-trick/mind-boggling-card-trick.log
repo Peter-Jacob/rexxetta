@@ -1,0 +1,80 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX pgm mimics a boggling card trick; separates cards into 3 piles based on color ···*/
+0002 parse arg trials # shuffs seed .                 /*obtain optional arguments from the CL*/
+0003 if trials=='' | trials==","  then trials= 1000   /*Not specified?  Then use the default.*/
+0004 if      #=='' |      #==","  then      #=   52   /* "      "         "   "   "     "    */
+0005 if shuffs=='' | shuffs==","  then shuffs=  #%4   /* "      "         "   "   "     "    */
+0006 if datatype(seed, 'W')   then call random ,,seed /*if integer, use this as a RANDOM seed*/
+0007 ok=0                                             /*the number of "expected" good trials.*/
+0008 do trials               /*perform a number of trials to be safe*/
+0009 call create             /*odd numbers≡RED,  even numbers≡BLACK.*/
+0010 call shuffle            /*shuffle the deck a number of times.  */
+0011 call deal               /*put cards into three piles of cards. */
+0012 call swap               /*swap rand # of cards in  R & B  piles*/
+0013 call count              /*count #blacks in B, #reds in R  piles*/
+0014 end   /*trials*/        /*#: is the number of cards in the deck*/
+0015 pc= (100*ok/trials)'%'                           /*calculate the  %  asserted correctly.*/
+0016 say "Correctness of the mathematician's assertion:"    pc   '  (out of'    commas(trials),
+0017 "trial"s(trials)')  using a deck of '     commas(#)                                  ,
+0018 " card"s(#)',  and doing '                commas(shuffs)         ' shuffle's(shuffs).
+0019 exit                                             /*stick a fork in it,  we're all done. */
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 ?:       return random(1, word( arg(1) #, 1) )   /*gen a random number from  1 ──► arg. */
+0022 commas:  parse arg _;  do j=length(_)-3  to 1  by -3; _=insert(',', _, j); end;   return _
+0023 create:  @.=; k=0; do j=1  by 4  for #; k=k+1; @.k= j; if k//13==0 then j=j+1; end; return
+0024 isRed:   return    arg(1) // 2                   /*if  arg(1)  is odd,  the card is RED.*/
+0025 s:       if arg(1)==1  then return arg(3);  return word( arg(2) 's', 1)    /*pluralizer.*/
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 count:   Rn=0;  Bn=0;              do j=1  for words(R);  Rn=Rn+   isRed(word(R,j)) ;  end
+0028 do k=1  for words(B);  Bn=Bn+ (\isRed(word(B,k)));  end
+0029 if Rn==Bn  then ok= ok+1;        return /*Was it a good trial?  Bump OK counter*/
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 deal:    R=;  B=;  D=;             do j=1  for #%2  by 2        /*deal all the cards.   */
+0032 next= j+1;   card= @.next    /*obtain the next card. */
+0033 if isRed(@.j)  then R=R card /*add to the  RED  pile?*/
+0034 else B=B card /* "   "  "  BLACK   "  */
+0035 D= D @.j                     /* "   "  " discard  "  */
+0036 end   /*j*/
+0037 return                                                 /*discard pile not used.*/
+0038 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0039 shuffle:   do j=1  for shuffs;  x=?();    do until y\==x | #==1;   y=?();   end  /*until*/
+0040 parse value   @.x  @.y     with     @.y  @.x;  end  /*j*/;                 return
+0041 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0042 swap:    $= min( words(R), words(B) );          Rc=;   Bc= /*ensure we can swap $ cards.*/
+0043 if $==0  then return                              /*A pile has no cards? return*/
+0044 do ?($)                 /*$:  is the number of swaps.*/
+0045 R?= ?( words(R) )       /*a random card in  RED pile.*/
+0046 B?= ?( words(B) )       /*"    "     "   " BLACK  "  */
+0047 /* "reds"  to be swapped.*/    Rc= Rc word(R, R?);  R= delword(R, R?, 1)  /*del card*/
+0048 /*"blacks"  "  "    "    */    Bc= Bc word(B, B?);  B= delword(B, B?, 1)  /* "    " */
+0049 end   /*?($)*/
+0050 R=R Bc;  B=B Rc;   return                         /*add swapped cards to piles.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                22 23 23 27 31
+002 k                23 23 28
+003 Bn               27 28
+004 Rn               27
+005 ok               29
+006 B                31 48 50
+007 D                31 35
+008 next             32
+009 card             32
+010 R                33 47 50
+011 x                39
+012 until            39
+013 y                39
+014 NORMAL.14        
+015 Rc               42 47
+016 Bc               42 48
+017 R?               45
+018 B?               46
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           23 40 40
+002 #                -> newV2            2 4
+003 _                -> newV3            22 22

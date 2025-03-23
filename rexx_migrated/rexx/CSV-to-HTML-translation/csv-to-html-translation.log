@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX program converts   CSV  ───►  HTML  table   representing  the  CSV  data.        */
+0002 arg header_ .                                    /*obtain an uppercase version of args. */
+0003 wantsHdr= (header_=='HEADER')                    /*is the arg (low/upp/mix case)=HEADER?*/
+0004 /* [↑]  determine if user wants a hdr. */
+0005 iFID= 'CSV_HTML.TXT'           /*the   input  fileID  to be used.     */
+0006 if wantsHdr  then oFID= 'OUTPUTH.HTML'           /*the  output  fileID  with     header.*/
+0007 else oFID= 'OUTPUT.HTML'            /* "      "      "     without     "   */
+0008 
+0009 do rows=0  while  lines(iFID)\==0            /*read the rows from a (text/txt) file.*/
+0010 row.rows= strip( linein(iFID) )
+0011 end   /*rows*/
+0012 
+0013 convFrom= '&      <     >     "'                 /*special characters to be converted.  */
+0014 convTo  = '&amp;  &lt;  &gt;  &quot;'            /*display what they are converted into.*/
+0015 
+0016 call write , '<html>'
+0017 call write , '<table border=4 cellpadding=9 cellspacing=1>'
+0018 
+0019 do j=0 for rows;    call write 5, '<tr>'
+0020 tx= 'td'
+0021 if wantsHdr & j==0  then tx= 'th'              /*if user wants a header, then oblige. */
+0022 
+0023 do  while  row.j\=='';          parse var row.j yyy "," row.j
+0024 do k=1  for words(convFrom)
+0025 yyy=changestr( word( convFrom, k), yyy, word( convTo, k))
+0026 end   /*k*/
+0027 call write 10, '<'tx">"yyy'</'tx">"
+0028 end       /*forever*/
+0029 end            /*j*/
+0030 
+0031 call write 5, '<tr>'
+0032 call write  , '</table>'
+0033 call write  , '</html>'
+0034 exit                                             /*stick a fork in it,  we're all done. */
+0035 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0036 write:   call lineout  oFID,  left('', 0 || arg(1) )arg(2);                         return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 row.             23 23
+002 yyy              23 25
+003 k                24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

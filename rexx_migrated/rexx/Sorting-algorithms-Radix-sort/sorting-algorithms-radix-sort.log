@@ -1,0 +1,95 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX program performs a radix sort on an integer array (can be negative/zero/positive)*/
+0002 call gen                                         /*call subroutine to generate numbers. */
+0003 call radSort  n, w                               /*invoke the  radix sort  subroutine.  */
+0004 call show                                        /*display the elements in the  @  array*/
+0005 exit 0                                           /*stick a fork in it,  we're all done. */
+0006 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0007 gen: ILF=  0  2  3  4  5  5  7. 6  6  7 11  7 13  9  8  8 17  8 19  9 10 13 23  9 10 15 ,
+0008 9 11 29 10 31 10 14 19 12 10 37 21 16 11 41 12 43 15 11 25 47 11 14 12 20 17 ,
+0009 53 11 16 13 22 31 59 12 61 33 13 12 18 16 67 21 26 14 71 12 73 39 13 23 18 18 ,
+0010 79 13 12 43 83 14 22 45 32 17 89 13 20 27 34 49 24 13 97 16 17 14  101        ,
+0011 '22 103 19 15 55 107 13 109 18 40 15 113  -42'
+0012 /*excluding -42, abbreviated above list is called the integer log function*/
+0013 n= words(ILF)                                            /*    I────── L── F───────*/
+0014 w= 0;         do m=1  for n;   _= word(ILF,m) +0;    @.m= _;    w= max(w, length(_) )
+0015 end   /*m*/;        return    /*W:  is the maximum width ↑ of numbers*/
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 radSort: procedure expose @.;  parse arg size,w;   mote= c2d(' ');    #= 1;   !.#._n= size
+0018 !.#._b= 1;                     if w==''  then w= 8
+0019 !.#._i= 1;  do i=1  for size;  y=@.i;  @.i= right(abs(y), w, 0);  if y<0  then @.i= '-'@.i
+0020 end  /*i*/                                            /* [↑]  negative case.*/
+0021 
+0022 do  while #\==0;  ctr.= 0;  L= 'ffff'x;   low= !.#._b;   n= !.#._n;   $= !.#._i;   H=
+0023 #= #-1                                                      /* [↑]   is the radix. */
+0024 do j=low  for n;      parse var  @.j  =($)  _  +1;    ctr._= ctr._ + 1
+0025 if ctr._==1 & _\==''  then do;  if _<<L  then L=_;    if _>>H  then H=_
+0026 end  /*  ↑↑                                       */
+0027 end   /*j*/                     /*  └┴─────◄───  <<   is a strict comparison.*/
+0028 _=                                    /*      ┌──◄───  >>    " "    "        "     */
+0029 if L>>H  then iterate                 /*◄─────┘                                    */
+0030 if L==H & ctr._==0  then do; #= #+1;  !.#._b= low;  !.#._n= n;  !.#._i= $+1;  iterate
+0031 end
+0032 L= c2d(L);   H= c2d(H);      ?= ctr._ + low;        top._= ?;          ts= mote
+0033 max= L
+0034 do k=L  to H;   _= d2c(k, 1);   c= ctr._  /* [↓]  swap 2 item radices.*/
+0035 if c>ts  then parse value  c k  with  ts max;     ?= ?+c;       top._= ?
+0036 end   /*k*/
+0037 piv= low                                    /*set PIVot to the low part of the sort*/
+0038 do  while piv<low+n
+0039 it= @.piv
+0040 do forever;     parse var it  =($)  _  +1;         c= top._ -1
+0041 if piv>=c  then leave;   top._= c;    ?= @.c;    @.c= it;    it= ?
+0042 end   /*forever*/
+0043 top._= piv;                         @.piv= it;        piv= piv + ctr._
+0044 end   /*while piv<low+n */
+0045 i= max
+0046 do  until i==max;  _= d2c(i, 1);     i= i+1;     if i>H  then i= L;     d= ctr._
+0047 if d<=mote  then do;         if d<2  then iterate;          b= top._
+0048 do k=b+1  for d-1;                       q= @.k
+0049 do j=k-1  by -1  to b  while q<<@.j;  jp= j+1;   @.jp= @.j
+0050 end   /*j*/
+0051 jp= j+1;   @.jp= q
+0052 end     /*k*/
+0053 iterate
+0054 end
+0055 #= #+1;       !.#._b= top._;       !.#._n= d;        !.#._i= $ + 1
+0056 end   /*until i==max*/
+0057 end        /*while #\==0 */
+0058 #= 0                                             /* [↓↓↓]  handle neg. and pos. arrays. */
+0059 do i=size  by -1  for size;    if @.i>=0  then iterate;     #= #+1;      @@.#= @.i
+0060 end   /*i*/
+0061 do j=1  for size;   if @.j>=0  then do;  #= #+1;   @@.#= @.j;  end;    @.j= @@.j+0
+0062 end   /*j*/                              /* [↑↑↑]  combine 2 lists into 1 list. */
+0063 return
+0064 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0065 show:  do j=1  for n;   say 'item'   right(j, w)   "after the radix sort:"   right(@.j, w)
+0066 end   /*j*/;     return                   /* [↑]  display sorted items ───► term.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 it               40 41
+002 c                40
+003 top.             41 43
+004 piv              43
+005 i                45 46 46 59
+006 until            46
+007 d                46
+008 b                47
+009 k                48
+010 q                48
+011 j                49 61
+012 jp               49 51
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 =($)             -> newV1            24 40
+002 @@.              -> newV2.           59 61
+003 @.               -> newV3.           14 19 19 24 41 43 49 51 61
+004 !.               -> newV4.           17 18 19 30 30 30 55 55 55
+005 _                -> newV5            14 24 28 34 40 46
+006 #                -> newV6            17 23 30 55 58 59 61
+007 $                -> newV7            22
+008 ?                -> newV8            32 35 41

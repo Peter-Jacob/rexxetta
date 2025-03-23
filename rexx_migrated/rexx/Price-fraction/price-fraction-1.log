@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX program re─scales a (decimal fraction)  price  (in the range of:   0¢  ──►  $1). */
+0002 pad= '     '                                     /*for inserting spaces into a message. */
+0003 do j=0  to 1  by .01                   /*process the prices from 0¢  to  ≤ $1 */
+0004 if j==0  then j= 0.00                  /*handle the special case of zero cents*/
+0005 say pad  'original price ──►'    j   pad   adjPrice(j)     " ◄── adjusted price"
+0006 end   /*j*/
+0007 exit 0                                           /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 adjPrice: procedure;  parse arg ?                /*a table is used to facilitate changes*/
+0010 select
+0011 when ?<0.06  then ?= 0.10
+0012 when ?<0.11  then ?= 0.18
+0013 when ?<0.16  then ?= 0.26
+0014 when ?<0.21  then ?= 0.32
+0015 when ?<0.26  then ?= 0.38
+0016 when ?<0.31  then ?= 0.44
+0017 when ?<0.36  then ?= 0.50
+0018 when ?<0.41  then ?= 0.54
+0019 when ?<0.46  then ?= 0.58
+0020 when ?<0.51  then ?= 0.62
+0021 when ?<0.56  then ?= 0.66
+0022 when ?<0.61  then ?= 0.70
+0023 when ?<0.66  then ?= 0.74
+0024 when ?<0.71  then ?= 0.78
+0025 when ?<0.76  then ?= 0.82
+0026 when ?<0.81  then ?= 0.86
+0027 when ?<0.86  then ?= 0.90
+0028 when ?<0.91  then ?= 0.94
+0029 when ?<0.96  then ?= 0.98
+0030 when ?<1.01  then ?= 1.00
+0031 otherwise    nop
+0032 end   /*select*/
+0033 return ?
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 ?                -> newV1            9

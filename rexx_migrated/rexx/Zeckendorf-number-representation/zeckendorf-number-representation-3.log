@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:36
+-------------------------------------------------------------------------
+0001 /*REXX program  calculates and displays the  first   N   Zeckendorf numbers.            */
+0002 numeric digits 100000                            /*just in case user gets real ka─razy. */
+0003 parse arg N .                                    /*let the user specify the upper limit.*/
+0004 if N=='' | N==","  then n=20;    w= length(N)    /*Not specified?  Then use the default.*/
+0005 z=0                                              /*the index of a  Zeckendorf number.   */
+0006 do j=0  until z>N;          _=x2b( d2x(j) )  /*task:   process zero  ──►   N.       */
+0007 if pos(11, _) \== 0  then iterate            /*are there two consecutive ones (1s) ?*/
+0008 say '    Zeckendorf'   right(z, w)    "="     right(_+0, 30)     /*display a number.*/
+0009 z= z + 1                                     /*bump the  Zeckendorf  number counter.*/
+0010 end   /*j*/                                  /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                3
+002 n                4
+003 w                4
+004 z                5 9
+005 j                6
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            6

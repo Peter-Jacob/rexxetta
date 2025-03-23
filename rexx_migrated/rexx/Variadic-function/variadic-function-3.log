@@ -1,0 +1,19 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 call print_all .1,5,2,4,-3, 4.7e1, 013.000 ,, 8**2 -3, sign(-66), abs(-71.00), 8 || 9, 'seven numbers are prime, 8th is null'
+0002 
+0003 call print_all  "One ringy-dingy,",
+0004 "two ringy-dingy,",
+0005 "three ringy-dingy...",
+0006 "Hello?  This is Ma Bell.",
+0007 "Have you been misusing your instrument?",
+0008 "(Lily Tomlin routine)"
+0009 
+0010 /*  [↑]   example showing multi-line arguments.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

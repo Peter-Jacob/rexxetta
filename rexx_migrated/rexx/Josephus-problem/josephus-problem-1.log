@@ -1,0 +1,68 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /* REXX **************************************************************
+0002 * 15.11.2012 Walter Pachl - my own solution
+0003 * 16.11.2012 Walter Pachl generalized n prisoners + w killing distance
+0004 *                         and s=number of survivors
+0005 * 09.05.2013 Walter Pachl accept arguments n w s and fix output
+0006 *                         thanks for the review/test
+0007 * I see no need for specifying a start count (actually a start number)
+0008 * This task states:      n    prisoners are standing on a circle,
+0009 *    sequentially numbered from  0  to  n-1.    The 1st prisoner is  0.
+0010 * This program should work on EVERY REXX.
+0011 * Pls report if this is not the case and let us know what's a problem.
+0012 **********************************************************************/
+0013 Parse Arg n w s .
+0014 If n='?' Then Do
+0015 Say 'Invoke the program with the following arguments:'
+0016 Say 'n number of prisoners            (default 41)'
+0017 Say 'w killing count                  (default  3)'
+0018 Say 's number of prisoners to survive (default  1)'
+0019 Exit
+0020 End
+0021 If n='' Then n=41                      /* number of alive prisoners  */
+0022 If w='' Then w=3                       /* killing count              */
+0023 If s='' Then s=1                       /* nuber of survivors         */
+0024 dead.=0                                /* nobody's dead yet          */
+0025 nn=n                                   /* wrap around boundary       */
+0026 p=-1                                   /* start here                 */
+0027 killed=''                              /* output of killings         */
+0028 Do until n=s                           /* until one alive prisoner   */
+0029 found=0                              /* start looking              */
+0030 Do Until found=w                     /* until we have the third    */
+0031 p=p+1                              /* next position              */
+0032 If p=nn Then p=0                   /* wrap around                */
+0033 If dead.p=0 Then                   /* a prisoner who is alive    */
+0034 found=found+1                    /* increment found count      */
+0035 End
+0036 dead.p=1
+0037 /*
+0038 Say 'killing' p 'now'
+0039 */
+0040 n=n-1                                /* shoot the one on this pos. */
+0041 killed=killed p                      /* add to output              */
+0042 End                                  /* End of main loop           */
+0043 Say 'killed:'killed                    /* output killing sequence    */
+0044 s=''
+0045 Do i=0 To nn-1                            /* look for the surviving p's */
+0046 If dead.i=0 Then s=s i               /* found one                  */
+0047 End
+0048 Say 'Survivor(s):'s                    /* show                       */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                13 21 40
+002 w                13 22
+003 s                13 23 44 46
+004 dead.            24 36
+005 nn               25
+006 p                26 31 32
+007 killed           27 41
+008 until            28
+009 found            29 34
+010 Until            30
+011 i                45
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

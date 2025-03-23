@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program to display scope modifiers  (for subroutines/functions). */
+0002 a=1/4
+0003 b=20
+0004 c=3
+0005 d=5
+0006 call SSN_571  d**4
+0007 
+0008 /* at this point,  A   is    defined and equal to      .25       */
+0009 /* at this point,  B   is    defined and equal to    40          */
+0010 /* at this point,  C   is    defined and equal to    27          */
+0011 /* at this point,  D   is    defined and equal to     5          */
+0012 /* at this point,  FF  isn't defined.                            */
+0013 /* at this point, EWE  is    defined and equal to 'female sheep' */
+0014 /* at this point,  G   is    defined and equal to   625          */
+0015 exit                                   /*stick a fork in it, we're done.*/
+0016 /*─────────────────────────────────────SSN_571 submarine, er, subroutine*/
+0017 SSN_571: procedure expose b c ewe g;  parse arg g
+0018 b   = b*2
+0019 c   = c**3
+0020 ff  = b+c
+0021 ewe = 'female sheep'
+0022 d   = 55555555
+0023 return                     /*compliments to Jules Verne's Captain Nemo? */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 g                17
+002 b                18
+003 c                19
+004 ff               20
+005 ewe              21
+006 d                22
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,288 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * Compute the Convex Hull for a set of points
+0003 * Format of the input file:
+0004 * (16,3) (12,17) (0,6) (-4,-6) (16,6) (16,-7) (16,-3) (17,-4) (5,19)
+0005 * (19,-8) (3,16) (12,13) (3,-4) (17,5) (-3,15) (-3,-9) (0,11) (-9,-3)
+0006 * (-4,-2)
+0007 * Alternate (better) method using slopes
+0008 * 1) Compute path from lowest/leftmost to leftmost/lowest
+0009 * 2) Compute leftmost vertical border
+0010 * 3) Compute path from rightmost/highest to highest/rightmost
+0011 * 4) Compute path from highest/rightmost to rightmost/highest
+0012 * 5) Compute rightmost vertical border
+0013 * 6) Compute path from rightmost/lowest to lowest_leftmost point
+0014 *--------------------------------------------------------------------*/
+0015 Parse Arg fid
+0016 If fid='' Then Do
+0017 fid='line.in'
+0018 fid='point.in'
+0019 fid='chullmin.in'                 /* miscellaneous test data       */
+0020 fid='chullxx.in'
+0021 fid='chullx.in'
+0022 fid='chullt.in'
+0023 fid='chulla.in'
+0024 fid='sq.in'
+0025 fid='tri.in'
+0026 fid='z.in'
+0027 fid='chull.in'                    /* data from task description    */
+0028 End
+0029 g.0debug=''
+0030 g.0oid=fn(fid)'.txt'; 'erase' g.0oid
+0031 x.=0
+0032 yl.=''
+0033 Parse Value '1000 -1000' With g.0xmin g.0xmax
+0034 Parse Value '1000 -1000' With g.0ymin g.0ymax
+0035 /*---------------------------------------------------------------------
+0036 * First read the input and store the points' coordinates
+0037 * x.0 contains the number of points, x.i contains the x.coordinate
+0038 * yl.x contains the y.coordinate(s) of points (x/y)
+0039 *--------------------------------------------------------------------*/
+0040 Do while lines(fid)>0
+0041 l=linein(fid)
+0042 Do While l<>''
+0043 Parse Var l '(' x ',' y ')' l
+0044 Call store x,y
+0045 End
+0046 End
+0047 Call lineout fid
+0048 g.0xlist=''
+0049 Do i=1 To x.0                       /* loop over points              */
+0050 x=x.i
+0051 g.0xlist=g.0xlist x
+0052 yl.x=sortv(yl.x)                  /* sort y-coordinates            */
+0053 End
+0054 Call sho
+0055 If x.0<3 Then Do
+0056 Say 'We need at least three points!'
+0057 Exit
+0058 End
+0059 Call o 'g.0xmin='g.0xmin
+0060 Call o 'g.0xmi ='g.0xmi
+0061 Call o 'g.0ymin='g.0ymin
+0062 Call o 'g.0ymi ='g.0ymi
+0063 
+0064 Do i=1 To x.0
+0065 x=x.i
+0066 If minv(yl.x)=g.0ymin Then Leave
+0067 End
+0068 lowest_leftmost=i
+0069 
+0070 highest_rightmost=0
+0071 Do i=1 To x.0
+0072 x=x.i
+0073 If maxv(yl.x)=g.0ymax Then
+0074 highest_rightmost=i
+0075 If maxv(yl.x)<g.0ymax Then
+0076 If highest_rightmost>0 Then
+0077 Leave
+0078 End
+0079 Call o 'lowest_leftmost='lowest_leftmost
+0080 Call o 'highest_rightmost  ='highest_rightmost
+0081 
+0082 x=x.lowest_leftmost
+0083 Call o 'We start at' from x'/'minv(yl.x)
+0084 path=x'/'minv(yl.x)
+0085 /*---------------------------------------------------------------------
+0086 * 1) Compute path from lowest/leftmost to leftmost/lowest
+0087 *--------------------------------------------------------------------*/
+0088 Call min_path lowest_leftmost,1
+0089 /*---------------------------------------------------------------------
+0090 * 2) Compute leftmost vertical border
+0091 *--------------------------------------------------------------------*/
+0092 Do i=2 To words(yl.x)
+0093 path=path x'/'word(yl.x,i)
+0094 End
+0095 cxy=x'/'maxv(yl.x)
+0096 /*---------------------------------------------------------------------
+0097 * 3) Compute path from rightmost/highest to highest/rightmost
+0098 *--------------------------------------------------------------------*/
+0099 Call max_path ci,highest_rightmost
+0100 /*---------------------------------------------------------------------
+0101 * 4) Compute path from highest/rightmost to rightmost/highest
+0102 *--------------------------------------------------------------------*/
+0103 Call max_path ci,x.0
+0104 /*---------------------------------------------------------------------
+0105 * 5) Compute rightmost vertical border
+0106 *--------------------------------------------------------------------*/
+0107 Do i=words(yl.x)-1 To 1 By -1
+0108 cxy=x'/'word(yl.x,i)
+0109 path=path cxy
+0110 End
+0111 /*---------------------------------------------------------------------
+0112 * 6) Compute path from rightmost/lowest to lowest_leftmost
+0113 *--------------------------------------------------------------------*/
+0114 Call min_path ci,lowest_leftmost
+0115 
+0116 Parse Var path pathx path
+0117 have.=0
+0118 Do i=1 By 1 While path>''
+0119 Parse Var path xy path
+0120 If have.xy=0 Then Do
+0121 pathx=pathx xy
+0122 have.xy=1
+0123 End
+0124 End
+0125 Say 'Points of convex hull in clockwise order:'
+0126 Say pathx
+0127 Call lineout g.0oid
+0128 Exit
+0129 
+0130 min_path:
+0131 Parse Arg from,tgt
+0132 ci=from
+0133 cxy=x.ci
+0134 Do Until ci=tgt
+0135 kmax=-1000
+0136 Do i=ci-1 To 1 By sign(tgt-from)
+0137 x=x.i
+0138 k=k(cxy'/'minv(yl.cxy),x'/'minv(yl.x))
+0139 If k>kmax Then Do
+0140 kmax=k
+0141 ii=i
+0142 End
+0143 End
+0144 ci=ii
+0145 cxy=x.ii
+0146 path=path cxy'/'minv(yl.cxy)
+0147 End
+0148 Return
+0149 
+0150 max_path:
+0151 Parse Arg from,tgt
+0152 Do Until ci=tgt
+0153 kmax=-1000
+0154 Do i=ci+1 To tgt
+0155 x=x.i
+0156 k=k(cxy,x'/'maxv(yl.x))
+0157 If k>kmax Then Do
+0158 kmax=k
+0159 ii=i
+0160 End
+0161 End
+0162 x=x.ii
+0163 cxy=x'/'maxv(yl.x)
+0164 path=path cxy
+0165 ci=ii
+0166 End
+0167 Return
+0168 
+0169 store: Procedure Expose x. yl. g.
+0170 /*---------------------------------------------------------------------
+0171 * arrange the points in ascending order of x (in x.) and,
+0172 * for each x in ascending order of y (in yl.x)
+0173 * g.0xmin is the smallest x-value, etc.
+0174 * g.0xmi  is the x-coordinate
+0175 * g.0ymin is the smallest y-value, etc.
+0176 * g.0ymi  is the x-coordinate of such a point
+0177 *--------------------------------------------------------------------*/
+0178 Parse Arg x,y
+0179 Call o 'store' x y
+0180 If x<g.0xmin Then Do; g.0xmin=x; g.0xmi=x; End
+0181 If x>g.0xmax Then Do; g.0xmax=x; g.0xma=x; End
+0182 If y<g.0ymin Then Do; g.0ymin=y; g.0ymi=x; End
+0183 If y>g.0ymax Then Do; g.0ymax=y; g.0yma=x; End
+0184 Do i=1 To x.0
+0185 Select
+0186 When x.i>x Then
+0187 Leave
+0188 When x.i=x Then Do
+0189 yl.x=yl.x y
+0190 Return
+0191 End
+0192 Otherwise
+0193 Nop
+0194 End
+0195 End
+0196 Do j=x.0 To i By -1
+0197 ja=j+1
+0198 x.ja=x.j
+0199 End
+0200 x.i=x
+0201 yl.x=y
+0202 x.0=x.0+1
+0203 Return
+0204 
+0205 sho: Procedure Expose x. yl. g.
+0206 Do i=1 To x.0
+0207 x=x.i
+0208 say  format(i,2) 'x='format(x,3) 'yl='yl.x
+0209 End
+0210 Say ''
+0211 Return
+0212 
+0213 maxv: Procedure Expose g.
+0214 Call trace 'O'
+0215 Parse Arg l
+0216 res=-1000
+0217 Do While l<>''
+0218 Parse Var l v l
+0219 If v>res Then res=v
+0220 End
+0221 Return res
+0222 
+0223 minv: Procedure Expose g.
+0224 Call trace 'O'
+0225 Parse Arg l
+0226 res=1000
+0227 Do While l<>''
+0228 Parse Var l v l
+0229 If v<res Then res=v
+0230 End
+0231 Return res
+0232 
+0233 sortv: Procedure Expose g.
+0234 Call trace 'O'
+0235 Parse Arg l
+0236 res=''
+0237 Do Until l=''
+0238 v=minv(l)
+0239 res=res v
+0240 l=remove(v,l)
+0241 End
+0242 Return space(res)
+0243 
+0244 lastword: return word(arg(1),words(arg(1)))
+0245 
+0246 k: Procedure
+0247 /*---------------------------------------------------------------------
+0248 * Compute slope of a straight line
+0249 * that is defined by two points:  y=k*x+d
+0250 * Specialty; k='*' x=xa if xb=xa
+0251 *--------------------------------------------------------------------*/
+0252 Call trace 'O'
+0253 Parse Arg xya,xyb
+0254 Parse Var xya xa '/' ya
+0255 Parse Var xyb xb '/' yb
+0256 If xa=xb Then
+0257 k='*'
+0258 Else
+0259 k=(yb-ya)/(xb-xa)
+0260 Return k
+0261 
+0262 remove:
+0263 /*---------------------------------------------------------------------
+0264 * Remove a specified element (e) from a given string (s)
+0265 *--------------------------------------------------------------------*/
+0266 Parse Arg e,s
+0267 Parse Var s sa (e) sb
+0268 Return space(sa sb)
+0269 
+0270 o: Procedure Expose g.
+0271 /*---------------------------------------------------------------------
+0272 * Write a line to the debug file
+0273 *--------------------------------------------------------------------*/
+0274 If arg(2)=1 Then say arg(1)
+0275 Return lineout(g.0oid,arg(1))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                267
+002 sa               267
+003 sb               267
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 (e)              -> newV1            267

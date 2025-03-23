@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program to display eban numbers (those that don't have an "e" their English name)*/
+0002 numeric digits 20                                /*support some gihugic numbers for pgm.*/
+0003 parse arg $                                      /*obtain optional arguments from the cL*/
+0004 if $=''  then $= '1 1000   1000 4000   1 -10000   1 -100000   1 -1000000   1 -10000000'
+0005 
+0006 do k=1  by 2  to words($)                  /*step through the list of numbers.    */
+0007 call banE  word($, k),  word($, k+1)       /*process the numbers, from low──►high.*/
+0008 end   /*k*/
+0009 exit                                             /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 banE: procedure; parse arg x,y,_;  z= reverse(x) /*obtain the number to be examined.    */
+0012 tell= y>=0                                 /*Is HI non-negative?  Display eban #s.*/
+0013 #= 0                                       /*the count of  eban  numbers (so far).*/
+0014 do j=x  to abs(y)                     /*probably process a range of numbers. */
+0015 if hasE(j)  then iterate              /*determine if the number has an  "e". */
+0016 #= # + 1                              /*bump the counter of  eban  numbers.  */
+0017 if tell  then _= _  j                 /*maybe add to a list of eban numbers. */
+0018 end   /*j*/
+0019 if _\==''  then say strip(_)               /*display the list  (if there is one). */
+0020 say;     say #   ' eban numbers found for: '   x   " "   y;     say copies('═', 105)
+0021 return
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 hasE: procedure; parse arg x;  z= reverse(x)     /*obtain the number to be examined.    */
+0024 do k=1  by 3                             /*while there're dec. digit to examine.*/
+0025 @= reverse( substr(z, k, 3) )            /*obtain 3 dec. digs (a period) from Z.*/
+0026 if @=='   '           then return 0      /*we have reached the "end" of the num.*/
+0027 uni= right(@, 1)                         /*get units dec. digit of this period. */
+0028 if uni//2==1          then return 1      /*if an odd digit, then not an eban #. */
+0029 if uni==8             then return 1      /*if an  eight,      "   "   "   "  "  */
+0030 tens=substr(@, 2, 1)                     /*get tens  dec. digit of this period. */
+0031 if tens==1            then return 1      /*if teens,        then not an eban #. */
+0032 if tens==2            then return 1      /*if twenties,       "   "   "   "  "  */
+0033 if tens>6             then return 1      /*if 70s, 80s, 90s,  "   "   "   "  "  */
+0034 hun= left(@, 1)                          /*get hundreds dec. dig of this period.*/
+0035 if hun==0             then iterate       /*if zero, then there is more of number*/
+0036 if hun\==' '          then return 1      /*any hundrEd (not zero) has an  "e".  */
+0037 end   /*k*/                              /*A "period" is a group of 3 dec. digs */
+0038 return 0                                    /*in the number, grouped from the right*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                23
+002 z                23
+003 k                24
+004 uni              27
+005 tens             30
+006 hun              34
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            3 4
+002 _                -> newV2            11 17
+003 #                -> newV3            13 16
+004 @                -> newV4            25

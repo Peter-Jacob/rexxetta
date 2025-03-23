@@ -1,0 +1,84 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 10.05.2014 Walter Pachl using the tree and the output format of C
+0003 **********************************************************************/
+0004 Call mktree
+0005 Say node.1.0name
+0006 Call tt 1,''
+0007 Exit
+0008 
+0009 tt: Procedure Expose node.
+0010 /**********************************************************************
+0011 * show a subtree (recursively)
+0012 **********************************************************************/
+0013 Parse Arg k,st
+0014 Do i=1 To node.k.0
+0015 If i=node.k.0 Then
+0016 s='`--'
+0017 Else
+0018 s='|--'
+0019 c=node.k.i
+0020 If st<>'' Then
+0021 st=left(st,length(st)-2)'  '
+0022 st=changestr('` ',st,'  ')
+0023 Say st||s||node.c.0name
+0024 Call tt c,st||s
+0025 End
+0026 Return
+0027 Exit
+0028 
+0029 mktree: Procedure Expose node. root
+0030 /**********************************************************************
+0031 * build the tree according to the task
+0032 **********************************************************************/
+0033 node.=0
+0034 r=mknode('R');
+0035 a=mknode('A'); Call attchild a,r
+0036 b=mknode('B'); Call attchild b,a
+0037 c=mknode('C'); Call attchild c,a
+0038 d=mknode('D'); Call attchild d,b
+0039 e=mknode('E'); Call attchild e,b
+0040 f=mknode('F'); Call attchild f,b
+0041 g=mknode('G'); Call attchild g,b
+0042 h=mknode('H'); Call attchild h,d
+0043 i=mknode('I'); Call attchild i,h
+0044 j=mknode('J'); Call attchild j,i
+0045 k=mknode('K'); Call attchild k,j
+0046 l=mknode('L'); Call attchild l,j
+0047 m=mknode('M'); Call attchild m,e
+0048 n=mknode('N'); Call attchild n,e
+0049 Return
+0050 
+0051 mknode: Procedure Expose node.
+0052 /**********************************************************************
+0053 * create a new node
+0054 **********************************************************************/
+0055 Parse Arg name
+0056 z=node.0+1
+0057 node.z.0name=name
+0058 node.0=z
+0059 Return z                        /* number of the node just created */
+0060 
+0061 attchild: Procedure Expose node.
+0062 /**********************************************************************
+0063 * make a the next child of father
+0064 **********************************************************************/
+0065 Parse Arg a,father
+0066 node.a.0father=father
+0067 z=node.father.0+1
+0068 node.father.z=a
+0069 node.father.0=z
+0070 node.a.0level=node.father.0level+1
+0071 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                65
+002 father           65
+003 node.            66 68 69 70
+004 z                67
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

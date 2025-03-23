@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program finds the  next highest positive integer  from a list of decimal digits. */
+0002 parse arg n                                      /*obtain optional arguments from the CL*/
+0003 if n='' | n=","  then n= 0 9 12 21 12453 738440 45072010 95322020    /*use the defaults?*/
+0004 w= length( commas( word(n, words(n) ) ) )        /*maximum width number  (with commas). */
+0005 
+0006 do j=1  for words(n);        y= word(n, j)  /*process each of the supplied numbers.*/
+0007 masky= mask(y)                              /*build a digit mask for a supplied int*/
+0008 lim= copies(9, length(y) )                  /*construct a  LIMIT  for the DO loop. */
+0009 
+0010 do #=y+1  to lim  until mask(#)==masky /*search for a number that might work. */
+0011 if verify(y, #) \== 0  then iterate    /*does # have all the necessary digits?*/
+0012 end   /*#*/
+0013 
+0014 if #>lim  then #= 0                         /*if # > lim,  then there is no valid #*/
+0015 say 'for ' right(commas(y),w) " ─── the next highest integer is: " right(commas(#),w)
+0016 end   /*j*/
+0017 exit                                             /*stick a fork in it,  we're all done. */
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 commas: parse arg _;  do ?=length(_)-3  to 1  by -3;  _= insert(',', _, ?); end;  return _
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 mask: parse arg z, $;   @.= 0                    /* [↓]  build an  unsorted digit mask. */
+0022 do k=1  for length(z);    parse var z _ +1 z;     @._= @._ + 1
+0023 end   /*k*/
+0024 do m=0  for 10;         if @.m==0  then iterate;            $= $ || copies(m, @.m)
+0025 end   /*m*/;      return $               /* [↑]  build  a    sorted  digit mask.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                22 22
+002 m                24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           21 22
+002 #                -> newV2            10 14
+003 _                -> newV3            19 19 22
+004 ?                -> newV4            19
+005 $                -> newV5            21 24

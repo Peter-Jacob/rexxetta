@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates a method to track history of assignments to a REXX variable.*/
+0002 varSet!.=0                                       /*initialize the all of the VARSET!'s. */
+0003 call varSet 'fluid',min(0,-5/2,-1)     ;    say 'fluid=' fluid
+0004 call varSet 'fluid',3.14159            ;    say 'fluid=' fluid
+0005 call varSet 'fluid',' Santa  Claus'    ;    say 'fluid=' fluid
+0006 call varSet 'fluid',,999
+0007 say 'There were' result "assignments (sets) for the FLUID variable."
+0008 exit                                             /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 varSet: arg ?x;  parse arg ?z, ?v, ?L            /*obtain varName, value, optional─List.*/
+0011 if ?L=='' then do                                /*not la ist,  so set the  X  variable.*/
+0012 ?_=varSet!.0.?x+1                 /*bump the history count  (# of SETs). */
+0013 varSet!.0.?x=?_                   /*   ... and store it in the "database"*/
+0014 varSet!.?_.?x=?v                  /*   ... and store the  SET  value.    */
+0015 call value(?x),?v                 /*now,  set the real  X  variable.     */
+0016 return ?v                         /*also, return the value for function. */
+0017 end
+0018 say                                              /*show a blank line for readability.   */
+0019 do ?j=1 to ?L while ?j<=varSet!.0.?x /*display the list of  "set"  history. */
+0020 say 'history entry' ?j "for var" ?z":" varSet!.?J.?x
+0021 end   /*?j*/
+0022 return ?j-1                                      /*return the number of assignments.    */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 varSet!.         13 14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 ?z               -> newV1            10
+002 ?v               -> newV2            10
+003 ?L               -> newV3            10
+004 ?_               -> newV4            12
+005 ?j               -> newV5            19

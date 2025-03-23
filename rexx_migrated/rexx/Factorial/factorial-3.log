@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program computes & shows the factorial of an integer,  striping trailing zeroes. */
+0002 numeric digits 200                               /*start with two hundred digits.       */
+0003 parse arg N .                                    /*obtain an optional argument from CL. */
+0004 if N=='' | N==","  then N= 0                     /*Not specified?  Then use the default.*/
+0005 != 1                                             /*define the factorial product so far. */
+0006 do j=2  to N                                 /*compute factorial the hard way.      */
+0007 old!= !                                      /*save old product in case of overflow.*/
+0008 != ! * j                                     /*multiple the old factorial with   J. */
+0009 if pos(.,!) \==0  then do                    /*is the   !   in exponential notation?*/
+0010 d= digits()           /*D   temporarily stores number digits.*/
+0011 numeric digits d+d%10 /*add  10%  to the   decimal digits.   */
+0012 != old! * j           /*re─calculate for the  "lost"  digits.*/
+0013 end                   /*IFF ≡ if and only if.  [↓]           */
+0014 parse var  !  ''  -1  _                      /*obtain the right-most digit of  !    */
+0015 if _==0  then != strip(!, , 0)               /*strip trailing zeroes  IFF  the ...  */
+0016 end   /*j*/                                  /* [↑]  ...  right-most digit is zero. */
+0017 z= 0                                             /*the number of trailing zeroes in  !  */
+0018 do v=5  by 0  while v<=N                     /*calculate number of trailing zeroes. */
+0019 z= z   +   N % v                             /*bump   Z   if multiple power of five.*/
+0020 v= v * 5                                     /*calculate the next power of five.    */
+0021 end   /*v*/                                  /* [↑]  we only advance  V  by ourself.*/
+0022 /*stick a fork in it,  we're all done. */
+0023 != ! || copies(0, z)                             /*add water to rehydrate the product.  */
+0024 if z==0  then z= 'no'                            /*use gooder English for the message.  */
+0025 say N'!  is      ['length(!)        " digits  with "        z        ' trailing zeroes]:'
+0026 say                                              /*display blank line  (for whitespace).*/
+0027 say !                                            /*display the factorial product.       */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                17 19 24
+002 v                18 20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !                -> newV1            5 8 12 14 15 23
+002 _                -> newV2            14

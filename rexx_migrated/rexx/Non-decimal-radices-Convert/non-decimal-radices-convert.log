@@ -1,0 +1,61 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program converts integers from  one base  to  another   (using bases  2 ──► 90). */
+0002 @abc = 'abcdefghijklmnopqrstuvwxyz'              /*lowercase (Latin or English) alphabet*/
+0003 parse  upper  var  @abc    @abcU                 /*uppercase a version of   @abc.       */
+0004 @@ = 0123456789 || @abc || @abcU                 /*prefix them with all numeric digits. */
+0005 @@ = @@'<>[]{}()?~!@#$%^&*_=|\/;:¢¬≈'            /*add some special characters as well. */
+0006 /* [↑]  all characters must be viewable*/
+0007 numeric digits 3000                              /*what da hey, support gihugeic numbers*/
+0008 maxB= length(@@)                                 /*max base/radix supported in this code*/
+0009 parse arg x toB inB 1 ox . 1 sigX 2 x2 .         /*obtain:  three args, origX, sign ··· */
+0010 if pos(sigX, "+-")\==0  then    x= x2            /*does X have a leading sign (+ or -) ?*/
+0011 else sigX=               /*Nope. No leading sign for the X value*/
+0012 if   x==''             then call erm             /*if no  X  number, issue an error msg.*/
+0013 if toB=='' | toB==","  then toB= 10              /*if skipped, assume the default (10). */
+0014 if inB=='' | inB==","  then inB= 10              /* "    "        "    "     "      "   */
+0015 if inB<2   | inB>maxB  | \datatype(inB, 'W')  then call erb  "inBase "  inB
+0016 if toB<2   | toB>maxB  | \datatype(toB, 'W')  then call erb  "toBase "  toB
+0017 #=0                                              /*result of converted  X  (in base 10).*/
+0018 do j=1  for length(x)                      /*convert  X:   base inB  ──► base 10. */
+0019 ?= substr(x,j,1)                           /*pick off a numeral/digit from  X.    */
+0020 _= pos(?, @@)                              /*calculate the value of this numeral. */
+0021 if _==0 | _>inB  then call erd x           /*is  _  character an illegal numeral? */
+0022 #= # * inB   +   _   -   1                 /*build a new number,  digit by digit. */
+0023 end    /*j*/                               /* [↑]  this also verifies digits.     */
+0024 y=                                               /*the value of   X   in   base  B.     */
+0025 do  while  # >= toB                        /*convert #:    base 10  ──►  base toB.*/
+0026 y= substr(@@, (#//toB) + 1, 1)y            /*construct the output number.         */
+0027 #= # % toB                                 /*      ··· and whittle  #  down also. */
+0028 end    /*while*/                           /* [↑]  algorithm may leave a residual.*/
+0029 /* [↓]         Y  is the residual.     */
+0030 y= sigX || substr(@@, #+1, 1)y                   /*prepend the sign  if  it existed.    */
+0031 say ox  "(base"       inB')'       center("is", 20)       y       '(base'       toB")"
+0032 exit                                             /*stick a fork in it,  we're all done. */
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 erb:  call ser  'illegal'   arg(1)",  it must be in the range:  2──►"maxB
+0035 erd:  call ser  'illegal digit/numeral  ['?"]  in:  "       x
+0036 erm:  call ser  'no argument specified.'
+0037 ser:  say; say  '***error!***';         say arg(1);             exit 13
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                9 10
+002 toB              9 13
+003 inB              9 14
+004 ox               9
+005 sigX             9
+006 x2               9
+007 j                18
+008 y                24 26 30
+009 while            25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @abcU            -> newV1            3
+002 @abc             -> newV2            2 3
+003 @@               -> newV3            4 5
+004 #                -> newV4            17 22 27
+005 ?                -> newV5            19
+006 _                -> newV6            20

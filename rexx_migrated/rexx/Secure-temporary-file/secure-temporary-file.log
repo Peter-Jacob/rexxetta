@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX pgm secures (a temporary file), writes to it, displays the file, then deletes it.*/
+0002 parse arg tFID # .                               /*obtain optional argument from the CL.*/
+0003 if tFID=='' | tFID==","  then tFID= 'TEMP.FILE'  /*Not specified?  Then use the default.*/
+0004 if    #=='' |    #==","  then    #= 6            /* "      "         "   "   "     "    */
+0005 call lineout tFID                                /*insure file is closed.               */
+0006 rc= 0
+0007 say '··· creating file: '  tFID
+0008 call lineout tFID,,1                             /*insure file is open and at record 1. */
+0009 if rc\==0  then call ser rc 'creating file' tFID /*issue error if can't open the file.  */
+0010 say '··· writing  file: '  tFID
+0011 
+0012 do j=1  for #                                /*write a half-dozen records to file.  */
+0013 call lineout tFID, 'line' j                  /*write a  record  to the file.        */
+0014 if rc\==0  then call ser rc 'writing file'  tFID    /*Have an error?  Issue err msg.*/
+0015 end   /*j*/
+0016 
+0017 call lineout tFID                                /*close the file.                      */
+0018 say '··· reading/display file: '  tFID
+0019 
+0020 do j=1  while lines(tFID)>0                  /*read the entire file and display it. */
+0021 x= linein(tFID)                              /*read a record from the file.         */
+0022 if rc\==0  then call ser rc 'reading file'  tFID    /*Have an error?  Issue err msg.*/
+0023 say 'line ' j  " of file" tFID":"  x                /*display a record to the term. */
+0024 end   /*j*/
+0025 
+0026 call lineout tFID                                /*close the file.                      */
+0027 say '··· erasing file: '  tFID
+0028 'ERASE' tFID                                     /*erase the file.                      */
+0029 exit 0                                           /*stick a fork in it,  we're all done. */
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 ser: say; say '***error***' arg(1); say; exit 13 /*issue an error message to the term.  */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 tFID             2 3
+002 rc               6
+003 j                12 20
+004 x                21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            2 4

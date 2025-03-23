@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates  disjointed array usage.                   */
+0002 yr. = 'year not supported'             /*value for all yr.xxx  (so far).*/
+0003 
+0004 do k=600  to 1100      /*a bunch of years prior to 1800.*/
+0005 yr.k=k "AD"            /*Kth element as the year itself.*/
+0006 end   /*k*/            /* [↑]      defines 501 elements.*/
+0007 
+0008 do j=1800  to 2100         /*start at 1800, define a bunch. */
+0009 yr.j=j 'AD'                /*Jth element as the year itself.*/
+0010 end   /*j*/                /* [↑]      defines 301 elements.*/
+0011 
+0012 year=1946
+0013 say 'DOB' year "is:" yr.year
+0014 
+0015 year=1744
+0016 say 'DOB' year "is:" yr.year
+0017 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 yr.              2 5 9
+002 k                4
+003 j                8
+004 year             12 15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

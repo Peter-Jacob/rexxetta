@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX program simulates a  metronome  (with sound).    Regina REXX only.               */
+0002 parse arg bpm bpb dur tockf tockd tickf tickd .  /*obtain optional arguments from the CL*/
+0003 if   bpm=='' |   bpm==","  then   bpm= 72        /*the number of  beats  per minute.    */
+0004 if   bpb=='' |   bpb==","  then   bpb=  4        /* "    "     "    "     "   bar.      */
+0005 if   dur=='' |   dur==","  then   dur=  5        /*duration  of the  run         in secs*/
+0006 if tockf=='' | tockf==","  then tockf=400        /*frequency  "  "   tock  sound  " HZ. */
+0007 if tockd=='' | tockd==","  then tockd= 20        /*duration   "  "     "     "    " msec*/
+0008 if tickf=='' | tickf==","  then tickf=600        /*frequency  "  "   tick    "    " HZ. */
+0009 if tickd=='' | tickd==","  then tickd= 10        /*duration   "  "     "     "    " msec*/
+0010 call time 'Reset'                                /*reset the REXX elapsed timer.        */
+0011 bt=1/bpb                                         /*calculate a   tock─time   interval.  */
+0012 
+0013 do until et>=dur;     et=time('Elasped')       /*process  tick-tocks  for the duration*/
+0014 call beep tockf, tockd                         /*sound a beep for the  "TOCK".        */
+0015 es=et+1                                        /*bump the elapsed time  "limiter".    */
+0016 $t=et+bt
+0017 do until e>=es;        e=time('Elapsed')
+0018 if e<$t then iterate                       /*time for tock?     */
+0019 call beep tickf, tickd                     /*sound a  "tick".   */
+0020 $t=$t+bt                                   /*bump the TOCK time.*/
+0021 end   /*until e≥es*/
+0022 end   /*until et≥dur*/
+0023 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 bpm              2 3
+002 bpb              2 4
+003 dur              2 5
+004 tockf            2 6
+005 tockd            2 7
+006 tickf            2 8
+007 tickd            2 9
+008 bt               11
+009 until            13 17
+010 et               13
+011 es               15
+012 e                17
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $t               -> newV1            16 20

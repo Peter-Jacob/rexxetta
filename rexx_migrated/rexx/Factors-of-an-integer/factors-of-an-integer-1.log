@@ -1,0 +1,47 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program  displays  divisors  of any [negative/zero/positive]  integer or a range.*/
+0002 parse arg LO HI inc .                                         /*obtain the optional args*/
+0003 HI= word(HI LO 20, 1);  LO= word(LO 1,1);  inc= word(inc 1,1) /*define the range options*/
+0004 w= length(HI) + 2;    numeric digits max(9, w-2);     != '∞'  /*decimal digits for  //  */
+0005 @.=left('',7); @.1= "{unity}"; @.2= '[prime]'; @.!= "  {∞}  " /*define some literals.   */
+0006 say center('n', w)    "#divisors"    center('divisors', 60)   /*display the  header.    */
+0007 say copies('═', w)    "═════════"    copies('═'       , 60)   /*   "     "   separator. */
+0008 pn= 0                                                         /*count of prime numbers. */
+0009 do k=2  until sq.k>=HI;   sq.k= k*k          /*memoization for squares.*/
+0010 end   /*k*/
+0011 do n=LO  to HI  by inc;  $= divs(n);  #= words($)        /*get list of divs; # divs*/
+0012 if $==!  then do;  #= !;  $= '  (infinite)';  end        /*handle case for infinity*/
+0013 p= @.#;    if n<0  then if n\==-1  then p= @..           /*   "     "   "  negative*/
+0014 if p==@.2  then pn= pn + 1                               /*Prime? Then bump counter*/
+0015 say center(n, w)      center('['#"]", 9)       "──► "        p      ' '       $
+0016 end   /*n*/                                 /* [↑]   process a range of integers.  */
+0017 say
+0018 say right(pn, 20)    ' primes were found.'       /*display the number of primes found.  */
+0019 exit 0                                           /*stick a fork in it,  we're all done. */
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 divs: procedure expose sq.; parse arg x 1 b; a=1 /*set  X  and  B  to the 1st argument. */
+0022 if x<2  then do;  x= abs(x);  if x==1  then return 1; if x==0  then return '∞';  b=x
+0023 end
+0024 odd= x // 2                                /* [↓]  process EVEN or ODD ints.   ___*/
+0025 do j=2+odd  by 1+odd  while sq.j<x       /*divide by all the integers up to √ x */
+0026 if x//j==0  then do; a=a j; b=x%j b; end /*÷?  Add divisors to  α  and  ß  lists*/
+0027 end   /*j*/                              /* [↑]  %  ≡  integer division.     ___*/
+0028 if sq.j==x  then  return  a j b            /*Was  X  a square?   Then insert  √ x */
+0029 return  a   b            /*return the divisors of both lists.   */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                21 22
+002 b                21 22 26
+003 a                21 26
+004 odd              24
+005 j                25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           5 5 5 5
+002 !                -> newV2            4
+003 $                -> newV3            11 12
+004 #                -> newV4            11 12

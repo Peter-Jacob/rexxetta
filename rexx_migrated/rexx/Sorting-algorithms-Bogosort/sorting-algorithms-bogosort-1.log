@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program performs a type of  bogo sort  on  numbers in an array.  */
+0002 parse arg list                         /*obtain optional list from C.L. */
+0003 if list=''  then list=-21 333 0 444.4  /*Not defined?  Then use default.*/
+0004 #=words(list)                          /*the number of numbers in list. */
+0005 do i=1  for words(list);  @.i=word(list,i);  end   /*create an array.*/
+0006 call tell 'before bogo sort'
+0007 
+0008 do bogo=1
+0009 
+0010 do j=1  for #-1;   jp=j+1          /* [↓]  compare a # with the next*/
+0011 if @.jp>=@.j  then iterate         /*so far, so good;  keep looking.*/
+0012 /*get 2 unique random #s for swap*/
+0013 do  until a\==b;  a=random(1, #);     b=random(1, #);    end
+0014 
+0015 parse value @.a @.b  with  @.b @.a /*swap 2 random numbers in array.*/
+0016 iterate bogo                       /*go and try another bogo sort.  */
+0017 end     /*j*/
+0018 
+0019 leave                                /*we're finished with bogo sort. */
+0020 end       /*bogo*/                   /* [↓]  show the # of bogo sorts.*/
+0021 
+0022 say 'number of bogo sorts performed =' bogo
+0023 call tell ' after bogo sort'
+0024 exit                                   /*stick a fork in it, we're done.*/
+0025 /*──────────────────────────────────TELL subroutine─────────────────────*/
+0026 tell:  say;  say center(arg(1), 50, '─')
+0027 do t=1  for #
+0028 say arg(1)  'element'right(t, length(#))'='right(@.t, 18)
+0029 end   /*t*/
+0030 say
+0031 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 list             2 3
+002 i                5
+003 bogo             8
+004 j                10
+005 jp               10
+006 until            13
+007 a                13
+008 b                13
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 t                27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           5 15 15
+002 #                -> newV2            4

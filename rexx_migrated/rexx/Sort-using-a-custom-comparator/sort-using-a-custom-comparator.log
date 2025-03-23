@@ -1,0 +1,145 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program sorts a (stemmed) array using the  merge-sort method. */
+0002 /*   using mycmp function for the sort order                         */
+0003 /**********************************************************************
+0004 * mergesort taken from REXX (adapted for ooRexx (and all other REXXes))
+0005 * 28.07.2013 Walter Pachl
+0006 **********************************************************************/
+0007 Call gena                        /* generate the array elements.   */
+0008 Call showa 'before sort'         /* show the before array elements.*/
+0009 Call mergeSort highitem          /* invoke the merge sort for array*/
+0010 Call showa ' after sort'         /* show the  after array elements.*/
+0011 Exit                             /* stick a fork in it, we're done.*/
+0012 /*---------------------------------GENa subroutine-------------------*/
+0013 gena:
+0014 a.=''                            /* assign default value for a stem*/
+0015 a.1='---The seven deadly sins---'/* everybody:  pick your favorite.*/
+0016 a.2='==========================='
+0017 a.3='pride'
+0018 a.4='avarice'
+0019 a.5='wrath'
+0020 a.6='envy'
+0021 a.7='gluttony'
+0022 a.8='sloth'
+0023 a.9='lust'
+0024 Do highitem=1 While a.highitem\=='' /*find number of entries       */
+0025 End
+0026 highitem=highitem-1              /* adjust highitem by -1.         */
+0027 Return
+0028 /*---------------------------------MERGETOa subroutine---------------*/
+0029 mergetoa: Procedure Expose a. !.
+0030 Parse Arg l,n
+0031 Select
+0032 When n==1 Then
+0033 Nop
+0034 When n==2 Then Do
+0035 h=l+1
+0036 If mycmp(a.l,a.h)=1 Then Do
+0037 _=a.h
+0038 a.h=a.l
+0039 a.l=_
+0040 End
+0041 End
+0042 Otherwise Do
+0043 m=n%2
+0044 Call mergeToa l+m,n-m
+0045 Call mergeTo! l,m,1
+0046 i=1
+0047 j=l+m
+0048 Do k=l While k<j
+0049 If j==l+n|mycmp(!.i,a.j)<>1 Then Do
+0050 a.k=!.i
+0051 i=i+1
+0052 End
+0053 Else Do
+0054 a.k=a.j
+0055 j=j+1
+0056 End
+0057 End
+0058 End
+0059 End
+0060 Return
+0061 /*---------------------------------MERGESORT subroutine--------------*/
+0062 mergesort: Procedure Expose a.
+0063 Call mergeToa 1,arg(1)
+0064 Return
+0065 /*---------------------------------MERGETO! subroutine---------------*/
+0066 mergeto!: Procedure Expose a. !.
+0067 Parse Arg l,n,_
+0068 Select
+0069 When n==1 Then
+0070 !._=a.l
+0071 When n==2 Then Do
+0072 h=l+1
+0073 q=1+_
+0074 If mycmp(a.l,a.h)=1 Then Do
+0075 q=_
+0076 _=q+1
+0077 End
+0078 !._=a.l
+0079 !.q=a.h
+0080 Return
+0081 End
+0082 Otherwise Do
+0083 m=n%2
+0084 Call mergeToa l,m
+0085 Call mergeTo! l+m,n-m,m+_
+0086 i=l
+0087 j=m+_
+0088 Do k=_ While k<j
+0089 If j==n+_|mycmp(a.i,!.j)<>1 Then Do
+0090 !.k=a.i
+0091 i=i+1
+0092 End
+0093 Else Do
+0094 !.k=!.j
+0095 j=j+1
+0096 End
+0097 End
+0098 End
+0099 End
+0100 Return
+0101 /*---------------------------------SHOWa subroutine------------------*/
+0102 showa:
+0103 widthh=length(highitem)           /* maximum the width of any line.*/
+0104 Do j=1 For highitem
+0105 Say 'element' right(j,widthh) arg(1)':' a.j
+0106 End
+0107 Say copies('-',60)                /* show a separator line (fence).*/
+0108 Return
+0109 
+0110 mycmp: Procedure
+0111 /**********************************************************************
+0112 * shorter string considered higher
+0113 * when lengths are equal: caseless 'Z' considered higher than 'X' etc.
+0114 * Result:  1  B consider higher than A
+0115 *         -1  A consider higher than B
+0116 *          0  A==B (caseless)
+0117 **********************************************************************/
+0118 Parse Upper Arg A,B
+0119 A=strip(A)
+0120 B=strip(B)
+0121 I = length(A)
+0122 J = length(B)
+0123 Select
+0124 When I << J THEN res=1
+0125 When I >> J THEN res=-1
+0126 When A >> B THEN res=1
+0127 When A << B THEN res=-1
+0128 Otherwise        res=0
+0129 End
+0130 RETURN res
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 A                118 119
+002 B                118 120
+003 I                121
+004 J                122
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           70 78 79 90 94
+002 _                -> newV2            37 67 76

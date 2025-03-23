@@ -1,0 +1,76 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program uses the Almkvist─Giullera formula for   1 / (pi**2)     [or  pi ** -2]. */
+0002 numeric digits length( pi() )  +  length(.);                                       w= 102
+0003 say $(   , 3)       $(              , w%2)       $('power', 5)       $(          , w)
+0004 say $('N', 3)       $('integer term', w%2)       $('of 10', 5)       $('Nth term', w)
+0005 say $(   , 3, "─")  $(              , w%2, "─")  $(       , 5, "─")  $(          , w, "─")
+0006 s= 0           /*initialize   S   (the sum)  to zero. */
+0007 do n=0  until old=s;    old= s              /*use the "older" value of  S  for OLD.*/
+0008 a= 2**5  *  !(6*n)  *  (532 * n**2  +  126*n  +  9)  /  (3 * !(n)**6)
+0009 z= 10 ** (- (6*n + 3) )
+0010 s= s     +   a * z
+0011 if n>10  then do;  do 3*(n==11);  say ' .';  end;  iterate;  end
+0012 say $(n, 3) right(a, w%2)  $(powX(z), 5)  right( lowE( format(a*z, 1, w-6, 2, 0)), w)
+0013 end   /*n*/
+0014 say
+0015 say 'The calculation of pi took '       n       " iterations with "         digits() ,
+0016 " decimal digits precision using"   subword( sourceLine(1), 4, 3).
+0017 say
+0018 numeric digits length( pi() ) - length(.);  d= digits() - length(.);          @= ' ↓↓↓ '
+0019 say center(@ 'calculated pi to '  d   " fractional decimal digits (below) is "@, d+4, '─')
+0020 say ' 'sqrt(1/s);          say
+0021 say ' 'pi();  @= ' ↑↑↑ '
+0022 say center(@ 'the  true  pi to '  d   " fractional decimal digits (above) is" @, d+4, '─')
+0023 exit 0                                           /*stick a fork in it,  we're all done. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 $:    procedure; parse arg text,width,fill;     return center(text, width, left(fill, 1) )
+0026 !:    procedure; parse arg x; !=1;;      do j=2  to x;    != !*j;    end;         return !
+0027 lowE: procedure; parse arg x; return translate(x, 'e', "E")
+0028 powX: procedure; parse arg p; return right( format( p, 1, 3, 2, 0),  3)   +   0
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 pi:   pi=3.141592653589793238462643383279502884197169399375105820974944592307816406286208,
+0031 ||9986280348253421170679821480865132823066470938446095505822317253594081284811174503
+0032 return pi
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 sqrt: procedure; parse arg x;  if x=0  then return 0;  d=digits();  numeric digits;  h=d+6
+0035 m.=9; numeric form; parse value format(x,2,1,,0) 'E0' with g 'E' _ .; g=g*.5'e'_ % 2
+0036 do j=0  while h>9;        m.j= h;                 h= h % 2  +  1;       end  /*j*/
+0037 do k=j+5  to 0  by -1;    numeric digits m.k;     g= (g + x/g) * .5;    end  /*k*/
+0038 numeric digits d;           return g/1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                34
+002 d                34
+003 h                34 36
+004 m.               35 36
+005 a                8
+006 z                9
+007 d                18
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                35 35 37
+024 j                36
+025 k                37
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 3*(n             -> newV1            11
+002 @                -> newV2            18 21
+003 !                -> newV3            26 26
+004 _                -> newV4            35

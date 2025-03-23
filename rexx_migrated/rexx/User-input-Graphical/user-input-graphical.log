@@ -1,0 +1,31 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX pgm prompts (using the OS GUI) for a string & then prompts for a specific number.*/
+0002 #= 75000                                         /*the number that   must be   entered. */
+0003 x=
+0004 N=
+0005 do while x=' ';       say                   /*string can't be blanks or null string*/
+0006 say 'Please enter a string: '
+0007 parse pull x
+0008 if x=''  then say '***error***  No string entered.'
+0009 end   /*while x···*/
+0010 
+0011 do while N\=#;        say                   /*the number (below) may be ill formed.*/
+0012 say 'Please enter the number:'   #
+0013 parse pull N
+0014 if datatype(N, 'N')  then N= N / 1          /*normalize the number:  007  4.0  +2  */
+0015 if N\=#  then say '***error***  The number is not correct: '   N.
+0016 end   /*while N···*/
+0017 say
+0018 say 'The string entered is:'  x                  /*echo the values  (string and number. */
+0019 say 'The number entered is:'  N                  /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             13
+002 N                13 14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            2

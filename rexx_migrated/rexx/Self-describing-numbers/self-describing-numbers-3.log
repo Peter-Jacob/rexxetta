@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program  determines  if a  number  (in base 10)   is  a  self-describing  number.*/
+0002 parse arg x y .                                  /*obtain optional arguments from the CL*/
+0003 if x=='' | x==","  then exit                     /*Not specified?  Then get out of Dodge*/
+0004 if y=='' | y==","  then y=x                      /*Not specified?  Then use the X value.*/
+0005 w=length(y)                                      /*use  Y's  width for aligned output.  */
+0006 numeric digits max(9, w)                         /*handle the possibility of larger #'s.*/
+0007 $= '1210 2020 21200 3211000 42101000 521001000 6210001000'        /*the list of numbers.*/
+0008 /*test for a  single  integer.         */
+0009 if x==y  then do                                 /*handle the case of a single number.  */
+0010 say word("isn't is",  wordpos(x, $) + 1)     'a self-describing number.'
+0011 exit
+0012 end
+0013 /* [↓]  test for a  range  of integers.*/
+0014 do n=1  for words($);     _=word($, n)  /*look for integers that are in range. */
+0015 if _<x | _>y  then iterate              /*if not self-describing, try again.   */
+0016 say  right(_, w)       'is a self-describing number.'
+0017 end   /*n*/                             /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                2
+002 y                2 4
+003 w                5
+004 n                14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            7
+002 _                -> newV2            14

@@ -1,0 +1,31 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program illustrates the ability to  execute code  entered  at runtime (from C.L.)*/
+0002 numeric digits 10000000                          /*ten million digits should do it.     */
+0003 bee=51
+0004 stuff= 'bee=min(-2,44);  say 13*2 "[from inside the box.]";  abc=abs(bee)'
+0005 interpret stuff
+0006 say 'bee='  bee
+0007 say 'abc='  abc
+0008 say
+0009 /* [↓]  now, we hear from the user.    */
+0010 say 'enter an expression:'
+0011 pull expression
+0012 say
+0013 say 'expression entered is:'  expression
+0014 say
+0015 
+0016 interpret '?='expression
+0017 
+0018 say 'length of result='length(?)
+0019 say ' left 50 bytes of result='left(?,50)"···"
+0020 say 'right 50 bytes of result=···'right(?, 50)   /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 bee              3
+002 stuff            4
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

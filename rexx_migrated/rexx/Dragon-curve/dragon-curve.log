@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program creates & draws an ASCII  Dragon Curve (or Harter-Heighway dragon curve).*/
+0002 d.= 1;   d.L= -d.;    @.= ' ';    x= 0;    x2= x;   y= 0;   y2= y;    z= d.;    @.x.y= "∙"
+0003 plot_pts = '123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZΘ' /*plot chars*/
+0004 loX= 0;     hiX= 0;     loY= 0;   hiY= 0         /*assign various constants & variables.*/
+0005 parse arg # p c .                                /*#:  number of iterations; P=init dir.*/
+0006 if #=='' | #==","  then #= 11                    /*Not specified?  Then use the default.*/
+0007 if p=='' | p==","  then p= 'north';     upper p  /* "      "         "   "   "     "    */
+0008 if c==''           then c= plot_pts              /* "      "         "   "   "     "    */
+0009 if length(c)==2    then c= x2c(c)                /*was a  hexadecimal  code specified?  */
+0010 if length(c)==3    then c= d2c(c)                /* "  "    decimal      "      "       */
+0011 p= translate( left(p, 1), 0123, 'NESW')          /*get the orientation for dragon curve.*/
+0012 $=                                               /*initialize the dragon curve to a null*/
+0013 do #                                         /*create the start of a dragon curve.  */
+0014 $= $'R'reverse( translate($, "RL", 'LR') )   /*append the rest of dragon curve.     */
+0015 end   /*#*/                                  /* [↑]  append char, flip, and reverse.*/
+0016 
+0017 do j=1  for length($);     _= substr($, j, 1)  /*get next cardinal direction for curve*/
+0018 p= (p + d._) // 4                              /*move dragon curve in a new direction.*/
+0019 if p< 0  then p= p + 4                         /*Negative?  Then use a new direction. */
+0020 if p==0  then do;  y= y + 1;  y2= y + 1;  end  /*curve is going  east  cartologically.*/
+0021 if p==1  then do;  x= x + 1;  x2= x + 1;  end  /*  "    "       south         "       */
+0022 if p==2  then do;  y= y - 1;  y2= y - 1;  end  /*  "    "        west         "       */
+0023 if p==3  then do;  x= x - 1;  x2= x - 1;  end  /*  "    "       north         "       */
+0024 if j>2**z  then z= z + 1                       /*identify a part of curve being built.*/
+0025 != substr(c, z, 1)                             /*choose plot point character (glyph). */
+0026 if !==' '  then != right(c, 1)                 /*Plot point a blank?  Then use a glyph*/
+0027 @.x.y= !;            @.x2.y2= !                /*draw part of the  dragon curve.      */
+0028 loX= min(loX,x,x2);  hiX= max(hiX,x,x2); x= x2 /*define the min & max  X  graph limits*/
+0029 loY= min(loY,y,y2);  hiY= max(hiY,y,y2); y= y2 /*   "    "   "  "  "   Y    "     "   */
+0030 end   /*j*/                                    /* [↑]  process all of  $  char string.*/
+0031 do r=loX  to hiX;     a=           /*nullify the line that will be drawn. */
+0032 do c=loY  to hiY;  a= a || @.r.c /*create a line (row) of curve points. */
+0033 end   /*c*/                      /* [↑] append a single column of a row.*/
+0034 if a\==''  then say strip(a, "T")  /*display a line (row) of curve points.*/
+0035 end      /*r*/                     /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 p                5 7 11 18 19
+002 c                5 8 9 10 32
+003 j                17
+004 y                20 22 29
+005 y2               20 22
+006 x                21 23 28
+007 x2               21 23
+008 z                24
+009 loX              28
+010 hiX              28
+011 loY              29
+012 hiY              29
+013 r                31
+014 a                31 32
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 2 27 27
+002 #                -> newV2            5 6
+003 $                -> newV3            12 14
+004 _                -> newV4            17
+005 !                -> newV5            25 26

@@ -1,0 +1,53 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX*/
+0002 
+0003 Call time 'R'
+0004 Do x=1 To 20000
+0005 pd=proper_divisors(x)
+0006 sumpd.x=sum(pd)
+0007 End
+0008 Say 'sum(pd) computed in' time('E') 'seconds'
+0009 Call time 'R'
+0010 Do x=1 To 20000
+0011 /* If x//1000=0 Then Say x time() */
+0012 Do y=x+1 To 20000
+0013 If y=sumpd.x &,
+0014 x=sumpd.y Then
+0015 Say x y 'found after' time('E') 'seconds'
+0016 End
+0017 End
+0018 Say time('E') 'seconds total search time'
+0019 Exit
+0020 
+0021 proper_divisors: Procedure
+0022 Parse Arg n
+0023 Pd=''
+0024 If n=1 Then Return ''
+0025 If n//2=1 Then  /* odd number  */
+0026 delta=2
+0027 Else            /* even number */
+0028 delta=1
+0029 Do d=1 To n%2 By delta
+0030 If n//d=0 Then
+0031 pd=pd d
+0032 End
+0033 Return space(pd)
+0034 
+0035 sum: Procedure
+0036 Parse Arg list
+0037 sum=0
+0038 Do i=1 To words(list)
+0039 sum=sum+word(list,i)
+0040 End
+0041 Return sum
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 list             36
+002 sum              37 39
+003 i                38
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

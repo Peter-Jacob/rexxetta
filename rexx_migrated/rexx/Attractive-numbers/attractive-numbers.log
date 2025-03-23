@@ -1,0 +1,66 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program finds and shows lists (or counts) attractive numbers up to a specified N.*/
+0002 parse arg N .                                    /*get optional argument from the C.L.  */
+0003 if N=='' | N==","  then N= 120                   /*Not specified?  Then use the default.*/
+0004 cnt= N<0                                         /*semaphore used to control the output.*/
+0005 N= abs(N)                                        /*ensure that  N  is a positive number.*/
+0006 call genP 100                                    /*gen 100 primes (high= 541); overkill.*/
+0007 sw= linesize()  -  1                             /*SW:    is the usable screen width.   */
+0008 if \cnt  then say 'attractive numbers up to and including '      commas(N)        " are:"
+0009 #= 0                                             /*number of attractive #'s  (so far).  */
+0010 $=                                               /*a list of attractive numbers (so far)*/
+0011 do j=1  for N;   if @.j  then iterate        /*Is it a low prime?  Then skip number.*/
+0012 a= cFact(j)                            /*call cFact to count the factors in J.*/
+0013 if \@.a  then iterate                        /*if # of factors not prime, then skip.*/
+0014 #= # + 1                                     /*bump number of attractive #'s found. */
+0015 if cnt   then iterate                        /*if not displaying numbers, skip list.*/
+0016 cj= commas(j);             _= $ cj           /*append a commatized number to $ list.*/
+0017 if length(_)>sw  then do;  say strip($);  $= cj;  end   /*display a line of numbers.*/
+0018 else                     $= _          /*append the latest number. */
+0019 end   /*j*/
+0020 
+0021 if $\==''  &  \cnt   then say strip($)           /*display any residual numbers in list.*/
+0022 say;     say commas(#)     ' attractive numbers found up to and including '      commas(N)
+0023 exit                                             /*stick a fork in it,  we're all done. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 cFact: procedure;  parse arg z 1 oz;  if z<2  then return z  /*if Z too small, return Z.*/
+0026 #= 0                                      /*#:  is the number of factors (so far)*/
+0027 do  while z//2==0;  #= #+1;  z= z%2;  end  /*maybe add the factor of two.  */
+0028 do  while z//3==0;  #= #+1;  z= z%3;  end  /*  "    "   "     "    " three.*/
+0029 do  while z//5==0;  #= #+1;  z= z%5;  end  /*  "    "   "     "    " five. */
+0030 do  while z//7==0;  #= #+1;  z= z%7;  end  /*  "    "   "     "    " seven.*/
+0031 /* [↑]  reduce  Z  by some low primes. */
+0032 do k=11  by 6  while k<=z              /*insure that  K  isn't divisible by 3.*/
+0033 parse var k  ''  -1  _                 /*obtain the last decimal digit of  K. */
+0034 if _\==5  then do  while z//k==0;  #= #+1;   z= z%k;   end   /*maybe reduce Z.*/
+0035 if _ ==3  then iterate                 /*Next number ÷ by 5?  Skip.   ____    */
+0036 if k*k>oz then leave                   /*are we  greater  than the   √ OZ  ?  */
+0037 y= k + 2                               /*get next divisor,  hopefully a prime.*/
+0038 do while  z//y==0;  #= #+1;   z= z%y;   end   /*maybe reduce Z.*/
+0039 end   /*k*/
+0040 if z\==1  then return # + 1               /*if residual isn't unity, then add one*/
+0041 return #                   /*return the number of factors in  OZ. */
+0042 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0043 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+0044 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0045 genP: procedure expose @.; parse arg n;           @.=0;         @.2= 1;     @.3= 1;   p= 2
+0046 do j=3  by 2  until p==n;   do k=3  by 2  until k*k>j;  if j//k==0  then iterate j
+0047 end  /*k*/;             @.j = 1;        p= p + 1
+0048 end   /*j*/;          return             /* [↑]  generate  N  primes.           */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                45
+002 p                45 47
+003 j                46
+004 k                46
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           45 45 45 47
+002 #                -> newV2            9 14 26 27 28 29 30 34 38
+003 $                -> newV3            10 17
+004 _                -> newV4            16 33
+005 ?                -> newV5            43 43

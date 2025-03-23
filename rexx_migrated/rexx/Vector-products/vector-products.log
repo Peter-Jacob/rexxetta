@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program computes the products:  dot,  cross,  scalar triple,  and  vector triple.*/
+0002 a=   3   4   5
+0003 b=   4   3   5      /*(positive numbers don't need quotes.)*/
+0004 c= "-5 -12 -13"
+0005 call tellV  'vector A =', a                      /*show the  A  vector, aligned numbers.*/
+0006 call tellV  'vector B =', b                      /*  "   "   B     "        "      "    */
+0007 call tellV  'vector C =', c                      /*  "   "   C     "        "      "    */
+0008 say
+0009 call tellV  '  dot product [A∙B] =',                 dot(a, b)
+0010 call tellV  'cross product [AxB] =',               cross(a, b)
+0011 call tellV  'scalar triple product [A∙(BxC)] =',     dot(a, cross(b, c) )
+0012 call tellV  'vector triple product [Ax(BxC)] =',   cross(a, cross(b, c) )
+0013 exit 0                                           /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 cross: procedure; arg $1 $2 $3,@1 @2 @3;  return  $2*@3 -$3*@2  $3*@1 -$1*@3  $1*@2 -$2*@1
+0016 dot:   procedure; arg $1 $2 $3,@1 @2 @3;  return  $1*@1        +   $2*@2     +   $3*@3
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 tellV: procedure; parse arg name,x y z;   w=max(4,length(x),length(y),length(z)) /*max W*/
+0019 say right(name,40)  right(x,w)  right(y,w)  right(z,w); /*show vector.*/    return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 name             18
+002 x                18
+003 y                18
+004 z                18
+005 w                18
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

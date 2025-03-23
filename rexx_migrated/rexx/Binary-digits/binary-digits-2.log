@@ -1,0 +1,23 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program to  convert  several  decimal numbers  to  binary  (or base 2).          */
+0002 @.=;             @.1=    0
+0003 @.2=    5
+0004 @.3=   50
+0005 @.4= 9000
+0006 
+0007 do j=1  while  @.j\==''                        /*compute until a  NULL value is found.*/
+0008 y=strip( x2b( d2x( @.j )), 'L', 0)             /*force removal of  all leading zeroes.*/
+0009 if y==''  then y=0                             /*handle the special case of  0 (zero).*/
+0010 say right(@.j,20) 'decimal, and in binary:' y  /*display the number to the terminal.  */
+0011 end   /*j*/                                    /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                7
+002 y                8 9
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 2 3 4 5

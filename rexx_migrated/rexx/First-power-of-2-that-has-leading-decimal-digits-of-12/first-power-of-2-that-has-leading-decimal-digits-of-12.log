@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program computes powers of two whose leading decimal digits are "12" (in base 10)*/
+0002 parse arg L n b .                                /*obtain optional arguments from the CL*/
+0003 if L=='' | L=="," then L= 12                     /*Not specified?  Then use the default.*/
+0004 if n=='' | n=="," then n=  1                     /* "      "         "   "   "     "    */
+0005 if b=='' | b=="," then b=  2                     /* "      "         "   "   "     "    */
+0006 LL= length(L)                                    /*obtain the length of  L  for compares*/
+0007 fd=   left(L, 1)                                 /*obtain the first   dec. digit  of  L.*/
+0008 fr= substr(L, 2)                                 /*   "    "  rest of dec. digits  "  " */
+0009 numeric digits max(20, LL+2)                     /*use an appropriate value of dec. digs*/
+0010 rest= LL - 1                                     /*the length of the rest of the digits.*/
+0011 #= 0                                             /*the number of occurrences of a result*/
+0012 x= 1                                             /*start with a product of unity (B**0).*/
+0013 do j=1  until #==n;        x= x * b         /*raise  B  to a whole bunch of powers.*/
+0014 parse var x _ 2                             /*obtain the first decimal digit of  X.*/
+0015 if _ \== fd  then iterate                   /*check only the 1st digit at this time*/
+0016 if LL>1  then do                            /*check the rest of the digits, maybe. */
+0017 $= format(x, , , , 0)         /*express  X  in exponential format.   */
+0018 parse var $ '.' +1 f +(rest)  /*obtain the rest of the digits.       */
+0019 if f \== fr  then iterate     /*verify that  X  has the rest of digs.*/
+0020 end                           /* [↓] found an occurrence of an answer*/
+0021 #= # + 1                                    /*bump the number of occurrences so far*/
+0022 end   /*j*/
+0023 
+0024 say 'The '  th(n)  ' occurrence of '   b  ' raised to a power whose product starts with' ,
+0025 ' "'L"'"       ' is '        commas(j).
+0026 exit                                             /*stick a fork in it,  we're all done. */
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 commas: arg _;     do c=length(_)-3  to 1  by -3;  _= insert(',', _, c);  end;    return _
+0029 th:     arg _;  return _ || word('th st nd rd', 1 +_//10 * (_//100 % 10\==1) * (_//10 <4))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 f                18
+002 c                28
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 +(rest)          -> newV1            18
+002 #                -> newV2            11 21
+003 _                -> newV3            14 28
+004 $                -> newV4            17 18

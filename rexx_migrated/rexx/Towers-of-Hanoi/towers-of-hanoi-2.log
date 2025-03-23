@@ -1,0 +1,82 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program  displays  the  moves  to solve  the  Tower of Hanoi  (with  N  disks).  */
+0002 parse arg N .                                    /*get optional number of disks from CL.*/
+0003 if N=='' | N==","  then N=3                      /*Not specified?  Then use the default.*/
+0004 sw= 80;    wp= sw%3 - 1;   blanks= left('', wp)  /*define some default REXX variables.  */
+0005 c.1= sw % 3 % 2                                  /* [↑]  SW: assume default Screen Width*/
+0006 c.2= sw % 2 - 1                                  /* ◄───  C.1 C.2 C.2  are the positions*/
+0007 c.3= sw - 2 - c.1                                /*                    of the 3 columns.*/
+0008 #= 0;        z= 2**N - 1;           moveK= z     /*#moves; min# of moves; where to move.*/
+0009 @abc= 'abcdefghijklmnopqrstuvwxyN'               /*dithering chars when many disks used.*/
+0010 ebcdic= ('f2'x==2)                               /*determine if EBCDIC or ASCII machine.*/
+0011 
+0012 if ebcdic then do;   bar= 'bf'x;    ar= "df"x;    dither= 'db9f9caf'x;         down= "9a"x
+0013 tr= 'bc'x;    bl= "ab"x;    br= 'bb'x;   vert= "fa"x;      tl= 'ac'x
+0014 end
+0015 else do;   bar= 'c4'x;    ar= "10"x;    dither= 'b0b1b2db'x;         down= "19"x
+0016 tr= 'bf'x;    bl= "c0"x;    br= 'd9'x;   vert= "b3"x;      tl= 'da'x
+0017 end
+0018 
+0019 verts= vert || vert;           Tcorners= tl || tr;              box     = left(dither, 1)
+0020 downs= down || down;           Bcorners= bl || br;              boxChars= dither || @abc
+0021 $.= 0;         $.1= N;         k= N;                            kk= k + k
+0022 
+0023 do j=1  for N;   @.3.j= blanks;    @.2.j= blanks;    @.1.j= center( copies(box, kk), wp)
+0024 if N<=length(boxChars)  then @.1.j= translate( @.1.j, , substr( boxChars, kk%2, 1), box)
+0025 kk= kk - 2
+0026 end   /*j*/                                    /*populate the tower of Hanoi spindles.*/
+0027 
+0028 call showTowers;   call mov 1,3,N;   say
+0029 say 'The minimum number of moves to solve a '        N"-disk  Tower of Hanoi is "      z
+0030 exit                                             /*stick a fork in it,  we're all done. */
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 dsk: parse arg from dest;   #= # + 1;       pp=
+0033 if from==1  then do;  pp= overlay(bl,  pp, c.1)
+0034 pp= overlay(bar, pp, c.1+1, c.dest-c.1-1, bar) || tr
+0035 end
+0036 if from==2  then do
+0037 if dest==1  then do;  pp= overlay(tl,  pp, c.1)
+0038 pp= overlay(bar, pp, c.1+1, c.2-c.1-1,bar)||br
+0039 end
+0040 if dest==3  then do;  pp= overlay(bl,  pp, c.2)
+0041 pp= overlay(bar, pp, c.2+1, c.3-c.2-1,bar)||tr
+0042 end
+0043 end
+0044 if from==3  then do;  pp= overlay(br,  pp, c.3)
+0045 pp= overlay(bar, pp, c.dest+1, c.3-c.dest-1, bar)
+0046 pp= overlay(tl,  pp, c.dest)
+0047 end
+0048 say translate(pp, downs, Bcorners || Tcorners || bar);     say overlay(moveK, pp, 1)
+0049 say translate(pp, verts, Tcorners || Bcorners || bar)
+0050 say translate(pp, downs, Tcorners || Bcorners || bar);     moveK= moveK - 1
+0051 $.from= $.from - 1;      $.dest= $.dest + 1;     _f= $.from + 1;           _t= $.dest
+0052 @.dest._t= @.from._f;    @.from._f= blanks;      call showTowers
+0053 return
+0054 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0055 mov: if arg(3)==1  then      call dsk arg(1) arg(2)
+0056 else do;  call mov arg(1),              6 -arg(1) -arg(2),    arg(3) -1
+0057 call mov arg(1),              arg(2),               1
+0058 call mov 6 -arg(1) -arg(2),   arg(2),               arg(3) -1
+0059 end                 /* [↑]  The  MOV  subroutine is recursive,  */
+0060 return                                 /*it uses no variables, is uses BIFs instead*/
+0061 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0062 showTowers: do j=N  by -1  for N; _=@.1.j @.2.j @.3.j;  if _\=''  then say _; end;  return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 from             32
+002 dest             32
+003 pp               32 33 34 37 38 40 41 44 45 46
+004 moveK            50
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @abc             -> newV1            9
+002 $.               -> newV2.           21 21 51 51
+003 @.               -> newV3.           23 23 23 24 52 52
+004 _f               -> newV4            51
+005 _t               -> newV5            51
+006 #                -> newV6            8 32
+007 _                -> newV7            62

@@ -1,0 +1,54 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program lists all the  non─continuous subsequences  (NCS),   given a sequence.   */
+0002 parse arg list                                   /*obtain optional argument from the CL.*/
+0003 if list='' | list==","  then list= 1 2 3 4 5     /*Not specified?  Then use the default.*/
+0004 say 'list='  space(list);             say        /*display the list to the terminal.    */
+0005 w= words(list)                                   /*W:  is the number of items in list.  */
+0006 nums= strip( left(123456789, w) )                /*build a string of decimal digits.    */
+0007 tail= right(nums, max(0, w-2) )                  /*construct a fast tail for comparisons*/
+0008 #= 0                                             /*#:  number of non─continuous subseq. */
+0009 do j=13  to left(nums,1) || tail           /*step through list (using smart start)*/
+0010 if verify(j, nums) \== 0  then iterate     /*Not one of the chosen  (sequences) ? */
+0011 f= left(j, 1)                              /*use the fist decimal digit of  J.    */
+0012 NCS= 0                                     /*so far, no non─continuous subsequence*/
+0013 do k=2  for length(j)-1           /*search for  "       "          "     */
+0014 x= substr(j, k, 1)                /*extract a single decimal digit of  J.*/
+0015 if x  <= f    then iterate j      /*if next digit ≤, then skip this digit*/
+0016 if x \== f+1  then NCS= 1         /*it's OK as of now  (that is, so far).*/
+0017 f= x                              /*now have a  new  next decimal digit. */
+0018 end   /*k*/
+0019 $=
+0020 if \NCS  then iterate                      /*not OK?  Then skip this number (item)*/
+0021 #= # + 1                                   /*Eureka!  We found a number (or item).*/
+0022 do m=1  for length(j)             /*build a sequence string to display.  */
+0023 $= $ word(list, substr(j, m, 1) ) /*obtain a number (or item) to display.*/
+0024 end   /*m*/
+0025 
+0026 say 'a non─continuous subsequence: '   $   /*show the non─continuous subsequence. */
+0027 end         /*j*/
+0028 say                                              /*help ensure visual fidelity in output*/
+0029 if #==0  then #= 'no'                            /*make it look more gooder Angleshy.   */
+0030 say  #   "non─continuous subsequence"s(#)    'were found.'             /*handle plurals.*/
+0031 exit 0                                           /*stick a fork in it,  we're all done. */
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 s:  if arg(1)==1  then return '';   return word( arg(2) 's',  1)    /*simple pluralizer.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 list             2 3
+002 w                5
+003 nums             6
+004 tail             7
+005 j                9
+006 f                11 17
+007 NCS              12 16
+008 k                13
+009 x                14
+010 m                22
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            8 21 29
+002 $                -> newV2            19 23

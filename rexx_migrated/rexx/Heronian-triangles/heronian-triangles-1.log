@@ -1,0 +1,76 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /*REXX program generates & displays primitive Heronian triangles by side length and area*/
+0002 parse arg  N  first  area  .                     /*obtain optional arguments from the CL*/
+0003 if     N==''  |     N==","  then     N= 200      /*Not specified?  Then use the default.*/
+0004 if first==''  | first==","  then first=  10      /* "      "         "   "   "     "    */
+0005 if  area==''  |  area==","  then  area= 210      /* "      "         "   "   "     "    */
+0006 numeric digits 99                                /*ensure 'nuff dec. digs to calc. N**5.*/
+0007 numeric digits max(9, 1 + length(N**5) )         /*minimize decimal digits for REXX pgm.*/
+0008 call Heron;       HT= 'Heronian triangles'       /*invoke the  Heron  subroutine.       */
+0009 say  #          ' primitive'  HT  "found with sides up to "   N  ' (inclusive).'
+0010 call show     , 'Listing of the first '      first      ' primitive'      HT":"
+0011 call show area, 'Listing of the (above) found primitive'   HT   "with an area of "    area
+0012 exit                                             /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 Heron: @.= 0;  minP= 9e9;  maxP= 0;  maxA= 0;  minA= 9e9;  Ln= length(N)    /*        __*/
+0015 #= 0;  #.= 0;  #.2= 1;  #.3= 1;  #.7= 1;  #.8= 1       /*digits ¬good √  */
+0016 do a=3  to N                                   /*start at a minimum side length of 3. */
+0017 Aeven= a//2==0                        /*if  A  is even,  B and C must be odd.*/
+0018 do b=a+Aeven  to N  by 1+Aeven;   ab= a + b  /*AB: a shortcut for the sum of A & B. */
+0019 if b//2==0  then                bump= 1      /*Is  B  even?       Then  C  is odd.  */
+0020 else if Aeven  then bump= 0      /*Is  A  even?         "   "   "  "    */
+0021 else bump= 1      /*A and B  are both odd,  biz as usual.*/
+0022 do c=b+bump  to N  by 2;   s= (ab + c) % 2 /*calculate triangle's perimeter:   S. */
+0023 _= s*(s-a)*(s-b)*(s-c); if _<=0   then iterate /*is  _  not positive?      Skip it*/
+0024 parse var _ '' -1 z   ; if #.z    then iterate /*Last digit not square?    Skip it*/
+0025 ar= hIsqrt(_);       if ar*ar\==_ then iterate /*Is area not an integer?   Skip it*/
+0026 if hGCD(a, b, c) \== 1            then iterate /*GCD of sides not equal 1? Skip it*/
+0027 #= # + 1;                p= ab + c             /*primitive Heronian triangle.     */
+0028 minP= min( p, minP);     maxP= max( p, maxP);        Lp= length(maxP)
+0029 minA= min(ar, minA);     maxA= max(ar, maxA);        La= length(maxA)
+0030 _=@.ar.p.0 + 1                                 /*bump Heronian triangle counter.  */
+0031 @.ar.p.0= _;  @.ar.p._= right(a, Ln)   right(b, Ln)   right(c, Ln)       /*unique.*/
+0032 end   /*c*/                                    /* [↑]  keep each unique perimeter#*/
+0033 end     /*b*/
+0034 end       /*a*/;             return #              /*return # of Heronian triangles.  */
+0035 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0036 hGCD: x=a;   do j=2  for 2;    y= arg(j);       do until y==0; parse value x//y y with y x
+0037 end   /*until*/
+0038 end   /*j*/;      return x
+0039 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0040 hIsqrt: procedure; parse arg x;  q= 1;  r= 0;                  do  while q<=x;    q= q * 4
+0041 end   /*while q<=x*/
+0042 do  while q>1; q=q%4; _= x-r-q; r= r%2; if _>=0  then parse value _ r+q with x r
+0043 end   /*while q>1*/;          return r
+0044 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0045 show: m=0;  say;  say;   parse arg ae;     say arg(2);         if ae\==''  then first= 9e9
+0046 say;  $=left('',9);   $a= $"area:";  $p= $'perimeter:';  $s= $"sides:"  /*literals*/
+0047 do   i=minA  to maxA;  if ae\=='' & i\==ae  then iterate          /*= area? */
+0048 do j=minP  to maxP  until m>=first      /*only display the  FIRST entries.*/
+0049 do k=1  for @.i.j.0;    m= m + 1      /*display each  perimeter  entry. */
+0050 say right(m, 9)   $a    right(i, La)    $p   right(j, Lp)    $s    @.i.j.k
+0051 end   /*k*/
+0052 end     /*j*/                           /* [↑]  use the known perimeters. */
+0053 end       /*i*/;            return        /* [↑]  show any found triangles. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 ae               45
+002 first            45
+003 i                47
+004 j                48
+005 k                49
+006 m                49
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #.               -> newV1.           15 15 15 15 15
+002 @.               -> newV2.           31 31
+003 $a               -> newV3            46
+004 $p               -> newV4            46
+005 $s               -> newV5            46
+006 #                -> newV6            15 27
+007 _                -> newV7            23 24 30 42
+008 $                -> newV8            46

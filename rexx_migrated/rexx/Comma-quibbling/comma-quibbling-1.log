@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 say quibbling('')
+0002 say quibbling('ABC')
+0003 say quibbling('ABC DEF')
+0004 say quibbling('ABC DEF G H')
+0005 exit
+0006 
+0007 quibbling: procedure
+0008 parse arg list
+0009 Select
+0010 When list='' Then result=''
+0011 When words(list)=1 then result=word(list,1)
+0012 Otherwise result=translate(strip(subword(list,1,words(list)-1)),',',' '),
+0013 'and' word(list,words(list))
+0014 End
+0015 Return '{'result'}'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 list             8
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

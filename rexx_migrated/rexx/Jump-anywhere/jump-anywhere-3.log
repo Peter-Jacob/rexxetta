@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 12.12.2012 Walter Pachl
+0003 **********************************************************************/
+0004 Signal On Syntax
+0005 Parse Upper Arg part
+0006 If part<>'' Then
+0007 Interpret 'Signal' part
+0008 Say 'Executing default part'
+0009 Signal eoj
+0010 a:Say 'executing part A'
+0011 Signal eoj
+0012 b:Say 'executing part B'
+0013 Signal eoj
+0014 Syntax:
+0015 Say 'argument must be a or b or omitted'
+0016 Exit
+0017 eoj: say 'here we could print statistics'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 part             5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

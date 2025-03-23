@@ -1,0 +1,87 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program analyzes an  N-card  poker hand, and displays what the poker hand is,    */
+0002 /*──────────────────────────────────────────── poker hands may contain up to two jokers.*/
+0003 parse arg iFID .;       if iFID=='' | iFID==","  then iFID= 'POKERHAJ.DAT'
+0004 /* [↓] read  the poker hands dealt.    */
+0005 do  while lines(iFID)\==0;      ox= linein(iFID);         if ox=''  then iterate
+0006 say right(ox, max(30, length(ox) ) )       ' ◄─── '       analyze(ox)
+0007 end   /*while*/                            /* [↑]  analyze/validate the poker hand*/
+0008 exit                                             /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 analyze: procedure; arg x ';',mc;       hand=translate(x, '♥♦♣♠1', "HDCSA,");    flush= 0
+0011 kinds= 0;    suit.= 0;    pairs= 0;     @.= 0;         run= copies(0 ,13);       pips= run
+0012 if mc==''  then mc= 5;    n= words(hand)         /*N   is the number of cards in hand.  */
+0013 if n\==mc  then return  'invalid number of cards, must be' mc
+0014 /* [↓]  the PIP can be  1 or 2  chars. */
+0015 do j=1  for n;     _= word(hand, j)           /*obtain a card from the dealt hand.   */
+0016 pip= left(_, length(_) - 1);  ws= right(_, 1) /*obtain card's pip; obtain card's suit*/
+0017 if pip==10   then pip= 'T'                    /*allow alternate form for a  TEN  pip.*/
+0018 if abbrev('JOKER', _, 1)  then _= "JK"        /*allow altername forms of JOKER names.*/
+0019 @._= @._ + 1                                  /*bump the card counter for this hand. */
+0020 #= pos(pip, 123456789TJQK)                    /*obtain the pip index for the card.   */
+0021 if _=='JK'  then do;  if @.j>2  then return 'invalid, too many jokers'
+0022 iterate
+0023 end
+0024 if pos(ws, "♥♣♦♠")==0  then return 'invalid suit in card:'     _
+0025 if #==0                then return 'invalid pip in card:'      _
+0026 if @._\==1             then return 'invalid, duplicate card:'  _
+0027 suit.ws= suit.ws + 1                          /*count the suits for a possible flush.*/
+0028 flush= max(flush, suit.ws)                  /*count number of cards in the suits.  */
+0029 run= overlay(., run, #)                   /*convert runs to a series of periods. */
+0030 _= substr(pips, #, 1) + 1               /*obtain the number of the pip in hand.*/
+0031 pips= overlay(_, pips, #)                  /*convert the pip to legitimate number.*/
+0032 kinds= max(kinds, _)                        /*convert certain pips to their number.*/
+0033 end   /*i*/                                   /* [↑]  keep track of  N─of─a─kind.    */
+0034 
+0035 run= run || left(run, 1)                         /*An  ace  can be  high  ─or─  low.    */
+0036 jok= @.jk;   kinds= kinds+jok;  flush= flush+jok /*N─of─a─kind;  adjustments for jokers.*/
+0037 straight= pos(..... , run)\==0           |,      /*does the RUN contain a straight?     */
+0038 (pos(....  , run)\==0 & jok>=1) |,      /*  "   "   "     "    "     "         */
+0039 (pos(..0.. , run)\==0 & jok>=1) |,      /*  "   "   "     "    "     "         */
+0040 (pos(...0. , run)\==0 & jok>=1) |,      /*  "   "   "     "    "     "         */
+0041 (pos(.0... , run)\==0 & jok>=1) |,      /*  "   "   "     "    "     "         */
+0042 (pos(...   , run)\==0 & jok>=2) |,      /*  "   "   "     "    "     "         */
+0043 (pos(..0.  , run)\==0 & jok>=2) |,      /*  "   "   "     "    "     "         */
+0044 (pos(.0..  , run)\==0 & jok>=2) |,      /*  "   "   "     "    "     "         */
+0045 (pos(.00.. , run)\==0 & jok>=2) |,      /*  "   "   "     "    "     "         */
+0046 (pos(..00. , run)\==0 & jok>=2) |,      /*  "   "   "     "    "     "         */
+0047 (pos(.0.0. , run)\==0 & jok>=2)         /*  "   "   "     "    "     "         */
+0048 pairs= countstr(2, pips)                         /*count number of pairs  (2s in PIPS). */
+0049 if jok\==0  then pairs= pairs - 1                /*adjust number of pairs with jokers.  */
+0050 if kinds>=5             then return  'five-of-a-kind'
+0051 if flush>=5 & straight  then return  'straight-flush'
+0052 if kinds>=4             then return  'four-of-a-kind'
+0053 if kinds>=3 & pairs>=1  then return  'full-house'
+0054 if flush>=5             then return  'flush'
+0055 if            straight  then return  'straight'
+0056 if kinds>=3             then return  'three-of-a-kind'
+0057 if kinds==2 & pairs==2  then return  'two-pair'
+0058 if kinds==2             then return  'one-pair'
+0059 return  'high-card'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 while            5
+002 ox               5
+003 hand             10
+004 flush            10 28 36
+005 kinds            11 32 36
+006 suit.            11 27
+007 pairs            11 48 49
+008 run              11 29 35
+009 pips             11 31
+010 mc               12
+011 n                12
+012 j                15
+013 pip              16 17
+014 ws               16
+015 jok              36
+016 straight         37
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           11 19
+002 _                -> newV2            15 18 30
+003 #                -> newV3            20

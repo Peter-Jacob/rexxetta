@@ -1,0 +1,18 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 uppercase: /*courtesy Gerard Schildberger */
+0002 return translate(changestr("ß",translate(arg(1),'ÄÖÜ',"äöü"),'SS'))
+0003 
+0004 uppercase2: Procedure
+0005 Parse Arg a
+0006 a=translate(arg(1),'ÄÖÜ',"äöü")     /* translate lowercase umlaute */
+0007 a=changestr("ß",a,'SS')             /* replace ß with SS           */
+0008 return translate(a)                 /* translate lowercase letters */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                5 6 7
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

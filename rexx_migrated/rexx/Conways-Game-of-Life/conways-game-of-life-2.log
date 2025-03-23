@@ -1,0 +1,199 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 02.08.2014 Walter Pachl
+0003 * Input is a file containing the initial pattern
+0004 * The compute area is extended when needed
+0005 *   (cells are born outside the current compute area)
+0006 * The program stops when the picture shown is the same as the first
+0007 *   or equal to the previous one
+0008 *--------------------------------------------------------------------*/
+0009 Parse Arg f
+0010 If f='' Then f='bipole'
+0011 fid=f'.in'
+0012 oid=f'.txt'; 'erase' oid
+0013 debug=0
+0014 If debug Then Do
+0015 dbg=f'.xxx'; 'erase' dbg
+0016 End
+0017 ml=0
+0018 l.=''
+0019 Do ri=3 By 1 While lines(fid)>0
+0020 l.ri='  'linein(fid)
+0021 ml=max(ml,length(strip(l.ri,'T')))
+0022 End
+0023 ml=ml+2
+0024 ri=ri+1
+0025 yy=ri
+0026 If debug Then
+0027 say 'ml='ml 'yy='yy
+0028 yb=1
+0029 a.=' '
+0030 b.=' '
+0031 m.=''
+0032 x.=''
+0033 Parse Value 1 ml 1 yy With xmi xma ymi yma
+0034 Parse Value '999 0' With xmin xmax
+0035 Parse Value '999 0' With ymin ymax
+0036 
+0037 Do y=1 To yy
+0038 z=yy-y-1
+0039 l=l.z
+0040 Do x=1 By 1 While l<>''
+0041 Parse Var l c +1 l
+0042 If c='*' Then Do
+0043 a.x.z='*'
+0044 End
+0045 End
+0046 End
+0047 Call show
+0048 Do step=1 To 60
+0049 Call store
+0050 If step>1 & is_equal(step,1) Then Leave
+0051 If step>1 & is_equal(step,step-1) Then Leave
+0052 Call show_neighbors
+0053 Do y=yma To ymi By -1
+0054 ol=format(x,2)' '
+0055 Do x=xmi To xma
+0056 neighbors=neighbors(x,y)
+0057 If a.x.y=' ' Then Do             /* dead cell                  */
+0058 If neighbors=3 Then Do
+0059 b.x.y='*'                    /*  gets life                 */
+0060 mmo=xmi xma ymi yma
+0061 xmi=min(xmi,x-1)
+0062 xma=max(xma,x+1)
+0063 ymi=min(ymi,y-1)
+0064 yma=max(yma,y+1)
+0065 mm=xmi xma ymi yma
+0066 If mm<>mmo Then
+0067 Call debug mmo '->' mm
+0068 End
+0069 Else                           /* life cell                  */
+0070 b.x.y=' '                    /*  remains dead              */
+0071 
+0072 End
+0073 Else Do                          /* life cell                  */
+0074 If neighbors=2 |,
+0075 neighbors=3 Then b.x.y='*'  /*  remains life              */
+0076 Else b.x.y=' '  /*  dies                      */
+0077 End
+0078 End
+0079 End
+0080 /* b. is the new state and is now copied to a.                     */
+0081 Do y=yma To ymi By -1
+0082 Do x=xmi To xma
+0083 a.x.y=b.x.y
+0084 End
+0085 End
+0086 End
+0087 /* Output name and all states                                        */
+0088 Call lineout oid,' 'f
+0089 st=' +'                                /* top and bottom border      */
+0090 sb=' +'                                /* top and bottom border      */
+0091 Do s=1 To step
+0092 st=st||'-'right(s,2,'-')||copies('-',xmax-xmin)'+'
+0093 sb=sb||copies('-',xmax-xmin+3)'+'
+0094 End
+0095 Call lineout oid,st                    /* top border                 */
+0096 Do y=ymin To ymax
+0097 ol=''
+0098 Do s=1 To step
+0099 ol=ol '|' substr(m.s.y,xmin,xmax-xmin+1)
+0100 End
+0101 Call lineout oid,ol '|'
+0102 End
+0103 Call lineout oid,sb                    /* bottom border              */
+0104 Call lineout oid
+0105 'type' oid
+0106 If debug Then Do
+0107 Say 'original area' 1 ml '/' 1 yy
+0108 Say 'compute area ' xmi xma '/' ymi yma
+0109 End
+0110 Exit
+0111 
+0112 set: Parse Arg x,y
+0113 a.x.y='*'
+0114 Return
+0115 
+0116 neighbors: Procedure Expose a. debug
+0117 Parse Arg x,y
+0118 neighbors=0
+0119 do xa=x-1 to x+1
+0120 do ya=y-1 to y+1
+0121 If xa<>x | ya<>y then
+0122 If a.xa.ya='*' Then
+0123 neighbors=neighbors+1
+0124 End
+0125 End
+0126 Return neighbors
+0127 
+0128 store:
+0129 /* store current state (a.) in lines m.step.*                        */
+0130 Do y=yy To 1 By -1
+0131 ol=''
+0132 Do x=1 To ml
+0133 z=a.x.y
+0134 ol=ol||z
+0135 End
+0136 x.step.y=ol
+0137 If ol<>'' then Do
+0138 ymin=min(ymin,y)
+0139 ymax=max(ymax,y)
+0140 p=pos('*',ol)
+0141 q=length(strip(ol,'T'))
+0142 If p>0 Then
+0143 xmin=min(xmin,p)
+0144 xmax=max(xmax,q)
+0145 End
+0146 m.step.y=ol
+0147 Call debug '====>' right(step,2) y ol  xmin xmax
+0148 End
+0149 Return
+0150 
+0151 is_equal:
+0152 /* test ist state a.b is equal to state a.a                          */
+0153 Parse Arg a,b
+0154 Do y=yy To 1 By -1
+0155 If x.b.y<>x.a.y Then
+0156 Return 0
+0157 End
+0158 Return 1
+0159 
+0160 show: Procedure Expose dbg a. yy ml debug
+0161 Do y=1 To yy
+0162 ol='>'
+0163 Do x=1 To ml
+0164 ol=ol||a.x.y
+0165 End
+0166 Call debug ol
+0167 End
+0168 Return
+0169 
+0170 show_neighbors: Procedure Expose a. xmi xma ymi yma dbg debug
+0171 Do y=yma To ymi By -1
+0172 ol=format(y,2)' '
+0173 
+0174 Do x=xmi To xma
+0175 ol=ol||neighbors(x,y)
+0176 End
+0177 Call debug ol
+0178 End
+0179 Return
+0180 
+0181 debug:
+0182 If debug Then
+0183 Return lineout(dbg,arg(1))
+0184 Else
+0185 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                153
+002 b                153
+003 y                154 161 171
+004 ol               162 164 172 175
+005 x                163 174
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

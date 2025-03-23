@@ -1,0 +1,56 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates  an  evolutionary algorithm  (by using mutation).          */
+0002 parse arg  children  MR  seed .                  /*get optional arguments from the C.L. */
+0003 if children=='' | children=="," then children=10 /*# children produced each generation. */
+0004 if MR      =='' | MR      =="," then MR= "4%"    /*the character Mutation Rate each gen.*/
+0005 if right(MR,1)=='%'  then MR= strip(MR,,"%")/100 /*expressed as a percent?  Then adjust.*/
+0006 if seed\==''  then call random ,,seed            /*SEED allow the runs to be repeatable.*/
+0007 abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ ';        Labc= length(abc)
+0008 
+0009 do i=0  for Labc;  @.i= substr(abc, i+1, 1)  /*define array  (for faster compare),  */
+0010 end   /*i*/                                  /*than picking one from a char string. */
+0011 
+0012 target= 'METHINKS IT IS LIKE A WEASEL' ;    Ltar= length(target)
+0013 
+0014 do j=1  for Ltar;  T.j= substr(target, j, 1) /*define an array (for faster compare),*/
+0015 end   /*j*/                                  /*faster than a byte-by-byte compare.  */
+0016 
+0017 parent= mutate( left('', Ltar), 1)               /*gen rand string, same length as tar. */
+0018 say center('target string', Ltar, "─")    'children'       "mutationRate"
+0019 say target  center(children, 8)    center( (MR*100/1)'%', 12);                     say
+0020 say center('new string'   , Ltar, "─")     'closeness'      "generation"
+0021 
+0022 do gen=0  until  parent==target;                      close= fitness(parent)
+0023 almost= parent
+0024 do  children;                       child= mutate(parent, MR)
+0025 _= fitness(child);                  if _<=close  then iterate
+0026 close= _;                           almost= child
+0027 say almost  right(close, 9)   right(gen, 10)
+0028 end   /*children*/
+0029 parent= almost
+0030 end   /*gen*/
+0031 exit                                             /*stick a fork in it,  we're all done. */
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 fitness: parse arg x; $=0;   do k=1  for Ltar;  $=$+(substr(x,k,1)==T.k);  end;   return $
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 mutate:  parse arg x,rate                        /*set  X  to 1st argument, RATE to 2nd.*/
+0036 $=;       do m=1  for Ltar;       r=random(1, 100000)   /*REXX's max for RANDOM*/
+0037 if .00001*r<=rate  then do;    _= r//Labc;        $= $ || @._;      end
+0038 else $= $  ||  substr(x, m, 1)
+0039 end   /*m*/
+0040 return $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                35
+002 rate             35
+003 m                36
+004 r                36
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           9
+002 _                -> newV2            25 37
+003 $                -> newV3            33 33 36 37

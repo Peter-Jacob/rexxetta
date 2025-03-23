@@ -1,0 +1,226 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:36
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * Solve the Zebra Puzzle
+0003 *--------------------------------------------------------------------*/
+0004 Call mk_perm    /* compute all permutations                        */
+0005 Call encode     /* encode the elements of the specifications       */
+0006 /* ex2 .. eg16     the formalized specifications                   */
+0007 solutions=0
+0008 Call time 'R'
+0009 Do nation_i = 1 TO 120
+0010 Nations = perm.nation_i
+0011 IF ex10() Then Do
+0012 Do color_i = 1 TO 120
+0013 Colors = perm.color_i
+0014 IF ex5() & ex2() & ex15() Then Do
+0015 Do drink_i = 1 TO 120
+0016 Drinks = perm.drink_i
+0017 IF ex9() & ex4() & ex6() Then Do
+0018 Do smoke_i = 1 TO 120
+0019 Smokes = perm.smoke_i
+0020 IF ex14() & ex13() & ex16() & ex8() Then Do
+0021 Do animal_i = 1 TO 120
+0022 Animals = perm.animal_i
+0023 IF ex3() & ex7() & ex11() & ex12() Then Do
+0024 /* Call out 'Drinks =' Drinks  54321 Wat Tea Mil Cof Bee */
+0025 /* Call out 'Nations=' Nations 41235 Nor Den Eng Ger Swe */
+0026 /* Call out 'Colors =' Colors  51324 Yel Blu Red Gre Whi */
+0027 /* Call out 'Smokes =' Smokes  31452 Dun Ble Pal Pri Blu */
+0028 /* Call out 'Animals=' Animals 24153 Cat Hor Bir Zeb Dog */
+0029 Call out 'House   Drink      Nation     Colour'||,
+0030 '     Smoke      Animal'
+0031 Do i=1 To 5
+0032 di=substr(drinks,i,1)
+0033 ni=substr(nations,i,1)
+0034 ci=substr(colors,i,1)
+0035 si=substr(smokes,i,1)
+0036 ai=substr(animals,i,1)
+0037 ol.i=right(i,3)'     '||left(drink.di,11),
+0038 ||left(nation.ni,11),
+0039 ||left(color.ci,11),
+0040 ||left(smoke.si,11),
+0041 ||left(animal.ai,11)
+0042 Call out ol.i
+0043 End
+0044 solutions=solutions+1
+0045 End
+0046 End /* animal_i */
+0047 End
+0048 End /* smoke_i */
+0049 End
+0050 End /* drink_i */
+0051 End
+0052 End /* color_i */
+0053 End
+0054 End /* nation_i */
+0055 Say 'Number of solutions =' solutions
+0056 Say 'Solved in' time('E') 'seconds'
+0057 Exit
+0058 
+0059 /*------------------------------------------------------------------------------
+0060 #There are five houses.
+0061 ex2:  #The English man lives in the red house.
+0062 ex3:  #The Swede has a dog.
+0063 ex4:  #The Dane drinks tea.
+0064 ex5:  #The green house is immediately to the left of the white house.
+0065 ex6:  #They drink coffee in the green house.
+0066 ex7:  #The man who smokes Pall Mall has birds.
+0067 ex8:  #In the yellow house they smoke Dunhill.
+0068 ex9:  #In the middle house they drink milk.
+0069 ex10: #The Norwegian lives in the first house.
+0070 ex11: #The man who smokes Blend lives in the house next to the house with cats.
+0071 ex12: #In a house next to the house where they have a horse, they smoke Dunhill.
+0072 ex13: #The man who smokes Blue Master drinks beer.
+0073 ex14: #The German smokes Prince.
+0074 ex15: #The Norwegian lives next to the blue house.
+0075 ex16: #They drink water in a house next to the house where they smoke Blend.
+0076 ------------------------------------------------------------------------------*/
+0077 ex2:  Return pos(England,Nations)=pos(Red,Colors)
+0078 ex3:  Return pos(Sweden,Nations)=pos(Dog,Animals)
+0079 ex4:  Return pos(Denmark,Nations)=pos(Tea,Drinks)
+0080 ex5:  Return pos(Green,Colors)=pos(White,Colors)-1
+0081 ex6:  Return pos(Coffee,Drinks)=pos(Green,Colors)
+0082 ex7:  Return pos(PallMall,Smokes)=pos(Birds,Animals)
+0083 ex8:  Return pos(Dunhill,Smokes)=pos(Yellow,Colors)
+0084 ex9:  Return substr(Drinks,3,1)=Milk
+0085 ex10: Return left(Nations,1)=Norway
+0086 ex11: Return abs(pos(Blend,Smokes)-pos(Cats,Animals))=1
+0087 ex12: Return abs(pos(Dunhill,Smokes)-pos(Horse,Animals))=1
+0088 ex13: Return pos(BlueMaster,Smokes)=pos(Beer,Drinks)
+0089 ex14: Return pos(Germany,Nations)=pos(Prince,Smokes)
+0090 ex15: Return abs(pos(Norway,Nations)-pos(Blue,Colors))=1
+0091 ex16: Return abs(pos(Blend,Smokes)-pos(Water,Drinks))=1
+0092 
+0093 mk_perm: Procedure Expose perm.
+0094 /*---------------------------------------------------------------------
+0095 * Make all permutations of 12345 in perm.*
+0096 *--------------------------------------------------------------------*/
+0097 perm.=0
+0098 n=5
+0099 Do pop=1 For n
+0100 p.pop=pop
+0101 End
+0102 Call store
+0103 Do While nextperm(n,0)
+0104 Call store
+0105 End
+0106 Return
+0107 
+0108 nextperm: Procedure Expose p. perm.
+0109 Parse Arg n,i
+0110 nm=n-1
+0111 Do k=nm By-1 For nm
+0112 kp=k+1
+0113 If p.k<p.kp Then Do
+0114 i=k
+0115 Leave
+0116 End
+0117 End
+0118 Do j=i+1 While j<n
+0119 Parse Value p.j p.n With p.n p.j
+0120 n=n-1
+0121 End
+0122 If i>0 Then Do
+0123 Do j=i+1 While p.j<p.i
+0124 End
+0125 Parse Value p.j p.i With p.i p.j
+0126 End
+0127 Return i>0
+0128 
+0129 store: Procedure Expose p. perm.
+0130 z=perm.0+1
+0131 _=''
+0132 Do j=1 To 5
+0133 _=_||p.j
+0134 End
+0135 perm.z=_
+0136 perm.0=z
+0137 Return
+0138 
+0139 encode:
+0140 Beer=1         ; Drink.1='Beer'
+0141 Coffee=2       ; Drink.2='Coffee'
+0142 Milk=3         ; Drink.3='Milk'
+0143 Tea=4          ; Drink.4='Tea'
+0144 Water=5        ; Drink.5='Water'
+0145 Denmark=1      ; Nation.1='Denmark'
+0146 England=2      ; Nation.2='England'
+0147 Germany=3      ; Nation.3='Germany'
+0148 Norway=4       ; Nation.4='Norway'
+0149 Sweden=5       ; Nation.5='Sweden'
+0150 Blue=1         ; Color.1='Blue'
+0151 Green=2        ; Color.2='Green'
+0152 Red=3          ; Color.3='Red'
+0153 White=4        ; Color.4='White'
+0154 Yellow=5       ; Color.5='Yellow'
+0155 Blend=1        ; Smoke.1='Blend'
+0156 BlueMaster=2   ; Smoke.2='BlueMaster'
+0157 Dunhill=3      ; Smoke.3='Dunhill'
+0158 PallMall=4     ; Smoke.4='PallMall'
+0159 Prince=5       ; Smoke.5='Prince'
+0160 Birds=1        ; Animal.1='Birds'
+0161 Cats=2         ; Animal.2='Cats'
+0162 Dog=3          ; Animal.3='Dog'
+0163 Horse=4        ; Animal.4='Horse'
+0164 Zebra=5        ; Animal.5='Zebra'
+0165 Return
+0166 
+0167 out:
+0168 Say arg(1)
+0169 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                109 120
+002 i                109 114
+003 nm               110
+004 k                111
+005 kp               112
+006 j                118 123 132
+007 Drinks           16
+008 smoke_i          18
+009 Smokes           19
+010 animal_i         21
+011 Animals          22
+012 i                31
+013 di               32
+014 ni               33
+015 p.               125 125
+016 z                130
+017 perm.            135 136
+018 Beer             140
+019 Drink.           140 141 142 143 144
+020 Coffee           141
+021 Milk             142
+022 Tea              143
+023 Water            144
+024 Denmark          145
+025 Nation.          145 146 147 148 149
+026 England          146
+027 Germany          147
+028 Norway           148
+029 Sweden           149
+030 Blue             150
+031 Color.           150 151 152 153 154
+032 Green            151
+033 Red              152
+034 White            153
+035 Yellow           154
+036 Blend            155
+037 Smoke.           155 156 157 158 159
+038 BlueMaster       156
+039 Dunhill          157
+040 PallMall         158
+041 Prince           159
+042 Birds            160
+043 Animal.          160 161 162 163 164
+044 Cats             161
+045 Dog              162
+046 Horse            163
+047 Zebra            164
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            131 133

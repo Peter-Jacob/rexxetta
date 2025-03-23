@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program validates the  checksum digit for an  International Securities ID number.*/
+0002 parse arg z                                      /*obtain optional  ISINs  from the C.L.*/
+0003 if z=''  then z= "US0378331005 US0373831005 U50378331005 US03378331005 AU0000XVGZA3" ,
+0004 'AU0000VXGZA3 FR0000988040'     /* [↑]  use the default list of  ISINs.*/
+0005 /* [↓]  process  all  specified  ISINs.*/
+0006 do n=1  for words(z);  x=word(z, n);  y= x  /*obtain an  ISIN  from the  Z  list.  */
+0007 $=                                          /* [↓]  construct list of ISIN digits. */
+0008 do k=1  for length(x);  _= substr(x,k,1) /*the ISIN may contain alphabetic chars*/
+0009 p= pos(_, 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ)   /*X must contain A──►Z, 0──►9.*/
+0010 if p==0  then y=                                  /*trigger  "not"  valid below.*/
+0011 else $= $ || p-1                /*convert  X  string (base 36 ──► dec).*/
+0012 end   /*k*/                              /* [↑]  convert  alphabetic ──► digits.*/
+0013 @=                                          /*placeholder for the "not" in message.*/
+0014 if length(y)\==12             then @= "not" /*see if the ISIN is exactly 12 chars. */
+0015 if \datatype( left(x,2),'U')  then @= "not" /* "   "  "    "  1st 2 chars cap. let.*/
+0016 if \datatype(right(x,1),'W')  then @= "not" /* "   "  "    "  last char not a digit*/
+0017 if @==''  then  if \luhn($)   then @= "not" /* "   "  "    "  passed the Luhn test.*/
+0018 say right(x, 30)   right(@, 5)   "valid"    /*display the   yea  or  nay   message.*/
+0019 end   /*n*/                                 /* [↑] 1st 3 IFs could've been combined*/
+0020 exit                                             /*stick a fork in it,  we're all done. */
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 Luhn: procedure;  parse arg x;           $= 0    /*get credit card number;  zero $ sum. */
+0023 y= reverse( left(0, length(x) // 2)x)      /*add leading zero if needed, & reverse*/
+0024 do j=1  to length(y)-1  by 2;    _= 2  *  substr(y, j+1, 1)
+0025 $= $ + substr(y, j, 1)  +  left(_, 1)  +  substr(_, 2  , 1, 0)
+0026 end   /*j*/          /* [↑]   sum the  odd and even  digits.*/
+0027 return right($, 1)==0                      /*return "1" if number passed Luhn test*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                22
+002 y                23
+003 j                24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            7 22 25
+002 _                -> newV2            8 24
+003 @                -> newV3            13 14 15 16 17

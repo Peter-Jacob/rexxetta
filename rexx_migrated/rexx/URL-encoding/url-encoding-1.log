@@ -1,0 +1,84 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /* Rexx */
+0002 do
+0003 call testcase
+0004 say
+0005 say RFC3986
+0006 call testcase RFC3986
+0007 say
+0008 say HTML5
+0009 call testcase HTML5
+0010 say
+0011 return
+0012 end
+0013 exit
+0014 
+0015 /* -------------------------------------------------------------------------- */
+0016 encode:
+0017 procedure
+0018 do
+0019 parse arg url, varn .
+0020 parse upper var varn variation
+0021 drop RFC3986 HTML5
+0022 opts. = ''
+0023 opts.RFC3986 = '-._~'
+0024 opts.HTML5   = '-._*'
+0025 
+0026 rp = ''
+0027 do while length(url) > 0
+0028 parse var url tc +1 url
+0029 select
+0030 when datatype(tc, 'A') then do
+0031 rp = rp || tc
+0032 end
+0033 when tc == ' ' then do
+0034 if variation = HTML5 then
+0035 rp = rp || '+'
+0036 else
+0037 rp = rp || '%' || c2x(tc)
+0038 end
+0039 otherwise do
+0040 if pos(tc, opts.variation) > 0 then do
+0041 rp = rp || tc
+0042 end
+0043 else do
+0044 rp = rp || '%' || c2x(tc)
+0045 end
+0046 end
+0047 end
+0048 end
+0049 
+0050 return rp
+0051 end
+0052 exit
+0053 
+0054 /* -------------------------------------------------------------------------- */
+0055 testcase:
+0056 procedure
+0057 do
+0058 parse arg variation
+0059 X = 0
+0060 url. = ''
+0061 X = X + 1; url.0 = X; url.X = 'http://foo bar/'
+0062 X = X + 1; url.0 = X; url.X = 'mailto:"Ivan Aim" <ivan.aim@email.com>'
+0063 X = X + 1; url.0 = X; url.X = 'mailto:"Irma User" <irma.user@mail.com>'
+0064 X = X + 1; url.0 = X; url.X = 'http://foo.bar.com/~user-name/_subdir/*~.html'
+0065 
+0066 do i_ = 1 to url.0
+0067 say url.i_
+0068 say encode(url.i_, variation)
+0069 end i_
+0070 
+0071 return
+0072 end
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 variation        58
+002 X                59 61 62 63 64
+003 url.             60 61 61 62 62 63 63 64 64
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

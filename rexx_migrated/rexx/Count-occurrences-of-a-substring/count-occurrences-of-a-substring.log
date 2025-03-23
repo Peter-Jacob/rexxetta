@@ -1,0 +1,47 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*REXX program counts the  occurrences  of a (non─overlapping)  substring  in a string. */
+0002 w=.                                                                 /*max. width so far.*/
+0003 bag= 'the three truths'    ;      x= "th"       ;        call showResult
+0004 bag= 'ababababab'          ;      x= "abab"     ;        call showResult
+0005 bag= 'aaaabacad'           ;      x= "aa"       ;        call showResult
+0006 bag= 'abaabba*bbaba*bbab'  ;      x= "a*b"      ;        call showResult
+0007 bag= 'abaabba*bbaba*bbab'  ;      x= " "        ;        call showResult
+0008 bag=                       ;      x= "a"        ;        call showResult
+0009 bag=                       ;      x=            ;        call showResult
+0010 bag= 'catapultcatalog'     ;      x= "cat"      ;        call showResult
+0011 bag= 'aaaaaaaaaaaaaa'      ;      x= "aa"       ;        call showResult
+0012 exit                                             /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 countstr:   procedure;  parse arg haystack,needle,start;      if start==''  then start=1
+0015 width=length(needle)
+0016 do $=0  until p==0;         p=pos(needle,haystack,start)
+0017 start=width + p                    /*prevent overlaps.*/
+0018 end   /*$*/
+0019 return $                                                 /*return the count.*/
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 showResult: if w==. then do;                   w=30        /*W:  largest haystack width.*/
+0022 say center('haystack',w)  center('needle',w%2)  center('count',5)
+0023 say left('', w, "═")      left('', w%2, "═")    left('', 5, "═")
+0024 end
+0025 
+0026 if bag==''  then bag= " (null)"                /*handle displaying of nulls.*/
+0027 if   x==''  then   x= " (null)"                /*   "        "      "   "   */
+0028 say left(bag, w)           left(x, w%2)            center(countstr(bag, x), 5)
+0029 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 haystack         14
+002 needle           14
+003 start            14 14 17
+004 width            15
+005 p                16
+006 w                21
+007 bag              26
+008 x                27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            16

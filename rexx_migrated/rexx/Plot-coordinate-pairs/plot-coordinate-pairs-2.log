@@ -1,0 +1,22 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program plots X,Y   coördinate pairs  of  numbers  with plain (ASCII) characters.*/
+0002 x = 0      1       2       3       4       5        6        7        8        9
+0003 y = 2.7    2.8    31.4    38.1    58.0    76.2    100.5    130.0    149.3    180.0
+0004 $=
+0005 do j=1  for words(x)           /*build a list suitable for $PLOT subr.*/
+0006 $=$   word(x, j)','word(y, j)  /*add this X,Y coördinate to the $ list*/
+0007 end   /*j*/                    /*$≡ 0,2.7  1,2.8  2,31.4 3,38.1  ···  */
+0008 call '$PLOT'  $   '(LABELDatapoints'             /*invoke the REXX program:  $PLOT      */
+0009 exit rc                                          /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                2
+002 y                3
+003 j                5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            4 6

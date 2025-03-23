@@ -1,0 +1,110 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program  solves  the  "no─connection"  puzzle   (the puzzle has eight pegs).     */
+0002 @abc= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+0003 parse arg limit .    /*number of solutions wanted.*/   /* ╔═══════════════════════════╗ */
+0004 if limit=='' | limit==","  then limit= 1               /* ║          A    B           ║ */
+0005 oLimit= limit;                  limit= abs(limit)      /* ║         /│\  /│\          ║ */
+0006 @.  =                                                  /* ║        / │ \/ │ \         ║ */
+0007 @.1 = 'A   C D E'                                      /* ║       /  │ /\ │  \        ║ */
+0008 @.2 = 'B   D E F'                                      /* ║      /   │/  \│   \       ║ */
+0009 @.3 = 'C   A D G'                                      /* ║     C────D────E────F      ║ */
+0010 @.4 = 'D   A B C E G'                                  /* ║      \   │\  /│   /       ║ */
+0011 @.5 = 'E   A B D F H'                                  /* ║       \  │ \/ │  /        ║ */
+0012 @.6 = 'F   B E H'                                      /* ║        \ │ /\ │ /         ║ */
+0013 @.7 = 'G   C D E'                                      /* ║         \│/  \│/          ║ */
+0014 @.8 = 'H   D E F'                                      /* ║          G    H           ║ */
+0015 cnt= 0                                                 /* ╚═══════════════════════════╝ */
+0016 do pegs=1  while  @.pegs\=='';    _= word(@.pegs, 1)
+0017 subs= 0
+0018 do #=1  for  words(@.pegs) -1  /*create list of node paths.*/
+0019 __= word(@.pegs, #+1);      if __>_  then iterate
+0020 subs= subs + 1;             !._.subs= __
+0021 end  /*#*/
+0022 !._.0= subs                   /*assign the number of the node paths.  */
+0023 end   /*pegs*/
+0024 pegs= pegs - 1                                  /*the number of pegs to be seated.      */
+0025 _= '    '                     /*_   is used for indenting the output. */
+0026 do               a=1  for pegs;     if ?('A')  then iterate
+0027 do             b=1  for pegs;     if ?('B')  then iterate
+0028 do           c=1  for pegs;     if ?('C')  then iterate
+0029 do         d=1  for pegs;     if ?('D')  then iterate
+0030 do       e=1  for pegs;     if ?('E')  then iterate
+0031 do     f=1  for pegs;     if ?('F')  then iterate
+0032 do   g=1  for pegs;     if ?('G')  then iterate
+0033 do h=1  for pegs;     if ?('H')  then iterate
+0034 call showNodes
+0035 cnt= cnt + 1;         if cnt==limit  then leave a
+0036 end   /*h*/
+0037 end     /*g*/
+0038 end       /*f*/
+0039 end         /*e*/
+0040 end           /*d*/
+0041 end             /*c*/
+0042 end               /*b*/
+0043 end                 /*a*/
+0044 say                                              /*display a blank line to the terminal.*/
+0045 s= left('s', cnt\==1)                            /*handle the case of plurals  (or not).*/
+0046 say 'found '     cnt     " solution"s'.'         /*display the number of solutions found*/
+0047 exit                                             /*stick a fork in it,  we're all done. */
+0048 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0049 ?: parse arg node;         nn= value(node)
+0050 nH= nn+1
+0051 do cn=c2d('A')  to c2d(node)-1;    if value( d2c(cn) )==nn  then return 1
+0052 end   /*cn*/                        /* [↑]  see if there're any duplicates.*/
+0053 nL= nn-1
+0054 do ch=1  for !.node.0               /* [↓]  see if there any ¬= ±1  values.*/
+0055 $= !.node.ch;       fn= value($)    /*the node name  and its current peg #.*/
+0056 if nL==fn | nH==fn  then return 1   /*if ≡ ±1, then the node can't be used.*/
+0057 end   /*ch*/                        /* [↑]  looking for suitable number.   */
+0058 return 0                                      /*the subroutine arg value passed is OK*/
+0059 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0060 showNodes: _= left('', 5)                        /*_   is used for padding the output.  */
+0061 show= 0                                          /*indicates no graph has been found yet*/
+0062 do box=1  for sourceline()  while oLimit<0 /*Negative?  Then display the diagram. */
+0063 xw= sourceline(box)                        /*get a source line of this program.   */
+0064 p2= lastpos('*', xw)                       /*the position of    last     asterisk.*/
+0065 p1= lastpos('*', xw, max(1, p2-1) )        /* "      "     " penultimate     "    */
+0066 if pos('╔', xw)\==0  then show= 1          /*Have found the top-left box corner ? */
+0067 if \show             then iterate          /*Not found?  Then skip this line.     */
+0068 xb= substr(xw, p1+1, p2-p1-2)              /*extract the  "box"  part of line.    */
+0069 xt= xb                                     /*get a working copy of the box.       */
+0070 do jx=1  for pegs              /*do a substitution for all the pegs.  */
+0071 @= substr(@abc, jx, 1)         /*get the name of the peg  (A ──► Z).  */
+0072 xt= translate(xt, value(@), @) /*substitute the peg name with a value.*/
+0073 end   /*jx*/                   /* [↑]    graph is limited to 26 nodes.*/
+0074 say _ xb _ _ xt                            /*display one line of the graph.       */
+0075 if pos('╝', xw)\==0  then return           /*Is this last line of graph? Then stop*/
+0076 end   /*box*/
+0077 say _  'a='a _    "b="||b _    'c='c _    "d="d _   ' e='e _    "f="f _    'g='g _   "h="h
+0078 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 node             49
+002 nn               49
+003 nH               50
+004 cn               51
+005 nL               53
+006 ch               54
+007 fn               55
+008 show             61 66
+009 box              62
+010 xw               63
+011 p2               64
+012 p1               65
+013 xb               68
+014 xt               69 72
+015 jx               70
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @abc             -> newV1            2
+002 @.               -> newV2.           6 7 8 9 10 11 12 13 14
+003 __               -> newV3            19
+004 !.               -> newV4.           20 22
+005 _                -> newV5            16 25
+006 #                -> newV6            18
+007 $                -> newV7            55
+008 @                -> newV8            71

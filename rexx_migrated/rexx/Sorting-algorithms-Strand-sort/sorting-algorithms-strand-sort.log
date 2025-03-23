@@ -1,0 +1,71 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX program sorts a random list of words (or numbers)              */
+0002 /* using the strand sort algorithm                                    */
+0003 Parse Arg size minv maxv old      /* obtain optional arguments from CL*/
+0004 if size=='' | size==","  then size=20    /*Not specified? use default.*/
+0005 if minv=='' | minv==","  then minv= 0    /*Not specified? use default.*/
+0006 if maxv=='' | maxv==","  then maxv=size  /*Not specified? use default.*/
+0007 Do i=1 To size
+0008 old=old random(0,maxv-minv)+minv/* append random numbers to the list*/
+0009 End
+0010 old=space(old)
+0011 Say 'Unsorted list:'
+0012 Say old
+0013 new=strand_sort(old)  /* sort given list (extended by random numbers) */
+0014 Say
+0015 Say 'Sorted list:'
+0016 Say new
+0017 Exit                           /* stick a fork in it,  we're all done */
+0018 /*--------------------------------------------------------------------*/
+0019 strand_sort: Procedure
+0020 Parse Arg source
+0021 sorted=''
+0022 Do While words(source)\==0
+0023 w=words(source)
+0024 /* Find first word in source that is smaller Than its predecessor */
+0025 Do j=1 To w-1
+0026 If word(source,j)>word(source,j+1) Then
+0027 Leave
+0028 End
+0029 /* Elements source.1 trough source.j are in ascending order       */
+0030 head=subword(source,1,j)
+0031 source=subword(source,j+1)     /* the rest starts with a smaller  */
+0032 /* value or is empty (j=w!)        */
+0033 sorted=merge(sorted,head)
+0034 End
+0035 Return sorted
+0036 /*--------------------------------------------------------------------*/
+0037 merge: Procedure
+0038 Parse Arg a.1,a.2
+0039 p=''
+0040 Do Forever
+0041 w1=words(a.1)
+0042 w2=words(a.2)
+0043 Select
+0044 When w1==0 | w2==0 Then
+0045 Return space(p a.1 a.2)
+0046 When word(a.1,w1)<=word(a.2,1) Then
+0047 Return space(p a.1 a.2)
+0048 When word(a.2,w2)<=word(a.1,1) Then
+0049 Return space(p a.2 a.1)
+0050 Otherwise Do
+0051 nn=1+(word(a.1,1)>=word(a.2,1))
+0052 /* move the smaller first word of a.1 or a.2 to p */
+0053 p=p word(a.nn,1)
+0054 a.nn=subword(a.nn,2)
+0055 End
+0056 End
+0057 End
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a.               38 38 54
+002 p                39 53
+003 w1               41
+004 w2               42
+005 nn               51
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

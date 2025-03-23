@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX prg displays a text string (in one direction), and reverses when a key is pressed*/
+0002 parse upper version !ver !vernum .;     !pcRexx= 'REXX/PERSONAL'==!ver  |  'REXX/PC'==!ver
+0003 if \!pcRexx  then do
+0004 say
+0005 say '***error***  This REXX program requires REXX/PERSONAL or REXX/PC.'
+0006 say
+0007 exit 1
+0008 end
+0009 parse arg $                                      /*obtain optional text message from CL.*/
+0010 if $=''  then $= 'Hello World!'                  /*Not specified?  Then use the default.*/
+0011 if right($, 1)\==' '  then $= $' '               /*ensure msg text has a trailing blank.*/
+0012 signal on halt                                   /*handle a HALT if user quits this way.*/
+0013 way = 0                                          /*default direction for marquee display*/
+0014 y =
+0015 do  until y=='Q';  'CLS'                 /*if user presses  Q  or  q, then quit.*/
+0016 call lineout ,$;   call delay .2         /*display output; delay 1/5 of a second*/
+0017 y= inKey('Nowait');  upper y             /*maybe get a pressed key; uppercase it*/
+0018 if y\==''  then way= \way                /*change the direction of the marquee. */
+0019 if way  then $= substr($, 2)left($, 1)   /*display marquee in a direction or ···*/
+0020 else $=  right($, 1)substr($, 1, length($) - 1)        /* ··· the other·*/
+0021 end   /*until*/
+0022 halt:                                            /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 way              13 18
+002 y                14 17
+003 until            15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !vernum          -> newV1            2
+002 !pcRexx          -> newV2            2
+003 !ver             -> newV3            2
+004 $                -> newV4            9 10 11 19

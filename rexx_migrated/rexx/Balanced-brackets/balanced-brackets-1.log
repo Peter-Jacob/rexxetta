@@ -1,0 +1,54 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program checks for balanced brackets     [  ]      ─── some fixed, others random.*/
+0002 parse arg seed .                                 /*obtain optional argument from the CL.*/
+0003 if datatype(seed,'W')  then call random ,,seed   /*if specified, then use as RANDOM seed*/
+0004 @.=0;          yesNo.0= right('not OK', 50)      /*for bad expressions, indent 50 spaces*/
+0005 yesNo.1=           'OK'           /* [↓]  the 14 "fixed"  ][  expressions*/
+0006 q=                     ;          call checkBal  q;           say yesNo.result  '«null»'
+0007 q= '[][][][[]]'        ;          call checkBal  q;           say yesNo.result  q
+0008 q= '[][][][[]]]['      ;          call checkBal  q;           say yesNo.result  q
+0009 q= '['                 ;          call checkBal  q;           say yesNo.result  q
+0010 q= ']'                 ;          call checkBal  q;           say yesNo.result  q
+0011 q= '[]'                ;          call checkBal  q;           say yesNo.result  q
+0012 q= ']['                ;          call checkBal  q;           say yesNo.result  q
+0013 q= '][]['              ;          call checkBal  q;           say yesNo.result  q
+0014 q= '[[]]'              ;          call checkBal  q;           say yesNo.result  q
+0015 q= '[[[[[[[]]]]]]]'    ;          call checkBal  q;           say yesNo.result  q
+0016 q= '[[[[[]]]][]'       ;          call checkBal  q;           say yesNo.result  q
+0017 q= '[][]'              ;          call checkBal  q;           say yesNo.result  q
+0018 q= '[]][[]'            ;          call checkBal  q;           say yesNo.result  q
+0019 q= ']]][[[[]'          ;          call checkBal  q;           say yesNo.result  q
+0020 #=0                                                    /*# additional random expressions*/
+0021 do j=1  until  #==26                         /*gen 26 unique bracket strings. */
+0022 q=translate( rand( random(1,10) ), '][', 10) /*generate random bracket string.*/
+0023 call checkBal q; if result==-1  then iterate /*skip if duplicated expression. */
+0024 say yesNo.result  q                          /*display the result to console. */
+0025 #=#+1                                        /*bump the  expression  counter. */
+0026 end   /*j*/                            /* [↑]  generate 26 random "Q" strings.*/
+0027 exit                                             /*stick a fork in it,  we're all done. */
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 ?:        ?=random(0,1);                                     return ? || \?   /*REXX BIF*/
+0030 rand:     $=copies(?()?(),arg(1));  _=random(2,length($));   return left($,_-1)substr($,_)
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 checkBal: procedure expose @.; parse arg y       /*obtain the   "bracket"   expression. */
+0033 if @.y  then return -1                 /*Done this expression before?  Skip it*/
+0034 @.y=1                                  /*indicate expression was processed.   */
+0035 !=0;         do j=1  for length(y);      _=substr(y,j,1)    /*get a character.*/
+0036 if _=='[' then      !=!+1                      /*bump the nest #.*/
+0037 else do;  !=!-1;  if !<0  then return 0;   end
+0038 end   /*j*/
+0039 return !==0                            /* [↑]  "!" is the nested  ][  counter.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                32
+002 j                35
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           4 34
+002 #                -> newV2            20 25
+003 _                -> newV3            30 35
+004 !                -> newV4            35 36 37

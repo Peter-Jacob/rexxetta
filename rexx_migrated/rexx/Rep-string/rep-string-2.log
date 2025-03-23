@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX pgm determines  if  a string is a repString, it returns minimum length repString.*/
+0002 parse arg s                                      /*get optional strings from the C.L.   */
+0003 if s=''  then s=1001110011 1110111011 0010010010 1010101010 1111111111 0100101101 0100100 101 11 00 1 45
+0004 /* [↑]  S  not specified?  Use defaults*/
+0005 do k=1  for words(s);   _=word(s,k);   w=length(_)       /*process binary strings. */
+0006 say right(_,max(25,w))  repString(_)                     /*show repString & result.*/
+0007 end   /*k*/                                 /* [↑]  the  "result"  may be negatory.*/
+0008 exit                                             /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 repString: procedure;  parse arg x;              L=length(x);         @rep='  rep string='
+0011 if \datatype(x,'B')  then return "  ***error***  string isn't a binary string."
+0012 h=L%2
+0013 do j=1  for L-1  while  j<=h;        $=left(x,j);     $$=copies($,L)
+0014 if left($$,L)==x  then  return @rep    left($,15)     "[length"     j']'
+0015 end   /*j*/                    /* [↑]  we have found a good repString.*/
+0016 return               '      (no repetitions)'    /*failure to find repString.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                10
+002 L                10
+003 h                12
+004 j                13
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @rep             -> newV1            10
+002 $$               -> newV2            13
+003 _                -> newV3            5
+004 $                -> newV4            13

@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX pgm generates a self─referential sequence and displays sequences with max length.*/
+0002 parse arg LO HI .                                /*obtain optional arguments from the CL*/
+0003 if LO=='' | LO==","  then LO=      1             /*Not specified?  Then use the default.*/
+0004 if HI=='' | HI==","  then HI=1000000 - 1         /* "      "         "   "   "     "    */
+0005 max$=;      seeds=;    maxL=0                    /*inialize some defaults and counters. */
+0006 
+0007 do #=LO  to HI;      n=#;     @.=0;     @.#=1  /*loop thru seed; define some defaults.*/
+0008 $=n
+0009 do c=1  until x==n;       x=n              /*generate a self─referential sequence.*/
+0010 n=;           do k=9  by -1  for 10        /*generate a new sequence (downwards). */
+0011 _=countstr(k, x)             /*obtain the number of sequence counts.*/
+0012 if _\==0  then n=n || _ || k /*is count > zero?  Then append it to N*/
+0013 end   /*k*/
+0014 if @.n  then leave                         /*has sequence been generated before ? */
+0015 $=$'-'n;     @.n=1                         /*add the number to sequence and roster*/
+0016 end   /*c*/
+0017 
+0018 if c==maxL then do;  seeds=seeds #             /*is the sequence equal to max so far ?*/
+0019 max$=max$   $             /*append this self─referential # to  $ */
+0020 end
+0021 else if c>maxL  then do;  seeds=#   /*use the new number as the new seed.  */
+0022 maxL=c; max$=$ /*also, set the new maximum L; max seq.*/
+0023 end            /* [↑]  have we found a new best seq ? */
+0024 end   /*#*/
+0025 
+0026 say  ' seeds that had the most iterations: '     seeds
+0027 say  'the maximum self─referential length: '     maxL
+0028 
+0029 do j=1  for words(max$) ;      say
+0030 say copies('─',30)  "iteration sequence for: "   word(seeds,j)  '  ('maxL  "iterations)"
+0031 q=translate( word( max$, j), ,'-')
+0032 do k=1  for words(q);     say  word(q, k)
+0033 end   /*k*/
+0034 end   /*j*/                                    /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 LO               2 3
+002 HI               2 4
+003 max$             5 19 22
+004 seeds            5 18 21
+005 maxL             5 22
+006 n                7 10 12
+007 c                9
+008 x                9
+009 k                10 32
+010 j                29
+011 q                31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           7 7 15
+002 #                -> newV2            7
+003 $                -> newV3            8 15
+004 _                -> newV4            11

@@ -1,0 +1,23 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program finds the  greatest element  in a list of numbers entered at the terminal*/
+0002 say '──────────────────  Please enter a list of numbers  (separated by blanks or commas):'
+0003 parse pull $;           #=words($)               /*get a list of numbers from terminal. */
+0004 $=translate($, , ',')                            /*change all commas  (,)  to  blanks.  */
+0005 big=word($,1);          do j=2  to #             /*traipse through the list of numbers. */
+0006 big=max(big, word($,j))  /*use a BIF for finding the max number.*/
+0007 end   /*j*/
+0008 say                                              /*stick a fork in it,  we're all done. */
+0009 say '────────────────── The biggest value in the list of '    #    " elements is: "    big
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             3
+002 big              5 6
+003 j                5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            3 4
+002 #                -> newV2            3

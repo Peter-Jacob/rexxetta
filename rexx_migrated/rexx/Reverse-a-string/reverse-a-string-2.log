@@ -1,0 +1,22 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program to reverse a string  (and show before and after strings).*/
+0002 
+0003 string1 = 'A man, a plan, a canal, Panama!'
+0004 string2 =
+0005 do j=1  for length(string1)
+0006 string2 = substr(string1,j,1)string2
+0007 end   /*j*/
+0008 say ' original string: '  string1
+0009 say ' reversed string: '  string2
+0010 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 string1          3
+002 string2          4 6
+003 j                5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

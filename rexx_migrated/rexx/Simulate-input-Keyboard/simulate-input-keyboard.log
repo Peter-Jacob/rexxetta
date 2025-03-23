@@ -1,0 +1,15 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX pgm shows how to use the REXX/PC  PRESS cmd to simulate keyboard input.*/
+0002 
+0003 call press 'This text will be put into a buffer as if it came from the keyboard'
+0004 
+0005 /* [↑]  text will be available for any program to use (including DOS).*/
+0006 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

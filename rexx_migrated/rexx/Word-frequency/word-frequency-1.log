@@ -1,0 +1,76 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX pgm displays top 10 words in a file (includes foreign letters),  case is ignored.*/
+0002 parse arg fID top .                              /*obtain optional arguments from the CL*/
+0003 if fID=='' | fID==","  then fID= 'les_mes.txt'   /*None specified? Then use the default.*/
+0004 if top=='' | top==","  then top= 10              /*  "      "        "   "   "     "    */
+0005 call init                                        /*initialize varied bunch of variables.*/
+0006 call rdr
+0007 say right('word', 40)  " "  center(' rank ', 6)  "  count "   /*display title for output*/
+0008 say right('════', 40)  " "  center('══════', 6)  " ═══════"   /*   "    title separator.*/
+0009 
+0010 do  until otops==tops | tops>top            /*process enough words to satisfy  TOP.*/
+0011 WL=;         mk= 0;    otops= tops          /*initialize the word list (to a NULL).*/
+0012 
+0013 do n=1  for c;    z= !.n;      k= @.z  /*process the list of words in the file*/
+0014 if k==mk  then WL= WL z                /*handle cases of tied number of words.*/
+0015 if k> mk  then do;  mk=k;  WL=z;  end  /*this word count is the current max.  */
+0016 end   /*n*/
+0017 
+0018 wr= max( length(' rank '), length(top) )    /*find the maximum length of the rank #*/
+0019 
+0020 do d=1  for words(WL);  y= word(WL, d) /*process all words in the  word list. */
+0021 if d==1  then w= max(10, length(@.y) ) /*use length of the first number used. */
+0022 say right(y, 40)         right( commas(tops), wr)          right(commas(@.y), w)
+0023 @.y= .                                 /*nullify word count for next go 'round*/
+0024 end   /*d*/                            /* [↑]  this allows a non-sorted list. */
+0025 
+0026 tops= tops + words(WL)                      /*correctly handle any  tied  rankings.*/
+0027 end        /*until*/
+0028 exit                                             /*stick a fork in it,  we're all done. */
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+0031 16bit:  do k=1 for xs; _=word(x,k); $=changestr('├'left(_,1),$,right(_,1)); end;  return
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 init:   x= 'Çà åÅ çÇ êÉ ëÉ áà óâ ªæ ºç ¿è ⌐é ¬ê ½ë «î »ï ▒ñ ┤ô ╣ù ╗û ╝ü';     xs= words(x)
+0034 abcL="abcdefghijklmnopqrstuvwxyz'"       /*lowercase letters of Latin alphabet. */
+0035 abcU= abcL;            upper abcU        /*uppercase version of Latin alphabet. */
+0036 accL= 'üéâÄàÅÇêëèïîìéæôÖòûùÿáíóúÑ'       /*some lowercase accented characters.  */
+0037 accU= 'ÜéâäàåçêëèïîìÉÆôöòûùÿáíóúñ'       /*  "  uppercase    "         "        */
+0038 accG= 'αßΓπΣσµτΦΘΩδφε'                   /*  "  upper/lowercase Greek letters.  */
+0039 ll= abcL || abcL ||accL ||accL || accG               /*chars of  after letters. */
+0040 uu= abcL || abcU ||accL ||accU || accG || xrange()   /*  "    " before    "     */
+0041 @.= 0;    q= "'";    totW= 0;    !.= @.;    c= 0;    tops= 1;          return
+0042 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0043 rdr:   do #=0  while lines(fID)\==0; $=linein(fID) /*loop whilst there're lines in file.*/
+0044 if pos('├', $) \== 0  then call 16bit       /*are there any  16-bit  characters ?*/
+0045 $= translate( $, ll, uu)                    /*trans. uppercase letters to lower. */
+0046 do while $ \= '';    parse var  $  z  $  /*process each word in the  $  line. */
+0047 parse var  z     z1  2  zr  ''  -1  zL   /*obtain: first, middle, & last char.*/
+0048 if z1==q  then do; z=zr; if z==''  then iterate; end /*starts with apostrophe?*/
+0049 if zL==q  then z= strip(left(z, length(z) - 1))      /*ends     "       "    ?*/
+0050 if z==''  then iterate                               /*if Z is now null, skip.*/
+0051 if @.z==0  then do;  c=c+1; !.c=z;  end  /*bump word cnt; assign word to array*/
+0052 totW= totW + 1;      @.z= @.z + 1        /*bump total words; bump a word count*/
+0053 end   /*while*/
+0054 end      /*#*/
+0055 say commas(totW)     ' words found  ('commas(c)    "unique)  in "    commas(#),
+0056 ' records read from file: '     fID;        say;          return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                47 48 49
+002 z1               47
+003 zr               47
+004 zL               47
+005 c                51
+006 totW             52
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           23 41 52
+002 !.               -> newV2.           41 51
+003 ?                -> newV3            30 30
+004 _                -> newV4            31
+005 $                -> newV5            31 43 45 46 46

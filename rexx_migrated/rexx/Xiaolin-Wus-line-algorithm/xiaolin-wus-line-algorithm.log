@@ -1,0 +1,80 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:36
+-------------------------------------------------------------------------
+0001 /*REXX program  plots/draws (ASCII)  a   line   using the   Xiaolin Wu  line algorithm. */
+0002 background= '·'                                  /*background character:  a middle-dot. */
+0003 image.= background                           /*fill the array with middle-dots.     */
+0004 plotC= '░▒▓█'                               /*characters used for plotting points. */
+0005 EoE= 3000                                 /*EOE = End Of Earth,  er, ··· graph.  */
+0006 do j=-EoE  to +EoE          /*define the graph: lowest ──► highest.*/
+0007 image.j.0= '─'              /*define the graph's horizontal axis.  */
+0008 image.0.j= '│'              /*   "    "     "    verical      "    */
+0009 end   /*j*/
+0010 image.0.0= '┼'                                  /*define the graph's axis origin (char)*/
+0011 parse arg xi yi xf yf .                          /*allow specifying the line-end points.*/
+0012 if xi=='' | xi==","  then xi= 1                  /*Not specified?  Then use the default.*/
+0013 if yi=='' | yi==","  then yi= 2                  /* "      "         "   "   "     "    */
+0014 if xf=='' | xf==","  then xf=11                  /* "      "         "   "   "     "    */
+0015 if yf=='' | yf==","  then yf=12                  /* "      "         "   "   "     "    */
+0016 minX=0;    minY=0                                /*use these as the limits for plotting.*/
+0017 maxX=0;    maxY=0                                /* "    "    "  "    "     "      "    */
+0018 call drawLine  xi, yi, xf, yf                    /*invoke subroutine and graph the line.*/
+0019 border=2                                         /*allow additional space (plot border).*/
+0020 minX=minX - border * 2;  maxX=maxX + border * 2  /*preserve screen's aspect ratio  {*2}.*/
+0021 minY=minY - border    ;  maxY=maxY + border
+0022 do     y=maxY  to minY  by -1;  $=      /*construct a row.*/
+0023 do x=minX  to maxX;       $=$ || image.x.y;   end  /*x*/
+0024 say $              /*display the constructed row to term. */
+0025 end   /*y*/        /*graph is cropped by the MINs and MAXs*/
+0026 exit                                             /*stick a fork in it,  we're all done. */
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 drawLine: parse arg x1,y1,x2,y2;      switchXY=0;        dx=x2-x1
+0029 dy=y2-y1
+0030 if abs(dx)<abs(dy)  then parse value  x1 y1 x2 y2 dx dy  with  y1 x2 y2 x2 dy dx
+0031 if x2<x1       then parse value  x1 x2 y1 y2   1   with   x2 x1 y2 y1   switchXY
+0032 gradient=dy/dx
+0033 xend=round(x1)             /*◄─────────────────1st endpoint.══════════════*/
+0034 yend=y1 + gradient * (xend-x1);      xgap=1 - fpart(x1 + .5)
+0035 xpx11=xend;       ypx11=floor(yend)
+0036 intery=yend+gradient
+0037 call plotXY  xpx11,  ypx11,    brite(1 - fpart(yend*xgap)), switchXY
+0038 call plotXY  xpx11,  ypx11+1,  brite(    fpart(yend*xgap)), switchXY
+0039 xend=round(x2)             /*◄─────────────────2nd endpoint.══════════════*/
+0040 yend=y2 + gradient * (xend-x2);      xgap=    fpart(x2 + .5)
+0041 xpx12=xend;       ypx12=floor(yend)
+0042 call plotXY  xpx12,  ypx12  ,  brite(1 - fpart(yend*xgap)), switchXY
+0043 call plotXY  xpx12,  ypx12+1,  brite(    fpart(yend*xgap)), switchXY
+0044 
+0045 do x=xpx11+1  to xpx12-1 /*◄═════════════════draw the line.═════════════*/
+0046 !intery=floor(intery)
+0047 call plotXY  x,  !intery  ,  brite(1 - fpart(intery)), switchXY
+0048 call plotXY  x,  !intery+1,  brite(    fpart(intery)), switchXY
+0049 intery=intery + gradient
+0050 end   /*x*/
+0051 return
+0052 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0053 brite:    return substr(background || plotC, 1 + round( abs( arg(1) ) * length(plotC)), 1)
+0054 floor:    parse arg #; _=trunc(#);  return _   -   (#<0) * (#\=_)
+0055 fpart:    parse arg #;              return abs(# - trunc(#) )
+0056 round:    return   format(arg(1), , word(arg(2) 0, 1) )
+0057 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0058 plotXY:   parse arg xx,yy,bc,switchYX;             if switchYX  then parse arg yy,xx
+0059 image.xx.yy=bc;    minX=min(minX, xx);   maxX=max(maxX,xx)
+0060 minY=min(minY, yy);   maxY=max(maxY,yy);               return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 yy               58
+002 xx               58
+003 image.           59
+004 minX             59
+005 maxX             59
+006 minY             60
+007 maxY             60
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !intery          -> newV1            46
+002 $                -> newV2            22 23
+003 #                -> newV3            54 55
+004 _                -> newV4            54

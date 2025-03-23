@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX program computes and displays the value of  pi÷4  using the Monte Carlo algorithm*/
+0002 numeric digits 20                                /*use 20 decimal digits to handle args.*/
+0003 parse arg times chunk digs r? .                  /*does user want a specific number?    */
+0004 if times=='' | times==","  then times=   5e12    /*five trillion should do it, hopefully*/
+0005 if chunk=='' | chunk==","  then chunk= 100000    /*perform Monte Carlo in  100k  chunks.*/
+0006 if digs =='' |  digs==","  then  digs=     99    /*indicates to use length of  PI - 1.  */
+0007 if datatype(r?, 'W')       then call random ,,r? /*Is there a random seed?  Then use it.*/
+0008 /* [↓]  pi meant to line─up with a SAY.*/
+0009 pi= 3.141592653589793238462643383279502884197169399375105820974944592307816406
+0010 pi= strip( left(pi, digs + length(.) ) )         /*obtain length of pi to what's wanted.*/
+0011 numeric digits length(pi) - 1                    /*define decimal digits as length PI -1*/
+0012 say '                    1         2         3         4         5         6         7   '
+0013 say 'scale:    1·234567890123456789012345678901234567890123456789012345678901234567890123'
+0014 say                                              /* [↑]  a two─line scale for showing pi*/
+0015 say 'true pi= '       pi"+"                      /*we might as well brag about true  pi.*/
+0016 say                                              /*display a blank line for separation. */
+0017 limit   = 10000 - 1                              /*REXX random generates only integers. */
+0018 limitSq = limit **2                              /*··· so, instead of one, use limit**2.*/
+0019 accuracy= 0                                      /*accuracy of Monte Carlo pi  (so far).*/
+0020 @reps= 'repetitions:  Monte Carlo  pi  is'       /*a handy─dandy short literal for a SAY*/
+0021 != 0                                             /*!:  is the accuracy of pi  (so far). */
+0022 do j=1  for times % chunk
+0023 do chunk                    /*do Monte Carlo, one chunk at─a─time. */
+0024 if random(, limit)**2 + random(, limit)**2 <= limitSq   then != ! + 1
+0025 end   /*chunk*/
+0026 reps= chunk * j                           /*calculate the number of repetitions. */
+0027 _= compare(4*! / reps, pi)                /*compare apples and  ···  crabapples. */
+0028 if _<=accuracy  then iterate              /*Not better accuracy?  Keep truckin'. */
+0029 say right(commas(reps), 20) @reps  'accurate to'  _-1  "places."  /*─1≡dec. point*/
+0030 accuracy= _                               /*use this accuracy for next baseline. */
+0031 end   /*j*/
+0032 exit 0                                           /*stick a fork in it,  we're all done. */
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 commas: procedure; arg _; do k=length(_)-3  to 1  by -3; _=insert(',',_,k); end;  return _
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 times            3 4
+002 chunk            3 5
+003 digs             3 6
+004 r?               3
+005 pi               9 10
+006 limit            17
+007 limitSq          18
+008 accuracy         19 30
+009 j                22
+010 reps             26
+011 k                34
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @reps            -> newV1            20
+002 !                -> newV2            21 24
+003 _                -> newV3            27 34

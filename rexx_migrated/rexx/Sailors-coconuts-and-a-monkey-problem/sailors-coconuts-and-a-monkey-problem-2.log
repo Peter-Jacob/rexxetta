@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program  solves  a  riddle of 5 sailors, a pile of coconuts, and a monkey.       */
+0002 
+0003 do n=2  to 9                                   /*traipse through number of sailors.   */
+0004 do $=0;                   nuts= $           /*perform while not valid # coconuts.  */
+0005 do k=n  by -1  for n                     /*step through the possibilities.      */
+0006 if nuts//n\==1  then iterate $           /*Not one coconut left?    No solution.*/
+0007 nuts= nuts    -  (1  +  nuts % n)        /*subtract number of coconuts from pile*/
+0008 end   /*k*/
+0009 if (nuts\==0) & \(nuts//n\==0)  then leave /*is this a solution to the riddle ?   */
+0010 end     /*$*/
+0011 say 'sailors='n         "  coconuts="$         /*display number of sailors & coconuts.*/
+0012 end         /*n*/                              /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                3
+002 nuts             4 7
+003 k                5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            4

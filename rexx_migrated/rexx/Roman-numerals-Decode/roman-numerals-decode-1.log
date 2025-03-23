@@ -1,0 +1,73 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /* Rexx */
+0002 
+0003 Do
+0004 /* 1990  2008   1666    */
+0005 years = 'MCMXC MMVIII MDCLXVI'
+0006 
+0007 Do y_ = 1 to words(years)
+0008 Say right(word(years, y_), 10) || ':' decode(word(years, y_))
+0009 End y_
+0010 
+0011 Return
+0012 End
+0013 Exit
+0014 
+0015 decode:
+0016 Procedure
+0017 Do
+0018 Parse upper arg roman .
+0019 
+0020 If verify(roman, 'MDCLXVI') = 0 then Do
+0021 
+0022 /* always insert the value of the least significant numeral */
+0023 decnum = rchar(substr(roman, length(roman), 1))
+0024 Do d_ = 1 to length(roman) - 1
+0025 If rchar(substr(roman, d_, 1)) < rchar(substr(roman, d_ + 1, 1)) then Do
+0026 /* Handle cases where numerals are not in descending order */
+0027 /*   subtract the value of the numeral */
+0028 decnum = decnum - rchar(substr(roman, d_, 1))
+0029 End
+0030 else Do
+0031 /* Normal case */
+0032 /*   add the value of the numeral */
+0033 decnum = decnum + rchar(substr(roman, d_, 1))
+0034 End
+0035 End d_
+0036 End
+0037 else Do
+0038 decnum = roman 'contains invalid roman numerals'
+0039 End
+0040 
+0041 Return decnum
+0042 End
+0043 Exit
+0044 
+0045 rchar:
+0046 Procedure
+0047 Do
+0048 Parse upper arg ch +1 .
+0049 
+0050 select
+0051 when ch = 'M' then digit = 1000
+0052 when ch = 'D' then digit =  500
+0053 when ch = 'C' then digit =  100
+0054 when ch = 'L' then digit =   50
+0055 when ch = 'X' then digit =   10
+0056 when ch = 'V' then digit =    5
+0057 when ch = 'I' then digit =    1
+0058 otherwise          digit =    0
+0059 end
+0060 
+0061 Return digit
+0062 End
+0063 Exit
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 ch               48
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

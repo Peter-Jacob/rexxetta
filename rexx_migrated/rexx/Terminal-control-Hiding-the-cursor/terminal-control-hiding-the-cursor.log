@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX pgm calls a function in a shared library (regutil) to hide/show cursor.*/
+0002 z=rxfuncadd('sysloadfuncs', "regutil", 'sysloadfuncs')   /*add a function lib.*/
+0003 if z\==0  then do                                        /*test the return cod*/
+0004 say 'return code'  z  "from rxfuncadd"    /*tell about bad RC. */
+0005 exit z                                    /*exit this program. */
+0006 end
+0007 
+0008 call sysloadfuncs                                        /*load the functions.*/
+0009 
+0010 /* [↓]   call a particular function.   */
+0011 call syscurstate 'off'                 /*hide the displaying of the cursor.   */
+0012 say 'showing of the cursor is now off' /*inform that the cursor is now hidden.*/
+0013 
+0014 /* ··· and perform some stuff here ··· */
+0015 say 'sleeping for three seconds ...'   /*inform the user of what we're doing. */
+0016 call sleep 3                           /*might as well sleep for three seconds*/
+0017 
+0018 call syscurstate 'on'                  /*(unhide) the displaying of the cursor*/
+0019 say 'showing of the cursor is now on'  /*inform that the cursor is now showing*/
+0020 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                2
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

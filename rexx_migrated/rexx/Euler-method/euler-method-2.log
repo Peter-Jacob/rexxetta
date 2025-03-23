@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX pgm solves example of Newton's cooling law via Euler's method (diff. step sizes).*/
+0002 e=2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138
+0003 numeric digits length(e)   -  length(.)          /*use the number of decimal digits in E*/
+0004 parse arg Ti Tr cc tt ss                         /*obtain optional arguments from the CL*/
+0005 if Ti='' | Ti=","  then Ti= 100                  /*given?  Default:  initial temp in ºC.*/
+0006 if Tr='' | Tr=","  then Tr=  20                  /*  "         "       room    "   "  " */
+0007 if cc='' | cc=","  then cc=   0.07               /*  "         "     cooling constant.  */
+0008 if tt='' | tt=","  then tt= 100                  /*  "         "    total time seconds. */
+0009 if ss='' | ss=","  then ss=   2  5  10           /*  "         "      the step sizes.   */
+0010 @= '═'                                           /*the character used in title separator*/
+0011 do sSize=1  for words(ss);    say;    say;    say center('time in'     , 11)
+0012 say center('seconds' , 11, @)                     center('Euler method', 16, @) ,
+0013 center('analytic', 18, @)                     center('difference'  , 14, @)
+0014 $=Ti;                  inc= word(ss, sSize) /*the 1st value;  obtain the increment.*/
+0015 do t=0  to Ti  by inc                  /*step through calculations by the inc.*/
+0016 a= format(Tr + (Ti-Tr)/exp(cc*t),6,10) /*calculate the analytic (exact) value.*/
+0017 say center(t,11)  format($,6,3)  'ºC '  a  "ºC"  format(abs(a-$)/a*100,6,2)  '%'
+0018 $= $   +   inc * cc * (Tr-$)           /*calc. next value via Euler's method. */
+0019 end   /*t*/
+0020 end        /*sSize*/
+0021 exit                                             /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 exp: procedure expose e; arg x; ix= x%1; if abs(x-ix)>.5  then ix=ix+sign(x); x= x-ix; z=1
+0024 _=1;  w=1;    do j=1;  _= _*x/j;    z= (z+_)/1;      if z==w  then leave;         w=z
+0025 end  /*j*/;           if z\==0  then z= e**ix * z;             return z
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 Ti               4 5
+002 Tr               4 6
+003 cc               4 7
+004 tt               4 8
+005 ss               4 9
+006 sSize            11
+007 inc              14
+008 t                15
+009 a                16
+010 ix               23 23
+011 x                23
+012 z                23 24 25
+013 w                24 24
+014 j                24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            10
+002 $                -> newV2            14 18
+003 _                -> newV3            24 24

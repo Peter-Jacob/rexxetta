@@ -1,0 +1,62 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX*/
+0002 s='WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW'
+0003 Say '  s='s
+0004 enc=encode(s)
+0005 Say 'enc='enc
+0006 dec=decode(enc)
+0007 Say 'dec='dec
+0008 if dec==s Then Say 'OK'
+0009 Exit
+0010 
+0011 encode: Procedure
+0012 Parse Arg s
+0013 c=left(s,1)
+0014 cnt=1
+0015 ol=''
+0016 Do i=2 To length(s)
+0017 If substr(s,i,1)=c Then
+0018 cnt=cnt+1
+0019 Else Do
+0020 If cnt=1 Then
+0021 Call o c
+0022 Else
+0023 Call o cnt||c
+0024 c=substr(s,i,1)
+0025 cnt=1
+0026 End
+0027 End
+0028 Call o cnt||c
+0029 Return ol
+0030 
+0031 decode: Procedure
+0032 Parse Arg s
+0033 abc='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+0034 ol=''
+0035 Do While s<>''
+0036 p=verify(s,abc,'M')
+0037 If pos(left(s,1),abc)>0 Then Do
+0038 Parse Var s c +1 s
+0039 Call o c
+0040 End
+0041 Else Do
+0042 Parse Var s cnt =(p) c +1 s
+0043 Call o copies(c,cnt)
+0044 End
+0045 End
+0046 Return ol
+0047 
+0048 o: ol=ol||arg(1)
+0049 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                42 42
+002 cnt              42
+003 c                42
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 =(p)             -> newV1            42

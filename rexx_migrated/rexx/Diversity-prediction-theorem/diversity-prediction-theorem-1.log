@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 Numeric Digits 20
+0003 Call diversityTheorem 49,'48 47 51'
+0004 Say '--------------------------------------'
+0005 Call diversityTheorem 49,'48 47 51 42'
+0006 Exit
+0007 
+0008 diversityTheorem:
+0009 Parse Arg truth,list
+0010 average=average(list)
+0011 Say 'average-error='averageSquareDiff(truth,list)
+0012 Say 'crowd-error='||(truth-average)**2
+0013 Say 'diversity='averageSquareDiff(average,list)
+0014 Return
+0015 
+0016 average: Procedure
+0017 Parse Arg list
+0018 res=0
+0019 Do i=1 To words(list)
+0020 res=res+word(list,i)  /* accumulate list elements */
+0021 End
+0022 Return res/words(list)  /* return the average */
+0023 
+0024 averageSquareDiff: Procedure
+0025 Parse Arg a,list
+0026 res=0
+0027 Do i=1 To words(list)
+0028 x=word(list,i)
+0029 res=res+(x-a)**2      /* accumulate square of differences */
+0030 End
+0031 Return res/words(list)  /* return the average */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                25
+002 list             25
+003 res              26 29
+004 i                27
+005 x                28
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

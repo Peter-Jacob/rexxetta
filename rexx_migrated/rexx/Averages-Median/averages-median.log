@@ -1,0 +1,52 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program finds the  median  of a  vector  (and displays the  vector  and  median).*/
+0002 /*  ══════════vector════════════   ══show vector═══   ════════show result═══════════    */
+0003 v=  1 9 2 4                ;   say "vector"  v;   say 'median──────►' median(v);   say
+0004 v=  3 1 4 1 5 9 7 6        ;   say "vector"  v;   say 'median──────►' median(v);   say
+0005 v= '3 4 1 -8.4 7.2 4 1 1.2';   say "vector"  v;   say 'median──────►' median(v);   say
+0006 v=  -1.2345678e99  2.3e700 ;   say "vector"  v;   say 'median──────►' median(v);   say
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 eSORT:  procedure expose @. #;     parse arg $;     #= words($)   /*$:  is the  vector. */
+0010 do g=1  for #;   @.g= word($, g);   end  /*g*/    /*convert list──►array*/
+0011 h=#                                                       /*#:  number elements.*/
+0012 do  while  h>1;             h= h % 2              /*cut entries by half.*/
+0013 do i=1  for #-h;         j= i;        k= h + i /*sort lower section. */
+0014 do  while @.k<@.j;    parse value  @.j @.k  with  @.k @.j  /*swap.*/
+0015 if h>=j  then leave;  j= j - h;    k= k - h /*diminish  J  and  K.*/
+0016 end   /*while @.k<@.j*/
+0017 end      /*i*/
+0018 end         /*while h>1*/                         /*end of exchange sort*/
+0019 return
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 median: procedure; call eSORT arg(1);   m= # % 2    /*   %   is REXX's integer division.*/
+0022 n= m + 1                                    /*N:     the next element after  M. */
+0023 if # // 2  then return @.n                  /*[odd?]   // ◄───REXX's ÷ remainder*/
+0024 return (@.m + @.n) / 2      /*process an  even─element  vector. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 g                10
+002 h                11 12
+003 i                13
+004 j                13 15
+005 k                13 15
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 m                21
+016 n                22
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           10 14 14
+002 $                -> newV2            9
+003 #                -> newV3            9

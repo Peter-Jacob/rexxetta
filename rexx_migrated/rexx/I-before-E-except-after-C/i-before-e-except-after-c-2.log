@@ -1,0 +1,86 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program shows  plausibility  of  "I before E"  when not preceded by C,  and      */
+0002 /*───────────────────────────────────── "E before I"  when     preceded by C,  using a  */
+0003 /*───────────────────────────────────── weighted frequency for each word.               */
+0004 parse arg iFID wFID .                            /*obtain optional arguments from the CL*/
+0005 if iFID=='' | iFID=="," then iFID='UNIXDICT.TXT' /*Not specified?  Then use the default.*/
+0006 if wFID=='' | wFID=="," then wFID='WORDFREQ.TXT' /* "      "         "   "   "     "    */
+0007 cntl=xrange(, ' ')                               /*get all manner of tabs, control chars*/
+0008 #.=0                                             /*zero out the various word counters.  */
+0009 f.=1                                             /*default word frequency multiplier.   */
+0010 do recs=0  while lines(wFID)\==0             /*read a record from the file 'til done*/
+0011 u=translate( linein(wFID), , cntl);  upper u /*translate various tabs and cntl chars*/
+0012 u=translate(u, '*', "~")                     /*translate tildes (~)  to an asterisk.*/
+0013 if u==''                 then iterate        /*Is this a blank line? Then ignore it.*/
+0014 freq=word(u, words(u) )                      /*obtain the last token on the line.   */
+0015 if \datatype(freq, 'W')  then iterate        /*FREQ not an integer?  Then ignore it.*/
+0016 parse var  u   w.1  '/'  w.2  .              /*handle case of:   ααα/ßßß  ···       */
+0017 
+0018 do j=1  for 2;  w.j=word(w.j, 1)        /*strip leading and/or trailing blanks.*/
+0019 _=w.j;   if _==''          then iterate /*if not present, then ignore it.      */
+0020 if j==2  then if w.2==w.1  then iterate /*second word ≡ first word?  Then skip.*/
+0021 #.freqs=#.freqs + 1                     /*bump word counter in the  FREQ  list.*/
+0022 f._=f._ + freq                          /*add to a word's frequency count.     */
+0023 end   /*ws*/
+0024 end        /*recs*/                          /*at exit of DO loop, RECS = # of recs.*/
+0025 
+0026 if    recs\==0  then say 'lines in the  '        wFID        "       list: "      recs
+0027 if #.freqs\==0  then say 'words in the  '        wFID        "       list: "      #.freqs
+0028 if #.freqs ==0  then weighted=
+0029 else weighted= ' (weighted)'
+0030 say
+0031 do r=0  while  lines(iFID)\==0               /*keep reading the dictionary 'til done*/
+0032 u=space( linein(iFID), 0);      upper u      /*elide superfluous blanks and tabs.   */
+0033 if u==''  then iterate                       /*Is it a blank line?   Then ignore it.*/
+0034 #.words=#.words + 1                          /*keep running count of number of words*/
+0035 one=f.u
+0036 if pos('EI', u)\==0 & pos('IE', u)\==0  then #.both=#.both + one /*the word has both*/
+0037 call find  'ie'                                                  /*look for   ie    */
+0038 call find  'ei'                                                  /*  "   "    ei    */
+0039 end   /*r*/                                  /*at exit of DO loop,   R = # of lines.*/
+0040 
+0041 L=length(#.words)                                /*use this to align the output numbers.*/
+0042 say 'lines in the  '         iFID         ' dictionary: '             r
+0043 say 'words in the  '         iFID         ' dictionary: '             #.words
+0044 say
+0045 say 'words with "IE" and "EI" (in same word): '    right(#.both, L)   weighted
+0046 say 'words with "IE" and     preceded by "C": '    right(#.ie.c ,L)   weighted
+0047 say 'words with "IE" and not preceded by "C": '    right(#.ie.z ,L)   weighted
+0048 say 'words with "EI" and     preceded by "C": '    right(#.ei.c ,L)   weighted
+0049 say 'words with "EI" and not preceded by "C": '    right(#.ei.z ,L)   weighted
+0050 say;                         mantra= 'The spelling mantra  '
+0051 p1=#.ie.z / max(1, #.ei.z);  phrase= '"I before E when not preceded by C"'
+0052 say mantra phrase   ' is '   word("im", 1 + (p1>2) )'plausible.'
+0053 p2=#.ie.c / max(1, #.ei.c);  phrase= '"E before I when     preceded by C"'
+0054 say mantra phrase   ' is '   word("im", 1 + (p2>2) )'plausible.'
+0055 po=(p1>2 & p2>2);            say 'Overall, it is'    word("im",1 + po)'plausible.'
+0056 exit                                             /*stick a fork in it,  we're all done. */
+0057 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0058 find: arg x;  s=1;  do forever;           _=pos(x, u, s);          if _==0  then return
+0059 if substr(u, _ - 1 + (_==1)*999, 1)=='C'  then #.x.c=#.x.c + one
+0060 else #.x.z=#.x.z + one
+0061 s=_ + 1                      /*handle the cases of multiple finds.  */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 u                16 32
+002 w.               16 16 18
+003 j                18
+004 f.               22
+005 weighted         28
+006 r                31
+007 one              35
+008 L                41
+009 mantra           50
+010 p1               51
+011 phrase           51 53
+012 p2               53
+013 po               55
+014 s                58 61
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #.               -> newV1.           8 21 34 36 59
+002 _                -> newV2            19 58

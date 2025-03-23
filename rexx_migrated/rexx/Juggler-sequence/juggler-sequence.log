@@ -1,0 +1,83 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program  calculates and displays  the  juggler sequence  for any positive integer*/
+0002 numeric digits 20                                /*define the number of decimal digits. */
+0003 parse arg LO HI list                             /*obtain optional arguments from the CL*/
+0004 if LO='' | LO=","  then do; LO= 20; HI= 39; end  /*Not specified?  Then use the default.*/
+0005 if HI='' | HI=","  then HI= LO                   /* "      "         "   "   "     "    */
+0006 w= length( commas(HI) )                          /*find the max width of any number  N. */
+0007 d= digits();     dd= d + d%3 + 1                 /*get # numeric digits; another version*/
+0008 if LO>0  then say c('n',w)    c("steps",7)    c('maxIndex',8)   c("biggest term"    ,dd)
+0009 if LO>0  then say c('' ,w,.)  c(""     ,7,.)  c(''        ,8,.) c(""                ,dd,.)
+0010 
+0011 do n=LO  to HI while n>0; steps= juggler(n)  /*invoke JUGGLER: find the juggler num.*/
+0012 nc= commas(n)                                /*maybe add commas to  N.              */
+0013 say right(nc, w)      c(steps, 8)     c(imx, 8)      right( commas(mx), dd-1)
+0014 end   /*n*/
+0015 /*biggest term isn't shown for list #s.*/
+0016 xtra= words(list)                                /*determine how many numbers in list.  */
+0017 if xtra==0  then exit 0                          /*no special ginormous juggler numbers?*/
+0018 w= max(9, length( commas( word(list, xtra) ) ) ) /*find the max width of any list number*/
+0019 say;             say;             say
+0020 say c('n',w)     c("steps",7)     c('maxIndex',8)     c("max number of digits",dd)
+0021 say c('' ,w,.)   c(""     ,7,.)   c(''        ,8,.)   c(""                    ,dd,.)
+0022 
+0023 do p=1  for xtra;     n= word(list, p)  /*process each of the numbers in list. */
+0024 steps= juggler(n);    nc= commas(n)     /*get a number & pass it on to JUGGLER.*/
+0025 say right(nc, w)   c(steps, 8)   c(imx, 8)      right( commas(length(mx)), dd-1)
+0026 end   /*p*/
+0027 exit 0                                           /*stick a fork in it,  we're all done. */
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 c:      parse arg c1,c2,c3; if c3==''  then c3= ' '; else c3= '─'; return center(c1,c2,c3)
+0030 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 Isqrt:  procedure; parse arg x;  q= 1;  r= 0     /*obtain X;  R  will be the Isqrt(X).  */
+0033 do until q>x;  q= q * 4               /*multiply   Q   by four until > X.    */
+0034 end   /*until*/
+0035 do while q>1;  q= q % 4           /*processing while Q>1;  quarter Q.    */
+0036 t= x - r - q;  r= r % 2           /*set T ──► X-R-Q;       halve R.      */
+0037 if t>=0  then do; x= t; r= r + q  /*T≥0?  Then set X ──► T;  add Q ──► R.*/
+0038 end
+0039 end   /*while*/;    return r      /*return the integer square root of  X.*/
+0040 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0041 juggler: parse arg #;  imx= 0;  mx= #            /*get N;  set index of MX and MX ──► 0.*/
+0042 @.=0; @.1=1; @.3=1; @.5=1; @.7=1; @.9=1 /*set semaphores (≡1) for odd dec. digs*/
+0043 do j=1  until z==1                    /*here is where we begin to juggle.    */
+0044 parse var  #  ''  -1  _               /*obtain the last decimal digit of  #. */
+0045 if @._  then do;       cube= #*#*#    /*Odd? Then compute integer sqrt(#**3).*/
+0046 if pos(., cube)>0  then do    /*need to increase decimal digits.*/
+0047 parse var  cube    with    'E'  x
+0048 if x>=digits()  then numeric digits x+2
+0049 end
+0050 z= Isqrt(#*#*#)          /*compute the integer sqrt(#**3)       */
+0051 end
+0052 else z= Isqrt(#)              /*Even? Then compute integer sqrt(#).  */
+0053 L= length(z)
+0054 if L>=d  then numeric digits L+1      /*reduce the number of numeric digits. */
+0055 if z>mx  then do;  mx= z; imx= j; end /*found a new max;  set MX;  set IMX.  */
+0056 #= z
+0057 end   /*j*/;                 return j
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 cube             45
+002 mx               41 55
+003 j                43
+004 t                36
+005 d                7
+006 dd               7
+007 n                11 23
+008 steps            11 24
+009 nc               12 24
+010 x                47
+011 z                50
+012 L                53
+013 imx              55
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           42 42 42 42 42 42
+002 ?                -> newV2            30 30
+003 #                -> newV3            41 44 56
+004 _                -> newV4            44

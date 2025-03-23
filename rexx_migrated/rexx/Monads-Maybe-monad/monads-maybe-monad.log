@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX program mimics a bind operation when trying to perform addition upon arguments.  */
+0002 call add 1, 2
+0003 call add 1, 2.0
+0004 call add 1, 2.0, -6
+0005 call add self, 2
+0006 exit 0                                           /*stick a fork in it,  we're all done. */
+0007 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0008 add:   void= 'VOID';                       f=    /*define in terms of a function&binding*/
+0009 do j=1  for arg()           /*process, classify, bind each argument*/
+0010 call bind( arg(j) );  f= f arg(j)
+0011 end   /*j*/
+0012 say
+0013 say 'adding'  f;    call sum f            /*telegraph what's being performed next*/
+0014 return                                    /*Note: REXX treats INT & FLOAT as num.*/
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 bind:  arg a;  type.a= datatype(a);  return      /*bind argument's kind with its "type".*/
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 sum:   parse arg a;  $= 0                        /*sum all arguments that were specified*/
+0019 do k=1  for words(a);  ?= word(a, k)
+0020 if type.?==num & $\==void  then $= ($ + word(a, k)) / 1
+0021 else $= void
+0022 end   /*k*/
+0023 say 'sum='  $
+0024 return $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                18
+002 k                19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            18 20
+002 ?                -> newV2            19

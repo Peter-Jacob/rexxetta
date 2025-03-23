@@ -1,0 +1,53 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX pgm performs deconvolution of two arrays:    deconv(g,f)=h   and   deconv(g,h)=f */
+0002 call make 'H',  "-8 -9 -3 -1 -6 7"
+0003 call make 'F',  "-3 -6 -1 8 -6 3 -1 -9 -9 3 -2 5 2 -2 -7 -1"
+0004 call make 'G',  "24 75 71 -34 3 22 -45 23 245 25 52 25 -67 -96 96 31 55 36 29 -43 -7"
+0005 call show 'H'                                    /*display the elements of array  H.    */
+0006 call show 'F'                                    /*   "     "     "      "   "    F.    */
+0007 call show 'G'                                    /*   "     "     "      "   "    G.    */
+0008 call deco 'G',  "F", 'X'                         /*deconvolution of  G  and  F  ───►  X */
+0009 call test 'X',  "H"                              /*test: is array  H  equal to array  X?*/
+0010 call deco 'G',  "H", 'Y'                         /*deconvolution of  G  and  H  ───►  Y */
+0011 call test 'F',  "Y"                              /*test: is array  F  equal to array  Y?*/
+0012 exit 0                                           /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 deco: parse arg $1,$2,$r;   b= @.$2.# + 1;   a= @.$1.# + 1      /*get sizes of array 1&2*/
+0015 @.$r.#= a - b                                             /*size of return array. */
+0016 do n=0  to a-b                                      /*define  return array. */
+0017 @.$r.n= @.$1.n                                      /*define RETURN element.*/
+0018 if n<b  then L= 0                                   /*define the variable L.*/
+0019 else L= n - b + 1                           /*   "    "     "     " */
+0020 if n>0  then do j=L  to n-1;                _= n-j  /*define elements > 0.  */
+0021 @.$r.n= @.$r.n - @.$r.j * @.$2._       /*compute   "     " "   */
+0022 end   /*j*/                            /* [↑] subtract product.*/
+0023 @.$r.n= @.$r.n / @.$2.0                             /*divide array element. */
+0024 end   /*n*/;                     return
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 make: parse arg $,z;                     @.$.#= words(z) - 1    /*obtain args; set size.*/
+0027 do k=0  to @.$.#;            @.$.k= word(z, k + 1)  /*define array element. */
+0028 end   /*k*/;                     return             /*array starts at unity.*/
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 show: parse arg $,z,_;    do s=0  to @.$.#;  _= strip(_ @.$.s)  /*obtain the arguments. */
+0031 end   /*s*/                           /* [↑]  build the list. */
+0032 say 'array' $": " _;                   return             /*show the list;  return*/
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 test: parse arg $1,$2;    do t=0  to max(@.$1.#, @.$2.#)        /*obtain the arguments. */
+0035 if @.$1.t= @.$2.t  then iterate       /*create array list.    */
+0036 say "***error*** arrays"   $1    ' and '    $2   "aren't equal."
+0037 end   /*t*/;       return             /* [↑]  build the list. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 t                34
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $1               -> newV1            14 34
+002 $2               -> newV2            14 34
+003 $r               -> newV3            14
+004 @.               -> newV4.           15 17 21 23 26 27
+005 _                -> newV5            20 30 30
+006 $                -> newV6            26 30

@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX program "collapses" all immediately repeated characters in a string (or strings).*/
+0002 @.=                                              /*define a default for the  @.  array. */
+0003 parse arg x                                      /*obtain optional argument from the CL.*/
+0004 if x\=''  then      @.1= x                       /*if user specified an arg, use that.  */
+0005 else do;  @.1=
+0006 @.2= '"If I were two-faced, would I be wearing this one?" --- Abraham Lincoln '
+0007 @.3=  ..1111111111111111111111111111111111111111111111111111111111111117777888
+0008 @.4= "I never give 'em hell, I just tell the truth, and they think it's hell. "
+0009 @.5= '                                                   ---  Harry S Truman  '
+0010 end
+0011 
+0012 do j=1;    L= length(@.j)                   /*obtain the length of an array element*/
+0013 say copies('═', 105)                        /*show a separator line between outputs*/
+0014 if j>1  &  L==0     then leave              /*if arg is null and  J>1, then leave. */
+0015 new= collapse(@.j)
+0016 say 'string' word("isn't is",1+collapsible) 'collapsible' /*display semaphore value*/
+0017 say '    length='right(L, 3)     "   input=«««"  ||  @.j  ||  '»»»'
+0018 w= length(new)
+0019 say '    length='right(w, 3)     "  output=«««"  ||  new  ||  '»»»'
+0020 end   /*j*/
+0021 exit                                             /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 collapse: procedure expose collapsible; parse arg y 1 $ 2  /*get the arg; get 1st char. */
+0024 do k=2  to length(y)                 /*traipse through almost all the chars.*/
+0025 _= substr(y, k, 1)                   /*pick a character from  Y  (1st arg). */
+0026 if _==right($, 1)  then iterate      /*Is this the same character?  Skip it.*/
+0027 $= $ || _                            /*append the character, it's different.*/
+0028 end   /*j*/
+0029 collapsible= y\==$;       return $     /*set boolean to  true  if collapsible.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                23
+002 k                24
+003 collapsible      29
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 4 5 6 7 8 9
+002 $                -> newV2            23 27
+003 _                -> newV3            25

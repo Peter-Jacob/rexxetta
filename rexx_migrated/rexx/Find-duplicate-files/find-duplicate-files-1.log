@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program to reads a (DOS) directory  and  finds and displays files that identical.*/
+0002 sep=center(' files are identical in size and content: ',79,"═")    /*define the header. */
+0003 tFID= 'c:\TEMP\FINDDUP.TMP'                      /*use this as a temporary  FileID.     */
+0004 arg maxSize aDir                                 /*obtain optional arguments from the CL*/
+0005 if maxSize='' | maxSize="," then maxSize=1000000 /*filesize limit (in bytes) [1 million]*/
+0006 aDir=strip(aDir)                                 /*remove any leading or trailing blanks*/
+0007 if right(aDir,1)\=='\'  then aDir=aDir"\"        /*possibly add a trailing backslash [\]*/
+0008 "DIR"  aDir  '/a-d-s-h /oS /s | FIND "/" >' tFID /*the (DOS) DIR output ───► temp file. */
+0009 pFN=                                             /*the previous  filename and filesize. */
+0010 pSZ=;  do j=0  while lines(tFID)\==0             /*process each of the files in the list*/
+0011 aLine=linein(tFID)                        /*obtain (DOS) DIR's output about a FID*/
+0012 parse var aLine . . sz fn                 /*obtain the filesize and its fileID.  */
+0013 sz=space(translate(sz,,','),0)            /*elide any commas from the size number*/
+0014 if sz>maxSize  then leave                 /*Is the file > maximum?  Ignore file. */
+0015 /* [↓]  files identical?  (1st million)*/
+0016 if sz==pSZ  then  if charin(aDir||pFN,1,sz)==charin(aDir||FN,1,sz)  then do
+0017 say sep
+0018 say pLine
+0019 say aLine
+0020 say
+0021 end
+0022 pSZ=sz;      pFN=FN;      pLine=aLine     /*remember the previous stuff for later*/
+0023 end   /*j*/
+0024 
+0025 if lines(tFID)\==0  then 'ERASE' tFID            /*do housecleaning  (delete temp file).*/
+0026 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 aLine            12
+002 sz               12 13
+003 fn               12
+004 pSZ              22
+005 pFN              22
+006 pLine            22
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

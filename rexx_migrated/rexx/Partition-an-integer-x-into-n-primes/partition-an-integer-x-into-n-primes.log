@@ -1,0 +1,73 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX program  partitions  integer(s)    (greater than unity)   into   N   primes.     */
+0002 parse arg what                                   /*obtain an optional list from the C.L.*/
+0003 
+0004 do  until what==''                             /*possibly process a series of integers*/
+0005 parse var what x n what; parse var  x  x '-' y /*get possible range  and # partitions.*/
+0006 parse var  n  n '-' m /* "      "      "     "  "      "     */
+0007 if x=='' | x==","   then x= 19                 /*Not specified?  Then use the default.*/
+0008 if y=='' | y==","   then y=  x                 /* "      "         "   "   "     "    */
+0009 if n=='' | n==","   then n=  3                 /* "      "         "   "   "     "    */
+0010 if m=='' | m==","   then m=  n                 /* "      "         "   "   "     "    */
+0011 call genP y                                    /*generate   Y   number of primes.     */
+0012 do   g=x  to y              /*partition  X ───► Y  into partitions.*/
+0013 do q=n  to m;  call part  /*    "      G   into    Q    primes.  */
+0014 end  /*q*/
+0015 end    /*g*/
+0016 end   /*until*/
+0017 
+0018 exit 0                                           /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 genP: arg high;     @.1= 2;   @.2= 3;    #= 2    /*get highest prime, assign some vars. */
+0021 do j=@.#+2  by 2  until @.#>high  /*only find odd primes from here on.   */
+0022 do k=2  while k*k<=j           /*divide by some known low odd primes. */
+0023 if j // @.k==0  then iterate j /*Is  J  divisible by P?  Then ¬ prime.*/
+0024 end   /*k*/                    /* [↓]  a prime  (J)  has been found.  */
+0025 #= # + 1;               @.#= j    /*bump prime count; assign prime to  @.*/
+0026 end      /*j*/;         return
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 getP: procedure expose i. p. @.;  parse arg z    /*bump the prime in the partition list.*/
+0029 if i.z==0  then do;   _= z - 1;     i.z= i._;   end
+0030 i.z= i.z + 1;         _= i.z;       p.z= @._;                      return 0
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 list: _= p.1;    if $==g  then do j=2  to q;     _= _ p.j
+0033 end   /*j*/
+0034 else _= '__(not_possible)'
+0035 return 'prime'  ||  word("s", 1 + (q==1))   translate(_, '+ ', " _")    /*plural? */
+0036 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0037 part: i.= 0;  do j=1  for q;   call getP j
+0038 end   /*j*/
+0039 
+0040 do !=0  by 0;         $= 0         /*!:  a DO variable for LEAVE & ITERATE*/
+0041 do s=1  for q;    $= $ + p.s   /* [↓]  is sum of the primes too large?*/
+0042 if $>g  then do;  if s==1  then leave !        /*perform a quick exit?*/
+0043 do k=s    to q;  i.k= 0;       end  /*k*/
+0044 do r=s-1  to q;  call getP r;  end  /*r*/
+0045 iterate !
+0046 end
+0047 end   /*s*/
+0048 if $==g  then leave                /*is sum of the primes exactly right ? */
+0049 if $ <g  then do;    call getP q;    iterate;    end
+0050 end   /*!*/                        /* [↑]   Is sum too low?  Bump a prime.*/
+0051 say 'partitioned'       center(g,9)        "into"        center(q, 5)        list()
+0052 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                28
+002 i.               29 30 43
+003 p.               30
+004 j                32 37
+005 s                41
+006 k                43
+007 r                44
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           20 20 25
+002 #                -> newV2            20 25
+003 _                -> newV3            29 30 32
+004 !                -> newV4            40
+005 $                -> newV5            40 41

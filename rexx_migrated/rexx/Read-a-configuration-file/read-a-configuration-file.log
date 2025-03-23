@@ -1,0 +1,67 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX program reads a config (configuration) file and assigns  VARs  as found within.  */
+0002 signal on syntax;      signal on novalue         /*handle REXX source program errors.   */
+0003 parse arg cFID _ .                               /*cFID:  is the CONFIG file to be read.*/
+0004 if cFID==''  then cFID='CONFIG.DAT'              /*Not specified?  Then use the default.*/
+0005 bad=                                             /*this will contain all the  bad VARs. */
+0006 varList=                                         /*  "    "     "     "   "  good   "   */
+0007 maxLenV=0;   blanks=0;   hashes=0;   semics=0;   badVar=0    /*zero all these variables.*/
+0008 
+0009 do j=0  while lines(cFID)\==0                 /*J:   it counts the lines in the file.*/
+0010 txt=strip(linein(cFID))                       /*read a line (record) from the file,  */
+0011 /*  ··· & strip leading/trailing blanks*/
+0012 if      txt    =''    then do; blanks=blanks+1; iterate; end   /*count # blank lines.*/
+0013 if left(txt,1)=='#'   then do; hashes=hashes+1; iterate; end   /*  "   " lines with #*/
+0014 if left(txt,1)==';'   then do; semics=semics+1; iterate; end   /*  "   "   "     "  ;*/
+0015 eqS=pos('=',txt)                              /*we can't use the   TRANSLATE   BIF.  */
+0016 if eqS\==0  then txt=overlay(' ',txt,eqS)     /*replace the first  '='  with a blank.*/
+0017 parse var txt xxx value;  upper xxx           /*get the variable name and it's value.*/
+0018 value=strip(value)                            /*strip leading and trailing blanks.   */
+0019 if value='' then value='true'                 /*if no value,  then use   "true".     */
+0020 if symbol(xxx)=='BAD'  then do                /*can REXX utilize the variable name ? */
+0021 badVar=badVar+1;  bad=bad xxx;  iterate  /*append to list*/
+0022 end
+0023 varList=varList xxx                           /*add it to the list of good variables.*/
+0024 call value xxx,value                          /*now,  use VALUE to set the variable. */
+0025 maxLenV=max(maxLenV,length(value))            /*maxLen of varNames,  pretty display. */
+0026 end   /*j*/
+0027 
+0028 vars=words(varList);          @ig= 'ignored that began with a'
+0029 say #(j)       'record's(j) "were read from file: " cFID
+0030 if blanks\==0  then say #(blanks)  'blank record's(blanks) "were read."
+0031 if hashes\==0  then say #(hashes)  'record's(hashes)   @ig   "#  (hash)."
+0032 if semics\==0  then say #(semics)  'record's(semics)   @ig   ";  (semicolon)."
+0033 if badVar\==0  then say #(badVar)  'bad variable name's(badVar) 'detected:' bad
+0034 say;  say 'The list of'    vars    "variable"s(vars)    'and'    s(vars,'their',"it's"),
+0035 "value"s(vars)       'follows:'
+0036 say;          do k=1  for vars
+0037 v=word(varList,k)
+0038 say  right(v,maxLenV) '=' value(v)
+0039 end   /*k*/
+0040 say;  exit                                       /*stick a fork in it,  we're all done. */
+0041 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0042 s:       if arg(1)==1  then return arg(3);               return word(arg(2) 's',1)
+0043 #:       return right(arg(1),length(j)+11)       /*right justify a number & also indent.*/
+0044 err:       do j=1  for arg();  say '***error***    ' arg(j);  say;  end  /*j*/;    exit 13
+0045 novalue: syntax:   call err 'REXX program' condition('C') "error",,
+0046 condition('D'),'REXX source statement (line' sigl"):",sourceline(sigl)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 txt              17
+002 xxx              17
+003 value            17 18 19
+004 badVar           21
+005 bad              21
+006 varList          23
+007 maxLenV          25
+008 vars             28
+009 k                36
+010 v                37
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @ig              -> newV1            28
+002 _                -> newV2            3

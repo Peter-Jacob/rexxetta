@@ -1,0 +1,303 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 Numeric Digits 40
+0002 N     = 6364136223846793005
+0003 state = x2d('853c49e6748fea9b',16)
+0004 inc   = x2d('da3e39cb94b95bdb',16)
+0005 Call seed 42,54
+0006 Do zz=1 To 5
+0007 res=nextint()
+0008 Say int2str(res)
+0009 End
+0010 Call seed 987654321,1
+0011 cnt.=0
+0012 Do i=1 To 100000
+0013 z=nextfloat()
+0014 cnt.z=cnt.z+1
+0015 End
+0016 Say ''
+0017 Say 'The counts for 100,000 repetitions are:'
+0018 Do z=0 To 4
+0019 Say format(z,2) ':' format(cnt.z,5)
+0020 End
+0021 Exit
+0022 
+0023 int2str: Procedure
+0024 int=arg(1)
+0025 intx=d2x(int,8)
+0026 res=x2d(copies(0,8)intx,16)
+0027 Return res
+0028 
+0029 seed:
+0030 Parse Arg seedState,seedSequence
+0031 state=0
+0032 inc=dshift(seedSequence,-1)
+0033 inc=x2d(or(d2x(inc,16),d2x(1,16)),16)
+0034 z=nextint()
+0035 state=javaadd(state,seedState)
+0036 z=nextint()
+0037 Return
+0038 
+0039 nextInt:
+0040 old = state
+0041 oldxN = javamult(old,n)
+0042 statex= javaadd(oldxN,inc)
+0043 state=statex
+0044 oldx=d2x(old,16)
+0045 oldb=x2b(oldx)
+0046 oldb18=copies(0,18)left(oldb,64-18)
+0047 oldb18o=bxor(oldb18,oldb)
+0048 rb=copies(0,27)left(oldb18o,64-27)
+0049 rx=b2x(rb)
+0050 shifted=x2d(substr(rx,9),8)
+0051 oldx=d2x(old,16)
+0052 oldb=x2b(oldx)
+0053 oldb2=copies(0,59)left(oldb,length(oldb)-59)
+0054 oldx2=b2x(oldb2)
+0055 rotx=x2d(substr(oldx2,9),8)
+0056 t1=ishift(shifted,rotx,'L')
+0057 t2=x2d(xneg(d2x(rotx,8)),8)
+0058 t3=t2+1
+0059 t4=x2d(xand(d2x(t3,8),d2x(31,8)),8)
+0060 t5=dshift(shifted,-t4)
+0061 t5x=d2x(t5,16)
+0062 t5y=substr(t5x,9)
+0063 t5z=x2d(t5y,16)
+0064 t7=x2d(or(d2x(t1,16),d2x(t5z,16)),16)
+0065 t8=long2int(t7)
+0066 Return t8
+0067 
+0068 nextfloat:
+0069 ni=nextint()
+0070 nix=d2x(ni,8)
+0071 niz=copies(0,8)nix
+0072 u=x2d(niz,16)
+0073 uu=u/(2**32)
+0074 z=uu*5%1
+0075 Return z
+0076 
+0077 javaadd: Procedure
+0078 /**********************************************************************
+0079 * Add two long integers and ignore the possible overflow
+0080 **********************************************************************/
+0081 Numeric Digits 40
+0082 Parse Arg a,b
+0083 r=a+b
+0084 rx=d2x(r,18)
+0085 res=right(rx,16)
+0086 return x2d(res,16)
+0087 
+0088 javamult: Procedure
+0089 /**********************************************************************
+0090 * Multiply java style
+0091 **********************************************************************/
+0092 Numeric Digits 40
+0093 Parse Arg a,b
+0094 m=d2x(a*b,16)
+0095 res=x2d(m,16)
+0096 Return res
+0097 
+0098 bxor: Procedure
+0099 /**********************************************************************
+0100 * Exclusive Or two bit strings
+0101 **********************************************************************/
+0102 Parse arg a,b
+0103 res=''
+0104 Do i=1 To length(a)
+0105 res=res||(substr(a,i,1)<>substr(b,i,1))
+0106 End
+0107 Return res
+0108 
+0109 xxor: Procedure
+0110 /**********************************************************************
+0111 * Exclusive Or two hex strings
+0112 **********************************************************************/
+0113 Parse Arg u,v
+0114 ub=x2b(u)
+0115 vb=x2b(v)
+0116 res=''
+0117 Do i=1 To 64
+0118 res=res||(substr(ub,i,1)<>substr(vb,i,1))
+0119 End
+0120 res=b2x(res)
+0121 Return res
+0122 
+0123 xand: Procedure
+0124 /**********************************************************************
+0125 * And two hex strings
+0126 **********************************************************************/
+0127 Parse Arg u,v
+0128 ub=x2b(u)
+0129 vb=x2b(v)
+0130 res=''
+0131 Do i=1 To length(ub)
+0132 res=res||(substr(ub,i,1)&substr(vb,i,1))
+0133 End
+0134 res=b2x(res)
+0135 Return res
+0136 
+0137 or: Procedure
+0138 /**********************************************************************
+0139 * Or two hex strings
+0140 **********************************************************************/
+0141 Parse Arg u,v
+0142 ub=x2b(u)
+0143 vb=x2b(v)
+0144 res=''
+0145 Do i=1 To length(ub)
+0146 res=res||(substr(ub,i,1)|substr(vb,i,1))
+0147 End
+0148 res=b2x(res)
+0149 Return res
+0150 
+0151 long2int: Procedure
+0152 /**********************************************************************
+0153 * Cast long to int
+0154 **********************************************************************/
+0155 Parse Arg long
+0156 longx=d2x(long,16)
+0157 int=x2d(substr(longx,9),8)
+0158 Return int
+0159 
+0160 xneg: Procedure
+0161 /**********************************************************************
+0162 * Negate a hex string
+0163 **********************************************************************/
+0164 Parse Arg s
+0165 sb=x2b(s)
+0166 res=''
+0167 Do i=1 To length(sb)
+0168 res=res||\substr(sb,i,1)
+0169 End
+0170 res=b2x(res)
+0171 Return res
+0172 
+0173 dshift: Procedure
+0174 /**********************************************************************
+0175 * Implement the shift operations for a long variable
+0176 * r = dshift(long,shift[,mode])  >>  Mode='L' logical right shift
+0177 *                                >>> Mode='A' arithmetic right shift
+0178 *                                <<  xhift<0  left shift
+0179 ********************************************`*************************/
+0180 Parse Upper Arg n,s,o
+0181 Numeric Digits 40
+0182 If o='' Then o='L'
+0183 nx=d2x(n,16)
+0184 nb=x2b(nx)
+0185 If s<0 Then Do
+0186 s=abs(s)
+0187 rb=substr(nb,s+1)||copies('0',s)
+0188 rx=b2x(rb)
+0189 r=x2d(rx,16)
+0190 End
+0191 Else Do
+0192 If o='L' Then Do
+0193 rb=left(copies('0',s)nb,length(nb))
+0194 rx=b2x(rb)
+0195 r=x2d(rx,16)
+0196 End
+0197 Else Do
+0198 rb=left(copies(left(nb,1),s)nb,length(nb))
+0199 rx=b2x(rb)
+0200 r=x2d(rx,16)
+0201 End
+0202 End
+0203 Return r
+0204 
+0205 ishift: Procedure
+0206 /**********************************************************************
+0207 * Implement the shift operations for an int variable
+0208 * r = dshift(int,shift[,mode])   >>  Mode='L' logical right shift
+0209 *                                >>> Mode='A' arithmetic right shift
+0210 *                                <<  xhift<0  left shift
+0211 ********************************************`*************************/
+0212 Parse Upper Arg n,s,o
+0213 Numeric Digits 40
+0214 If o='' Then o='L'
+0215 nx=d2x(n,8)
+0216 nb=x2b(nx)
+0217 If s<0 Then Do
+0218 s=abs(s)
+0219 rb=substr(nb,s+1)||copies('0',s)
+0220 rx=b2x(rb)
+0221 r=x2d(rx,8)
+0222 End
+0223 Else Do
+0224 If o='L' Then Do
+0225 rb=left(copies('0',s)nb,length(nb))
+0226 rx=b2x(rb)
+0227 r=x2d(rx,8)
+0228 End
+0229 Else Do
+0230 rb=left(copies(left(nb,1),s)nb,length(nb))
+0231 rx=b2x(rb)
+0232 r=x2d(rx,8)
+0233 End
+0234 End
+0235 Return r
+0236 
+0237 b2x: Procedure Expose x.
+0238 /**********************************************************************
+0239 * Convert a Bit string to a Hex stríng
+0240 **********************************************************************/
+0241 Parse Arg b
+0242 z='0'; bits.z='0000'; y=bits.z; x.y=z
+0243 z='1'; bits.z='0001'; y=bits.z; x.y=z
+0244 z='2'; bits.z='0010'; y=bits.z; x.y=z
+0245 z='3'; bits.z='0011'; y=bits.z; x.y=z
+0246 z='4'; bits.z='0100'; y=bits.z; x.y=z
+0247 z='5'; bits.z='0101'; y=bits.z; x.y=z
+0248 z='6'; bits.z='0110'; y=bits.z; x.y=z
+0249 z='7'; bits.z='0111'; y=bits.z; x.y=z
+0250 z='8'; bits.z='1000'; y=bits.z; x.y=z
+0251 z='9'; bits.z='1001'; y=bits.z; x.y=z
+0252 z='A'; bits.z='1010'; y=bits.z; x.y=z
+0253 z='B'; bits.z='1011'; y=bits.z; x.y=z
+0254 z='C'; bits.z='1100'; y=bits.z; x.y=z
+0255 z='D'; bits.z='1101'; y=bits.z; x.y=z
+0256 z='E'; bits.z='1110'; y=bits.z; x.y=z
+0257 z='F'; bits.z='1111'; y=bits.z; x.y=z
+0258 x=''
+0259 Do While b<>''
+0260 Parse Var b b4 +4 b
+0261 x=x||x.b4
+0262 End
+0263 Return x
+0264 
+0265 x2b: Procedure Expose bits.
+0266 /***********************************************************************
+0267 * Convert a Hex string to a Bit stríng
+0268 ***********************************************************************/
+0269 Parse Arg x
+0270 z='0'; bits.z='0000'; y=bits.z; x.y=z
+0271 z='1'; bits.z='0001'; y=bits.z; x.y=z
+0272 z='2'; bits.z='0010'; y=bits.z; x.y=z
+0273 z='3'; bits.z='0011'; y=bits.z; x.y=z
+0274 z='4'; bits.z='0100'; y=bits.z; x.y=z
+0275 z='5'; bits.z='0101'; y=bits.z; x.y=z
+0276 z='6'; bits.z='0110'; y=bits.z; x.y=z
+0277 z='7'; bits.z='0111'; y=bits.z; x.y=z
+0278 z='8'; bits.z='1000'; y=bits.z; x.y=z
+0279 z='9'; bits.z='1001'; y=bits.z; x.y=z
+0280 z='A'; bits.z='1010'; y=bits.z; x.y=z
+0281 z='B'; bits.z='1011'; y=bits.z; x.y=z
+0282 z='C'; bits.z='1100'; y=bits.z; x.y=z
+0283 z='D'; bits.z='1101'; y=bits.z; x.y=z
+0284 z='E'; bits.z='1110'; y=bits.z; x.y=z
+0285 z='F'; bits.z='1111'; y=bits.z; x.y=z
+0286 b=''
+0287 Do While x<>''
+0288 Parse Var x c +1 x
+0289 b=b||bits.c
+0290 End
+0291 Return b
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                288 288
+002 c                288
+003 b                289
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

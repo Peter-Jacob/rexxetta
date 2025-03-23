@@ -1,0 +1,71 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * determinant.rex
+0003 * compute the determinant of the given square matrix
+0004 * Input: as: the representation of the matrix as vector (n**2 elements)
+0005 * 21.05.2013 Walter Pachl
+0006 **********************************************************************/
+0007 Parse Arg as
+0008 n=sqrt(words(as))
+0009 Do i=1 To n
+0010 Do j=1 To n
+0011 Parse Var as a.i.j as
+0012 End
+0013 End
+0014 Select
+0015 When n=2 Then det=a.1.1*a.2.2-a.1.2*a.2.1
+0016 When n=3 Then det= a.1.1*a.2.2*a.3.3,
+0017 +a.1.2*a.2.3*a.3.1,
+0018 +a.1.3*a.2.1*a.3.2,
+0019 -a.1.3*a.2.2*a.3.1,
+0020 -a.1.2*a.2.1*a.3.3,
+0021 -a.1.1*a.2.3*a.3.2
+0022 Otherwise Do
+0023 det=0
+0024 Do k=1 To n
+0025 det=det+((-1)**(k+1))*a.1.k*determinant(subm(k))
+0026 End
+0027 End
+0028 End
+0029 Return det
+0030 
+0031 subm: Procedure Expose a. n
+0032 /**********************************************************************
+0033 * compute the submatrix resulting when row 1 and column k are removed
+0034 * Input: a.*.*, k
+0035 * Output: bs the representation of the submatrix as vector
+0036 **********************************************************************/
+0037 Parse Arg k
+0038 bs=''
+0039 do i=2 To n
+0040 Do j=1 To n
+0041 If j=k Then Iterate
+0042 bs=bs a.i.j
+0043 End
+0044 End
+0045 Return bs
+0046 
+0047 sqrt: Procedure
+0048 /**********************************************************************
+0049 * compute and return the (integer) square root of the given argument
+0050 * terminate the program if the argument is not a square
+0051 **********************************************************************/
+0052 Parse Arg nn
+0053 Do n=1 By 1 while n*n<nn
+0054 End
+0055 If n*n=nn Then
+0056 Return n
+0057 Else Do
+0058 Say 'invalid number of elements:' nn 'is not a square.'
+0059 Exit
+0060 End
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 nn               52
+002 n                53
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

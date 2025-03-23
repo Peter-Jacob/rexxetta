@@ -1,0 +1,281 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program helps the user find solutions to the game of  24.                        */
+0002 /*                           start-of-help
+0003 ┌───────────────────────────────────────────────────────────────────────┐
+0004 │ Argument is either of three forms:  (blank)                           │~
+0005 │                                      ssss                             │~
+0006 │                                      ssss,tot                         │~
+0007 │                                      ssss-ffff                        │~
+0008 │                                      ssss-ffff,tot                    │~
+0009 │                                     -ssss                             │~
+0010 │                                     +ssss                             │~
+0011 │                                                                       │~
+0012 │ where SSSS and/or FFFF must be exactly four numerals (digits)         │~
+0013 │ comprised soley of the numerals (digits)  1 ──> 9   (no zeroes).      │~
+0014 │                                                                       │~
+0015 │                                      SSSS  is the start,              │~
+0016 │                                      FFFF  is the start.              │~
+0017 │                                                                       │~
+0018 │                                                                       │~
+0019 │ If  ssss  has a leading plus (+) sign, it is used as the number, and  │~
+0020 │ the user is prompted to find a solution.                              │~
+0021 │                                                                       │~
+0022 │ If  ssss  has a leading minus (-) sign, a solution is looked for and  │~
+0023 │ the user is told there is a solution (but no solutions are shown).    │~
+0024 │                                                                       │~
+0025 │ If no argument is specified, this program finds a four digits (no     │~
+0026 │ zeroes)  which has at least one solution, and shows the digits to     │~
+0027 │ the user, requesting that they enter a solution.                      │~
+0028 │                                                                       │~
+0029 │ If  tot  is entered, it is the desired answer.  The default is  24.   │~
+0030 │                                                                       │~
+0031 │ A solution to be entered can be in the form of:                       │
+0032 │                                                                       │
+0033 │    digit1   operator   digit2   operator   digit3   operator  digit4  │
+0034 │                                                                       │
+0035 │ where    DIGITn     is one of the digits shown (in any order),  and   │
+0036 │          OPERATOR   can be any one of:     +    -    *    /           │
+0037 │                                                                       │
+0038 │ Parentheses  ()  may be used in the normal manner for grouping,  as   │
+0039 │ well as brackets  []  or  braces  {}.   Blanks can be used anywhere.  │
+0040 │                                                                       │
+0041 │ I.E.:    for the digits    3448     the following could be entered.   │
+0042 │                                                                       │
+0043 │                            3*8 + (4-4)                                │
+0044 └───────────────────────────────────────────────────────────────────────┘
+0045 end-of-help                                   */
+0046 numeric digits 12                                /*where rational arithmetic is needed. */
+0047 parse arg orig                                   /*get the  guess  from the command line*/
+0048 orig= space(orig, 0)                             /*remove all blanks from  ORIG.        */
+0049 negatory= left(orig,1)=='-'                      /*=1, suppresses showing.              */
+0050 pository= left(orig,1)=='+'                      /*=1, force $24 to use specific number.*/
+0051 if pository | negatory  then orig=substr(orig,2) /*now, just use the absolute vaue.     */
+0052 parse var orig orig ',' ??                       /*get ??  (if specified, def=24).      */
+0053 parse var orig start '-' finish                  /*get start and finish  (maybe).       */
+0054 opers= '*' || "/+-"                              /*legal arith. opers;order is important*/
+0055 ops= length(opers)                               /*the number of arithmetic operators.  */
+0056 groupsym= '()[]{}'                               /*allowed grouping symbols.            */
+0057 indent= left('', 30)                             /*indents display of solutions.        */
+0058 show= 1                                          /*=1, shows solutions (semifore).      */
+0059 digs= 123456789                                  /*numerals/digs that can be used.      */
+0060 abuttals = 0                                     /*=1, allows digit abutal:  12+12      */
+0061 if ??==''  then ??= 24                           /*the name of the game.                */
+0062 ??= ?? / 1                                       /*normalize the answer.                */
+0063 @abc= 'abcdefghijklmnopqrstuvwxyz'               /*the Latin alphabet in order.         */
+0064 @abcu= @abc;  upper @abcu                        /*an uppercase version of @abc.        */
+0065 x.= 0                                            /*method used to not re-interpret.     */
+0066 do j=1  for ops;    o.j=substr(opers, j, 1)
+0067 end  /*j*/                                 /*used for fast execution.             */
+0068 y= ??
+0069 if \datatype(??,'N')       then do; call ger "isn't numeric"; exit 13;  end
+0070 if start\=='' & \pository  then do; call ranger start,finish; exit 13;  end
+0071 show= 0                                          /*stop SOLVE blabbing solutions.       */
+0072 do forever  while  \negatory             /*keep truckin' until a solution.      */
+0073 x.= 0                                    /*way to hold unique expressions.      */
+0074 rrrr= random(1111, 9999)                 /*get a random set of digits.          */
+0075 if pos(0, rrrr)\==0  then iterate        /*but don't the use of zeroes.         */
+0076 if solve(rrrr)\==0  then leave           /*try to solve for these digits.       */
+0077 end   /*forever*/
+0078 
+0079 if left(orig,1)=='+'  then rrrr=start            /*use what's specified.                */
+0080 show= 1                                          /*enable SOLVE to show solutions.      */
+0081 rrrr= sortc(rrrr)                                /*sort four elements.                  */
+0082 rd.= 0
+0083 do j=1  for 9                    /*count for each digit in  RRRR.       */
+0084 _= substr(rrrr, j, 1);    rd._= countchars(rrrr, _)
+0085 end
+0086 do guesses=1;                 say
+0087 say 'Using the digits' rrrr", enter an expression that equals" ?? '  (? or QUIT):'
+0088 pull y;                       y= space(y, 0)
+0089 if countchars(y, @abcu)>2  then exit           /*the user must be desperate.          */
+0090 helpstart= 0
+0091 if y=='?'  then do j=1  for sourceline()       /*use a lazy way to show help.         */
+0092 _= sourceline(j)
+0093 if p(_)=='start-of-help'  then do;  helpstart=1;  iterate;  end
+0094 if p(_)=='end-of-help'    then iterate guesses
+0095 if \helpstart             then iterate
+0096 if right(_,1)=='~'        then iterate
+0097 say '  ' _
+0098 end
+0099 
+0100 _v= verify(y, digs || opers || groupsym)       /*any illegal characters?              */
+0101 if _v\==0  then do;   call ger 'invalid character:'  substr(y, _v, 1);   iterate;    end
+0102 if y=''  then do;     call validate y;   iterate;    end
+0103 
+0104 do j=1  for length(y)-1  while \abuttals     /*check for two digits adjacent.       */
+0105 if \datatype(substr(y,j,1),  'W') then iterate
+0106 if  datatype(substr(y,j+1,1),'W') then do
+0107 call ger 'invalid use of digit abuttal' substr(y,j,2)
+0108 iterate guesses
+0109 end
+0110 end   /*j*/
+0111 
+0112 yd= countchars(y, digs)                        /*count of legal digits  123456789     */
+0113 if yd<4  then do;  call ger 'not enough digits entered.'; iterate guesses; end
+0114 if yd>4  then do;  call ger 'too many digits entered.'  ; iterate guesses; end
+0115 
+0116 do j=1  for length(groupsym)  by 2
+0117 if countchars(y,substr(groupsym,j  ,1))\==,
+0118 countchars(y,substr(groupsym,j+1,1))  then do
+0119 call ger 'mismatched' substr(groupsym,j,2)
+0120 iterate guesses
+0121 end
+0122 end   /*j*/
+0123 
+0124 do k=1  for 2                            /*check for   **    and    //          */
+0125 _= copies( substr( opers, k, 1), 2)
+0126 if pos(_, y)\==0  then do;  call ger 'illegal operator:' _;  iterate guesses;  end
+0127 end   /*k*/
+0128 
+0129 do j=1  for 9;    if rd.j==0  then iterate;     _d= countchars(y, j)
+0130 if _d==rd.j  then iterate
+0131 if _d<rd.j   then call ger  'not enough'   j   "digits, must be"   rd.j
+0132 else call ger  'too many'     j   "digits, must be"   rd.j
+0133 iterate guesses
+0134 end   /*j*/
+0135 
+0136 y= translate(y, '()()', "[]{}")
+0137 interpret  'ans=('  y   ") / 1"
+0138 if ans==??  then leave guesses
+0139 say right('incorrect, ' y'='ans, 50)
+0140 end   /*guesses*/
+0141 
+0142 say;      say center('┌─────────────────────┐', 79)
+0143 say center('│                     │', 79)
+0144 say center('│  congratulations !  │', 79)
+0145 say center('│                     │', 79)
+0146 say center('└─────────────────────┘', 79)
+0147 say
+0148 exit                                             /*stick a fork in it,  we're all done. */
+0149 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0150 countchars: procedure; arg x,c                   /*count of characters in  X.           */
+0151 return length(x) - length( space( translate(x, ,c ),  0) )
+0152 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0153 ranger: parse arg ssss,ffff                      /*parse args passed to this sub.       */
+0154 ffff= p(ffff ssss)                       /*create a   FFFF   if necessary.      */
+0155 do g=ssss  to ffff                 /*process possible range of values.    */
+0156 if pos(0, g)\==0  then iterate     /*ignore any   G   with zeroes.        */
+0157 sols= solve(g);  wols= sols
+0158 if sols==0  then wols= 'No'        /*un-geek number of solutions (if any).*/
+0159 if negatory & sols\==0  then wols='A'   /*found only the first solution?  */
+0160 say
+0161 say wols   'solution's(sols)    "found for"    g
+0162 if ??\==24  then say  'for answers that equal'    ??
+0163 end
+0164 return
+0165 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0166 solve: parse arg qqqq;   finds= 0                /*parse args passed to this sub.       */
+0167 if \validate(qqqq)  then return -1
+0168 parse value '( (( )) )' with L LL RR R           /*assign some static variables.        */
+0169 nq.= 0
+0170 do jq=1  for 4;  _= substr(qqqq,jq,1) /*count the number of each digit.      */
+0171 nq._= nq._ + 1
+0172 end   /*jq*/
+0173 
+0174 do gggg=1111  to 9999
+0175 if pos(0, gggg)\==0        then iterate        /*ignore values with zeroes.           */
+0176 if verify(gggg, qqqq)\==0  then iterate
+0177 if verify(qqqq, gggg)\==0  then iterate
+0178 ng.= 0
+0179 do jg=1  for 4;  _= substr(gggg, jg, 1) /*count the number of each digit.      */
+0180 g.jg= _;         ng._= ng._ + 1
+0181 end   /*jg*/
+0182 do kg=1  for 9         /*verify each number has same # digits.*/
+0183 if nq.kg\==ng.kg  then iterate gggg
+0184 end   /*kg*/
+0185 do i    =1  for ops                          /*insert operator after 1st numeral.   */
+0186 do j  =1  for ops                          /*  "        "      "   2nd    "       */
+0187 do k=1  for ops                          /*  "        "      "   3rd    "       */
+0188 do m=0  for 10;       !.=              /*nullify all grouping symbols (parens)*/
+0189 select
+0190 when m==1  then do; !.1=L;           !.3=R;                                end
+0191 when m==2  then do; !.1=L;                              !.5=R;             end
+0192 when m==3  then do; !.1=L;           !.3=R;   !.4=L;              !.6=R;   end
+0193 when m==4  then do; !.1=L;   !.2=L;                               !.6=RR;  end
+0194 when m==5  then do; !.1=LL;                             !.5=R;    !.6=R;   end
+0195 when m==6  then do;          !.2=L;                     !.5=R;             end
+0196 when m==7  then do;          !.2=L;                               !.6=R;   end
+0197 when m==8  then do;          !.2=L;           !.4=L;              !.6=RR;  end
+0198 when m==9  then do;          !.2=LL;                    !.5=R;    !.6=R;   end
+0199 otherwise  nop
+0200 end   /*select*/
+0201 
+0202 e= space(!.1 g.1 o.i      !.2 g.2 !.3 o.j      !.4 g.3 !.5 o.k       g.4 !.6, 0)
+0203 if x.e  then iterate                   /*was the expression already used?     */
+0204 x.e= 1                                 /*mark this expression as being used.  */
+0205 /*(below)  change the expression:   /(yyy)  ===>  /div(yyy)   */
+0206 origE= e                               /*keep original version for the display*/
+0207 pd= pos('/(', e)                       /*find pos of     /(      in  E.       */
+0208 if pd\==0  then do                     /*Found?  Might have possible ÷ by zero*/
+0209 eo= e
+0210 lr= lastpos(')', e)    /*find last right )   */
+0211 lm= pos('-', e, pd+1)  /*find  -  after  (   */
+0212 if lm>pd & lm<lr  then e= changestr('/(',e,"/div(")   /*change*/
+0213 if eo\==e then if x.e  then iterate /*expression already used?*/
+0214 x.e= 1                 /*mark this expression as being used.  */
+0215 end
+0216 interpret 'x=('   e   ") / 1"          /*have REXX do the heavy lifting here. */
+0217 if x\==??  then do                     /*Not correct?   Then try again.       */
+0218 numeric digits 9;    x= x / 1              /*re-do evaluation.*/
+0219 numeric digits 12                          /*re-instate digits*/
+0220 if x\==?? then iterate /*Not correct?   Then try again.       */
+0221 end
+0222 finds= finds + 1                       /*bump number of found solutions.      */
+0223 if \show | negatory  then return finds
+0224 _= translate(origE, '][', ")(")                        /*show  [],  not  ().  */
+0225 if show  then say indent   'a solution for'  g':'  ??"="  _   /*show solution.*/
+0226 end     /*m*/
+0227 end       /*k*/
+0228 end         /*j*/
+0229 end           /*i*/
+0230 end             /*gggg*/
+0231 return finds
+0232 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0233 sortc: procedure;  arg nnnn;   L= length(nnnn)    /*sorts the chars NNNN                */
+0234 do i=1  for L                       /*build array of digs from  NNNN,     */
+0235 a.i= substr(nnnn, i, 1)             /*enabling SORT to sort an array.     */
+0236 end   /*i*/
+0237 
+0238 do j=1  for L                       /*very simple sort, it's a small array*/
+0239 _= a.j
+0240 do k=j+1  to L
+0241 if a.k<_  then  do;   a.j= a.k;     a.k= _;     _= a.k;    end
+0242 end   /*k*/
+0243 end   /*j*/
+0244 v= a.1
+0245 do m=2  to L;  v= v || a.m /*build a string of digs from  A.m    */
+0246 end   /*m*/
+0247 return v
+0248 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0249 validate: parse arg y;     errCode= 0;       _v= verify(y, digs)
+0250 select
+0251 when y==''         then call ger 'no digits entered.'
+0252 when length(y)<4   then call ger 'not enough digits entered, must be 4'
+0253 when length(y)>4   then call ger 'too many digits entered, must be 4'
+0254 when pos(0,y)\==0  then call ger "can't use the digit  0 (zero)"
+0255 when _v\==0        then call ger 'illegal character:' substr(y,_v,1)
+0256 otherwise               nop
+0257 end   /*select*/
+0258 return \errCode
+0259 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0260 div:  procedure; parse arg q; if q=0  then q=1e9; return q  /*tests if dividing by zero.*/
+0261 ger:  say= '***error*** for argument:'  y;      say arg(1);      errCode= 1;      return 0
+0262 p:    return word( arg(1), 1)
+0263 s:    if arg(1)==1  then return arg(3);           return word( arg(2) 's', 1)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 q                260 260
+002 errCode          261
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @abcu            -> newV1            64
+002 @abc             -> newV2            63
+003 ??               -> newV3            52 61 62
+004 _v               -> newV4            100 249
+005 _d               -> newV5            129
+006 !.               -> newV6.           188 190 190 191 191 192 192 192 192 193 193 193 194 194 194 195 195 196 196 197 197 197 198 198 198
+007 _                -> newV7            84 92 125 170 179 224 239 241

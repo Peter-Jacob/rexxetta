@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX program determines  if  a list < previous list,   and returns   true  or  false. */
+0002 @.=;                    @.1 = 1 2 1 5 2
+0003 @.2 = 1 2 1 5 2 2
+0004 @.3 = 1 2 3 4 5
+0005 @.4 = 1 2 3 4 5
+0006 /* [↓]  compare a list to previous list*/
+0007 do j=2  while  @.j\=='';      p= j - 1  /*P:  points to previous value in list.*/
+0008 if FNorder(@.p, @.j)=='true'  then is= " < "       /*use a more familiar glyph.*/
+0009 else is= " ≥ "       /* "  "   "      "      "   */
+0010 say
+0011 say right('['@.p"]", 40)  is  '['@.j"]"
+0012 end   /*i*/
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 FNorder: procedure;  parse arg x,y
+0016 wx= words(x);     wy= words(y)
+0017 do k=1  for min(wx, wy)
+0018 a= word(x, k)         /*get a value from X. */
+0019 b= word(y, k)         /* "  "   "     "  Y. */
+0020 if a<b  then                return 'true'
+0021 else  if a>b  then  return 'false'
+0022 end   /*k*/
+0023 if wx<wy  then return 'true'                  /*handle case of equal (so far). */
+0024 return 'false'                 /*   "     "   "   "     "   "   */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                15
+002 y                15
+003 wx               16
+004 wy               16
+005 k                17
+006 a                18
+007 b                19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 2 3 4 5

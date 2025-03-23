@@ -1,0 +1,59 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program shows unique positive integers for ────────── aⁿ+bⁿ+cⁿ+dⁿ==xⁿ  where n=5 */
+0002 numeric digits 1000                              /*ensure enough decimal digs for powers*/
+0003 parse arg N oFID .                               /*obtain optional arguments from the CL*/
+0004 if N=='' | N==","  then N= 200                   /*Not specified?  Then use the default.*/
+0005 if oFID==''|oFID==","  then oFID= 'EULERSUM.OUT' /* "      "         "   "   "     "    */
+0006 tell= N>=0                                       /*if N is ≥ 0, show output to terminal.*/
+0007 N= abs(N)                                        /*use the absolute value of  N.        */
+0008 a.1=  27  ;   a.2=    55   /*the   A   values for the two sets.   */
+0009 b.1=  84  ;   b.2=  3183   /* "    B      "    "   "   "    "     */
+0010 c.1= 110  ;   c.2= 28969   /* "    C      "    "   "   "    "     */
+0011 d.1= 133  ;   d.2= 85282   /* "    D      "    "   "   "    "     */
+0012 x.1= 144  ;   x.2= 85359   /* "    X      "    "   "   "    "     */
+0013 w= length( commas(N * x.2) )                     /*W:  used to align displayed numbers. */
+0014 $= center(' 'subword( sourceLine(1), 9, 3)" ", 70 +5*w, '─')           /*create a title.*/
+0015 call show                                        /*show a title  (from 1st line of pgm).*/
+0016 pad= left('',5)                                  /*used for padding (spacing) the output*/
+0017 oo= 1;   tt= 1                                   /*a counter for the  A.1  &  A.2  sets.*/
+0018 #= 0                                             /*count of number of solutions so far. */
+0019 do j=1  until #>N                         /*step through the possible solutions. */
+0020 one= a.1 * oo                             /*calculate the 1st set's  A.1  value. */
+0021 two= a.2 * tt                             /*    "      "  2nd   "    A.2    "    */
+0022 use= min(one, two)                        /*pick which "set" that is to be used. */
+0023 #= # + 1                                  /*bump counter for number of solutions.*/
+0024 if one==use  then do;      mult=oo;      oo= oo + 1;      which= 1;      end
+0025 if two==use  then do;      mult=tt;      tt= tt + 1;      which= 2;      end
+0026 $= pad  'solution'  right(#,length(N))":  "  'a='right( commas(a.which * mult), w),
+0027 pad     'b='right( commas(b.which * mult), w),
+0028 pad     'c='right( commas(c.which * mult), w),
+0029 pad     'd='right( commas(d.which * mult), w),
+0030 pad     'x='right( commas(x.which * mult), w)
+0031 call show                                 /*write; maybe show output to terminal.*/
+0032 res= (x.which * mult) **5                 /*compute the sum of the  right  side. */
+0033 sum= (a.which * mult) **5   +   ,         /*   "     "   "   "  "    left    "   */
+0034 (b.which * mult) **5   +   ,
+0035 (c.which * mult) **5   +   ,
+0036 (d.which * mult) **5
+0037 if sum==res  then iterate                 /*All is kosher?   Then keep truckin'. */
+0038 $= "***error*** the left side sum   doesn't   equal the right side result (X**5)."
+0039 tell=1;  call show;  exit 13              /*force telling of error to terminal.  */
+0040 end   /*j*/
+0041 tell=1;                                                                          call show
+0042 $= pad ' Showed '   commas(N)   " solutions,  output written to file: " oFID;    call show
+0043 exit                                             /*stick a fork in it,  we're all done. */
+0044 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0045 commas: parse arg _;  do jc=length(_)-3  to 1  by -3; _=insert(',', _, jc); end;  return _
+0046 show:   if tell  then say $;  call lineout oFID, $;  $=;  return  /*show and/or write it*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 jc               45
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            14 26 38 42 46
+002 #                -> newV2            18 23
+003 _                -> newV3            45 45

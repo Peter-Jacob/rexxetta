@@ -1,0 +1,71 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 09.02.2014 Walter Pachl
+0003 * 22.02.2014 WP fix 'accounting' problem (courtesy GS)
+0004 *--------------------------------------------------------------------*/
+0005 c.=1
+0006 Numeric Digits 100
+0007 limit=200
+0008 pl=''
+0009 mmm=0
+0010 Do p=3 To limit
+0011 pm1=p-1
+0012 c.p.1=1
+0013 c.p.p=1
+0014 Do j=2 To p-1
+0015 jm1=j-1
+0016 c.p.j=c.pm1.jm1+c.pm1.j
+0017 mmm=max(mmm,c.p.j)
+0018 End
+0019 End
+0020 Say '(x-1)**0 = 1'
+0021 do i=2 To limit
+0022 im1=i-1
+0023 sign='+'
+0024 ol='(x-1)^'im1 '='
+0025 Do j=i to 2 by -1
+0026 If j=2 Then
+0027 term='x  '
+0028 Else
+0029 term='x^'||(j-1)
+0030 If j=i Then
+0031 ol=ol term
+0032 Else
+0033 ol=ol sign c.i.j'*'term
+0034 sign=translate(sign,'+-','-+')
+0035 End
+0036 If i<10 then
+0037 Say ol sign 1
+0038 Do j=2 To i-1
+0039 If c.i.j//(i-1)>0 Then
+0040 Leave
+0041 End
+0042 If j>i-1 Then
+0043 pl=pl (i-1)
+0044 End
+0045 Say ' '
+0046 Say 'Primes:' subword(pl,2,27)
+0047 Say '       ' subword(pl,29)
+0048 Say 'Largest coefficient:' mmm
+0049 Say 'This has' length(mmm) 'digits'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 c.               5 12 13 16
+002 limit            7
+003 pl               8 43
+004 mmm              9 17
+005 p                10
+006 pm1              11
+007 j                14 25 38
+008 jm1              15
+009 i                21
+010 im1              22
+011 sign             23 34
+012 ol               24 31 33
+013 term             27 29
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

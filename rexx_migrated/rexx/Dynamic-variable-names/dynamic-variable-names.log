@@ -1,0 +1,18 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates the use of dynamic variable names & setting a val.*/
+0002 parse arg newVar newValue
+0003 say 'Arguments as they were entered via the command line: '   newVar    newValue
+0004 say
+0005 call value newVar, newValue
+0006 say 'The newly assigned value (as per the VALUE bif)------' newVar value(newVar)
+0007 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 newVar           2
+002 newValue         2
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

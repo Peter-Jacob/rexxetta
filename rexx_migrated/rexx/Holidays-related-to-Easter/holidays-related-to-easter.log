@@ -1,0 +1,99 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /* REXX **********************************************************************************
+0002 * Test frame for computing Christian (Roman Catholic) holidays, related to Easter
+0003 * 16.04.2013 Walter Pachl
+0004 * 08.03.2021 -"- extended range of years and indicate Roman Catholic use
+0005 *****************************************************************************************/
+0006 oid='ee.txt'; 'erase' oid
+0007 
+0008 month.3='Mar'; days.3=31
+0009 month.4='Apr'; days.4=30
+0010 month.5='May'; days.5=31
+0011 month.6='Jun'; days.6=30
+0012 Call o 'Christian holidays, related to Easter, for each centennial',
+0013 'from 400 to 2200 CE:'
+0014 Do y=400 To 2200 By 100
+0015 Call line y
+0016 End
+0017 Call o ' '
+0018 Call o 'Christian holidays, related to Easter, for years',
+0019 'from 2010 to 2030 CE:'
+0020 Do y=2010 To 2030
+0021 Call line y
+0022 End
+0023 Exit
+0024 
+0025 line: Parse Arg y
+0026 Parse Value easter(y) With y m d
+0027 Parse Value add(d,m,39) With ad am
+0028 Parse Value add(ad,am,10) With pd pm
+0029 Parse Value add(pd,pm,7) With td tm
+0030 Parse Value add(td,tm,4) With cd cm
+0031 ol=right(y,4) 'Easter:' right(d,2) month.m
+0032 ol=ol'  Ascension:' right(ad,2) month.am ' Pentecost:' right(pd,2) month.pm
+0033 ol=ol'  Trinity:' right(td,2) month.tm'  Corpus:' right(cd,2) month.cm
+0034 Call o ol
+0035 Return
+0036 
+0037 o: Return lineout(oid,arg(1))
+0038 
+0039 add: Procedure Expose days.
+0040 Parse Arg d,m,dd
+0041 res=d+dd
+0042 Do While res>days.m
+0043 res=res-days.m
+0044 m=m+1
+0045 End
+0046 Return res m
+0047 
+0048 easter: Procedure
+0049 /***********************************************************
+0050 * translated from FORTRAN (mod -> //; / -> %)
+0051 * Input  year
+0052 * Output year month day of Easter Sunday
+0053 * 16.04.2013 Walter Pachl
+0054 c See:
+0055 c Jean Meeus, "Astronomical Formulae for Calculators",
+0056 c 4th edition, Willmann-Bell, 1988, p.31
+0057 *********************************************************/
+0058 Parse Arg year
+0059 a=year//19
+0060 b=year%100
+0061 c=year//100
+0062 d=b%4
+0063 e=b//4
+0064 f=(b+8)%25
+0065 g=(b-f+1)%3
+0066 h=(19*a+b-d-g+15)//30
+0067 i=c%4
+0068 k=c//4
+0069 l=(32+2*e+2*i-h-k)//7
+0070 m=(a+11*h+22*l)%451
+0071 n=h+l-7*m+114
+0072 month=n%31
+0073 day=n//31+1
+0074 Return year month day
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 year             58
+002 a                59
+003 b                60
+004 c                61
+005 d                62
+006 e                63
+007 f                64
+008 g                65
+009 h                66
+010 i                67
+011 k                68
+012 l                69
+013 m                70
+014 n                71
+015 month            72
+016 day              73
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

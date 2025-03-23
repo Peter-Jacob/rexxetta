@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program does a  "perfect shuffle"  for a number of  even  numbered  decks.       */
+0002 parse arg X                                      /*optional list of test cases from C.L.*/
+0003 if X=''  then X=8 24 52 100 1020 1024 10000      /*Not specified?  Use default.*/
+0004 w=length(word(X, words(X)))                      /*used for right─aligning the numbers. */
+0005 
+0006 do j=1  for words(X);  y=word(X,j)           /*use numbers in the test suite (list).*/
+0007 
+0008 do k=1  for y;       @.k=k;       end      /*generate a deck to be shuffled (used)*/
+0009 do t=1  until eq();  call magic;  end      /*shuffle until  before  equals  after.*/
+0010 
+0011 say 'deck size:'    right(y,w)","       right(t,w)      'perfect shuffles.'
+0012 end     /*j*/
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 eq:           do ?=1  for y;    if @.?\==?  then return 0;    end;            return 1
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 magic: z=1;                     h=y%2                        /*H  is (half─way) pointer.*/
+0018 do L=3  by 2  for h-1; z=z+1; !.L=@.z; end     /*assign left half of deck.*/
+0019 do R=2  by 2  for h-1; h=h+1; !.R=@.h; end     /*   "   right  "   "   "  */
+0020 do a=2        for y-2;        @.a=!.a; end     /*re─assign──►original deck*/
+0021 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 X                2 3
+002 w                4
+003 j                6
+004 y                6
+005 k                8
+006 t                9
+007 h                17 19
+008 L                18
+009 z                18
+010 R                19
+011 a                20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           8 20
+002 !.               -> newV2.           18 19

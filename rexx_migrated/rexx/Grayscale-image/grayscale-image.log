@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program converts a  RGB (red─green─blue) image into a  grayscale/greyscale image.*/
+0002 blue= '00 00 ff'x                              /*define the blue color  (hexadecimal).*/
+0003 @.= blue                                     /*set the entire  image  to blue color.*/
+0004 width=  60                                      /* width of the   image  (in pixels).  */
+0005 height= 100                                      /*height  "  "      "      "   "       */
+0006 
+0007 do    col=1  for width
+0008 do row=1  for height                        /* [↓]  C2D  convert  char ───► decimal*/
+0009 r= left(@.col.row, 1)      ;     r= c2d(r)  /*extract the component red  & convert.*/
+0010 g= substr(@.col.row, 2, 1) ;     g= c2d(g)  /*   "     "      "    green "    "    */
+0011 b=  right(@.col.row, 1)    ;     b= c2d(b)  /*   "     "      "    blue  "    "    */
+0012 _= d2c( (.2126*r + .7152*g + .0722*b) % 1)  /*convert RGB number  ───►  grayscale. */
+0013 @.col.row= copies(_, 3)                     /*redefine old RGB    ───►  grayscale. */
+0014 end   /*row*/                               /* [↑]  D2C  convert  decimal ───► char*/
+0015 end      /*col*/                               /* [↑]  x%1   is the same as  TRUNC(x) */
+0016 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 blue             2
+002 width            4
+003 height           5
+004 col              7
+005 row              8
+006 r                9 9
+007 g                10 10
+008 b                11 11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           3 13
+002 _                -> newV2            12

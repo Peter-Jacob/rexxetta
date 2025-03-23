@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*REXX pgm illustrates how to code a list of words  (named chemical elements  */
+0002 /*──────────────────────── ordered by their atomic number)  in a list format. */
+0003 
+0004 $= 'hydrogen     helium        lithium     beryllium   boron        carbon'    ,
+0005 'nitrogen     oxygen        fluorine    neon        sodium       magnesium' ,
+0006 'aluminum     silicon       phosphorous sulfur      chlorine     argon'     ,
+0007 'potassium    calcium       scandium    titanium    vanadium     chromium'  ,
+0008 'manganese    iron          cobalt      nickel      copper       zinc'      ,
+0009 'gallium      germanium     arsenic     selenium    bromine      krypton'   ,
+0010 'rubidium     strontium     yttrium     zirconium   niobium      molybdenum',
+0011 'technetium   ruthenium     rhodium     palladium   silver       cadmium'   ,
+0012 'indium       tin           antimony    tellurium   iodine       xenon'     ,
+0013 'cesium       barium        lanthanum   cerium      praseodymium neodymium' ,
+0014 'promethium   samarium      europium    gadolinium  terbium      dysprosium',
+0015 'holmium      erbium        thulium     ytterbium   lutetium     hafnium'   ,
+0016 'tantalum     tungsten      rhenium     osmium      iridium      platinum'  ,
+0017 'gold         mercury       thallium    lead        bismuth      polonium'  ,
+0018 'astatine     radon         francium    radium      actinium     thorium'   ,
+0019 'protactinium uranium       neptunium   plutonium   americium    curium'    ,
+0020 'berkelium    californium   einsteinium fermium     mendelevium  nobelium'  ,
+0021 'lawrencium   rutherfordium dubnium     seaborgium  bohrium      hassium'   ,
+0022 'meitnerium   darmstadtium  roentgenium copernicium nihonium     flerovium' ,
+0023 'moscovium    livermorium   tennessine  oganesson'
+0024 
+0025 /* [↑]  element list using continuation  (commas).*/
+0026 
+0027 updated= 'February 29th, 2020'            /*date of the last revision of list.*/
+0028 say 'revision date of the list: ' updated /*show the date of the last update. */
+0029 elements= space($)                        /*elide excess  blanks   in the list*/
+0030 #= words(elements)                        /*the  number of elements "  "   "  */
+0031 say 'number of elements in the list: ' #  /*show   "     "    "     "  "   "  */
+0032 say 'the last element is: '    word($, #) /*stick a fork in it, we're all done*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 updated          27
+002 elements         29
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            4
+002 #                -> newV2            30

@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program tests a  number  and also a  range for  hailstone  (Collatz)  sequences. */
+0002 !.=0;     !.0=1;  !.2=1;  !.4=1;  !.6=1;  !.8=1  /*assign even numerals to be  "true".  */
+0003 numeric digits 20;  @.= 0                        /*handle big numbers; initialize array.*/
+0004 parse arg x y z .;  !.h= y                       /*get optional arguments from the C.L. */
+0005 if x=='' | x==","   then x=     27               /*No  1st  argument?  Then use default.*/
+0006 if y=='' | y==","   then y= 100000 - 1           /* "  2nd      "        "   "     "    */
+0007 if z=='' | z==","   then z=     12               /*head/tail number?     "   "     "    */
+0008 hm= max(y, 500000)                               /*use memoization (maximum num for  @.)*/
+0009 $= hailstone(x)     /*▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒task 1▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒*/
+0010 say  x   ' has a hailstone sequence of '       words($)
+0011 say      '    and starts with: '               subword($, 1, z)    " ∙∙∙"
+0012 say      '    and  ends  with:  ∙∙∙'           subword($, max(z+1, words($)-z+1))
+0013 if y==0  then exit  /*▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒task 2▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒*/
+0014 say
+0015 w= 0;        do j=1  for y;  $= hailstone(j)     /*traipse through the range of numbers.*/
+0016 #hs= words($)                       /*find the length of the hailstone seq.*/
+0017 if #hs<=w  then iterate             /*Not big enough?  Then keep traipsing.*/
+0018 bigJ= j;   w= #hs                   /*remember what # has biggest hailstone*/
+0019 end   /*j*/
+0020 say '(between 1 ──►'   y") "      bigJ     ' has the longest hailstone sequence: '   w
+0021 exit                                             /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 hailstone: procedure expose @. !. hm;  parse arg n 1 s 1 o,@.1  /*N,S,O: are the 1st arg*/
+0024 do  while @.n==0             /*loop while the residual is unknown.  */
+0025 parse var  n  ''  -1  L      /*extract the last decimal digit of  N.*/
+0026 if !.L  then n= n % 2        /*N is even?   Then calculate  fast ÷  */
+0027 else n= n * 3  +  1  /*"  " odd ?     "      "      3*n + 1 */
+0028 s= s n                       /* [↑]  %: is the REXX integer division*/
+0029 end   /*while*/              /* [↑]  append  N  to the sequence list*/
+0030 s= s @.n                              /*append the number to a sequence list.*/
+0031 @.o= subword(s, 2);   parse var s _ r /*use memoization for this hailstone #.*/
+0032 do  while r\=='';  parse var r _ r /*obtain the next  hailstone sequence. */
+0033 if @._\==0  then leave             /*Was number already found?  Return  S.*/
+0034 if _>hm     then iterate           /*Is  number  out of range?  Ignore it.*/
+0035 @._= r                             /*assign subsequence number to array.  */
+0036 end   /*while*/;         return s
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 r                32 32
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #hs              -> newV1            16
+002 !.               -> newV2.           2 2 2 2 2 2 4
+003 @.               -> newV3.           3 23 31 35
+004 $                -> newV4            9 15
+005 _                -> newV5            31 32

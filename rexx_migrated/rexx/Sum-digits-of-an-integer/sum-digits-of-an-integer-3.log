@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program  sums  the  decimal digits  of  integers  expressed in base ten.         */
+0002 parse arg z                                      /*obtain optional argument from the CL.*/
+0003 if z='' | z=","  then z=copies(7, 108)           /*let's generate a pretty huge integer.*/
+0004 numeric digits 1 + max( length(z) )              /*enable use of gigantic numbers.      */
+0005 
+0006 do j=1  for words(z);    _=abs(word(z, j))  /*ignore any leading sign,  if present.*/
+0007 say sumDigs(_)      ' is the sum of the digits for the number '    _
+0008 end   /*j*/
+0009 exit                                             /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 sumDigs: procedure;  parse arg N 1 $ 2 ?         /*use first decimal digit for the sum. */
+0012 do  while ?\=='';  parse var ? _ 2 ?;  $=$+_;  end  /*while*/
+0013 return $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            6 12
+002 $                -> newV2            11 12
+003 ?                -> newV3            11 12 12

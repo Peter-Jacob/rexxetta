@@ -1,0 +1,67 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX pgm finds the Nth value of the  Calkin─Wilf  sequence (which will be a fraction),*/
+0002 /*────────────────────── or finds which sequence number contains a specified fraction). */
+0003 numeric digits 2000                              /*be able to handle ginormic integers. */
+0004 parse arg LO HI te .                             /*obtain optional arguments from the CL*/
+0005 if LO=='' | LO==","   then LO=  1                /*Not specified?  Then use the default.*/
+0006 if HI=='' | HI==","   then HI= 20                /* "      "         "   "   "     "    */
+0007 if te=='' | te==","   then te= '/'               /* "      "         "   "   "     "    */
+0008 if datatype(LO, 'W')  then call CW_terms         /*Is LO numeric?  Then show some terms.*/
+0009 if pos('/', te)>0     then call CW_frac  te      /*Does TE have a / ?   Then find term #*/
+0010 exit 0
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+0013 th:     parse arg th; return word('th st nd rd', 1+(th//10) *(th//100%10\==1) *(th//10<4))
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 CW_frac:   procedure; parse arg p '/' q .;       say
+0016 if q==''  then do;  p= 83116;         q= 51639;  end
+0017 n= rle2dec( frac2cf(p q) );                    @CWS= 'the Calkin─Wilf sequence'
+0018 say 'for '  p"/"q',  the element number for'   @CWS    "is: "    commas(n)th(n)
+0019 if length(n)<10  then return
+0020 say;  say 'The above number has '     commas(length(n))      " decimal digits."
+0021 return
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 CW_term:   procedure;  parse arg z;                 dd= 1;               nn= 0
+0024 do z
+0025 parse value  dd  dd*(2*(nn%dd)+1)-nn   with  nn  dd
+0026 end   /*z*/
+0027 return nn'/'dd
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 CW_terms:  $=;        if LO\==0  then  do j=LO  to HI;   $= $  CW_term(j)','
+0030 end   /*j*/
+0031 if $==''  then return
+0032 say 'Calkin─Wilf sequence terms for '  commas(LO)  " ──► "  commas(HI)  ' are:'
+0033 say strip( strip($), 'T', ",")
+0034 return
+0035 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0036 frac2cf:   procedure;  parse arg p q;  if q==''  then return p;          cf= p % q;   m= q
+0037 p= p - cf*q;                n= p;        if p==0  then return cf
+0038 do k=1  until n==0;        @.k= m % n
+0039 m= m  -  @.k * n;    parse value  n m   with   m n   /*swap N M*/
+0040 end   /*k*/
+0041 /*for inverse Calkin─Wilf, K must be even.*/
+0042 if k//2  then do;  @.k= @.k - 1;   k= k + 1;    @.k= 1;   end
+0043 do k=1  for k;       cf= cf @.k;            end  /*k*/
+0044 return cf
+0045 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0046 rle2dec:   procedure;  parse arg f1 rle;                       obin= copies(1, f1)
+0047 do until rle=='';               parse var rle f0 f1 rle
+0048 obin= copies(1, f1)copies(0, f0)obin
+0049 end   /*until*/
+0050 return x2d( b2x(obin) )            /*RLE2DEC: Run Length Encoding ──► decimal*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 rle              47 47
+002 f0               47
+003 f1               47
+004 obin             48
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @CWS             -> newV1            17
+002 @.               -> newV2.           38 42 42
+003 ?                -> newV3            12 12
+004 $                -> newV4            29

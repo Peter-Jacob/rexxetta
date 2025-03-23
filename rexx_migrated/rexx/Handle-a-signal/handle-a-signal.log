@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program displays integers until a   Ctrl─C  is pressed, then shows the number of */
+0002 /*────────────────────────────────── seconds that have elapsed since start of execution.*/
+0003 call time 'Reset'                                /*reset the REXX elapsed timer.        */
+0004 signal on halt                                   /*HALT: signaled via a  Ctrl─C  in DOS.*/
+0005 
+0006 do j=1                                        /*start with  unity  and go ye forth.  */
+0007 say right(j,20)                               /*display the integer right-justified. */
+0008 t=time('E')                                   /*get the REXX elapsed time in seconds.*/
+0009 do forever;   u=time('Elapsed')  /* "   "    "     "      "   "    "    */
+0010 if u<t | u>t+.5  then iterate j  /* ◄═══ passed midnight or  ½  second. */
+0011 end   /*forever*/
+0012 end   /*j*/
+0013 
+0014 halt: say  'program HALTed, it ran for'   format(time("ELapsed"),,2)     'seconds.'
+0015 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                6
+002 t                8
+003 u                9
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

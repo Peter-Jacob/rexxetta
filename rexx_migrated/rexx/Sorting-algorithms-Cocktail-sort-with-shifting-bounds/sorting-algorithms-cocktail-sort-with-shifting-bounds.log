@@ -1,0 +1,78 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program sorts an array using the   cocktail─sort   method  with shifting bounds. */
+0002 call gen                                         /*generate some array elements.        */
+0003 call show  'before sort'                         /*show  unsorted  array elements.      */
+0004 say copies('█', 101)                        /*show a separator line  (a fence).    */
+0005 call cocktailSort  #                             /*invoke the cocktail sort subroutine. */
+0006 call show  ' after sort'                         /*show    sorted  array elements.      */
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 cocktailSort: procedure expose @.;    parse arg N             /*N:  is number of items. */
+0010 end$= N - 1;     beg$= 1
+0011 do while beg$ <= end$
+0012 beg$$= end$;               end$$= beg$
+0013 do j=beg$ to end$;                   jp= j + 1
+0014 if @.j>@.jp  then do;  _=@.j;  @.j=@.jp;  @.jp=_;  end$$=j;  end
+0015 end   /*j*/
+0016 end$= end$$ - 1
+0017 do k=end$  to beg$  by -1;           kp= k + 1
+0018 if @.k>@.kp  then do;  _=@.k;  @.k=@.kp;  @.kp=_;  beg$$=k;  end
+0019 end   /*k*/
+0020 beg$= beg$$ + 1
+0021 end      /*while*/
+0022 return
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 gen: @.=                                        /*assign a default value for the stem. */
+0025 @.1 = '---the 22 card tarot deck (larger deck has 56 additional cards in 4 suits)---'
+0026 @.2 = '==========symbol====================pip======================================'
+0027 @.3 = 'the juggler                  ◄───     I'
+0028 @.4 = 'the high priestess  [Popess] ◄───    II'
+0029 @.5 = 'the empress                  ◄───   III'
+0030 @.6 = 'the emperor                  ◄───    IV'
+0031 @.7 = 'the hierophant  [Pope]       ◄───     V'
+0032 @.8 = 'the lovers                   ◄───    VI'
+0033 @.9 = 'the chariot                  ◄───   VII'
+0034 @.10= 'justice                      ◄───  VIII'
+0035 @.11= 'the hermit                   ◄───    IX'
+0036 @.12= 'fortune  [the wheel of]      ◄───     X'
+0037 @.13= 'strength                     ◄───    XI'
+0038 @.14= 'the hanging man              ◄───   XII'
+0039 @.15= 'death  [often unlabeled]     ◄───  XIII'
+0040 @.16= 'temperance                   ◄───   XIV'
+0041 @.17= 'the devil                    ◄───    XV'
+0042 @.18= 'lightning  [the tower]       ◄───   XVI'
+0043 @.18= 'the stars                    ◄───  XVII'
+0044 @.20= 'the moon                     ◄─── XVIII'
+0045 @.21= 'the sun                      ◄───   XIX'
+0046 @.22= 'judgment                     ◄───    XX'
+0047 @.23= 'the world                    ◄───   XXI'
+0048 @.24= 'the fool  [often unnumbered] ◄───  XXII'
+0049 
+0050 do #= 1  until @.#==''; end;  #= #-1 /*find how many entries in the array.  */
+0051 return                                      /* [↑]  adjust for DO loop advancement.*/
+0052 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0053 show: w= length(#);               do j=1  for #      /*#:  is the number of items in @. */
+0054 say 'element'    right(j, w)     arg(1)":"    @.j
+0055 end   /*j*/        /*     ↑                           */
+0056 return                                         /*     └─────max width of any line.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                9
+002 end$             10 16
+003 beg$             10 20
+004 while            11
+005 beg$$            12 18
+006 end$$            12 14
+007 j                13 53
+008 jp               13
+009 k                17
+010 kp               17
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           14 14 18 18 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
+002 _                -> newV2            14 18
+003 #                -> newV3            50 50

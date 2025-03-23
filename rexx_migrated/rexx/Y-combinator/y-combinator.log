@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:36
+-------------------------------------------------------------------------
+0001 /*REXX program implements and displays  a  stateless   Y   combinator.                  */
+0002 numeric digits 1000                                               /*allow big numbers.  */
+0003 say '    fib'   Y(fib      (50) )                                 /*Fibonacci series.   */
+0004 say '    fib'   Y(fib      (12 11 10 9 8 7 6 5 4 3 2 1 0)  )      /*Fibonacci series.   */
+0005 say '   fact'   Y(fact     (60) )                                 /*single    factorial.*/
+0006 say '   fact'   Y(fact     (0 1 2 3 4 5 6 7 8 9 10 11) )          /*single    factorial.*/
+0007 say '  Dfact'   Y(dfact    (4 5 6 7 8 9 10 11 12 13)   )          /*double    factorial.*/
+0008 say '  Tfact'   Y(tfact    (4 5 6 7 8 9 10 11 12 13)   )          /*triple    factorial.*/
+0009 say '  Qfact'   Y(qfact    (4 5 6 7 8 40) )                       /*quadruple factorial.*/
+0010 say ' length'   Y(length   (when for to where whenceforth) )      /*lengths   of words. */
+0011 say 'reverse'   Y(reverse  (123 66188 3007 45.54 MAS I MA) )      /*reverses  strings.  */
+0012 say '   sign'   Y(sign     (-8 0 8) )                             /*sign of the numbers.*/
+0013 say '  trunc'   Y(trunc    (-7.0005 12 3.14159 6.4 78.999) )      /*truncates numbers.  */
+0014 say '    b2x'   Y(b2x      (1 10 11 100 1000 10000 11111 ) )      /*converts BIN──►HEX. */
+0015 say '    d2x'   Y(d2x      (8 9 10 11 12 88 89 90 91 6789) )      /*converts DEC──►HEX. */
+0016 say '    x2d'   Y(x2d      (8 9 10 11 12 88 89 90 91 6789) )      /*converts HEX──►DEC. */
+0017 exit 0                                           /*stick a fork in it,  we're all done. */
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 Y: parse arg Y _; $=; do j=1 for words(_); interpret '$=$' Y"("word(_,j)')'; end; return $
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 fib:   procedure; parse arg x;  if x<2  then return x;  s= 0;  a= 0;   b= 1
+0022 do j=2  to x;  s= a+b;  a= b;  b= s;  end;    return s
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 dfact: procedure; parse arg x;  != 1;    do j=x  to 2  by -2;   != !*j;   end;    return !
+0025 tfact: procedure; parse arg x;  != 1;    do j=x  to 2  by -3;   != !*j;   end;    return !
+0026 qfact: procedure; parse arg x;  != 1;    do j=x  to 2  by -4;   != !*j;   end;    return !
+0027 fact: procedure; parse arg x;  != 1;    do j=2  to x       ;   != !*j;   end;    return !
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                27
+002 j                27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            19
+002 $                -> newV2            19
+003 !                -> newV3            24 24 25 25 26 26 27 27

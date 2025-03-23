@@ -1,0 +1,109 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program implements a   PLAYFAIR cipher   (encryption  and  decryption).          */
+0002 @abc= 'abcdefghijklmnopqrstuvwxyz';  @abcU= @abc /*literals for  lower and upper  ABC's.*/
+0003 parse arg omit key  '('  text                    /*TEXT  is the phrase to be used.      */
+0004 oldKey= key                                      /*save the old key.                    */
+0005 if key =='' | key ==','    then do;       key= 'Playfair example.'
+0006 oldKey= key "   ◄───using the default."
+0007 end
+0008 if omit=='' | omit==','    then omit= 'J'        /*the  "omitted"  character string.    */
+0009 if text=''                 then text= 'Hide the gold in the tree stump!!'     /*default.*/
+0010 upper omit @abcU                                 /*uppercase OMIT characters & alphabet.*/
+0011 @cant= 'can''t contain the "OMIT" character: '  omit       /*literal used in error text.*/
+0012 @uchars= 'unique characters.'                    /*a literal used below in an error msg.*/
+0013 newKey = scrub(key, 1)                           /*scrub old cipher key  ──►  newKey    */
+0014 newText= scrub(text  )                           /*  "    "     text     ──►  newText   */
+0015 if newText==''             then call err 'TEXT is empty or has no letters.'
+0016 if length(omit)\==1        then call err 'OMIT letter must be only one letter.'
+0017 if \datatype(omit, 'M')    then call err 'OMIT letter must be a Latin alphabet letter.'
+0018 if pos(omit, newText)\==0  then call err 'TEXT'        @cant
+0019 if pos(omit, newKey) \==0  then call err 'cipher key'  @cant
+0020 fill= space( translate(@abcU, , omit),  0)       /*elide OMIT characters from alphabet. */
+0021 xx= 'X'                                          /*character used for double characters.*/
+0022 if omit==xx  then xx= 'Q'                        /*    "       "   "     "       "      */
+0023 if length(newKey)<3        then call err 'cipher key is too short, must be ≥ 3' @uchars
+0024 fill= space( translate(fill, , newKey), 0)       /*remove any cipher characters.        */
+0025 grid= newKey || fill                             /*only first  25  characters are used. */
+0026 say 'old cipher key: '  strip(oldKey)
+0027 say 'new cipher key: '  newKey
+0028 say '     omit char: '  omit
+0029 say '   double char: '  xx
+0030 say ' original text: '  strip(text)
+0031 padL= 14 + 2
+0032 call show 'cleansed', newText
+0033 #= 0                                             /*number of grid characters used.      */
+0034 do row   =1  for 5                      /*build array of individual cells.     */
+0035 do col=1  for 5;                 #= # + 1;       @.row.col= substr(grid, #, 1)
+0036 if row==1  then            @.0.col= @.1.col
+0037 if col==5  then do;        @.row.6= @.row.1;     @.row.0= @.row.5;    end
+0038 if row==5  then do;        @.6.col= @.1.col;     @.0.col= @.5.col;    end
+0039 end   /*col*/
+0040 end      /*row*/
+0041 pad = left('', padL)
+0042 padX= left('', padL, "═")'Playfair'
+0043 Lxx = translate(xx, @abc, @abcU)                 /* [↓]  lowercase of double character. */
+0044 LxxLxx= Lxx || Lxx                               /* [↓]  doubled version of  Lxx.       */
+0045 eText= .Playfair(newText, 1);          call show 'encrypted' , eText
+0046 pText= .Playfair(eText     );          call show 'plain'     , pText
+0047 qText= changestr(xx  || xx, pText, Lxx)          /*change doubled doublechar ──► single.*/
+0048 qText= changestr(Lxx || xx, qText, LxxLxx)       /*change  xx ──► lowercase dblCharacter*/
+0049 qText= space( translate( qText, , xx), 0)        /*remove character used for "doubles". */
+0050 upper qText                                      /*reinstate the use of upper characters*/
+0051 if length(qText)\==length(pText)  then call show 'possible',  qText
+0052 say ' original text: '  newText;       say       /*··· and also show the original text. */
+0053 if qtext==newText  then say padx 'encryption──► decryption──► encryption worked.'
+0054 exit                                             /*stick a fork in it,  we're all done. */
+0055 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0056 @@:    parse arg Xrow,Xcol;                         return  @.Xrow.Xcol
+0057 err:   say;   say '***error!***'  arg(1);           say;    exit 13
+0058 LR:    rowL= row(left(__, 1)); colL= _; rowR= row(right(__,1)); colR= _; return length(__)
+0059 row:   ?= pos(arg(1), grid);      _= (?-1) // 5  +  1;      return  (4+?) % 5
+0060 show:  arg ,y; say; say right(arg(1) 'text: ',padL) digram(y); say pad space(y, 0); return
+0061 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0062 .Playfair: arg T,encrypt;         i= -1;     if encrypt==1  then i= 1;          $=
+0063 do k=1  while  i==1;     _= substr(T, k, 1);     if _==' '  then leave
+0064 if _==substr(T, k+1, 1)  then T= left(T, k) || Lxx || substr(T, k + 1)
+0065 end     /*k*/
+0066 upper T
+0067 do j=1  by 2  to length(T);     __= strip( substr(T, j, 2) )
+0068 if LR()==1  then __= __ || xx;  call LR /*append X or Q char, rule 1*/
+0069 select                                                      /*rule*/
+0070 when rowL==rowR  then __= @@(rowL,   colL+i)@@(rowR,   colR+i) /*2*/
+0071 when colL==colR  then __= @@(rowL+i, colL  )@@(rowR+i, colR)   /*3*/
+0072 otherwise             __= @@(rowL,   colR  )@@(rowR,   colL)   /*4*/
+0073 end   /*select*/
+0074 $= $ || __
+0075 end     /*j*/
+0076 return $
+0077 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0078 digram: procedure; parse arg x,,$;          do j=1  by 2  to length(x)
+0079 $= $  ||  substr(x, j, 2)' '
+0080 end   /*j*/
+0081 return strip($)
+0082 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0083 scrub:  procedure; arg xxx,unique;    xxx= space(xxx, 0)      /*ARG capitalizes all args*/
+0084 $=;            do j=1  for length(xxx);    _= substr(xxx, j, 1)
+0085 if unique==1  then  if  pos(_, $)\==0  then iterate  /*is unique?*/
+0086 if datatype(_, 'M')  then $= $  ||  _  /*only use Latin letters. */
+0087 end   /*j*/
+0088 return $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                78
+002 j                78 84
+003 xxx              83
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @uchars          -> newV1            12
+002 @abcU            -> newV2            2
+003 @cant            -> newV3            11
+004 @abc             -> newV4            2
+005 @.               -> newV5.           35 36 37 37 38 38
+006 __               -> newV6            67 68
+007 #                -> newV7            33 35
+008 _                -> newV8            59 63 84
+009 $                -> newV9            62 74 78 79 84 86

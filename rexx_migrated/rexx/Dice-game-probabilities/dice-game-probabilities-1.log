@@ -1,0 +1,82 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 Numeric Digits 30
+0003 Call test '9 4 6 6'
+0004 Call test '5 10 6 7'
+0005 Exit
+0006 test:
+0007 Parse Arg w1 s1 w2 s2
+0008 plist1=pp(w1,s1)
+0009 p1.=0
+0010 Do x=w1 To w1*s1
+0011 Parse Var plist1 p1.x plist1
+0012 End
+0013 plist2=pp(w2,s2)
+0014 p2.=0
+0015 Do x=w2 To w2*s2
+0016 Parse Var plist2 p2.x plist2
+0017 End
+0018 p2low.=0
+0019 Do x=w1 To w1*s1
+0020 Do y=0 To x-1
+0021 p2low.x=p2low.x+p2.y
+0022 End
+0023 End
+0024 pwin1=0
+0025 Do x=w1 To w1*s1
+0026 pwin1=pwin1+p1.x*p2low.x
+0027 End
+0028 Say 'Player 1 has' w1 'dice with' s1 'sides each'
+0029 Say 'Player 2 has' w2 'dice with' s2 'sides each'
+0030 Say 'Probability for player 1 to win:' pwin1
+0031 Say ''
+0032 Return
+0033 
+0034 pp: Procedure
+0035 /*---------------------------------------------------------------------
+0036 * Compute and return the probabilities to get a sum x
+0037 * when throwing w dice each having s sides (marked from 1 to s)
+0038 *--------------------------------------------------------------------*/
+0039 Parse Arg w,s
+0040 str=''
+0041 cnt.=0
+0042 Do wi=1 To w
+0043 str=str||'Do v'wi'=1 To' s';'
+0044 End
+0045 str=str||'sum='
+0046 Do wi=1 To w-1
+0047 str=str||'v'wi'+'
+0048 End
+0049 str=str||'v'w';'
+0050 str=str||'cnt.'sum'=cnt.'sum'+1;'
+0051 Do wi=1 To w
+0052 str=str||'End;'
+0053 End
+0054 Interpret str
+0055 psum=0
+0056 Do x=0 To w*s
+0057 p.x=cnt.x/(s**w)
+0058 psum=psum+p.x
+0059 End
+0060 res=''
+0061 Do x=w To s*w
+0062 res=res p.x
+0063 End
+0064 Return res
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 w                39
+002 s                39
+003 str              40 43 45 47 49 50 52
+004 cnt.             41
+005 wi               42 46 51
+006 psum             55 58
+007 x                56 61
+008 p.               57
+009 res              60 62
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

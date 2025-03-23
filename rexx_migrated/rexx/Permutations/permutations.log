@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX pgm generates/displays all permutations of N different objects taken M at a time.*/
+0002 parse arg things bunch inbetweenChars names      /*obtain optional arguments from the CL*/
+0003 if things=='' | things==","  then things= 3      /*Not specified?  Then use the default.*/
+0004 if  bunch=='' |  bunch==","  then  bunch= things /* "      "         "   "   "     "    */
+0005 /* ╔════════════════════════════════════════════════════════════════╗ */
+0006 /* ║  inBetweenChars  (optional)   defaults to a  [null].           ║ */
+0007 /* ║           names  (optional)   defaults to digits (and letters).║ */
+0008 /* ╚════════════════════════════════════════════════════════════════╝ */
+0009 call permSets things, bunch, inBetweenChars, names
+0010 exit                                             /*stick a fork in it,  we're all done. */
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 p:        return word( arg(1), 1)                /*P  function (Pick first arg of many).*/
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 permSets: procedure; parse arg x,y,between,uSyms /*X    things taken    Y    at a time. */
+0015 @.=;       sep=                        /*X  can't be  >  length(@0abcs).      */
+0016 @abc  = 'abcdefghijklmnopqrstuvwxyz';     @abcU=  @abc;          upper @abcU
+0017 @abcS = @abcU || @abc;                    @0abcS= 123456789  ||  @abcS
+0018 
+0019 do k=1  for x                        /*build a list of permutation symbols. */
+0020 _= p(word(uSyms, k)  p(substr(@0abcS, k, 1) k) )    /*get/generate a symbol.*/
+0021 if length(_)\==1  then sep= '_'      /*if not 1st character,  then use sep. */
+0022 $.k= _                               /*append the character to symbol list. */
+0023 end   /*k*/
+0024 
+0025 if between==''  then between= sep      /*use the appropriate separator chars. */
+0026 call .permSet 1                        /*start with the  first  permutation.  */
+0027 return                                 /* [↓]  this is a recursive subroutine.*/
+0028 .permSet: procedure expose $. @. between x y;       parse arg ?
+0029 if ?>y  then do;  _= @.1;      do j=2  for y-1
+0030 _= _  ||  between  ||  @.j
+0031 end   /*j*/
+0032 say _
+0033 end
+0034 else do q=1  for x             /*build the  permutation  recursively. */
+0035 do k=1 for ?-1;  if @.k==$.q  then iterate q
+0036 end   /*k*/
+0037 @.?= $.q;         call .permSet ?+1
+0038 end     /*q*/
+0039 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                29
+002 k                35
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @0abcS           -> newV1            17
+002 @abcU            -> newV2            16
+003 @abcS            -> newV3            17
+004 @abc             -> newV4            16
+005 @.               -> newV5.           15 37
+006 $.               -> newV6.           22
+007 _                -> newV7            20 29 30
+008 ?                -> newV8            28

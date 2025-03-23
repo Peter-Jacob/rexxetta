@@ -1,0 +1,19 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:03
+-------------------------------------------------------------------------
+0001 /*REXX pgm solves the  100 doors  puzzle,  doing it the easy way by calculating squares.*/
+0002 parse arg doors .                                /*obtain the optional argument from CL.*/
+0003 if doors=='' | doors==","  then doors=100        /*not specified?  Then assume 100 doors*/
+0004 say 'After '          doors          " passes, the following doors are open:"
+0005 say
+0006 do #=1  while  #**2 <= doors           /*process easy pass─through  (squares).*/
+0007 say right(#**2, 20)                    /*add some indentation for the output. */
+0008 end   /*#*/                            /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 doors            2 3
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            6

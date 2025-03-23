@@ -1,0 +1,59 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX pgm computes/shows (integers),  D  that aren't possible for: a² + b² + c²  =  d² */
+0002 parse arg hi .                                   /*obtain optional argument from the CL.*/
+0003 if hi=='' | hi==","  then hi=2200                /*Not specified?  Then use the default.*/
+0004 high= hi * 3                                     /*D  can be three times the  HI  (max).*/
+0005 @.= .                                            /*array of integers  (≤ hi)    squared.*/
+0006 do s=1  for high;  _= s*s;  r._= s;  @.s=_ /*precompute squares and square roots. */
+0007 end  /*s*/
+0008 !.=                                              /*array of differences between squares.*/
+0009 do    c=1   for high;       cc = @.c       /*precompute possible differences.     */
+0010 do d=c+1  to high;       dif= @.d - cc  /*process  D  squared; calc differences*/
+0011 !.dif= !.dif cc                         /*add    CC    to the    !.DIF   list. */
+0012 end   /*d*/
+0013 end      /*c*/
+0014 d.=.                                             /*array of the possible solutions (D). */
+0015 do     a=1  for hi-2                       /*go hunting for solutions to equation.*/
+0016 do  b=a   to hi-1;        ab= @.a + @.b /*calculate sum of two  (A,B)  squares.*/
+0017 if !.ab==''  then iterate               /*Not a difference?   Then ignore it.  */
+0018 do n=1  for words(!.ab)              /*handle all ints that satisfy equation*/
+0019 abc= ab  +  word(!.ab, n)            /*add the  C²  integer  to  A²  +  B²  */
+0020 _= r.abc                             /*retrieve the square root  of  C²     */
+0021 d._=                                 /*mark the  D  integer as being found. */
+0022 end   /*n*/
+0023 end      /*b*/
+0024 end         /*a*/
+0025 say
+0026 say 'Not possible positive integers for   d ≤' hi "  using equation:  a² + b² + c²  =  d²"
+0027 say
+0028 $=                                               /* [↓]  find all the  "not possibles". */
+0029 do p=1  for hi;   if d.p==.  then $= $ p  /*Not possible? Then add it to the list*/
+0030 end   /*p*/                               /* [↓]  display list of not-possibles. */
+0031 say substr($, 2)                                 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 hi               2 3
+002 high             4
+003 s                6
+004 r.               6
+005 c                9
+006 cc               9
+007 d                10
+008 dif              10
+009 d.               14 21
+010 a                15
+011 b                16
+012 ab               16
+013 n                18
+014 abc              19
+015 p                29
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           5 6
+002 !.               -> newV2.           8 11
+003 _                -> newV3            6 20
+004 $                -> newV4            28 29

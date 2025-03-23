@@ -1,0 +1,68 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*REXX program counts the occurrences of all characters in a file,  and note that all   */
+0002 /* Latin alphabet letters are uppercased for also counting {Latin} letters (both cases).*/
+0003 /*════════════════════════════════════~~~~~~~~~~════════════════════════════════════════*/
+0004 abc = 'abcdefghijklmnopqrstuvwxyz'               /*define an (Latin or English) alphabet*/
+0005 abcU= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'               /*define an uppercase version of  [↑]. */
+0006 parse arg fileID .                               /*this last char isn't a middle dot: · */
+0007 if fileID==''  then fileID= 'JUNK.TXT'           /*¿none specified? Then use the default*/
+0008 totChars= 0;           totLetters= 0             /*count of all chars and of all letters*/
+0009 pad= left('',18);      pad9= left('', 18%2)      /*used for the indentations of output. */
+0010 @.= 0                                            /*wouldn't it be neat to use Θ instead?*/
+0011 do j=1  while lines(fileID)\==0             /*read the file 'til the cows come home*/
+0012 rec= linein(fileID)                         /*get a line/record from the input file*/
+0013 /* [↓]  process all characters in  REC.*/
+0014 do k=1  for length(rec)                   /*examine/count each of the characters.*/
+0015 totChars= totChars + 1                    /*bump count of number of characters.  */
+0016 c= substr(rec, k, 1);      @.c= @.c + 1   /*Peel off a character; bump its count.*/
+0017 if \datatype(c, 'M')  then iterate        /*Not a Latin letter?   Get next char.⌠*/
+0018 totLetters= totLetters + 1                /*bump the count for [Latin] letters. ⌡*/
+0019 upper c                                   /* ◄─────◄ uppercase a Latin character.*/
+0020 @..c= @..c + 1                            /*bump the  (Latin)  letter's count.   */
+0021 end   /*k*/                               /*no Greek glyphs:  αßΓπΣσµτΦΘΩδφε ··· */
+0022 end     /*j*/                               /*maybe we're ½ done by now, or mäÿbé ¬*/
+0023 LL= '(Latin) letter'   /*literal used for a  "SAY"  (below).  */
+0024 w= length(totChars)                              /*used for right─aligning the counts.  */
+0025 say 'file ─────'  fileId  "───── has"   j-1   'records and has'   totLetters LL"s.";   say
+0026 do L=0  for 256;    c= d2c(L)               /*display all none─zero letter counts. */
+0027 if @..c==0  then iterate                    /*Has a zero count? Then skip character*/
+0028 say pad9  LL' '    c    " (also" translate(c,abc,abcU)')  count:'      right(@..c, w)
+0029 end   /*L*/                                 /*we may be in a rut, but not a cañyon.*/
+0030 say                                              /*¡The old name for Eygpt was Æygpt!  _*/
+0031 say 'file ─────'    fileId     "───── has"     totChars     'characters.'          /* √ */
+0032 say                                              /*The name for « » chars is guillemets.*/
+0033 do #=0  for 256;    y= d2c(#)               /*display all none─zero char counts.   */
+0034 if @.y==0  then iterate                     /*¿Å zero count?  Then ignore character*/
+0035 c= d2c(#);               ch= c              /*C  is the character glyph of a char. */
+0036 if c<<' ' | #==255  then ch=                /*don't show some control characters.  */
+0037 if c==' '           then ch= 'blank'        /*show a blank's  {true}  name.        */
+0038 say pad right(ch, 5)         " ('"d2x(#,2)"'x  character count:"      right(@.c, w)
+0039 end   /*#*/                                 /*255 isn't quite ∞, but sometimes ∙∙∙ */
+0040 say                                              /*not a good place for dithering: ░▒▓█ */
+0041 say  pad   pad9   '☼ end─of─list ☼'              /*show we are at the end of the list.  */
+0042 /*§§§§ Talk about a mishmash of 2¢ comments. ▬▬^▬▬ stick a fork in it, we're all done. ☻*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 fileID           6 7
+002 totChars         8 15
+003 totLetters       8 18
+004 pad              9
+005 pad9             9
+006 j                11
+007 rec              12
+008 k                14
+009 c                16 26 35
+010 LL               23
+011 w                24
+012 L                26
+013 y                33
+014 ch               35 36 37
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 /*����������B -> newV1            22
+002 @.               -> newV2.           10 16 20
+003 #                -> newV3            33

@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program  encrypts  (and displays)  most text  using  the  Vigenère  cypher.      */
+0002 @abc= 'abcdefghijklmnopqrstuvwxyz';       @abcU=@abc;    upper @abcU
+0003 @.1 = @abcU || @abc'0123456789~`!@#$%^&*()_-+={}|[]\:;<>?,./" '''
+0004 L=length(@.1)
+0005 do j=2  to length(@.1);                jm=j - 1;          q=@.jm
+0006 @.j=substr(q, 2, L - 1)left(q, 1)
+0007 end   /*j*/
+0008 
+0009 cypher = space('WHOOP DE DOO    NO BIG DEAL HERE OR THERE', 0)
+0010 oMsg   = 'Making things easy is just knowing the shortcuts. --- Gerard J. Schildberger'
+0011 cypher_= copies(cypher, length(oMsg) % length(cypher) )
+0012 say '   original text ='   oMsg
+0013 xMsg= Ncypher(oMsg);         say '   cyphered text ='   xMsg
+0014 bMsg= Dcypher(xMsg);         say 're-cyphered text ='   bMsg
+0015 exit
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 Ncypher:  parse arg x;    nMsg=;       #=1      /*unsupported char? ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
+0018 do i=1  for length(x);   j=pos(substr(x,i,1), @.1);   if j==0  then iterate
+0019 nMsg=nMsg || substr(@.j, pos( substr( cypher_, #, 1), @.1), 1);     #=# + 1
+0020 end   /*j*/
+0021 return nMsg
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 Dcypher:  parse arg x;    dMsg=
+0024 do i=1  for length(x);   j=pos(substr(cypher_, i, 1),  @.1)
+0025 dMsg=dMsg || substr(@.1, pos( substr(x, i, 1), @.j),   1  )
+0026 end   /*j*/
+0027 return dMsg
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                23
+002 dMsg             23 25
+003 i                24
+004 j                24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @abcU            -> newV1            2
+002 @abc             -> newV2            2
+003 @.               -> newV3.           3 6
+004 #                -> newV4            17 19

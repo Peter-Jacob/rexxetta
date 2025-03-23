@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates moving the cursor position and writing of text to same place*/
+0002 
+0003 call cursor  3,6                                 /*move the cursor to  row 3, column 6. */
+0004 say 'Hello'                                      /*write the text at that location.     */
+0005 
+0006 
+0007 
+0008 call scrwrite 30,50,'Hello.'                     /*another method,  different location. */
+0009 
+0010 call scrwrite 40,60,'Hello.',,,14                /*another method  ...  in yellow.      */
+0011 exit 0                                           /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

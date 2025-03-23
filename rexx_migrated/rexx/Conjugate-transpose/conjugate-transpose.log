@@ -1,0 +1,115 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*REXX program performs a  conjugate transpose  on a  complex  square matrix.           */
+0002 parse arg N elements;  if N==''|N==","  then N=3 /*Not specified?  Then use the default.*/
+0003 k= 0;             do   r=1  for N
+0004 do c=1  for N;    k= k+1;      M.r.c= word( word(elements, k)  1,  1)
+0005 end   /*c*/
+0006 end     /*r*/
+0007 call showCmat 'M'        ,N                      /*display a nicely formatted matrix.   */
+0008 identity.= 0;                     do d=1  for N;   identity.d.d= 1;    end  /*d*/
+0009 call conjCmat 'MH', "M"  ,N                      /*conjugate the  M  matrix  ───►  MH   */
+0010 call showCmat 'MH'       ,N                      /*display a nicely formatted matrix.   */
+0011 say 'M is Hermitian:  '    word('no yes', isHermitian('M', "MH", N) + 1)
+0012 call multCmat 'M',  'MH', 'MMH',  N              /*multiple the two matrices together.  */
+0013 call multCmat 'MH', 'M',  'MHM',  N              /*    "     "   "      "        "      */
+0014 say '  M is Normal:   '           word('no yes', isHermitian('MMH', "MHM", N) + 1)
+0015 say '  M is Unary:    '           word('no yes',     isUnary('M',   N) + 1)
+0016 say 'MMH is Unary:    '           word('no yes',     isUnary('MMH', N) + 1)
+0017 say 'MHM is Unary:    '           word('no yes',     isUnary('MHM', N) + 1)
+0018 exit                                             /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 cP:       procedure; arg ',' c;        return word( strip( translate(c, , 'IJ') )  0, 1)
+0021 rP:       procedure; parse arg r ',';  return word( r 0, 1)  /*◄──maybe return a 0 ↑    */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 conjCmat: parse arg matX,matY,rows 1 cols;                call normCmat matY, rows
+0024 do   r=1  for rows;   _=
+0025 do c=1  for cols;   v= value(matY'.'r"."c)
+0026 rP= rP(v);     cP= -cP(v);                 call value matX'.'c"."r, rP','cP
+0027 end   /*c*/
+0028 end     /*r*/;                return
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 isHermitian: parse arg matX,matY,rows 1 cols;                 call normCmat matX, rows
+0031 call normCmat matY, rows
+0032 do   r=1  for rows;  _=
+0033 do c=1  for cols
+0034 if value(matX'.'r"."c) \= value(matY'.'r"."c)  then return 0
+0035 end   /*c*/
+0036 end     /*r*/;                return 1
+0037 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0038 isUnary: parse arg matX,rows 1 cols
+0039 do   r=1  for rows;    _=
+0040 do c=1  for cols;    z= value(matX'.'r"."c);   rP= rP(z);       cP= cP(z)
+0041 if abs( sqrt( rP(z) **2  +  cP(z)**2)  -  (r==c)) >= .0001  then return 0
+0042 end   /*c*/
+0043 end     /*r*/;                return 1
+0044 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0045 multCmat: parse arg matA,matB,matT,rows 1 cols;               call value matT'.', 0
+0046 do     r=1  for rows;  _=
+0047 do   c=1  for cols
+0048 do k=1  for cols;  T= value(matT'.'r"."c);   Tr= rP(T);   Tc= cP(T)
+0049 A= value(matA'.'r"."k);   Ar= rP(A);   Ac= cP(A)
+0050 B= value(matB'.'k"."c);   Br= rP(B);   Bc= cP(B)
+0051 Pr= Ar*Br - Ac*Bc;    Pc= Ac*Br  +  Ar*Bc;   Tr= Tr+Pr;   Tc= Tc+Pc
+0052 call value  matT'.'r"."c,Tr','Tc
+0053 end   /*k*/
+0054 end     /*c*/
+0055 end       /*r*/;              return
+0056 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0057 normCmat: parse arg matN,rows 1 cols
+0058 do   r=1  to rows;  _=
+0059 do c=1  to cols;  v= translate( value(matN'.'r"."c), , "IiJj")
+0060 parse upper  var  v  real  ','  cplx
+0061 if real\==''  then real= real / 1
+0062 if cplx\==''  then cplx= cplx / 1;             if cplx=0  then cplx=
+0063 if cplx\==''  then cplx= cplx"j"
+0064 call value matN'.'r"."c,  strip(real','cplx,  "T",  ',')
+0065 end   /*c*/
+0066 end     /*r*/;                return
+0067 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0068 showCmat: parse arg matX,rows,cols;    if cols==''  then cols= rows;       @@= left('', 6)
+0069 say;  say center('matrix' matX, 79, '─');      call normCmat matX, rows, cols
+0070 do   r=1  to rows;  _=
+0071 do c=1  to cols;  _= _ @@ left( value(matX'.'r"."c),  9)
+0072 end   /*c*/
+0073 say _
+0074 end     /*r*/;      say;      return
+0075 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0076 sqrt: procedure; parse arg x;  if x=0  then return 0;   d=digits();  numeric form;   h=d+6
+0077 numeric digits; parse value format(x,2,1,,0) 'E0'  with  g 'E' _ .;  g=g *.5'e'_ % 2
+0078 m.=9;  do j=0  while h>9;     m.j=h;              h=h%2+1;       end /*j*/
+0079 do k=j+5  to 0  by -1; numeric digits m.k; g=(g+x/g)*.5;  end /*k*/; return g
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                76
+002 d                76
+003 h                76 78
+004 r                70
+005 c                71
+006 v                59
+007 c                47
+008 k                48 79
+009 T                48
+010 Tr               48 51
+011 Tc               48 51
+012 A                49
+013 Ar               49
+014 Ac               49
+015 B                50
+016 Br               50
+017 Bc               50
+018 Pr               51
+019 Pc               51
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                77 77 79
+024 m.               78 78
+025 j                78
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @@               -> newV1            68
+002 _                -> newV2            24 32 39 46 58 70 71 77

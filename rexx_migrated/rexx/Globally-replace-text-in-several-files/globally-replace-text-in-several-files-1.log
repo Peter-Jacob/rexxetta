@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program  reads  the  files specified  and  globally replaces  a string.          */
+0002 old= "Goodbye London!"                           /*the  old text     to be replaced.    */
+0003 new= "Hello New York!"                           /* "   new   "   used for replacement. */
+0004 parse  arg  fileList                             /*obtain required list of files from CL*/
+0005 #= words(fileList)                               /*the number of files in the file list.*/
+0006 
+0007 do f=1  for #;     fn= translate( word(fileList, f), , ',');     say;     say
+0008 say '──────── file is being read: '    fn    " ("f   'out of'     #     "files)."
+0009 call linein fn,1,0                            /*position the file for input.         */
+0010 changes= 0                                    /*the number of changes in file so far.*/
+0011 do rec=0  while lines(fn)\==0       /*read a file   (if it exists).        */
+0012 @.rec= linein(fn)                   /*read a record (line)  from the file. */
+0013 if pos(old, @.rec)==0  then iterate /*Anything to change?   No, then skip. */
+0014 changes= changes + 1                /*flag that file contents have changed.*/
+0015 @.rec= changestr(old, @.rec, new)   /*change the @.rec record, old ──► new.*/
+0016 end   /*rec*/
+0017 
+0018 say '──────── file has been read: '         fn", with "      rec      'records.'
+0019 if changes==0  then do;  say '──────── file  not  changed: '   fn;   iterate;   end
+0020 call lineout fn,,1                            /*position file for output at 1st line.*/
+0021 say '──────── file being changed: '   fn
+0022 
+0023 do r=0  for rec;     call lineout fn, @.r /*re─write the contents of the file.   */
+0024 end   /*r*/
+0025 
+0026 say '──────── file was   changed: '   fn    " with"   changes   'lines changed.'
+0027 end   /*f*/                                   /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 fileList         4
+002 f                7
+003 fn               7
+004 changes          10 14
+005 rec              11
+006 r                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           12 15
+002 #                -> newV2            5

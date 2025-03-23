@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 ...
+0002 signal on error
+0003 signal on failure
+0004 signal on halt
+0005 signal on lostdigits      /*newer REXXes.*/
+0006 signal on notready
+0007 signal on novalue
+0008 signal on syntax
+0009 
+0010 signal off error
+0011 signal off failure
+0012 signal off halt
+0013 signal off lostdigits     /*newer REXXes.*/
+0014 signal off notready
+0015 signal off novalue
+0016 signal off syntax
+0017 ...
+0018 signal on novalue
+0019 ...
+0020 x=oopsay+1                /* ◄─── this is it.*/
+0021 exit
+0022 
+0023 novalue: say
+0024 say '───────────────────────────error!─────────────────────────────────'
+0025 say 'that reference to  oopsay  (above) will cause control to get here.'
+0026 parse source . . fid .
+0027 say;  say  'REXX raised a NOVALUE error in program:' fid
+0028 say;  say  'it occurred on line' sigl
+0029 say;  say  'the REXX statement is:'     /*put it on separate line.*/
+0030 say  sourceline(sigl)
+0031 say;  say  'which code:' condition('C') "error"
+0032 say;  say  'REXX variable:' condition('D')
+0033 say;  say  "Moral: shouldn't do that."
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 source           26
+002 fid              26
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

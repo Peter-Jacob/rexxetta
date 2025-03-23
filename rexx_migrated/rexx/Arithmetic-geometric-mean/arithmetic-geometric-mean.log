@@ -1,0 +1,67 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program calculates the  AGM  (arithmetic─geometric mean)  of two (real) numbers. */
+0002 parse arg a b digs .                             /*obtain optional numbers from the C.L.*/
+0003 if digs=='' | digs==","  then digs= 120          /*No DIGS specified?  Then use default.*/
+0004 numeric digits digs                              /*REXX will use lots of decimal digits.*/
+0005 if    a=='' |    a==","  then a= 1               /*No A specified?  Then use the default*/
+0006 if    b=='' |    b==","  then b= 1 / sqrt(2)     /* " B     "         "   "   "     "   */
+0007 call AGM a,b                                     /*invoke the  AGM  function.           */
+0008 say  '1st # ='      a                            /*display the   A   value.             */
+0009 say  '2nd # ='      b                            /*   "     "    B     "                */
+0010 say  '  AGM ='  agm(a, b)                        /*   "     "   AGM    "                */
+0011 exit 0                                           /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 agm:  procedure: parse arg x,y;  if x=y  then return x       /*is this an equality case?*/
+0014 if y=0  then return 0       /*is   Y   equal to zero ? */
+0015 if x=0  then return y/2     /* "   X     "    "   "    */
+0016 d= digits()                                /*obtain the  current  decimal digits. */
+0017 numeric digits d + 5                       /*add 5 more digs to ensure convergence*/
+0018 tiny= '1e-'  ||  (digits() - 1)            /*construct a pretty tiny REXX number. */
+0019 ox= x + 1                                  /*ensure that   the old X  ¬=  new X.  */
+0020 do  while ox\=x  &  abs(ox)>tiny /*compute until the old X   ≡  new X.  */
+0021 ox= x;    oy= y                  /*save    the  old  value of  X and Y. */
+0022 x=     (ox + oy)  *  .5          /*compute  "   new    "    "  X.       */
+0023 y= sqrt(ox * oy)                 /*   "     "    "     "    "  Y.       */
+0024 end   /*while*/
+0025 
+0026 numeric digits d                           /*restore the original decimal digits. */
+0027 return x / 1                               /*normalize  X  to new    "       "    */
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 sqrt: procedure; parse arg x; if x=0  then return 0; d=digits(); m.=9; numeric form; h=d+6
+0030 numeric digits; parse value format(x,2,1,,0) 'E0'  with  g 'E' _ .;  g=g *.5'e'_ % 2
+0031 do j=0  while h>9;      m.j=h;               h=h % 2  + 1;  end /*j*/
+0032 do k=j+5  to 0  by -1;  numeric digits m.k;  g=(g+x/g)*.5;  end /*k*/;    return g
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                29
+002 d                29
+003 m.               29 31
+004 h                29 31
+005 ox               19 21
+006 while            20
+007 oy               21
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                30 30 32
+024 j                31
+025 k                32
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            30

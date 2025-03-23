@@ -1,0 +1,26 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX program constructs & displays Floyd's triangle for any number of rows in base 16.*/
+0002 parse arg N .;  if N=='' | N==","  then N=6      /*Not specified?  Then use the default.*/
+0003 mx=N * (N+1) % 2  -  N                           /*calculate maximum value of any value.*/
+0004 say 'displaying a '    N    " row Floyd's triangle in base 16:"  /*show triangle header.*/
+0005 say
+0006 #=1;  do     r=1  for N;     i=0;         _=     /*construct Floyd's triangle row by row*/
+0007 do #=#  for r;     i=i+1               /*start to construct a row of triangle.*/
+0008 _=_ right( d2x(#), length( d2x(mx+i))) /*build a row of the Floyd's triangle. */
+0009 end   /*#*/
+0010 say substr(_, 2)                           /*remove 1st leading blank in the line.*/
+0011 end       /*r*/                            /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                2 2
+002 mx               3
+003 r                6
+004 i                6 7
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            6 7
+002 _                -> newV2            6 8

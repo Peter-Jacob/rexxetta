@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /*REXX program solves the   Hofstadter─Conway  sequence  $10,000   prize  (puzzle).     */
+0002 @pref= 'Maximum of    a(n) ÷ n     between '     /*a prologue for the text of message.  */
+0003 H.=.;   H.1=1;  H.2=1;   !.=0;     @.=0          /*initialize some REXX variables.      */
+0004 win=0
+0005 do k=0  to 20;     p.k=2**k;  maxp=p.k     /*build an array of the powers of two. */
+0006 end   /*k*/
+0007 r=1                                              /*R:  is the range of the power of two.*/
+0008 do n=1  for maxp;  if n> p.r  then r=r+1   /*for golf coders, same as: r=r+(n>p.r)*/
+0009 _=H(n)/n;          if _>=.55  then win=n   /*get next seq number; if ≥.55, a win? */
+0010 if _<=@.r  then iterate /*less than previous? Then keep looking*/
+0011 @.r=_;      !.r=n                          /*@.r and  !.r  are like ginkgo biloba.*/
+0012 end   /*n*/                                /*  ··· or in other words, memoization.*/
+0013 
+0014 do j=1  for 20;   range= '2**'right(j-1, 2)              "───► 2**"right(  j, 2)
+0015 say @pref  range  '(inclusive)  is '    left(@.j, 9)     "  at  n="right(!.j, 7)
+0016 end   /*j*/
+0017 say
+0018 say 'The winning number is: '    win             /*and the money shot is  ···           */
+0019 exit                                             /*stick a fork in it,  we're all done. */
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 H: procedure expose H.; parse arg z
+0022 if H.z==.  then do;  m=z-1;   $=H.m;   _=z-$;   H.z=H.$+H._;   end
+0023 return H.z
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                21
+002 m                22
+003 H.               22
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @pref            -> newV1            2
+002 !.               -> newV2.           3 11
+003 @.               -> newV3.           3 11
+004 _                -> newV4            9 22
+005 $                -> newV5            22

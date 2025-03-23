@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program solves   Ax=b   with Gaussian elimination  and  backwards  substitution. */
+0002 numeric digits 1000                              /*heavy─duty decimal digits precision. */
+0003 parse arg iFID .                                 /*obtain optional argument from the CL.*/
+0004 if iFID=='' | iFID=="," then iFID= 'GAUSS_E.DAT' /*Not specified?  Then use the default.*/
+0005 do rec=1    while lines(iFID) \== 0         /*read the equation sets.              */
+0006 #= 0                                        /*the number of equations  (so far).   */
+0007 do $=1  while lines(iFID) \== 0         /*process the equation.                */
+0008 z= linein(iFID);   if z=''  then leave  /*Is this a blank line?    end─of─data.*/
+0009 if $==1  then do;  say;     say center(' equations ', 75, "▓");        say
+0010 end                       /* [↑]  if 1st equation, then show hdr.*/
+0011 say z                                   /*display an equation to the terminal. */
+0012 if left(space(z), 1)=='*'  then iterate /*Is this a comment?    Then ignore it.*/
+0013 #= # + 1;     n= words(z) - 1           /*assign equation #; calculate # items.*/
+0014 do e=1  for n;     a.#.e= word(z, e)
+0015 end   /*e*/                           /* [↑]  process  A  numbers.           */
+0016 b.#= word(z, n + 1)                     /* ◄───    "     B     "               */
+0017 end     /*$*/
+0018 if #\==0  then call Gauss_elim              /*Not zero?  Then display the results. */
+0019 end         /*rec*/
+0020 exit                                             /*stick a fork in it,  we're all done. */
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 Gauss_elim: say;              do     j=1  for n;   jp= j + 1
+0023 do   i=jp  to n;   _= a.j.j / a.i.j
+0024 do k=jp  to n;   a.i.k= a.j.k   -   _ * a.i.k
+0025 end   /*k*/
+0026 b.i= b.j   -   _ * b.i
+0027 end     /*i*/
+0028 end       /*j*/
+0029 x.n= b.n / a.n.n
+0030 do   j=n-1  to 1  by -1;   _= 0
+0031 do i=j+1  to n;          _= _   +   a.j.i * x.i
+0032 end     /*i*/
+0033 x.j= (b.j - _) / a.j.j
+0034 end       /*j*/    /* [↑]  uses backwards substitution.   */
+0035 numeric digits                       /*for the display,  only use 8 digits. */
+0036 say center('solution', 75, "═"); say /*a title line for articulated output. */
+0037 do o=1  for n;   say right('x['o"] = ", 38)   left('', x.o>=0)    x.o/1
+0038 end   /*o*/
+0039 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 rec              5
+002 z                8
+003 n                13
+004 e                14
+005 a.               14 24
+006 b.               16 26
+007 j                22 30
+008 jp               22
+009 i                23 31
+010 k                24
+011 x.               29 33
+012 o                37
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            6 13
+002 $                -> newV2            7
+003 _                -> newV3            23 30 31

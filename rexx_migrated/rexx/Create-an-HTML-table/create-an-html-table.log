@@ -1,0 +1,49 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*REXX program  creates (and displays)  an  HTML table of five rows  and  three columns.*/
+0002 parse arg rows .                                 /*obtain optional argument from the CL.*/
+0003 if rows=='' | rows==","   then rows=5            /*no ROWS specified?  Then use default.*/
+0004 cols = 3                                   /*specify three columns for the table. */
+0005 maxRand = 9999                                /*4-digit numbers, allows negative nums*/
+0006 headerInfo = 'X Y Z'                             /*specifify column header information. */
+0007 oFID = 'a_table.html'                      /*name of the  output  file.           */
+0008 w = 0                                   /*number of writes to the output file. */
+0009 
+0010 call wrt  "<html>"
+0011 call wrt  "<head></head>"
+0012 call wrt  "<body>"
+0013 call wrt  "<table border=5  cellpadding=20  cellspace=0>"
+0014 
+0015 do r=0  to rows                                /* [↓]  handle row  0 as being special.*/
+0016 if r==0  then call wrt  "<tr><th></th>"        /*when it's     the zeroth row.        */
+0017 else call wrt  "<tr><th>"  r  "</th>" /*  "    "  not  "    "     "          */
+0018 
+0019 do c=1  for cols                           /* [↓]  for row 0,  add the header info*/
+0020 if r==0  then call wrt  "<th>"   word(headerInfo,c)   "</th>"
+0021 else call wrt  "<td align=right>"    rnd()   "</td>"
+0022 end   /*c*/
+0023 end       /*r*/
+0024 
+0025 call wrt  "</table>"
+0026 call wrt  "</body>"
+0027 call wrt  "</html>"
+0028 say;         say  w    ' records were written to the output file: '   oFID
+0029 exit                                             /*stick a fork in it,  we're all done. */
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 rnd: return right(random(0,maxRand*2)-maxRand,5) /*RANDOM doesn't generate negative ints*/
+0032 wrt: call lineout oFID,arg(1);   say '══►'  arg(1);   w=w+1;    return          /*write.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 rows             2 3
+002 cols             4
+003 maxRand          5
+004 headerInfo       6
+005 oFID             7
+006 w                8 32
+007 r                15
+008 c                19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

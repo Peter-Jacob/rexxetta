@@ -1,0 +1,117 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 tok.=''
+0003 Do i=0 To 6
+0004 tok.i="'Payload#"i"'"
+0005 End
+0006 t1='[[[1,2],[3,4,1],5]]'
+0007 t2='[[[1,6],[3,4,7,0],5]]'
+0008 Call transform t1
+0009 Call transform t2
+0010 Exit
+0011 
+0012 transform:
+0013 Parse Arg t 1 tt
+0014 /* http://rosettacode.org/wiki/Nested_templated_data */
+0015 /*
+0016 [[['Payload#1', 'Payload#2'],
+0017 ['Payload#3', 'Payload#4', 'Payload#1'],
+0018 'Payload#5']]
+0019 */
+0020 lvl=0
+0021 n.=0
+0022 o=''
+0023 w=''
+0024 used.=0
+0025 Do While t<>''
+0026 Parse Var t c +1 1 c3 +3 1 c2 +2
+0027 u=' '
+0028 v=' '
+0029 Select
+0030 When c3='],[' Then Do
+0031 o=o'  '
+0032 w=w'  '
+0033 t=substr(t,3)
+0034 End
+0035 When c2='],' Then Do
+0036 o=o' '
+0037 w=w' '
+0038 t=substr(t,2)
+0039 lvl=lvl-1
+0040 End
+0041 When c='[' Then
+0042 lvl=lvl+1
+0043 When c=']' Then
+0044 lvl=lvl-1
+0045 When c=',' Then
+0046 Nop
+0047 Otherwise Do
+0048 u=lvl
+0049 v=c
+0050 End
+0051 End
+0052 t=substr(t,2)
+0053 o=o||u
+0054 w=w||v
+0055 End
+0056 Say 'Template' tt
+0057 Do i=1 By 1 While w<>''
+0058 If i=1 Then Do
+0059 w=substr(w,4)
+0060 p=pos('  ',w)
+0061 Call o '[[['cont(left(w,p-1))'],'
+0062 w=substr(w,p)
+0063 End
+0064 Else Do
+0065 If left(w,3)='' Then Do
+0066 w=substr(w,4)
+0067 p=pos('  ',w)
+0068 Call o '  ['cont(left(w,p-1))'],'
+0069 w=substr(w,p)
+0070 End
+0071 Else Do
+0072 w=substr(w,3)
+0073 p=pos('  ',w)
+0074 Call o '  'cont(left(w,p-1))']]'
+0075 w=substr(w,p)
+0076 End
+0077 End
+0078 End
+0079 Do i=0 To 6
+0080 If used.i=0 Then Say 'Payload' i 'not used'
+0081 End
+0082 Call o ' '
+0083 Return
+0084 
+0085 o: Say arg(1)
+0086 Return
+0087 
+0088 cont: Procedure Expose tok. used.
+0089 Parse Arg list
+0090 res=''
+0091 Do while list>''
+0092 Parse Var list i list
+0093 res= res tok(i)','
+0094 End
+0095 res=strip(res)
+0096 res=strip(res,'T',',')
+0097 Return res
+0098 
+0099 tok: Procedure Expose tok. used.
+0100 Parse Arg i
+0101 If tok.i<>'' Then Do
+0102 used.i=1
+0103 Return tok.i
+0104 End
+0105 Else
+0106 Return "'Payload#" i "not defined'"
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 i                100
+002 used.            102
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

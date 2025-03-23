@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX pgm finds if words can be spelt from a pool of toy blocks (each having 2 letters)*/
+0002 list= 'A bark bOOk treat common squaD conFuse'   /*words can be:  upper/lower/mixed case*/
+0003 blocks= 'BO  XK  DQ  CP  NA  GT  RE  TG  QD  FS  JW  HU  VI  AN  OB  ER  FS  LY  PC  ZM'
+0004 do k=1  for  words(list)           /*traipse through a list of some words.*/
+0005 call  spell  word(list, k)         /*display if word can be spelt (or not)*/
+0006 end   /*k*/                        /* [↑]  tests each word in the list.   */
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 spell: procedure expose blocks;  arg x           /*ARG  uppercases the word to be spelt.*/
+0010 L= length(x);   @.= 0   /*get length of the word to be spelt.  */
+0011 do try=1  for L;  z= blocks;  upper z /*use a fresh copy of the  "Z"  blocks.*/
+0012 do n=1  for L;  y= substr(x, n, 1)  /*attempt another letter in the word.  */
+0013 @.n= pos(y, z, 1 + @.n);    if @.n==0  then leave   /*not found?  Try again*/
+0014 z= overlay(' ', z, @.n)             /*mutate the toy block  ───►  a onesy. */
+0015 do q=1  for words(z);    if length(word(z,q))==1  then z= delword(z, q, 1)
+0016 end   /*q*/                      /* [↑]  elide any existing onesy block.*/
+0017 if n==L  then leave try             /*was last letter used in the spelling?*/
+0018 end      /*n*/                      /* [↑]  end of a  toy block  usage.    */
+0019 end        /*try*/                    /* [↑]  end of a  "TRY"  permute.      */
+0020 say right( arg(1), 30)    right( word( "can't can", (n==L) + 1), 6)     'be spelt.'
+0021 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 list             2
+002 blocks           3
+003 k                4
+004 L                10
+005 try              11
+006 z                11 14 15
+007 n                12
+008 y                12
+009 q                15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           10 13

@@ -1,0 +1,55 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 fid='updatecf.txt'
+0002 oid='updatecf.xxx'; 'erase' oid
+0003 options=translate('FAVOURITEFRUIT NEEDSPEELING SEEDSREMOVED NUMBEROFBANANAS numberofstrawberries')
+0004 done.=0
+0005 Do While lines(fid)>0
+0006 l=linein(fid)
+0007 c=left(l,1)
+0008 option=''
+0009 If c='#' | l='' Then
+0010 call o l
+0011 Else Do
+0012 If c=';' Then l=substr(l,3)
+0013 Parse Upper Var l option value
+0014 Select
+0015 When option='NEEDSPEELING' Then
+0016 Call o ';' option
+0017 When option='SEEDSREMOVED' Then
+0018 Call o option
+0019 When option='NUMBEROFBANANAS' Then
+0020 Call o option 1024
+0021 When option='FAVOURITEFRUIT' Then
+0022 Call o l
+0023 When option='NUMBEROFSTRAWBERRIES' Then
+0024 Call o option 62000
+0025 Otherwise
+0026 Call o '>>>' l
+0027 End
+0028 End
+0029 End
+0030 Do while options<>''
+0031 Parse Var options option options
+0032 If done.option=0 Then
+0033 Call o option 62000
+0034 End
+0035 Exit
+0036 o:
+0037 If option<>'' & done.option Then
+0038 Say 'Duplicate' option 'ignored'
+0039 Else Do
+0040 Call lineout oid,arg(1)
+0041 done.option=1
+0042 End
+0043 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 options          31 31
+002 option           31
+003 done.            41
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,80 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /* Rexx */
+0002 
+0003 drop !top !bot
+0004 x = 0
+0005 x = x + 1; txt.0 = x; txt.x = '   *****'
+0006 x = x + 1; txt.0 = x; txt.x = '   *    *'
+0007 x = x + 1; txt.0 = x; txt.x = '   *    * ***** *   * *   *'
+0008 x = x + 1; txt.0 = x; txt.x = '   *****  *      * *   * *'
+0009 x = x + 1; txt.0 = x; txt.x = '   *  *   ***     *     *'
+0010 x = x + 1; txt.0 = x; txt.x = '   *   *  *      * *   * *'
+0011 x = x + 1; txt.0 = x; txt.x = '   *    * ***** *   * *   *'
+0012 x = x + 1; txt.0 = x; txt.x = ''
+0013 
+0014 call Banner3D isTrue()
+0015 do ll = 1 to txt.0
+0016 say txt.ll.!top
+0017 say txt.ll.!bot
+0018 end ll
+0019 
+0020 return
+0021 exit
+0022 
+0023 Banner3D:
+0024 procedure expose txt.
+0025 drop !top !bot
+0026 parse arg slope .
+0027 
+0028 select
+0029 when slope = isTrue() then nop
+0030 when slope = isFalse() then nop
+0031 otherwise do
+0032 if slope = '' then slope = isFalse()
+0033 else slope = isTrue()
+0034 end
+0035 end
+0036 
+0037 do ll = 1 to txt.0
+0038 txt.ll.!top = txt.ll
+0039 txt.ll.!bot = txt.ll
+0040 txt.ll.!top = changestr(' ', txt.ll.!top, '   ')
+0041 txt.ll.!bot = changestr(' ', txt.ll.!bot, '   ')
+0042 txt.ll.!top = changestr('*', txt.ll.!top, '///')
+0043 txt.ll.!bot = changestr('*', txt.ll.!bot, '\\\')
+0044 txt.ll.!top = txt.ll.!top || ' '
+0045 txt.ll.!bot = txt.ll.!bot || ' '
+0046 txt.ll.!top = changestr('/ ', txt.ll.!top, '/\')
+0047 txt.ll.!bot = changestr('\ ', txt.ll.!bot, '\/')
+0048 end ll
+0049 
+0050 if slope then do
+0051 do li = txt.0 to 1 by -1
+0052 ll = txt.0 - li + 1
+0053 txt.ll.!top = insert('', txt.ll.!top, 1, li - 1, ' ')
+0054 txt.ll.!bot = insert('', txt.ll.!bot, 1, li - 1, ' ')
+0055 end li
+0056 end
+0057 
+0058 return
+0059 exit
+0060 
+0061 isTrue:
+0062 procedure
+0063 return 1 == 1
+0064 
+0065 isFalse:
+0066 procedure
+0067 return \isTrue()
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 slope            26 32
+002 ll               37 52
+003 txt.             38 39 40 41 42 43 44 45 46 47 53 54
+004 li               51
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

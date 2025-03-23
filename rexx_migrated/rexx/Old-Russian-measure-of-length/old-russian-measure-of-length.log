@@ -1,0 +1,143 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX program converts a   metric  or  old Russian length   to various other lengths.  */
+0002 numeric digits 200                      /*lots of digits. */
+0003 /*──translation───*/
+0004 /*tip, top        */        vershok  = 22.492971                    /*1.75 inch.      */
+0005 /*palm, quarter   */        piad     = vershok    /   4             /*(also) chetvert.*/
+0006 /*yard            */        arshin   = vershok    /  16
+0007 /*fathom          */        sazhen   = arshin     /   3
+0008 /*turn (of a plow)*/        verst    = sazhen     / 500             /*(also) a versta.*/
+0009 /*mile            */        milia    = verst      /   1.5
+0010 /*inch            */        diuym    = arshin     *  28
+0011 /*foot            */        fut      = diuym      /  12             /*sounds like foot*/
+0012 /*line            */        liniya   = diuym      *  10
+0013 /*point           */        tochka   = diuym      * 100
+0014 
+0015 KM= 1000;           CM=100                       /*define a couple of metric multipliers*/
+0016 sw= linesize() -1                                /*get the linesize (screen width)  - 1.*/
+0017 parse arg N what _ __                            /*obtain the user's input from the C.L.*/
+0018 if N==''               then call  err  'no arguments specified.'
+0019 if \datatype(N, 'N')   then call  err  'units not numeric: '    N
+0020 if _\==''              then call  err  'too many arguments specified: '   _   __
+0021 n= n / 1                                         /*normalize it  (004──►4  7.──►7,  etc.*/
+0022 if what==''  then what= 'meters';   whatU= what  /*None specified?  Then assume meters. */
+0023 upper whatU                                      /*an uppercase version for ABBREV bif. */
+0024 select                  /* [↓]  convert the length ───► meters.*/
+0025 when abbrev('METRES'     , whatU    )  |,
+0026 abbrev('METERS'     , whatU    )       then  m= N
+0027 when abbrev('KILOMETRES' , whatU, 2 )  |,
+0028 abbrev('KILOMETERS' , whatU, 2 )  |,
+0029 abbrev('KMS'        , whatU,   )       then  m= N * KM
+0030 when abbrev('CENTIMETRES', whatU, 2 )  |,
+0031 abbrev('CENTIMETERS', whatU, 2 )  |,
+0032 abbrev('CMS'        , whatU, 2 )       then  m= N / CM
+0033 when abbrev('ARSHINS'    , whatU    )       then  m= N / arshin
+0034 when abbrev('DIUYM'      , whatU    )       then  m= N / diuym
+0035 when abbrev('FUT'        , whatU    )       then  m= N / fut
+0036 when abbrev('LINIYA'     , whatU    )       then  m= N / liniya
+0037 when abbrev('PIADS'      , whatU    )  |,
+0038 abbrev('CHETVERTS'  , whatU, 2 )       then  m= N / piad
+0039 when abbrev('SAZHENS'    , whatU    )       then  m= N / sazhen
+0040 when abbrev('TOCHKA'     , whatU    )       then  m= N / tochka
+0041 when abbrev('VERSHOKS'   , whatU, 5 )       then  m= N / vershok
+0042 when abbrev('VERSTAS'    , whatU, 5 )  |,
+0043 abbrev('VERSTS'     , whatU, 2 )       then  m= N / verst
+0044 when abbrev('MILIA'      , whatU, 2 )       then  m= N / milia
+0045 otherwise     call err   'invalid measure name: '        what
+0046 end   /*select*/
+0047 say centre('metric',      sw, "─")
+0048 call tell m / KM       ,   'kilometer'
+0049 call tell m            ,   'meter'
+0050 call tell m * CM       ,   'centimeter'
+0051 say centre('old Russian', sw, "─")
+0052 call tell m * milia    ,   'milia'
+0053 call tell m * verst    ,   'verst'
+0054 call tell m * sazhen   ,   'sazhen'
+0055 call tell m * arshin   ,   'arshin'
+0056 call tell m * fut      ,   'fut'
+0057 call tell m * piad     ,   'piad'
+0058 call tell m * vershok  ,   'vershok'
+0059 call tell m * diuym    ,   'diuym'
+0060 call tell m * liniya   ,   'liniya'
+0061 call tell m * tochka   ,   'tochka'              /* ◄─── TELL shows eight decimal digits*/
+0062 exit 0                                           /*stick a fork in it,  we're all done. */
+0063 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0064 err:  say center(' error ', sw % 2, "*");   do j=1  to arg();  say arg(j);  end;   exit 13
+0065 s:    if arg(1)=1  then return arg(3);      return word( arg(2) 's', 1)       /*plurals.*/
+0066 tell: parse arg $;  numeric digits 8;  $= $ / 1;  say right($, 40) arg(2)s($);      return/*REXX program converts a   metric  or  old Russian length   to various other lengths.  */
+0067 numeric digits 200                      /*lots of digits. */
+0068 /*──translation───*/
+0069 /*tip, top        */        vershok  = 22.492971                    /*1.75 inch.      */
+0070 /*palm, quarter   */        piad     = vershok    /   4             /*(also) chetvert.*/
+0071 /*yard            */        arshin   = vershok    /  16
+0072 /*fathom          */        sazhen   = arshin     /   3
+0073 /*turn (of a plow)*/        verst    = sazhen     / 500             /*(also) a versta.*/
+0074 /*mile            */        milia    = verst      /   1.5
+0075 /*inch            */        diuym    = arshin     *  28
+0076 /*foot            */        fut      = diuym      /  12             /*sounds like foot*/
+0077 /*line            */        liniya   = diuym      *  10
+0078 /*point           */        tochka   = diuym      * 100
+0079 
+0080 KM= 1000;           CM=100                       /*define a couple of metric multipliers*/
+0081 sw= linesize() -1                                /*get the linesize (screen width)  - 1.*/
+0082 parse arg N what _ __                            /*obtain the user's input from the C.L.*/
+0083 if N==''               then call  err  'no arguments specified.'
+0084 if \datatype(N, 'N')   then call  err  'units not numeric: '    N
+0085 if _\==''              then call  err  'too many arguments specified: '   _   __
+0086 n= n / 1                                         /*normalize it  (004──►4  7.──►7,  etc.*/
+0087 if what==''  then what= 'meters';   whatU= what  /*None specified?  Then assume meters. */
+0088 upper whatU                                      /*an uppercase version for ABBREV bif. */
+0089 select                  /* [↓]  convert the length ───► meters.*/
+0090 when abbrev('METRES'     , whatU    )  |,
+0091 abbrev('METERS'     , whatU    )       then  m= N
+0092 when abbrev('KILOMETRES' , whatU, 2 )  |,
+0093 abbrev('KILOMETERS' , whatU, 2 )  |,
+0094 abbrev('KMS'        , whatU,   )       then  m= N * KM
+0095 when abbrev('CENTIMETRES', whatU, 2 )  |,
+0096 abbrev('CENTIMETERS', whatU, 2 )  |,
+0097 abbrev('CMS'        , whatU, 2 )       then  m= N / CM
+0098 when abbrev('ARSHINS'    , whatU    )       then  m= N / arshin
+0099 when abbrev('DIUYM'      , whatU    )       then  m= N / diuym
+0100 when abbrev('FUT'        , whatU    )       then  m= N / fut
+0101 when abbrev('LINIYA'     , whatU    )       then  m= N / liniya
+0102 when abbrev('PIADS'      , whatU    )  |,
+0103 abbrev('CHETVERTS'  , whatU, 2 )       then  m= N / piad
+0104 when abbrev('SAZHENS'    , whatU    )       then  m= N / sazhen
+0105 when abbrev('TOCHKA'     , whatU    )       then  m= N / tochka
+0106 when abbrev('VERSHOKS'   , whatU, 5 )       then  m= N / vershok
+0107 when abbrev('VERSTAS'    , whatU, 5 )  |,
+0108 abbrev('VERSTS'     , whatU, 2 )       then  m= N / verst
+0109 when abbrev('MILIA'      , whatU, 2 )       then  m= N / milia
+0110 otherwise     call err   'invalid measure name: '        what
+0111 end   /*select*/
+0112 say centre('metric',      sw, "─")
+0113 call tell m / KM       ,   'kilometer'
+0114 call tell m            ,   'meter'
+0115 call tell m * CM       ,   'centimeter'
+0116 say centre('old Russian', sw, "─")
+0117 call tell m * milia    ,   'milia'
+0118 call tell m * verst    ,   'verst'
+0119 call tell m * sazhen   ,   'sazhen'
+0120 call tell m * arshin   ,   'arshin'
+0121 call tell m * fut      ,   'fut'
+0122 call tell m * piad     ,   'piad'
+0123 call tell m * vershok  ,   'vershok'
+0124 call tell m * diuym    ,   'diuym'
+0125 call tell m * liniya   ,   'liniya'
+0126 call tell m * tochka   ,   'tochka'              /* ◄─── TELL shows eight decimal digits*/
+0127 exit 0                                           /*stick a fork in it,  we're all done. */
+0128 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0129 err:  say center(' error ', sw % 2, "*");   do j=1  to arg();  say arg(j);  end;   exit 13
+0130 s:    if arg(1)=1  then return arg(3);      return word( arg(2) 's', 1)       /*plurals.*/
+0131 tell: parse arg $;  numeric digits 8;  $= $ / 1;  say right($, 40) arg(2)s($);      return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 __               -> newV1            17 82
+002 _                -> newV2            17 82
+003 $                -> newV3            66 66 131 131

@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates  how to  strip  leading  and/or  trailing  spaces (blanks). */
+0002 yyy="   this is a string that has leading/embedded/trailing blanks,  fur shure.  "
+0003 say 'YYY──►'yyy"◄──"                             /*display the original string + fence. */
+0004 /*white space also includes tabs (VT, HT), among other characters.*/
+0005 
+0006 /*all examples in each group are equivalent, only the option's 1st*/
+0007 /*character is examined.                                          */
+0008 noL=strip(yyy,'L')                               /*elide any  leading white space.      */
+0009 noL=strip(yyy,"l")                               /*  (the same as the above statement.) */
+0010 noL=strip(yyy,'leading')                         /*    "    "   "  "    "       "       */
+0011 say 'noL──►'noL"◄──"                             /*display the string with a title+fence*/
+0012 
+0013 noT=strip(yyy,'T')                               /*elide any trailing white space.      */
+0014 noT=strip(yyy,"t")                               /*  (the same as the above statement.) */
+0015 noT=strip(yyy,'trailing')                        /*    "    "   "  "    "       "       */
+0016 say 'noT──►'noT"◄──"                             /*display the string with a title+fence*/
+0017 
+0018 noB=strip(yyy)                                   /*elide leading & trailing white space.*/
+0019 noB=strip(yyy,)                                  /*  (the same as the above statement.) */
+0020 noB=strip(yyy,'B')                               /*    "    "   "  "    "       "       */
+0021 noB=strip(yyy,"b")                               /*    "    "   "  "    "       "       */
+0022 noB=strip(yyy,'both')                            /*    "    "   "  "    "       "       */
+0023 say 'noB──►'noB"◄──"                             /*display the string with a title+fence*/
+0024 
+0025 /*elide leading & trailing white space,*/
+0026 noX=space(yyy)                                   /* including white space between words.*/
+0027 say 'nox──►'noX"◄──"                             /*display the string with a title+fence*/
+0028 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 yyy              2
+002 noL              8 9 10
+003 noT              13 14 15
+004 noB              18 19 20 21 22
+005 noX              26
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program  converts  Roman numeral number(s)  ───►  Arabic numerals  (or numbers). */
+0002 rYear = 'MCMXC'    ;      say right(rYear, 9)":"     rom2dec(rYear)
+0003 rYear = 'mmviii'   ;      say right(rYear, 9)":"     rom2dec(rYear)
+0004 rYear = 'MDCLXVI'  ;      say right(rYear, 9)":"     rom2dec(rYear)
+0005 exit                                             /*stick a fork in it,  we're all done. */
+0006 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0007 rom2dec: procedure;  arg roman .                 /*obtain the Roman numeral number.     */
+0008 if verify(roman, 'MDCLXVI')\==0  then return  "***error***  invalid Roman number:"   roman
+0009 #=rChar(right(roman, 1))                         /*start with the last Roman numeral.   */
+0010 do j=1  for length(roman) - 1
+0011 x=rChar( substr(roman, j  , 1) )     /*extract the  current  Roman numeral. */
+0012 y=rChar( substr(roman, j+1, 1) )     /*extract the     next  Roman numeral. */
+0013 if x<y  then # = #-x                 /*Is   x<y ?         Then subtract it. */
+0014 else # = #+x                 /*Is   x≥y ?           "    add     "  */
+0015 end   /*j*/
+0016 return #
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 rChar: procedure;  arg _                         /*convert Roman number to Arabic digits*/
+0019 if _=='I'  then return    1
+0020 if _=='V'  then return    5
+0021 if _=='X'  then return   10
+0022 if _=='L'  then return   50
+0023 if _=='C'  then return  100
+0024 if _=='D'  then return  500
+0025 if _=='M'  then return 1000
+0026 return    0               /*indicate an  invalid  Roman numeral. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 rYear            2 3 4
+002 j                10
+003 x                11
+004 y                12
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            9 13

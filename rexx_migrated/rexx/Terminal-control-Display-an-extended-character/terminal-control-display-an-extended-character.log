@@ -1,0 +1,14 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates  displaying an extended character  (glyph)  to the terminal.*/
+0002 /* [↓]  this  SAY will display the £ glyph (if the term supports it).*/
+0003 say '£'            /*this assumes the pound sign glyph is displayable on the terminal.  */
+0004 /*this program can execute correctly on an  EBCDIC or ASCII  machine.*/
+0005 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

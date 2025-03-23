@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program implements a simple  ASSERT  function;  the expression can be compound.  */
+0002 a =  1                                         /*assign a value to the   A   variable.*/
+0003 b =  -2                                        /*   "   "   "    "  "    B       "    */
+0004 gee =  7.00                                      /*   "   "   "    "  "   GEE      "    */
+0005 zee = 26                                         /*   "   "   "    "  "   ZEE      "    */
+0006 
+0007 call assert (a = 1)
+0008 call assert (b > 0)
+0009 call assert (gee = 7)
+0010 call assert (zee = a  &  zee>b)
+0011 exit                                             /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 assert: if arg(1)=1  then return;    parse value sourceline(sigl)  with x;  say
+0014 say '===== ASSERT failure in REXX line' sigl", the statement is:";  say '====='  x
+0015 say;       return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                2
+002 b                3
+003 gee              4
+004 zee              5
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 NORMAL.23        
+024 x                13
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

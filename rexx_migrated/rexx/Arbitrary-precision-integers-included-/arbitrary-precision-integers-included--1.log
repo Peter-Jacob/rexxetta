@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program calculates and demonstrates  arbitrary precision numbers (using powers). */
+0002 numeric digits 200000                            /*two hundred thousand decimal digits. */
+0003 
+0004 # = 5 ** (4 ** (3 ** 2) )                    /*calculate multiple exponentiations.  */
+0005 
+0006 true=62060698786608744707...92256259918212890625 /*what answer is supposed to look like.*/
+0007 rexx= left(#, 20)'...'right(#, 20)               /*the left and right 20 decimal digits.*/
+0008 
+0009 say  '  true:'    true                           /*show what the  "true"  answer is.    */
+0010 say  '  REXX:'    rexx                           /*  "    "   "    REXX      "    "     */
+0011 say  'digits:'    length(#)                      /*  "    "   "   length  of answer is. */
+0012 say
+0013 if true == rexx   then say 'passed!'             /*either it passed,  ···               */
+0014 else say 'failed!'             /*    or it didn't.                    */
+0015 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 true             6
+002 rexx             7
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            4

@@ -1,0 +1,19 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program obtains two numbers from the input stream (the console), shows their sum.*/
+0002 numeric digits 300                               /*the default is  nine  decimal digits.*/
+0003 parse pull a b                                   /*obtain two numbers from input stream.*/
+0004 z= (a+b) / 1                                     /*add and normalize sum, store it in Z.*/
+0005 say z                                            /*display normalized sum Z to terminal.*/
+0006 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             3
+002 a                3
+003 b                3
+004 z                4
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

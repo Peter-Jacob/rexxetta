@@ -1,0 +1,131 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program generates and displays a  rectangular  solvable maze  (of any size).     */
+0002 parse arg rows cols seed .                       /*allow user to specify the maze size. */
+0003 if rows='' | rows==','  then rows= 19            /*No rows given?  Then use the default.*/
+0004 if cols='' | cols==','  then cols= 19            /* " cols   "  ?    "   "   "     "    */
+0005 if datatype(seed, 'W')  then call random ,,seed  /*use a random  seed for repeatability.*/
+0006 ht=0;                        @.=0                /*HT= # rows in grid;  @.: default cell*/
+0007 call makeRow  '┌'copies("~┬", cols - 1)'~┐'      /*construct the top edge of the maze.  */
+0008 /* [↓]  construct the maze's grid.     */
+0009 do    r=1  for rows;   _=;     __=;      hp= "|";              hj= '├'
+0010 do c=1  for cols;   _= _ || hp'1';    __= __ || hj"~";      hj= '┼';      hp= "│"
+0011 end   /*c*/
+0012 call makeRow  _'│'       /*construct the right edge of the cells*/
+0013 if r\==rows  then call makeRow __'┤'       /*    "      "    "     "   "  "  maze.*/
+0014 end      /*r*/                             /* [↑]  construct the maze's grid.     */
+0015 
+0016 call makeRow  '└'copies("~┴",  cols - 1)'~┘'     /*construct the bottom edge of the maze*/
+0017 r!= random(1, rows) *2;     c!= random(1, cols) *2;      @.r!.c!= 0   /*choose 1st cell.*/
+0018 /* [↓]  traipse through the maze.      */
+0019 do forever;    n= hood(r!, c!);    if n==0  then if \fCell()  then leave  /*¬freecell?*/
+0020 call ?;        @._r._c= 0                      /*get the (next) maze direction to go. */
+0021 ro= r!;        co= c!;     r!= _r;    c!= _c   /*save original maze cell coordinates. */
+0022 ?.zr= ?.zr % 2;            ?.zc= ?.zc % 2      /*get the maze row and cell directions.*/
+0023 rw= ro + ?.zr;             cw= co + ?.zc       /*calculate the next row and column.   */
+0024 @.rw.cw= .                                     /*mark the maze cell as being visited. */
+0025 end   /*forever*/
+0026 /* [↓]  display maze to the terminal.  */
+0027 do     r=1  for ht;            _=
+0028 do c=1  for cols*2 + 1;    _= _ || @.r.c;    end  /*c*/
+0029 if \(r//2)  then _= translate(_, '\', .)                   /*trans to backslash*/
+0030 @.r= _                                                     /*save the row in @.*/
+0031 end   /*r*/
+0032 
+0033 do #=1  for ht;           _= @.#           /*display the maze to the terminal.    */
+0034 call makeNice                              /*prettify cell corners and dead─ends. */
+0035 _=  changestr( 1 ,  _   , 111     )        /*──────these four ────────────────────*/
+0036 _=  changestr( 0 ,  _   , 000     )        /*───────── statements are ────────────*/
+0037 _=  changestr( . ,  _   , "   "   )        /*────────────── used for preserving ──*/
+0038 _=  changestr('~',  _   , "───"   )        /*────────────────── the aspect ratio. */
+0039 say translate( _ , '─│' , "═|\10" )        /*make it presentable for the screen.  */
+0040 end   /*#*/
+0041 exit                                             /*stick a fork in it,  we're all done. */
+0042 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0043 @:       parse arg _r,_c;     return  @._r._c    /*a fast way to reference a maze cell. */
+0044 makeRow: parse arg z; ht= ht+1;  do c=1  for length(z); @.ht.c=substr(z,c,1);  end; return
+0045 hood:    parse arg rh,ch;     return  @(rh+2,ch)  + @(rh-2,ch)  + @(rh,ch-2)  + @(rh,ch+2)
+0046 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0047 ?:         do forever;  ?.= 0;   ?= random(1, 4);     if ?==1  then ?.zc= -2     /*north*/
+0048 if ?==2  then ?.zr=  2     /* east*/
+0049 if ?==3  then ?.zc=  2     /*south*/
+0050 if ?==4  then ?.zr= -2     /* west*/
+0051 _r= r! + ?.zr;       _c= c! + ?.zc;        if @._r._c == 1    then return
+0052 end   /*forever*/
+0053 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0054 fCell:     do     r=1  for rows;                rr= r + r
+0055 do c=1  for cols;                         cc= c + c
+0056 if hood(rr,cc)==1  then do;  r!= rr;  c!= cc;   @.r!.c!= 0;  return 1;  end
+0057 end   /*c*/                       /* [↑]  r! and c!  are used by invoker.*/
+0058 end       /*r*/;       return 0
+0059 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0060 makeNice: width= length(_);     old= # - 1;     new= # + 1;     old_= @.old;   new_= @.new
+0061 if left(_, 2)=='├.'  then _= translate(_, "|", '├')
+0062 if right(_,2)=='.┤'  then _= translate(_, "|", '┤')
+0063 
+0064 do  k=1  for  width  while #==1;         z= substr(_, k, 1) /*maze top row.*/
+0065 if z\=='┬'                  then iterate
+0066 if substr(new_, k, 1)=='\'  then _= overlay("═", _, k)
+0067 end   /*k*/
+0068 
+0069 do  k=1  for  width  while #==ht;        z= substr(_, k, 1) /*maze bot row.*/
+0070 if z\=='┴'                  then iterate
+0071 if substr(old_, k, 1)=='\'  then _= overlay("═", _, k)
+0072 end   /*k*/
+0073 
+0074 do  k=3  to  width-2  by 2  while #//2;  z= substr(_, k, 1) /*maze mid rows*/
+0075 if z\=='┼'   then iterate
+0076 le= substr(_   , k-1, 1)
+0077 ri= substr(_   , k+1, 1)
+0078 up= substr(old_, k  , 1)
+0079 dw= substr(new_, k  , 1)
+0080 select
+0081 when le== .  & ri== .  & up=='│' & dw=="│"  then _= overlay('|', _, k)
+0082 when le=='~' & ri=="~" & up=='\' & dw=="\"  then _= overlay('═', _, k)
+0083 when le=='~' & ri=="~" & up=='\' & dw=="│"  then _= overlay('┬', _, k)
+0084 when le=='~' & ri=="~" & up=='│' & dw=="\"  then _= overlay('┴', _, k)
+0085 when le=='~' & ri== .  & up=='\' & dw=="\"  then _= overlay('═', _, k)
+0086 when le== .  & ri=="~" & up=='\' & dw=="\"  then _= overlay('═', _, k)
+0087 when le== .  & ri== .  & up=='│' & dw=="\"  then _= overlay('|', _, k)
+0088 when le== .  & ri== .  & up=='\' & dw=="│"  then _= overlay('|', _, k)
+0089 when le== .  & ri=="~" & up=='\' & dw=="│"  then _= overlay('┌', _, k)
+0090 when le== .  & ri=="~" & up=='│' & dw=="\"  then _= overlay('└', _, k)
+0091 when le=='~' & ri== .  & up=='\' & dw=="│"  then _= overlay('┐', _, k)
+0092 when le=='~' & ri== .  & up=='│' & dw=="\"  then _= overlay('┘', _, k)
+0093 when le=='~' & ri== .  & up=='│' & dw=="│"  then _= overlay('┤', _, k)
+0094 when le== .  & ri=="~" & up=='│' & dw=="│"  then _= overlay('├', _, k)
+0095 otherwise   nop
+0096 end   /*select*/
+0097 end          /*k*/;                   return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 rh               45
+002 ch               45
+003 rr               54
+004 c                55
+005 cc               55
+006 r!               56
+007 c!               56
+008 old              60
+009 new              60
+010 old_             60
+011 new_             60
+012 k                64 69 74
+013 z                64 69 74
+014 le               76
+015 ri               77
+016 up               78
+017 dw               79
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           6 17 20 24 30 44 56
+002 __               -> newV2            9 10
+003 ?.               -> newV3.           22 22 47 47 48 49 50
+004 _r               -> newV4            43 51
+005 _c               -> newV5            43 51
+006 _                -> newV6            9 10 27 28 29 33 35 36 37 38 61 62 66 71
+007 #                -> newV7            33
+008 ?                -> newV8            47

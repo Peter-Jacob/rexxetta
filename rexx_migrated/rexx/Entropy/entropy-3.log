@@ -1,0 +1,56 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program calculates the   information entropy   for a specified character string. */
+0002 numeric digits length( e() ) % 2   -  length(.)  /*use 1/2 of the decimal digits of  E. */
+0003 parse arg $;   if $=''  then $= 1223334444       /*obtain the optional input from the CL*/
+0004 #=0;           @.= 0;        L= length($)        /*define handy-dandy REXX variables.   */
+0005 $$=                                              /*initialize the   $$   list.          */
+0006 do j=1  for L;        _= substr($, j, 1)  /*process each character in  $  string.*/
+0007 if @._==0  then do;   #= # + 1            /*Unique?  Yes, bump character counter.*/
+0008 $$= $$ || _         /*add this character to the  $$  list. */
+0009 end
+0010 @._= @._ + 1                              /*keep track of this character's count.*/
+0011 end   /*j*/
+0012 sum= 0                                           /*calculate info entropy for each char.*/
+0013 do i=1  for #;        _= substr($$, i, 1) /*obtain a character from unique list. */
+0014 sum= sum  -   @._/L * log2(@._/L)         /*add (negatively) the char entropies. */
+0015 end   /*i*/
+0016 say ' input string: '   $
+0017 say 'string length: '   L
+0018 say ' unique chars: '   #;          say
+0019 say 'the information entropy of the string ──► '         format(sum,,12)          " bits."
+0020 exit                                             /*stick a fork in it,  we're all done. */
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 e: e= 2.718281828459045235360287471352662497757247093699959574966967627724076630; return e
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 log2: procedure;  parse arg x 1 ox;     ig= x>1.5;     ii= 0;         is= 1 - 2 * (ig\==1)
+0025 numeric digits digits()+5;        call e   /*the precision of E must be≥digits(). */
+0026 do  while  ig & ox>1.5 | \ig&ox<.5;       _= e;       do j=-1;   iz= ox * _ ** -is
+0027 if j>=0 & (ig & iz<1 | \ig&iz>.5)  then leave;    _= _ * _;    izz= iz;  end /*j*/
+0028 ox=izz;  ii=ii+is*2**j;  end /*while*/;   x= x * e** -ii -1;   z= 0;  _= -1;  p= z
+0029 do k=1;   _= -_ * x;   z= z+_/k;        if z=p  then leave;  p= z;    end  /*k*/
+0030 r= z + ii;               if arg()==2  then return r;         return r / log2(2, .)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                24 28
+002 ox               24 28
+003 ig               24
+004 ii               24 28
+005 is               24
+006 j                26
+007 iz               26
+008 izz              27
+009 z                28 29
+010 p                28 29
+011 k                29
+012 r                30
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           4 10
+002 $$               -> newV2            5 8
+003 $                -> newV3            3 3
+004 #                -> newV4            4 7
+005 _                -> newV5            6 13 26 27 28 29

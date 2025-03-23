@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*REXX pgm copies data from STDIN──►STDOUT (default input stream──►default output stream*/
+0002 
+0003 do while chars()\==0                           /*repeat loop until no more characters.*/
+0004 call charin  , x                               /*read  a char from the  input stream. */
+0005 call charout , x                               /*write "   "    "   "   output   "    */
+0006 end   /*while*/                                /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 while            3
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

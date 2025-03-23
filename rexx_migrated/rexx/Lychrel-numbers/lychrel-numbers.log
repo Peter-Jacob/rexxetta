@@ -1,0 +1,55 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program finds and displays  Lychrel numbers,  related numbers, and  palindromes. */
+0002 parse arg high limit .                           /*obtain optional argument from the CL.*/
+0003 if  high='' |  high==","  then  high= 10000      /*Not specified?  Then use the default.*/
+0004 if limit='' | limit==","  then limit=   500      /* "      "         "   "   "     "    */
+0005 numeric digits  limit % 2                        /*ensure enough decimal digits for adds*/
+0006 T.= 0;   @.= T.;   #.=@.;     w= length(high)    /*W:   is used for formatting numbers. */
+0007 $=                                               /*the list of  Lychrel  numbers.       */
+0008 do j=1  for high;         call Lychrel j     /*find the    Lychrel   numbers.       */
+0009 end   /*j*/
+0010 p=;                           R=                 /*P: list of palindromes; R: related #s*/
+0011 do k=1  for high
+0012 if #.k                    then $= $ k        /*build a list of Lychrel numbers.     */
+0013 if T.k                    then R= R k        /*  "   "   "   "    "    related nums.*/
+0014 if T.k  &  k==reverse(k)  then p= p k        /*  "   "   "   "    "    palindromes. */
+0015 end   /*k*/
+0016 
+0017 say 'Found in the range  1  to '   high    " (limiting searches to "    limit   ' steps):'
+0018 say
+0019 say right( words($)           , w)         'Lychrel numbers:'             $
+0020 say right( words(R) - words($), w)         'Lychrel related numbers.'
+0021 say right( words(p)           , w)         'Lychrel palindromes:'         p
+0022 exit                                             /*stick a fork in it,  we're all done. */
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 Lychrel: procedure expose limit @. #. T.; parse arg x 1 z   /*set X and Z to argument 1.*/
+0025 rels= 0                                            /*# related numbers (so far)*/
+0026 do  limit;             z= z + reverse(z) /*add the reverse of Z ···  */
+0027 if z==reverse(z)  then return            /*is the new Z a palindrome?*/
+0028 rels= rels + 1;        !.rels= z         /*add to the related numbers*/
+0029 end   /*limit*/                          /* [↑]  only DO limit times.*/
+0030 #.x= 1                                             /*mark number as a  Lychrel.*/
+0031 T.x= 1;   do a=1  for rels;      _= !.a            /*process "related" numbers.*/
+0032 if @._  then #.x= 0                      /*unmark number as  Lychrel.*/
+0033 else @._= 1                      /*  mark    "    "    "     */
+0034 T._= 1                                   /*mark number as  "related".*/
+0035 end   /*a*/
+0036 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                24
+002 z                24 26
+003 rels             25 28
+004 T.               31 34
+005 a                31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           6
+002 #.               -> newV2.           6 30 32
+003 !.               -> newV3.           28
+004 $                -> newV4            7 12
+005 _                -> newV5            31

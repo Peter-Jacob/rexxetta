@@ -1,0 +1,95 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX program generates  10,000  normally distributed numbers  (Gaussian distribution).*/
+0002 numeric digits 20                                /*use twenty decimal digs for accuracy.*/
+0003 parse arg n seed .                               /*obtain optional arguments from the CL*/
+0004 if n==''  |  n==","     then n= 10000            /*Not specified?  Then use the default.*/
+0005 if datatype(seed, 'W')  then call random ,,seed  /*seed is for repeatable RANDOM numbers*/
+0006 call pi                                          /*call subroutine to define pi constant*/
+0007 do g=1  for n;   #.g= sqrt( -2 * ln( rand() ) )      *      cos( 2 * pi * rand() )
+0008 end   /*g*/                              /* [↑]  uniform random number ───► #.g */
+0009 s= 0
+0010 mn= #.1;        mx= mn;        noise= n * .0005  /*calculate the noise:  1/20th %  of N.*/
+0011 ss= 0
+0012 do j=1  for n;         _= #.j            /*the sum,  and  the sum of squares.   */
+0013 s= s + _;              ss= ss  +  _ * _  /*the sum,  and  the sum of squares.   */
+0014 mn= min(mn, _);        mx= max(mx, _)    /*find the minimum  and the maximum.   */
+0015 end   /*j*/
+0016 !.= 0
+0017 say 'number of data points = '   fmt(n  )
+0018 say '              minimum = '   fmt(mn )
+0019 say '              maximum = '   fmt(mx )
+0020 say '      arithmetic mean = '   fmt(s/n)
+0021 say '   standard deviation = '   fmt(sqrt( ss/n - (s/n) **2) )
+0022 ?mn= !.1;    ?mx= ?mn                            /*define minimum & maximum value so far*/
+0023 parse value  scrSize()  with  sd sw .            /*obtain the (true) screen size of term*/  /*◄──not all REXXes have this BIF*/
+0024 sdE= sd - 4                                      /*the effective (usable) screen depth. */
+0025 swE= sw - 1                                      /* "      "         "        "   width.*/
+0026 $= 1 / max(1, mx-mn) * sdE                       /*$  is used for scaling depth of histo*/
+0027 do i=1  for n; ?= trunc((#.i-mn) *$) /*calculate the relative line.         */
+0028 !.?= !.? + 1                         /*bump the counter.                    */
+0029 ?mn= min(?mn, !.?)                   /*find the minimum.                    */
+0030 ?mx= max(?mx, !.?)                   /*  "   "  maximum.                    */
+0031 end   /*i*/
+0032 f= swE/?mx                                                /*limit graph to 1 full screen*/
+0033 do h=0  for sdE;     _= !.h                   /*obtain a data point.        */
+0034 if _>noise  then say copies('─', trunc(_*f) ) /*display a bar of histogram. */
+0035 end   /*h*/                                   /*[↑]  use a hyphen for histo.*/
+0036 exit                                             /*stick a fork in it,  we're all done. */
+0037 /*───────────────────────────────────────────────────────────────────────────────────────────────────────────────────*/
+0038 fmt:  parse arg @; return left('', (@>=0) + 2 * datatype(@, 'W'))@  /*prepend a blank if #>=0, add 2 blanks if whole.*/
+0039 e:    e = 2.7182818284590452353602874713526624977572470936999595749669676277240766303535;                     return e
+0040 pi:   pi= 3.1415926535897932384626433832795028841971693993751058209749445923078164062862;                     return pi
+0041 r2r:  return arg(1)  //  (pi() * 2)                                 /*normalize the given angle (in radians) to ±2pi.*/
+0042 rand: return random(1, 1e5)  /  1e5                                 /*REXX generates uniform random postive integers.*/
+0043 /*───────────────────────────────────────────────────────────────────────────────────────────────────────────────────*/
+0044 ln:   procedure; parse arg x,f; call e; ig= x>1.5; is= 1 -2*(ig\==1); ii= 0; xx= x;  do while ig & xx>1.5 | \ig & xx<.5
+0045 _= e;  do k=-1; iz= xx*_ **-is;  if k>=0 & (ig & iz<1 | \ig & iz>.5)  then leave;  _= _*_; izz= iz; end;  xx= izz
+0046 ii= ii +is*2**k; end; x= x*e**-ii-1; z=0; _=-1; p=z; do k=1;_=-_*x;z=z+_/k;if z=p then leave;p=z;end; return z+ii
+0047 /*───────────────────────────────────────────────────────────────────────────────────────────────────────────────────*/
+0048 cos:  procedure; parse arg x; x=r2r(x); a=abs(x); hpi= pi*.5;  numeric fuzz min(6, digits()-3); if a=pi  then return -1
+0049 if a=hpi | a=hpi*3  then return 0;   if a=pi/3  then return .5;   if a=pi*2/3 then return -.5;   z= 1;   _= 1
+0050 x= x*x;  p= z;      do k=2  by 2; _= -_ * x / (k*(k-1));   z= z + _;  if z=p  then leave;  p= z; end;    return z
+0051 /*───────────────────────────────────────────────────────────────────────────────────────────────────────────────────*/
+0052 sqrt: procedure; parse arg x;  if x=0  then return 0;  d= digits();   m.= 9;   numeric digits;   numeric form;   h= d+6
+0053 parse value format(x,2,1,,0) 'E0'  with  g 'E' _ .; g=g*.5'e'_%2;    do j=0  while h>9; m.j=h; h=h%2+1; end /*j*/
+0054 do k=j+5  to 0  by -1;  numeric digits m.k;  g=(g+x/g)*.5;  end  /*k*/;          numeric digits d;   return g/1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                52
+002 d                52
+003 m.               52 53
+004 h                52 53
+005 p                50 50
+006 k                50 54
+007 k                45 46
+008 iz               45
+009 izz              45
+010 z                46 46
+011 p                46 46
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 sd               23
+018 sw               23
+019 sdE              24
+020 swE              25
+021 i                27
+022 f                32
+023 g                53 53 54
+024 j                53
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 ?mn              -> newV1            22 29
+002 ?mx              -> newV2            22 30
+003 #.               -> newV3.           7
+004 !.               -> newV4.           16 28
+005 _                -> newV5            12 33 45 45 46 46 49 50 53
+006 $                -> newV6            26
+007 ?                -> newV7            27
+008 @                -> newV8            38

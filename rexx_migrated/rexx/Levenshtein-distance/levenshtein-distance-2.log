@@ -1,0 +1,71 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*rexx*/
+0002 
+0003 call test 'kitten'      ,'sitting'
+0004 call test 'rosettacode' ,'raisethysword'
+0005 call test 'Sunday'      ,'Saturday'
+0006 call test 'Vladimir_Levenshtein[1965]',,
+0007 'Vladimir_Levenshtein[1965]'
+0008 call test 'this_algorithm_is_similar_to',,
+0009 'Damerau-Levenshtein_distance'
+0010 call test '','abc'
+0011 exit 0
+0012 
+0013 
+0014 test: Procedure
+0015 Parse Arg s,t
+0016 ld.=''
+0017 Say '          1st string  = >'s'<'
+0018 Say '          2nd string  = >'t'<'
+0019 Say 'Levenshtein distance  =' Levenshtein(s,length(s),t,length(t))
+0020 Say ''
+0021 Return
+0022 
+0023 
+0024 Levenshtein: Procedure
+0025 Parse Arg s,t
+0026 /* for all i and j, d[i,j] will hold the Levenshtein distance between     */
+0027 /* the first i characters of s and the first j characters of t;           */
+0028 /* note that d has (m+1)*(n+1) values                                     */
+0029 m=length(s)
+0030 n=length(t)
+0031 d.=0
+0032 Do i=1 To m  /* source prefixes can be transformed into empty string by */
+0033 d.i.0=i    /* dropping all characters                                 */
+0034 End
+0035 Do j=1 To n  /* target prefixes can be reached from empty source prefix */
+0036 d.0.j=j    /* by inserting every character                            */
+0037 End
+0038 Do j=1 To n
+0039 jj=j-1
+0040 Do i=1 To m
+0041 ii=i-1
+0042 If substr(s,i,1)=substr(t,j,1) Then
+0043 d.i.j=d.ii.jj          /* no operation required                   */
+0044 else
+0045 d.i.j=min(d.ii.j+1,,   /* a deletion                              */
+0046 d.i.jj+1,,   /* an insertion                            */
+0047 d.ii.jj+1)   /* a substitution                          */
+0048 End
+0049 End
+0050 Say '          1st string  = '    s
+0051 Say '          2nd string  = '    t
+0052 say 'Levenshtein distance  = ' d.m.n;   say ''
+0053 Return d.m.n
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                25
+002 t                25
+003 m                29
+004 n                30
+005 d.               31 33 36 43 45
+006 i                32 40
+007 j                35 38
+008 jj               39
+009 ii               41
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,26 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX program expands an  ordered list  of  integers  into  an expanded list.          */
+0002 old= '-6,-3--1,   3-5,  7-11,       14,15,17-20';       a=translate(old,,',')
+0003 new=                                             /*translate [↑]  commas (,) ───► blanks*/
+0004 do until a=='';   parse var a X a          /*obtain the next integer ──or── range.*/
+0005 p=pos('-', X, 2)                           /*find the location of a dash (maybe). */
+0006 if p==0 then  new=new   X                  /*append integer   X   to the new list.*/
+0007 else  do j=left(X,p-1)  to substr(X,p+1);     new=new j
+0008 end   /*j*/                  /*append a single [↑] integer at a time*/
+0009 end                 /*until*/
+0010 /*stick a fork in it,  we're all done. */
+0011 new=translate( strip(new),  ',',  " ")           /*remove the first blank,  add commas. */
+0012 say 'old list: '   old                           /*show the  old list of numbers/ranges.*/
+0013 say 'new list: '   new                           /*  "   "   new   "   " numbers.       */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                4 4
+002 X                4
+003 p                5
+004 new              6 7 11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

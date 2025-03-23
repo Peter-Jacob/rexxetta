@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 ...
+0002 signal on syntax
+0003 ...
+0004 y=4 - 4
+0005 x=66
+0006 say x/y                  /*divide x by y.*/
+0007 say "yup, that's a divide by zero, by gum."
+0008 exit
+0009 
+0010 syntax: say
+0011 
+0012 /* We can now possibly do some repair work , but most people trap */
+0013 /* the condition, display where it happened, the REXX sourceline  */
+0014 /* (the actual REXX statement),  which condition was triggered,   */
+0015 /* display any other pertinent REXX variables, which line in the  */
+0016 /* REXX program, and then (usually) exit with some kind of error  */
+0017 /* message and error code indicator.                              */
+0018 /* Note:  the "name" of the REXX program isn't quite accurate,    */
+0019 /* rather, it is the name that was invoked (called by), which may */
+0020 /* be different name than the actual program being executed.      */
+0021 
+0022 say '──────────────────────error!─────────────────────────'
+0023 say 'that division (above) will cause control to get here.'
+0024 parse source . . fid .
+0025 say;  say  'REXX raised a SYNTAX error in program:' fid
+0026 say;  say  'it occurred on line' sigl
+0027 say;  say  'the REXX statement is:'     /*put it on separate line.*/
+0028 say  sourceline(sigl)
+0029 say;  say  'which code:' condition('C') "error"
+0030 say;  say  'error code:' condition('D')
+0031 say;  say  "Moral: don't do that."
+0032 exit 13
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 source           24
+002 fid              24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

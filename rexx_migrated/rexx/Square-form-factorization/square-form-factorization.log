@@ -1,0 +1,85 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX pgm factors an integer using Daniel Shanks' (1917-1996) square form factorization*/
+0002 numeric digits 100                                       /*ensure enough decimal digits.*/
+0003 call dMults 1,3,5,7,11,3*5,3*7,3*11,5*7,5*11,7*11, 3*5*7, 3*5*11, 3*7*11, 5*7*11, 3*5*7*11
+0004 call dTests 2501,  12851,  13289,  75301,  120787,  967009, 997417,  7091569,  13290059, ,
+0005 42854447,  223553581,  2027651281, 11111111111, 100895598169, 1002742628021, ,
+0006 60012462237239,   287129523414791,    9007199254740931,   11111111111111111, ,
+0007 314159265358979323,    384307168202281507,    419244183493398773,            ,
+0008 658812288346769681,    922337203685477563,    1000000000000000127,           ,
+0009 1152921505680588799,   1537228672809128917,   4611686018427387877
+0010 w= length( commas(!.$) )     /*the max width of test numbers*/
+0011 do tests=1  for !.0;  n= !.tests;  nc= commas(n)
+0012 f= ssff(n);   fc= commas(f);     wf= length(fc);     if f\==0  then nf= commas(n%f)
+0013 if f\==0  then do;  nfc= commas(n%f);      wnfc= length(nfc);   end
+0014 if f ==0  then _= "   (Shank's square form factor failed.)"
+0015 else _= ' factors are: '  right( fc, max(w%2  , wf  ) )     "  and  "   ,
+0016 right(nfc, max(w%2+4, wnfc) )
+0017 say right(nc, w+5)   _
+0018 end   /*tests*/
+0019 exit 0                                           /*stick a fork in it,  we're all done. */
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+0022 dMults: @.$= 0;  do j=1  for arg(); @.j= arg(j); @.$=max(@.$, @.j); end; @.0=j-1; return
+0023 dTests: !.$= 0;  do j=1  for arg(); !.j= arg(j); !.$=max(!.$, !.j); end; !.0=j-1; return
+0024 gcd:    procedure; parse arg x,y;  do until _==0;  _= x // y;  x= y;   y= _; end; return x
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 iSqrt: procedure; parse arg x;  r=0;  q=1;             do while q<=x;  q=q*4;  end
+0027 do while q>1; q=q%4; _=x-r-q; r=r%2; if _>=0 then do;x=_;r=r+q; end; end
+0028 return r
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 ssff:  procedure expose @.;  parse arg n;   n= abs(n);               er= '***error***'
+0031 s= iSqrt(n);          if s**2==n  then return s;              big= 2**digits()
+0032 do #=1  for @.0;   k= @.#          /*get a # from the list of low factors*/
+0033 if n>big/k  then do; say er 'number is too large: '  commas(k); exit 8; end
+0034 d= n*k;      po= iSqrt(d);   p= po
+0035 pprev= po;   QQ= d - po*po
+0036 qprev= 1;    BB= iSqrt(s+s)*6
+0037 do i=2  while i<BB;         b= (po+p)%QQ
+0038 p= b*QQ - p;                q= QQ
+0039 QQ= qprev + b*(pprev-p);    r= iSqrt(QQ)
+0040 if i//2==0  then  if r*r==QQ  then leave
+0041 qprev= q;                   pprev= p
+0042 end   /*i*/
+0043 if i>=BB  then iterate
+0044 b= (po-p)%r;   p= b*r + p
+0045 pprev= p;             qprev= r
+0046 QQ= (d - pprev*pprev)%qprev
+0047 do until p==pprev;          pprev= p
+0048 b= (po+p)%QQ;     q= QQ;    p= b*QQ - p
+0049 QQ= qprev + b*(pprev-p);    qprev= q
+0050 end   /*until*/
+0051 r= gcd(n, qprev)
+0052 if r\==1  then if  r\==n  then return r
+0053 end   /*#*/
+0054 return 0
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                30 30
+002 er               30
+003 s                31
+004 big              31
+005 k                32
+006 d                34
+007 po               34
+008 p                34 38 44 48
+009 pprev            35 41 45 47
+010 QQ               35 39 46 49
+011 qprev            36 41 45 49
+012 BB               36
+013 i                37
+014 b                37 44 48
+015 q                38 48
+016 r                39 51
+017 until            47
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           22 22 22
+002 !.               -> newV2.           23 23 23
+003 _                -> newV3            14 24 27
+004 ?                -> newV4            21 21
+005 #                -> newV5            32

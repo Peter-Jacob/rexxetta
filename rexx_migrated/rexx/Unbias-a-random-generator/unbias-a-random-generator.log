@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program generates  unbiased random numbers  and displays the results to terminal.*/
+0002 parse arg # R seed .                             /*obtain optional arguments from the CL*/
+0003 if #==''  |  #==","     then #=1000              /*#:  the number of SAMPLES to be used.*/
+0004 if R==''  |  R==","     then R=6                 /*R:  the high number for the  range.  */
+0005 if datatype(seed, 'W')  then call random ,,seed  /*Specified?  Then use for RANDOM seed.*/
+0006 dash='─';    @b="biased";         @ub='un'@b     /*literals for the SAY column headers. */
+0007 say left('',5)   ctr("N",5)   ctr(@b)   ctr(@b'%')  ctr(@ub)  ctr(@ub"%")   ctr('samples')
+0008 dash=
+0009 do N=3  to R;      b=0;                u=0
+0010 do j=1  for #;   b=b + randN(N);     u=u + unbiased()
+0011 end   /*j*/
+0012 say  left('', 5)     ctr(N, 5)     ctr(b)    pct(b)    ctr(u)    pct(u)    ctr(#)
+0013 end     /*N*/
+0014 exit                                             /*stick a fork in it,  we're all done. */
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 ctr:       return center( arg(1), word(arg(2) 12, 1), left(dash, 1)) /*show hdr│numbers.*/
+0017 pct:       return ctr( format(arg(1) / # * 100, , 2)'%' )            /*2 decimal digits.*/
+0018 randN:     parse arg z;            return random(1, z)==z            /*ret 1 if rand==Z.*/
+0019 unbiased:  do  until x\==randN(N); x=randN(N);  end;       return x  /* "  unbiased RAND*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                18
+002 x                19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @ub              -> newV1            6
+002 @b               -> newV2            6
+003 #                -> newV3            2 3

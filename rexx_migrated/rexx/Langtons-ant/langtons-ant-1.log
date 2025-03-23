@@ -1,0 +1,77 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program implements Langton's ant walk and displays the ant's path (finite field).*/
+0002 parse arg dir char seed .                        /*obtain optional arguments from the CL*/
+0003 if datatype(seed, 'W')   then call random ,,seed /*Integer? Then use it as a RANDOM SEED*/
+0004 if  dir=='' |  dir==","  then dir= random(1, 4)  /*ant is facing a random direction,    */
+0005 if char=='' | char==","  then char= '#'          /*binary colors:   0≡white,  1≡black.  */
+0006 parse value scrSize() with sd          sw .      /*obtain the terminal's depth and width*/
+0007 sd= sd -6;  sw= sw -1 /*adjust for     "      useble area.   */
+0008 xHome= 1000000;      yHome= 1000000           /*initially in the middle of nowhere.  */
+0009 x= xHome;            y= yHome                    /*start ant's walk in middle of nowhere*/
+0010 $.= 1  ;  $.0= 4 ;   $.2= 2 ;   $.3= 3;   $.4= 4 /* 1≡north   2≡east   3≡south   4≡west.*/
+0011 minX= x;  minY= y;   maxX= x;   maxY= y          /*initialize the min/max values for X,Y*/
+0012 @.= 0                                            /*the universe  (walk field)  is white.*/
+0013 do #=1  until (maxX-minY>sw)|(maxY-minY>sd) /*is the path out─of─bounds for screen?*/
+0014 black= @.x.y;                 @.x.y= \@.x.y /*invert (flip)  ant's cell color code.*/
+0015 if black  then dir= dir - 1                 /*if cell color was black,  turn  left.*/
+0016 else dir= dir + 1                 /* "   "    "    "  white,  turn right.*/
+0017 dir= $.dir                                  /*$ array handles/adjusts under & over.*/
+0018 select                            /*ant walks the direction it's facing. */
+0019 when dir==1  then y= y + 1        /*is ant walking north?  Then go up.   */
+0020 when dir==2  then x= x + 1        /* "  "     "     east?    "  "  right.*/
+0021 when dir==3  then y= y - 1        /* "  "     "    south?    "  "  down. */
+0022 when dir==4  then x= x - 1        /* "  "     "     west?    "  "  left. */
+0023 end   /*select*/                  /*the  DIRection  is always normalized.*/
+0024 minX= min(minX, x);    maxX= max(maxX, x)   /*find the minimum and maximum of  X.  */
+0025 minY= min(minY, y);    maxY= max(maxY, y)   /*  "   "     "     "     "     "  Y.  */
+0026 end   /*steps*/                             /* [↑]  ant walks  hither and thither. */
+0027 /*finished walking, it's out-of-bounds.*/
+0028 say center(" Langton's ant walked "     #     ' steps ', sw, "─")
+0029 @.xHome.yHome= '█'                               /*show the ant's initial starting point*/
+0030 @.x.y=         '∙'                               /*show where the ant went out─of─bounds*/
+0031 /* [↓]  show Langton's ant's trail.    */
+0032 do    y=maxY  to minY  by -1;  _=           /*display a single  row  of cells.     */
+0033 do x=minX  to maxX;         _=_ || @.x.y /*build a cell row for the display.    */
+0034 end   /*x*/                              /* [↓]  strip trailing blanks from line*/
+0035 _= strip( translate(_, char, 10),  'T')     /*color the cells:   black  or  white. */
+0036 if _\==''  then say _                       /*display line (strip trailing blanks).*/
+0037 end      /*y*/                              /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 dir              2 4 15 17
+002 char             2 5
+003 seed             2
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 sd               6 7
+018 sw               6 7
+019 xHome            8
+020 yHome            8
+021 x                9 33
+022 y                9 32
+023 minX             11 24
+024 minY             11 25
+025 maxX             11 24
+026 maxY             11 25
+027 black            14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $.               -> newV1.           10 10 10 10 10
+002 @.               -> newV2.           12 14 29 30
+003 #                -> newV3            13
+004 _                -> newV4            32 33 35

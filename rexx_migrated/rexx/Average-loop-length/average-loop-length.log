@@ -1,0 +1,52 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program computes the average loop length mapping a random field 1···N ───► 1···N */
+0002 parse arg runs tests seed .                      /*obtain optional arguments from the CL*/
+0003 if  runs =='' |  runs ==","  then runs =      40 /*Not specified?  Then use the default.*/
+0004 if tests =='' | tests ==","  then tests= 1000000 /* "      "         "   "   "     "    */
+0005 if datatype(seed, 'W')  then call random ,, seed /*Is integer?   For RAND repeatability.*/
+0006 !.=0;          !.0=1                             /*used for  factorial (!)  memoization.*/
+0007 numeric digits 100000                            /*be able to calculate 25k! if need be.*/
+0008 numeric digits max(9, length( !(runs) )   )      /*set the NUMERIC DIGITS for  !(runs). */
+0009 say right(     runs, 24)      'runs'             /*display number of runs   we're using.*/
+0010 say right(    tests, 24)      'tests'            /*   "       "    " tests    "     "   */
+0011 say right( digits(), 24)      'digits'           /*   "       "    " digits   "     "   */
+0012 say
+0013 say "        N    average     exact     % error "     /* ◄─── title, header ►────────┐  */
+0014 hdr="       ═══  ═════════  ═════════  ═════════";       pad=left('',3)  /* ◄────────┘  */
+0015 say hdr
+0016 do #=1  for runs;   av=fmtD( exact(#) ) /*use four digits past decimal point.  */
+0017 xa=fmtD( exper(#) ) /* "    "    "      "     "      "     */
+0018 say right(#,9)  pad xa pad av pad fmtD( abs(xa-av) * 100 / av)   /*show values.*/
+0019 end   /*#*/
+0020 say hdr                                          /*display the final header (some bars).*/
+0021 exit                                             /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 !:     procedure expose !.;  parse arg z;                      if !.z\==0  then return !.z
+0024 !=1;       do j=2  for z -1;  !=!*j;  !.j=!;  end; /*compute factorial*/   return !
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 exact: parse arg x;  s=0;     do j=1  for x;  s=s + !(x) / !(x-j) / x**j;  end;   return s
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 exper: parse arg n;  k=0;     do tests;   $.=0                      /*do it TESTS times.*/
+0029 do n;    r=random(1, n);      if $.r  then leave
+0030 $.r=1;   k=k + 1                   /*bump the counter. */
+0031 end   /*n*/
+0032 end      /*tests*/
+0033 return k/tests
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 fmtD:  parse arg y,d;     d=word(d 4, 1);    y=format(y, , d);     parse var  y  w  '.'  f
+0036 if f=0  then return  w || left('', d +1);                                  return y
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                35
+002 w                35
+003 f                35
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           6 6 24
+002 $.               -> newV2.           28 30
+003 #                -> newV3            16
+004 !                -> newV4            24 24

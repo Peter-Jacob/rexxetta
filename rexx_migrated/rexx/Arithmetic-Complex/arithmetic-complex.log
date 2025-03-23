@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates how to support some  math functions  for  complex numbers. */
+0002 x = '(5,3i)'                                     /*define  X    ─── can use  I i J or j */
+0003 y = "( .5,  6j)"                                 /*define  Y         "   "   " " "  " " */
+0004 
+0005 say '      addition:   '        x        " + "         y         ' = '          Cadd(x, y)
+0006 say '   subtraction:   '        x        " - "         y         ' = '          Csub(x, y)
+0007 say 'multiplication:   '        x        " * "         y         ' = '          Cmul(x, y)
+0008 say '      division:   '        x        " ÷ "         y         ' = '          Cdiv(x, y)
+0009 say '       inverse:   '        x        "                         = "          Cinv(x, y)
+0010 say '  conjugate of:   '        x        "                         = "          Conj(x, y)
+0011 say '   negation of:   '        x        "                         = "          Cneg(x, y)
+0012 exit                                             /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 Conj: procedure; parse arg a ',' b,c ',' d;   call C#;    return C$(  a      ,  -b    )
+0015 Cadd: procedure; parse arg a ',' b,c ',' d;   call C#;    return C$(  a+c    ,   b+d  )
+0016 Csub: procedure; parse arg a ',' b,c ',' d;   call C#;    return C$(  a-c    ,   b-d  )
+0017 Cmul: procedure; parse arg a ',' b,c ',' d;   call C#;    return C$( ac-bd   ,   bc+ad)
+0018 Cdiv: procedure; parse arg a ',' b,c ',' d;   call C#;    return C$((ac+bd)/s,  (bc-ad)/s)
+0019 Cinv: return  Cdiv(1,  arg(1))
+0020 Cneg: return  Cmul(arg(1), -1)
+0021 C_:   return  word(translate(arg(1), , '{[(JjIi)]}')  0,  1)                /*get # or 0*/
+0022 C#:   a=C_(a); b=C_(b); c=C_(c); d=C_(d); ac=a*c; ad=a*d; bc=b*c; bd=b*d;s=c*c+d*d; return
+0023 C$:   parse arg r,c;    _='['r;   if c\=0  then _=_","c'j';   return _"]"   /*uses  j   */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 r                23
+002 c                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            23 23

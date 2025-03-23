@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX program reports on the amount of elapsed time 4 different tasks use (wall clock).*/
+0002 time.=                                           /*nullify times for all the tasks below*/
+0003 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0004 call time 'Reset'                                /*reset the REXX (elapsed) clock timer.*/
+0005 /*show pi in hex to  2,000 dec. digits.*/
+0006 task.1= 'base(pi,16)  ;;;  lowercase   digits 2k   echoOptions'
+0007 call '$CALC' task.1            /*perform task number one  (via $CALC).*/
+0008 time.1=time('E')                                 /*get and save the time used by task 1.*/
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 call time 'Reset'                                /*reset the REXX (elapsed) clock timer.*/
+0011 /*get primes  40000 ──► 40800 and      */
+0012 /*show their differences.              */
+0013 task.2= 'diffs[ prime(40k, 40.8k) ]  ;;;  GRoup 20'
+0014 call '$CALC' task.2            /*perform task number two  (via $CALC).*/
+0015 time.2=time('E')                                 /*get and save the time used by task 2.*/
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 call time 'Reset'                                /*reset the REXX (elapsed) clock timer.*/
+0018 /*show the  Collatz sequence  for a    */
+0019 /*stupidly gihugeic number.            */
+0020 task.3= 'Collatz(38**8)  ;;;  Horizontal'
+0021 call '$CALC' task.3            /*perform task number three (via $CALC)*/
+0022 time.3=time('E')                                 /*get and save the time used by task 3.*/
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 call time 'Reset'                                /*reset the REXX (elapsed) clock timer.*/
+0025 /*plot  SINE  in  ½  degree increments.*/
+0026 /*using five decimal digits  (¬ 60).   */
+0027 task.4= 'sinD(-180, +180, 0.5)  ;;;  Plot  DIGits 5   echoOptions'
+0028 call '$CALC' task.4            /*perform task number four (via $CALC).*/
+0029 time.4=time('E')                                 /*get and save the time used by task 4.*/
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 say
+0032 do j=1  while  time.j\==''
+0033 say 'time used for task'     j     "was"     right(format(time.j,,0),4)     'seconds.'
+0034 end   /*j*/
+0035 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 time.            2 8 15 22 29
+002 task.            6 13 20 27
+003 j                32
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 /*����������Š�� -> newV1            25

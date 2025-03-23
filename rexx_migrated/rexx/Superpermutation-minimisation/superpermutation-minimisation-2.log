@@ -1,0 +1,77 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program attempts  to find better  minimizations  for computing superpermutations.*/
+0002 parse arg cycles .                               /*obtain optional arguments from the CL*/
+0003 if cycles=='' | cycles==","  then cycles= 7      /*Not specified?  Then use the default.*/
+0004 
+0005 do n=0  to  cycles
+0006 #= 0;                          $.=         /*populate the first permutation.      */
+0007 do pop=1  for n;       @.pop= d2x(pop);         $.0= $.0  ||  @.pop
+0008 end     /*pop*/
+0009 
+0010 do  while aPerm(n,0);  if n\==0  then #= #+1;   $.#=
+0011 do j=1  for n;      $.#= $.#  ||  @.j
+0012 end  /*j*/
+0013 end     /*while*/
+0014 z= $.0
+0015 c= 0                     /*count of found permutations (so far).*/
+0016 do j=1  while c\==#
+0017 if j>#  then do;  c= c + 1             /*exhausted finds and shortcuts; concat*/
+0018 z= z  ||  $.j;  $.j=
+0019 j= 1
+0020 end
+0021 if $.j==''          then iterate       /*Already found? Then ignore this perm.*/
+0022 if pos($.j, z)\==0  then do;  c= c + 1;      $.j=
+0023 iterate
+0024 end
+0025 
+0026 do k=n-1  to 1  by -1              /*handle the shortcuts in perm finding.*/
+0027 if substr($.j, k)==left(z, k)  then do;  c= c+1  /*found rightish shortcut*/
+0028 z= left($.j, k-1)  ||  z;     $.j=
+0029 iterate j
+0030 end
+0031 if left($.j, k) ==right(z, k)  then do;  c= c+1 /*found   leftish shortcut*/
+0032 z= z  ||  substr($.j, k+1);   $.j=
+0033 iterate j
+0034 end
+0035 end   /*k*/                        /* [↑]  more IFs could be added for opt*/
+0036 end      /*j*/
+0037 
+0038 L= commas( length(z) )
+0039 say 'length of superpermutation('n") ="     right(L, max(length(L), cycles+2) )
+0040 end   /*n*/
+0041 exit 0                                           /*stick a fork in it,  we're all done. */
+0042 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0043 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+0044 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0045 aPerm: procedure expose @.;     parse arg n,i;    nm=n-1;  if n==0  then return 0
+0046 do k=nm  by -1  for nm; kp=k+1; if @.k<@.kp  then do; i=k;leave; end; end /*k*/
+0047 do j=i+1  while  j<n;  parse value  @.j @.n  with  @.n @.j;    n=n-1; end /*j*/
+0048 if i==0  then return 0
+0049 do m=i+1  while @.m<@.i; end /*m*/;   parse value  @.m @.i  with  @.i @.m
+0050 return 1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                45 47
+002 i                45 46
+003 nm               45
+004 k                46
+005 kp               46
+006 j                47
+007 k                26
+008 L                38
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $.               -> newV1.           6 7 10 11 18 22 28 32
+002 @.               -> newV2.           7 47 47 49 49
+003 #                -> newV3            6 10
+004 ?                -> newV4            43 43

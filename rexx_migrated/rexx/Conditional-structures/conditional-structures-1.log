@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 if  y  then @=6                        /* Y  must be either   0  or  1  */
+0002 
+0003 if t**2>u  then x=y                    /*simple  IF  with  THEN & ELSE. */
+0004 else x=-y
+0005 
+0006 if t**2>u  then do j=1  for 10;  say prime(j);  end    /*THEN  DO  loop.*/
+0007 else x=-y                                   /*simple  ELSE.  */
+0008 
+0009 if z>w+4  then do                                      /*THEN  DO group.*/
+0010 z=abs(z)
+0011 say 'z='z
+0012 end
+0013 else do;  z=0;  say 'failed.';  end          /*ELSE  DO group.*/
+0014 
+0015 if x>y  &  c*d<sqrt(pz) |,             /*this statement is continued [,]*/
+0016 substr(abc,4,1)=='~'  then  if  z=0  then call punt
+0017 else nop       /*NOP pairs up IF*/
+0018 else  if  z<0  then z=-y      /*alignment helps*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                3
+002 j                6
+003 z                10 13
+004 substr(abc,4,1)  16
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            1

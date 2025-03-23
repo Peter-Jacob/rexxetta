@@ -1,0 +1,116 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * permanent.rex
+0003 * compute the permanent of a matrix
+0004 * I found an algorithm here:
+0005 * http://www.codeproject.com/Articles/21282/Compute-Permanent-of-a-Matrix-with-Ryser-s-Algorit
+0006 * see there for the original author.
+0007 * translated it to REXX (hopefully correctly) to REXX
+0008 * and believe that I can "publish" it here, on rosettacode
+0009 * when I look at the copyright rules shown there:
+0010 * http://www.codeproject.com/info/cpol10.aspx
+0011 * 20.05.2013 Walter Pachl
+0012 **********************************************************************/
+0013 Call init arg(1)                 /* initialize the matrix (n and a.* */
+0014 sum=0
+0015 rowsumprod=0
+0016 rowsum=0
+0017 chi.=0
+0018 c=2**n
+0019 Do k=1 To c-1                       /* loop all 2^n submatrices of A */
+0020 rowsumprod = 1
+0021 chis=dec2binarr(k,n)              /* characteristic vector         */
+0022 Do ci=0 By 1 While chis<>''
+0023 Parse Var chis chi.ci chis
+0024 End
+0025 Do m=0 To n-1                     /* loop columns of submatrix #k  */
+0026 rowsum = 0
+0027 Do p=0 To n-1                   /* loop rows and compute rowsum  */
+0028 mnp=m*n+p
+0029 rowsum=rowsum+chi.p*A.mnp
+0030 End
+0031 rowsumprod=rowsumprod*rowsum  /* update product of rowsums     */
+0032 /* (optional -- use for sparse matrices) */
+0033 /* if (rowsumprod == 0) break;           */
+0034 End
+0035 sum=sum+((-1)**(n-chi.n))*rowsumprod
+0036 End
+0037 Return sum
+0038 /**********************************************************************
+0039 * Notes
+0040 * 1.The submatrices are chosen by use of a characteristic vector chi
+0041 * (only the columns are considered, where chi[p] == 1).
+0042 * To retrieve the t from Ryser's formula, we need to save the number
+0043 * n-t, as is done in chi[n]. Then we get t = n - chi[n].
+0044 * 2.The matrix parameter A is expected to be a one-dimensional integer
+0045 * array -- should the matrix be encoded row-wise or column-wise?
+0046 * -- It doesn't matter. The permanent is invariant under
+0047 * row-switching and column-switching, and it is Screenshot
+0048 * - per_inv.gif .
+0049 * 3.Further enhancements: If any rowsum equals zero,
+0050 * the entire rowsumprod becomes zero, and thus the m-loop can be broken.
+0051 * Since if-statements are relatively expensive compared to integer
+0052 * operations, this might save time only for sparse matrices
+0053 * (where most entries are zeros).
+0054 * 4.If anyone finds a polynomial algorithm for permanents,
+0055 * he will get rich and famous (at least in the computer science world).
+0056 **********************************************************************/
+0057 /**********************************************************************
+0058 * At first, we need to transform a decimal to a binary array
+0059 * with an additional element
+0060 * (the last one) saving the number of ones in the array:
+0061 **********************************************************************/
+0062 dec2binarr: Procedure
+0063 Parse Arg n,dim
+0064 ol='n='n 'dim='dim
+0065 res.=0
+0066 pos=dim-1
+0067 Do While n>0
+0068 res.pos=n//2
+0069 res.dim=res.dim+res.pos
+0070 n=n%2
+0071 pos=pos-1
+0072 End
+0073 res_s=''
+0074 Do i=0 To dim
+0075 res_s=res_s res.i
+0076 End
+0077 Return res_s
+0078 
+0079 init: Procedure Expose a. n
+0080 /**********************************************************************
+0081 * a.* (starting with index 0) contains all array elements
+0082 * n is the dimension of the square matrix
+0083 **********************************************************************/
+0084 Parse Arg as
+0085 n=sqrt(words(as))
+0086 a.=0
+0087 Do ai=0 By 1 While as<>''
+0088 Parse Var as a.ai as
+0089 End
+0090 Return
+0091 
+0092 sqrt: Procedure
+0093 /**********************************************************************
+0094 * compute and return the (integer) square root of the given argument
+0095 * terminate the program if the argument is not a square
+0096 **********************************************************************/
+0097 Parse Arg nn
+0098 Do n=1 By 1 while n*n<nn
+0099 End
+0100 If n*n=nn Then
+0101 Return n
+0102 Else Do
+0103 Say 'invalid number of elements:' nn 'is not a square.'
+0104 Exit
+0105 End
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 nn               97
+002 n                98
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

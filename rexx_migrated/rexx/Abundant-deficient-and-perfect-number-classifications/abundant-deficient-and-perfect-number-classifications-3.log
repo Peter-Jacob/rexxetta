@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 Call time 'R'
+0003 cnt.=0
+0004 Do x=1 To 20000
+0005 pd=proper_divisors(x)
+0006 sumpd=sum(pd)
+0007 Select
+0008 When x<sumpd Then cnt.abundant =cnt.abundant +1
+0009 When x=sumpd Then cnt.perfect  =cnt.perfect  +1
+0010 Otherwise         cnt.deficient=cnt.deficient+1
+0011 End
+0012 Select
+0013 When npd>hi Then Do
+0014 list.npd=x
+0015 hi=npd
+0016 End
+0017 When npd=hi Then
+0018 list.hi=list.hi x
+0019 Otherwise
+0020 Nop
+0021 End
+0022 End
+0023 
+0024 Say 'In the range 1 - 20000'
+0025 Say format(cnt.abundant ,5) 'numbers are abundant  '
+0026 Say format(cnt.perfect  ,5) 'numbers are perfect   '
+0027 Say format(cnt.deficient,5) 'numbers are deficient '
+0028 Say time('E') 'seconds elapsed'
+0029 Exit
+0030 
+0031 proper_divisors: Procedure
+0032 Parse Arg n
+0033 Pd=''
+0034 If n=1 Then Return ''
+0035 If n//2=1 Then  /* odd number  */
+0036 delta=2
+0037 Else            /* even number */
+0038 delta=1
+0039 Do d=1 To n%2 By delta
+0040 If n//d=0 Then
+0041 pd=pd d
+0042 End
+0043 Return space(pd)
+0044 
+0045 sum: Procedure
+0046 Parse Arg list
+0047 sum=0
+0048 Do i=1 To words(list)
+0049 sum=sum+word(list,i)
+0050 End
+0051 Return sum
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 list             46
+002 sum              47 49
+003 i                48
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

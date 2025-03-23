@@ -1,0 +1,52 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program illustrates methods to  ring the terminal bell  or  use the PC speaker.  */
+0002 /*╔═══════════════════════════════════════════════════════════════╗
+0003 ║                                                               ║
+0004 ║  Note that the  hexadecimal code  to ring the  terminal bell  ║
+0005 ║  is different on an ASCII machine than an EBCDIC machine.     ║
+0006 ║                                                               ║
+0007 ║  On an  ASCII machine,  it is  (hexadecimal)  '07'x.          ║
+0008 ║   "  " EBCDIC    "       "  "        "        '2F'x.          ║
+0009 ║                                                               ║
+0010 ╚═══════════════════════════════════════════════════════════════╝*/
+0011 
+0012 if 3=='F3'  then bell= '2f'x                     /*we are running on an EBCDIC machine. */
+0013 else bell= '07'x                     /* "  "     "     "  "  ASCII    "     */
+0014 
+0015 say bell                                         /*sound the  bell  on the terminal.    */
+0016 say copies(bell, 20)                             /*as above,  but much more annoying.   */
+0017 
+0018 /*╔═══════════════════════════════════════════════════════════════╗
+0019 ║                                                               ║
+0020 ║  Some REXX interpreters have a  built-in function  (BIF)  to  ║
+0021 ║  to produce a sound on the PC speaker, the sound is specified ║
+0022 ║  by frequency  and  an optional  duration.                    ║
+0023 ║                                                               ║
+0024 ╚═══════════════════════════════════════════════════════════════╝*/
+0025 
+0026 /* [↓]  supported by Regina REXX:              */
+0027 freq= 1200                               /*frequency in  (nearest)  cycles per second.  */
+0028 call  beep freq                          /*sounds the PC speaker, duration=  1   second.*/
+0029 ms=   500                                /*duration in milliseconds.                    */
+0030 call  beep freq, ms                      /*  "     "   "    "         "     1/2     "   */
+0031 
+0032 
+0033 /* [↓]  supported by PC/REXX  &  Personal REXX:*/
+0034 freq= 2000                               /*frequency in  (nearest)  cycles per second.  */
+0035 call  sound freq                         /*sounds PC speaker, duration=   .2   second.  */
+0036 secs= .333                               /*duration in seconds (round to nearest tenth).*/
+0037 call  sound freq, secs                   /*  "     "    "         "      3/10     "     */
+0038 
+0039 /*stick a fork in it, we're done making noises.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 bell             12
+002 freq             27 34
+003 ms               29
+004 secs             36
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

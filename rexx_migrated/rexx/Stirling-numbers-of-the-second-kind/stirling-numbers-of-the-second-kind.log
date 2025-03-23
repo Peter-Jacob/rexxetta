@@ -1,0 +1,61 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program to compute and display   Stirling numbers   of the second kind.          */
+0002 parse arg lim .                                  /*obtain optional argument from the CL.*/
+0003 if lim=='' | lim==","  then lim= 12              /*Not specified?  Then use the default.*/
+0004 olim= lim                                        /*save     the original value of  LIM. */
+0005 lim= abs(lim)                                    /*only use the absolute value of  LIM. */
+0006 numeric digits max(9, 2*lim)                     /*(over) specify maximum number in grid*/
+0007 @.=
+0008 do j=0  for lim+1
+0009 @.j.j = 1;  if j==0  then iterate   /*define the right descending diagonal.*/
+0010 @.0.j = 0;  @.j.0 = 0               /*   "    "  zero  values.             */
+0011 end   /*j*/
+0012 max#.= 0                                         /* [↓]  calculate values for the grid. */
+0013 do   n=0  for lim+1;         np= n + 1
+0014 do k=1  for lim;           km= k - 1
+0015 @.np.k = k * @.n.k  +  @.n.km        /*calculate a number in the grid.      */
+0016 max#.k= max(max#.k, @.n.k)           /*find the maximum value for a column. */
+0017 max#.b= max(max#.b, @.n.k)           /*find the maximum value for all rows. */
+0018 end   /*k*/
+0019 end     /*n*/
+0020 /* [↓]  only show the maximum value ?  */
+0021 do k=0  for lim+1                        /*find max column width for each column*/
+0022 max#.a= max#.a + length(max#.k)
+0023 end   /*k*/
+0024 
+0025 w= length(max#.b)                                /*calculate max width of all numbers.  */
+0026 if olim<0  then do;  say 'The maximum value  (which has '       w      " decimal digits):"
+0027 say max#.b                  /*display maximum number in the grid.  */
+0028 exit                        /*stick a fork in it,  we're all done. */
+0029 end
+0030 wgi= max(5, length(lim+1) )                      /*the maximum width of the grid's index*/
+0031 say '═row═'  center("columns", max(9, max#.a + lim), '═')  /*display header of the grid.*/
+0032 
+0033 do   r=0  for lim+1;        $=               /* [↓]  display the grid to the term.  */
+0034 do c=0  for lim+1  until c>=r              /*build a row of grid, 1 col at a time.*/
+0035 $= $  right(@.r.c, length(max#.c) )        /*append a column to a row of the grid.*/
+0036 end   /*c*/
+0037 say center(r, wgi)  strip( substr($,2), 'T') /*display a single row of the grid.    */
+0038 end     /*r*/                                /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 lim              2 3 5
+002 olim             4
+003 j                8
+004 max#.            12 16 17 22
+005 n                13
+006 np               13
+007 k                14 21
+008 km               14
+009 w                25
+010 wgi              30
+011 r                33
+012 c                34
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           7 9 10 10 15
+002 $                -> newV2            33 35

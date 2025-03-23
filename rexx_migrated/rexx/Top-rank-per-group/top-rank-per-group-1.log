@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program displays the top   N   salaries in each department (internal table).     */
+0002 parse arg topN .                                 /*get optional # for the top N salaries*/
+0003 if topN=='' | topN==","  then topN= 1            /*Not specified?  Then use the default.*/
+0004 say 'Finding the top '   topN   " salaries in each department.";            say
+0005 @.=                          /*════════ employee name      ID    salary   dept. ═══════ */
+0006 @.1 = "Tyler Bennett    ,E10297,  32000,  D101"
+0007 @.2 = "John Rappl       ,E21437,  47000,  D050"
+0008 @.3 = "George Woltman   ,E00127,  53500,  D101"
+0009 @.4 = "Adam Smith       ,E63535,  18000,  D202"
+0010 @.5 = "Claire Buckman   ,E39876,  27800,  D202"
+0011 @.6 = "David McClellan  ,E04242,  41500,  D101"
+0012 @.7 = "Rich Holcomb     ,E01234,  49500,  D202"
+0013 @.8 = "Nathan Adams     ,E41298,  21900,  D050"
+0014 @.9 = "Richard Potter   ,E43128,  15900,  D101"
+0015 @.10 = "David Motsinger  ,E27002,  19250,  D202"
+0016 @.11 = "Tim Sampair      ,E03033,  27000,  D101"
+0017 @.12 = "Kim Arlich       ,E10001,  57000,  D190"
+0018 @.13 = "Timothy Grove    ,E16398,  29900,  D190"
+0019 depts=                                           /*build people database from  @  array.*/
+0020 do j=1  until @.j=='';  parse var @.j name.j ',' id.j "," sal.j ',' dept.j .
+0021 if wordpos(dept.j, depts)==0  then depts= depts dept.j       /*a new DEPT?*/
+0022 end   /*j*/
+0023 employees= j-1                                   /*adjust for the bumped  DO loop index.*/
+0024 say 'There are '   employees   "employees, "    words(depts)     'departments: '     depts
+0025 say
+0026 do dep=1  for words(depts);       say         /*process each of the departments.     */
+0027 Xdept= word(depts, dep)                       /*current department being processed.  */
+0028 do topN;        h= 0;          highSal= 0  /*process the top  N  salaries.        */
+0029 do e=1  for employees             /*process each employee in department. */
+0030 if dept.e\==Xdept | sal.e<highSal then iterate  /*is this the wrong info?*/
+0031 highSal= sal.e;        h= e       /*a higher salary was just discovered. */
+0032 end   /*e*/
+0033 if h==0  then iterate                      /*do we have no highest paid this time?*/
+0034 say 'department:  '      dept.h       " $" || sal.h+0        id.h      space(name.h)
+0035 dept.h=                                    /*make sure we see the employee again. */
+0036 end         /*topN*/
+0037 end             /*dep*/                       /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 name.            20
+002 id.              20
+003 sal.             20
+004 dept.            20 35
+005 depts            21
+006 employees        23
+007 dep              26
+008 Xdept            27
+009 h                28 31
+010 highSal          28 31
+011 e                29
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           5 6 7 8 9 10 11 12 13 14 15 16 17 18 20

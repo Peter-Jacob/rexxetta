@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*the  WHEN  conditional operators are the same as*/
+0002 /*the   IF   conditional operators.               */
+0003 select
+0004 when t<0        then z=abs(u)
+0005 when t=0 & y=0  then z=0
+0006 when t>0        then do
+0007 y=sqrt(z)
+0008 z=u**2
+0009 end
+0010 
+0011 /*if control reaches here & none of the WHENs were*/
+0012 /*satisfiied, a SYNTAX (error) condition is raised*/
+0013 end  /*1st select*/
+0014 
+0015 select
+0016 when a=='angel'              then many='host'
+0017 when a=='ass' | a=='donkey'  then many='pace'
+0018 when a=='crocodile'          then many='bask'
+0019 when a=='crow'               then many='murder'
+0020 when a=='lark'               then many='ascension'
+0021 when a=='quail'              then many='bevy'
+0022 when a=='wolf'               then many='pack'
+0023 otherwise                         many='?'
+0024 end  /*2nd select*/          /* [↑]  uses OTHERWISE as a catch-all.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                7
+002 z                8
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

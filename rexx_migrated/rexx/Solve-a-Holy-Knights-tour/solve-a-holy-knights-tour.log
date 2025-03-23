@@ -1,0 +1,84 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program solves the  holy knight's tour  problem for a (general)  NxN  chessboard.*/
+0002 blank=pos('//', space(arg(1), 0))\==0            /*see if the pennies are to be shown.  */
+0003 parse arg  ops   '/'   cent                      /*obtain the options and the pennies.  */
+0004 parse var  ops  N  sRank  sFile .                /*boardsize, starting position, pennys.*/
+0005 if     N=='' |     N==","  then     N=8          /*no boardsize specified?  Use default.*/
+0006 if sRank=='' | sRank==","  then sRank=N          /*starting rank given?      "      "   */
+0007 if sFile=='' | sFile==","  then sFile=1          /*    "    file   "         "      "   */
+0008 NN=N**2;  NxN='a ' N"x"N ' chessboard'           /*file  [↓]          [↓]   r=rank      */
+0009 @.=;              do r=1  for N;  do f=1  for N;   @.r.f=.;    end /*f*/;        end /*r*/
+0010 /*[↑]  create an empty  NxN chessboard.*/
+0011 cent=space( translate( cent, , ',') )            /*allow use of comma (,) for separater.*/
+0012 cents=0                                          /*number of pennies on the chessboard. */
+0013 do  while  cent\=''                       /* [↓]  possibly place the pennies.    */
+0014 parse var  cent   cr  cf  x  '/'  cent    /*extract where to place the pennies.  */
+0015 if x=''   then x=1                        /*if number not specified, use 1 penny.*/
+0016 if cr=''  then iterate                    /*support the  "blanking"  option.     */
+0017 do cf=cf  for x   /*now, place  X  pennies on chessboard.*/
+0018 @.cr.cf= '¢'      /*mark chessboard position with a penny*/
+0019 end   /*cf*/      /* [↑]  places X pennies on chessboard.*/
+0020 end   /*while*/                           /* [↑]  allows of the placing of  X  ¢s*/
+0021 /* [↓]  traipse through the chessboard.*/
+0022 do r=1  for N;  do f=1  for N;  cents=cents + (@.r.f=='¢');   end /*f*/;     end /*r*/
+0023 /* [↑]  count the number of pennies.   */
+0024 if cents\==0  then say cents   'pennies placed on chessboard.'
+0025 target=NN - cents                                /*use this as the number of moves left.*/
+0026 Kr = '2 1 -1 -2 -2 -1  1  2'  /*the legal "rank"  moves for a knight.*/
+0027 Kf = '1 2  2  1 -1 -2 -2 -1'  /* "    "   "file"    "    "  "    "   */
+0028 kr.M=words(Kr)                                   /*number of possible moves for a Knight*/
+0029 parse var Kr  Kr.1 Kr.2 Kr.3 Kr.4 Kr.5 Kr.6 Kr.7 Kr.8   /*parse the legal moves by hand.*/
+0030 parse var Kf  Kf.1 Kf.2 Kf.3 Kf.4 Kf.5 Kf.6 Kf.7 Kf.8   /*  "    "    "     "    "   "  */
+0031 beg= '-1-'                                       /* [↑]   create the  NxN  chessboard.  */
+0032 if @.sRank.sFile ==.    then @.sRank.sFile=beg   /*the knight's starting position.      */
+0033 if @.sRank.sFile\==beg  then do    sRank=1  for N   /*find starting rank for the knight.*/
+0034 do sFile=1  for N   /*  "     "     file  "   "     "   */
+0035 if @.sRank.sFile\==.  then iterate
+0036 @.sRank.sFile=beg   /*the knight's starting position.   */
+0037 leave sRank         /*we have a spot, so leave all this.*/
+0038 end   /*sFile*/
+0039 end      /*sRank*/
+0040 @hkt= "holy knight's tour"                       /*a handy─dandy literal for the  SAYs. */
+0041 if \move(2,sRank,sFile)  &  \(N==1)  then say 'No'    @hkt    "solution for"        NxN'.'
+0042 else say 'A solution for the'   @hkt   "on"    NxN':'
+0043 
+0044 /*show chessboard with moves and coins.*/
+0045 !=left('', 9 * (n<18) );           say           /*used for indentation of chessboard.  */
+0046 _=substr( copies("┼───", N), 2);   say  ! translate('┌'_"┐", '┬', "┼")
+0047 do   r=N  for N  by -1;       if r\==N      then say ! '├'_"┤";     L=@.
+0048 do f=1  for N; ?=@.r.f;     if ?==target  then ?='end';           L=L'│'center(?,3)
+0049 end      /*f*/
+0050 if blank then L=translate(L,,'¢')           /*blank out the pennies on chessboard ?*/
+0051 say !  translate(L'│', , .)                 /*display  a  rank of the  chessboard. */
+0052 end        /*r*/                            /*19x19 chessboard can be shown 80 cols*/
+0053 say  !  translate('└'_"┘", '┴', "┼")             /*display the last rank of chessboard. */
+0054 exit                                             /*stick a fork in it,  we're all done. */
+0055 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0056 move: procedure expose @. Kr. Kf. target; parse arg #,rank,file /*obtain move,rank,file.*/
+0057 do t=1  for Kr.M;   nr=rank+Kr.t;         nf=file+Kf.t  /*position of the knight*/
+0058 if @.nr.nf==.  then do;                   @.nr.nf=#     /*Empty? Knight can move*/
+0059 if #==target       then return 1 /*is this the last move?*/
+0060 if move(#+1,nr,nf) then return 1 /* "   "   "    "    "  */
+0061 @.nr.nf=.                        /*undo the above move.  */
+0062 end                                 /*try a different move. */
+0063 end   /*t*/                                             /* [↑]  all moves tried.*/
+0064 return 0                                                   /*tour isn't possible.  */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 rank             56
+002 file             56
+003 t                57
+004 nr               57
+005 nf               57
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @hkt             -> newV1            40
+002 @.               -> newV2.           9 9 18 32 36 58 61
+003 !                -> newV3            45
+004 _                -> newV4            46
+005 ?                -> newV5            48 48
+006 #                -> newV6            56

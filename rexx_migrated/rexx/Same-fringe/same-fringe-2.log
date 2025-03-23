@@ -1,0 +1,159 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Same Fringe
+0003 =           1                A                 A
+0004 =          / \              / \               / \
+0005 =         /   \            /   \             /   \
+0006 =        /     \          /     \           /     \
+0007 =       2       3        B       C         B       C
+0008 =      / \     /        / \     /         / \     /
+0009 =     4   5   6        D   E   F         D   E   F
+0010 =    /       / \      /       / \       /       / \
+0011 =   7       8   9    G       H   I     G       *   I
+0012 =
+0013 * 23.08.2012 Walter Pachl derived from
+0014 *                            http://rosettacode.org/wiki/Tree_traversal
+0015 * Tree A: A B D G E C F H I
+0016 * Tree B: A B D G E C F * I
+0017 **********************************************************************/
+0018 node.=0
+0019 
+0020 Call mktree 'A'
+0021 Call mktree 'B'
+0022 
+0023 sideboard.=0
+0024 
+0025 za=root.a; leafa=node.a.za.0name
+0026 zb=root.b; leafb=node.b.zb.0name
+0027 Do i=1 To 20 Until za=0 & zb=0
+0028 If leafa=leafb Then Do
+0029 Say leafa '=' leafb
+0030 Parse Value get_next(za,'A') with za leafa
+0031 Parse Value get_next(zb,'B') with zb leafb
+0032 End
+0033 Else Do
+0034 Select
+0035 When za=0 Then Say leafb 'exceeds tree A'
+0036 When zb=0 Then Say leafa 'exceeds tree B'
+0037 Otherwise Say 'First difference' leafa '<>' leafb
+0038 End
+0039 Leave
+0040 Exit
+0041 End
+0042 End
+0043 exit
+0044 
+0045 get_next: Procedure Expose node. sideboard.
+0046 Parse Arg za,t
+0047 Select
+0048 When node.t.za.0left<>0 Then Do
+0049 If node.t.za.0rite<>0 Then Do
+0050 z=sideboard.t.0+1
+0051 sideboard.t.z=node.t.za.0rite
+0052 sideboard.t.0=z
+0053 End
+0054 za=node.t.za.0left
+0055 End
+0056 When node.t.za.0rite<>0 Then Do
+0057 za=node.t.za.0rite
+0058 End
+0059 Otherwise Do
+0060 z=sideboard.t.0
+0061 za=sideboard.t.z
+0062 z=z-1
+0063 sideboard.t.0=z
+0064 End
+0065 End
+0066 Return za node.t.za.0name
+0067 
+0068 mknode: Procedure Expose node.
+0069 /**********************************************************************
+0070 * create a new node
+0071 **********************************************************************/
+0072 Parse Arg name,t
+0073 z=node.t.0+1
+0074 node.t.z.0name=name
+0075 node.t.z.0father=0
+0076 node.t.z.0left =0
+0077 node.t.z.0rite =0
+0078 node.t.0=z
+0079 Return z                        /* number of the node just created */
+0080 
+0081 attleft: Procedure Expose node.
+0082 /**********************************************************************
+0083 * make son the left son of father
+0084 **********************************************************************/
+0085 Parse Arg son,father,t
+0086 node.t.son.0father=father
+0087 z=node.t.father.0left
+0088 If z<>0 Then Do
+0089 node.t.z.0father=son
+0090 node.t.son.0left=z
+0091 End
+0092 node.t.father.0left=son
+0093 Return
+0094 
+0095 attrite: Procedure Expose node.
+0096 /**********************************************************************
+0097 * make son the right son of father
+0098 **********************************************************************/
+0099 Parse Arg son,father,t
+0100 node.t.son.0father=father
+0101 z=node.t.father.0rite
+0102 If z<>0 Then Do
+0103 node.t.z.0father=son
+0104 node.t.son.0rite=z
+0105 End
+0106 node.t.father.0rite=son
+0107 le=node.t.father.0left
+0108 If le>0 Then
+0109 node.t.le.0brother=node.t.father.0rite
+0110 Return
+0111 
+0112 mktree: Procedure Expose node. root.
+0113 /**********************************************************************
+0114 * build the tree according to the task
+0115 **********************************************************************/
+0116 Parse Arg t
+0117 If t='A' Then Do
+0118 a=mknode('A',t); root.t=a
+0119 b=mknode('B',t); Call attleft b,a,t
+0120 c=mknode('C',t); Call attrite c,a,t
+0121 d=mknode('D',t); Call attleft d,b,t
+0122 e=mknode('E',t); Call attrite e,b,t
+0123 f=mknode('F',t); Call attleft f,c,t
+0124 g=mknode('G',t); Call attleft g,d,t
+0125 h=mknode('H',t); Call attleft h,f,t
+0126 i=mknode('I',t); Call attrite i,f,t
+0127 End
+0128 Else Do
+0129 a=mknode('A',t); root.t=a
+0130 b=mknode('B',t); Call attleft b,a,t
+0131 c=mknode('C',t); Call attrite c,a,t
+0132 d=mknode('D',t); Call attleft d,b,t
+0133 e=mknode('E',t); Call attrite e,b,t
+0134 f=mknode('F',t); Call attleft f,c,t
+0135 g=mknode('G',t); Call attleft g,d,t
+0136 h=mknode('*',t); Call attleft h,f,t
+0137 i=mknode('I',t); Call attrite i,f,t
+0138 End
+0139 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 t                116
+002 a                118 129
+003 root.            118 129
+004 b                119 130
+005 c                120 131
+006 d                121 132
+007 e                122 133
+008 f                123 134
+009 g                124 135
+010 h                125 136
+011 i                126 137
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

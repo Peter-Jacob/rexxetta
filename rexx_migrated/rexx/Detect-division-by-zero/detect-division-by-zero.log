@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates  detection  and handling  division by zero.                */
+0002 signal on syntax                                 /*handle all REXX syntax errors.       */
+0003 x = sourceline()                                 /*being cute, x=is the size of this pgm*/
+0004 y = x - x                                        /*setting to zero the obtuse way.      */
+0005 z = x / y                                        /*this'll trigger it,  furrrr shurrre. */
+0006 exit                                             /*We're kaput.   Ja vohl !             */
+0007 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0008 err:    if rc==42  then do;  say                 /*first,  check for a specific error.  */
+0009 say center(' ***error*** ', 79, "═")
+0010 say 'Division by zero detected at line  '       @ ,
+0011 "  and the REXX statement is:"
+0012 say sourceLine(@)
+0013 say
+0014 exit 42
+0015 end
+0016 say
+0017 say center(' error! ', 79, "*")
+0018 do #=1  for arg();   say;     say arg(#);       say
+0019 end   /*#*/
+0020 exit 13
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 syntax: @=sigl;   call err  'REXX program'   condition("C")   'error',   condition('D'), ,
+0023 'REXX source statement (line'   sigl"):",    sourceLine(sigl)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                3
+002 y                4
+003 z                5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            18

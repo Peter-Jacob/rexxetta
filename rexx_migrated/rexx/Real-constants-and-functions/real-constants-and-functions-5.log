@@ -1,0 +1,62 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*──────────────────────────────────SQRT subroutine───────────────────────────*/
+0002 sqrt: procedure;  parse arg x;         if x=0  then return 0  /*handle 0 case.*/
+0003 if \datatype(x,'N')  then return '[n/a]'   /*Not Applicable ───if not numeric.*/
+0004 i=;  if x<0  then do; x=-x; i='i'; end /*handle complex numbers if  X  is < 0.*/
+0005 d=digits()                             /*get the current numeric precision.   */
+0006 m.=9                                   /*technique uses just enough digits.   */
+0007 h=d+6                                  /*use extra decimal digits for accuracy*/
+0008 numeric digits 9                       /*use "small" precision at first.      */
+0009 numeric form                           /*force scientific form of the number. */
+0010 if fuzz()\==0  then numeric fuzz 0     /*just in case invoker has a FUZZ  set.*/
+0011 parse value format(x,2,1,,0)  'E0'  with  g 'E' _ .  /*get the  X's  exponent.*/
+0012 g=(g * .5) || 'e' || (_ % 2)      /*1st guesstimate for the square root. */
+0013 /* g= g * .5     'e'    (_ % 2) */   /*a shorter & concise version of above.*/
+0014 /*Note: to insure enough accuracy for  */
+0015 /*  the result, the precision during   */
+0016 /*  the SQRT calculations is increased */
+0017 /*  by two extra decimal digits.       */
+0018 do j=0  while  h>9;  m.j=h;  h=h%2+1 /*compute the sizes (digs) of precision*/
+0019 end   /*j*/                          /* [↑]  precisions are stored in  M.   */
+0020 /*now, we start to do the heavy lifting*/
+0021 do k=j+5  to 0  by -1                /*compute the  √  with increasing digs.*/
+0022 numeric digits m.k                   /*each iteration, increase the digits. */
+0023 g=(g+x/g) * .5                       /*perform the nitty-gritty calculations*/
+0024 end   /*k*/                          /* [↑]  * .5   is faster than   / 2    */
+0025 /* [↓]  normalize √ ──► original digits*/
+0026 numeric digits d                       /* [↓]  make answer complex if  X < 0. */
+0027 return (g/1)i                          /*normalize, and add possible I suffix.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                2 4
+002 i                4 4
+003 d                5
+004 m.               6 18
+005 h                7 18
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                11 12 23
+024 j                18
+025 k                21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            11

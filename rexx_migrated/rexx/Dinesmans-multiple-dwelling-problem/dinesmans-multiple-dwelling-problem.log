@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program solves the  Dinesman's multiple─dwelling  problem with "natural" wording.*/
+0002 names= 'Baker Cooper Fletcher Miller Smith'      /*names of multiple─dwelling tenants.  */
+0003 #tenants= words(names)                           /*the number of tenants in the building*/
+0004 floors= 5;              top= floors;   bottom= 1 /*floor 1 is the ground (bottom) floor.*/
+0005 #= 0                                             /*the number of solutions found so far.*/
+0006 do         @.1=1  for floors                /*iterate through all floors for rules.*/
+0007 do       @.2=1  for floors                /*   "       "     "     "    "    "   */
+0008 do     @.3=1  for floors                /*   "       "     "     "    "    "   */
+0009 do   @.4=1  for floors                /*   "       "     "     "    "    "   */
+0010 do @.5=1  for floors                /*   "       "     "     "    "    "   */
+0011 call set
+0012 do    j=1   for floors-1;  a= @.j /* [↓]  people don't live on same floor*/
+0013 do k=j+1  to floors            /*see if any people live on same floor.*/
+0014 if a==@.k  then iterate @.5    /*Is anyone cohabiting?  Then not valid*/
+0015 end   /*k*/
+0016 end      /*j*/
+0017 call Waldo                          /* ◄══ where the rubber meets the road.*/
+0018 end        /*@.5*/
+0019 end          /*@.4*/
+0020 end            /*@.3*/
+0021 end              /*@.2*/
+0022 end                /*@.1*/
+0023 
+0024 say 'found '     #       " solution"s(#).        /*display the number of solutions found*/
+0025 exit 0                                           /*stick a fork in it,  we're all done. */
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 set:      do p=1  for #tenants;   call value word(names, p), @.p;   end;       return
+0028 s:     if arg(1)=1  then return '';    return "s"        /*a simple pluralizer function.*/
+0029 th:    arg x;  x=abs(x);  return word('th st nd rd', 1 +x// 10* (x//100%10\==1)*(x//10<4))
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 Waldo: if Baker    == top                                          then return
+0032 if Cooper   == bottom                                       then return
+0033 if Fletcher == bottom         |   Fletcher == top           then return
+0034 if Miller   \> Cooper                                       then return
+0035 if Smith    == Fletcher - 1   |   Smith    == Fletcher + 1  then return
+0036 if Fletcher == Cooper   - 1   |   Fletcher == Cooper   + 1  then return
+0037 #= # + 1                                  /* [↑]  "|"  is REXX's "or" comparator.*/
+0038 say;           do p=1  for #tenants;             tenant= word(names, p)
+0039 say right(tenant, 35)  'lives on the'     @.p || th(@.p)    "floor."
+0040 end   /*p*/                /* [↑]  "||"  is REXX's concatenation. */
+0041 return                                    /* [↑]  show tenants in order in NAMES.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 names            2
+002 floors           4
+003 top              4
+004 bottom           4
+005 j                12
+006 a                12
+007 k                13
+008 x                29
+009 p                38
+010 tenant           38
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #tenants         -> newV1            3
+002 @.               -> newV2.           6 7 8 9 10
+003 #                -> newV3            5 37

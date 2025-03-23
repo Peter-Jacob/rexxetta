@@ -1,0 +1,39 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Test digroot
+0003 **********************************************************************/
+0004 /*           n r p */
+0005 say right(7           ,12) digroot(7           ) /*           7 7 0 */
+0006 say right(627615      ,12) digroot(627615      ) /*      627615 9 2 */
+0007 say right(39390       ,12) digroot(39390       ) /*       39390 6 2 */
+0008 say right(588225      ,12) digroot(588225      ) /*      588225 3 2 */
+0009 say right(393900588225,12) digroot(393900588225) /*393900588225 9 2 */
+0010 Exit
+0011 digroot: Procedure
+0012 /**********************************************************************
+0013 * Compute the digital root and persistence of the given decimal number
+0014 * 25.07.2012 Walter Pachl
+0015 **************************** Bottom of Data **************************/
+0016 Parse Arg n                         /* the number                    */
+0017 p=0                                 /* persistence                   */
+0018 Do While length(n)>1                /* more than one digit in n      */
+0019 s=0                               /* initialize sum                */
+0020 p=p+1                             /* increment persistence         */
+0021 Do while n<>''                    /* as long as there are digits   */
+0022 Parse Var n c +1 n              /* pick the first one            */
+0023 s=s+c                           /* add to the new sum            */
+0024 End
+0025 n=s                               /* the 'new' number              */
+0026 End
+0027 return n p                          /* return root and persistence   */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                22 22 25
+002 c                22
+003 s                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

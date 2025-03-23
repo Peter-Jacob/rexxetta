@@ -1,0 +1,64 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program sorts a list (4 groups) of integers using the  bead sort algorithm. */
+0002 /* original source by Gerard Schildberger                                          */
+0003 /* 20230605 Walter Pachl reformatted and refurbished                               */
+0004 /* define  two dozen  grasshopper  numbers.       */
+0005 /* source ??                                      */
+0006 gHopper=1 4 10 12 22 26 30 46 54 62 66 78 94 110 126 134 138 158 162 186 190 222 254,
+0007 270
+0008 /* these are also called hexagonal pyramidal #s.  */
+0009 /* see https://oeis.org/A002412                   */
+0010 greenGrocer=0 4 16 40 80 140 224 336 480 660 880 1144 1456 1820 2240 2720 3264 3876,
+0011 4560
+0012 /* define twenty-three Bernoulli numerator numbers*/
+0013 /* source ?? quotes needed because of negative #s.*/
+0014 bernN='1 -1 1 0 -1 0 1 0 -1 0 5 0 -691 0 7 0 -3617 0 43867 0 -174611 0'
+0015 /* also called the Reduced Totient function,      */
+0016 /* and is also called Carmichael lambda,          */
+0017 /* or the LAMBDA function                         */
+0018 /* see https://en.wikipedia.org/wiki/Carmichael_function */
+0019 psi=1 1 2 2 4 2 6 2 6 4 10 2 12 6 4 4 16 6 18 4 6 10 22 2 20 12 18 6 28 4 30 8 10 16
+0020 list=gHopper greenGrocer bernN psi           /*combine the four lists into one list.*/
+0021 Call show 'before sort',list                 /*display the  list  before sorting.   */
+0022 Say copies('¦', 75)                          /*show long separator line before sort.*/
+0023 Call show ' after sort',beadSort(list)       /*display the  list  after sorting.    */
+0024 Exit                                         /*stick a fork in it, we're all done.  */
+0025 /*----------------------------------------------------------------------------------*/
+0026 beadSort: Procedure
+0027 Parse Arg list 1 low . 1 high .            /* List to be sorted and first value   */
+0028 occurences.=0                              /* count stem occurences               */
+0029 Do Until list==''                          /* loop through the list               */
+0030 Parse Var list bead list                 /* take an element                     */
+0031 bead= bead / 1                           /* normalize the value                 */
+0032 occurences.bead=occurences.bead + 1      /* bump occurences                     */
+0033 low= min(low, bead)                      /* track lowest                        */
+0034 high=max(high,bead)                      /* and highest number                  */
+0035 End
+0036 sorted=''                                  /* now, collect the beads              */
+0037 Do v=low To high
+0038 If occurences.v>0 Then
+0039 sorted=sorted copies(v' ', occurences.v)
+0040 End
+0041 Return sorted
+0042 /*----------------------------------------------------------------------------------*/
+0043 show:
+0044 Parse Arg txt,slist
+0045 n=words(slist)
+0046 w=length(n)
+0047 Do k=1 For n
+0048 Say right('element',30) right(k,w) txt':' right(word(slist,k),9)
+0049 End
+0050 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 txt              44
+002 slist            44
+003 n                45
+004 w                46
+005 k                47
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

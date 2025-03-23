@@ -1,0 +1,54 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX program supports the Caesar cipher for most keyboard characters  */
+0002 /*                                                     including blanks.*/
+0003 Parse Arg key text                /* get key and the text to be ciph  */
+0004 Say 'Caesar cipher key:' key      /* echo the Caesar cipher key       */
+0005 Say '       plain text:' text     /* "   "       plain text           */
+0006 code=caesar(text,key)
+0007 Say '         ciphered:' code     /* "   "    ciphered text           */
+0008 back=caesar(code,-key)
+0009 Say '       unciphered:' back     /* "   "  unciphered text           */
+0010 If back\==text Then
+0011 Say "plain text doesn't match unciphered ciphered text."
+0012 Exit                           /* stick a fork in it,  we're all done */
+0013 /*----------------------------------------------------------------------*/
+0014 caesar: Procedure
+0015 Parse Arg txt,ky
+0016 abcx='abcdefghijklmnopqrstuvwxyz'
+0017 abcx=translate(abcx)abcx"0123456789(){}[]<>'" /*add uppercase, digits */
+0018 abcx=abcx'~!@#$%^&*_+:";?,./`-= ' /* also add other characters     */
+0019 l=length(abcx)                       /* obtain the length of abcx     */
+0020 aky=abs(ky)                          /* absolute value of the key     */
+0021 If aky>length(abcx)-1|ky==0 Then
+0022 Call err ky 'key is invalid.'
+0023 badpos=verify(txt,abcx)              /* any illegal character in txt  */
+0024 If badpos\==0 Then
+0025 Call err 'unsupported character:' substr(txt,badpos,1)
+0026 If ky>0 Then                          /* cipher                        */
+0027 ky=ky+1
+0028 Else                                 /* decipher                      */
+0029 ky=l+1-aky
+0030 /* return translated input       */
+0031 Return translate(txt,substr(abcx||abcx,ky,l),abcx)
+0032 /*----------------------------------------------------------------------*/
+0033 err:
+0034 Say
+0035 Say '***error***'
+0036 Say
+0037 Say arg(1)
+0038 Say
+0039 Exit 13
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 txt              15
+002 ky               15 27 29
+003 abcx             16 17 18
+004 l                19
+005 aky              20
+006 badpos           23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,49 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program  computes and displays  a  Farey sequence  (or the number of fractions). */
+0002 parse arg LO HI INC .                            /*obtain optional arguments from the CL*/
+0003 if  LO=='' |  LO==","  then  LO=  1              /*Not specified?  Then use the default.*/
+0004 if  HI=='' |  HI==","  then  HI= LO              /* "      "         "   "   "     "    */
+0005 if INC=='' | INC==","  then INC=  1              /* "      "         "   "   "     "    */
+0006 sw= linesize() - 1                               /*obtain the linesize of the terminal. */
+0007 oLO= LO                                          /*save original value of the the orders*/
+0008 do j=abs(LO)  to abs(HI)  by INC          /*process each of the specified numbers*/
+0009 #= fareyF(j)                              /*go ye forth & compute Farey sequence.*/
+0010 say center('Farey sequence for order '   j   " has "   #   ' fractions.', sw, "═")
+0011 if oLO>=0  then call show                 /*display the Farey fractions.         */
+0012 end   /*j*/
+0013 exit #                                           /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 fareyF: procedure expose n. d.;  parse arg x
+0016 n.1= 0;   d.1= 1;   n.2= 1;   d.2= x     /*some kit parts for the fraction list.*/
+0017 do k=1  until n.z>x          /*construct from thirds  and  on  "up".*/
+0018 y= k+1;       z= k+2         /*calculate the next K and the next Z. */
+0019 _= d.k + x              /*calculation used as a shortcut.      */
+0020 n.z= _ % d.y*n.y   -   n.k   /*    "     the fraction   numerator.  */
+0021 d.z= _ % d.y*d.y   -   d.k   /*    "      "     "     denominator.  */
+0022 if n.z>x  then leave         /*Should the construction be stopped ? */
+0023 end   /*k*/
+0024 return z - 1                             /*return the count of Farey fractions. */
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 show:   $= '0/1'                                 /*construct the start of the Farey seq.*/
+0027 do k=2  for #-1;   _= n.k'/'d.k        /*build a fraction:   numer. / denom.  */
+0028 if length($ _)>sw  then do; say $; $= _; end   /*Is new line too wide? Show it*/
+0029 else $= $ _                 /*No?  Keep it & keep building.*/
+0030 end   /*k*/
+0031 if $\==''  then say $;      return         /*display any residual fractions.      */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                15
+002 n.               16 16 20
+003 d.               16 16 21
+004 k                17 27
+005 y                18
+006 z                18
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            9
+002 _                -> newV2            19 27
+003 $                -> newV3            28

@@ -1,0 +1,99 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:03
+-------------------------------------------------------------------------
+0001 /*REXX pgm implements the 15─puzzle (AKA: Gem Puzzle, Boss Puzzle, Mystic Square, 14─15)*/
+0002 parse arg N seed .                               /*obtain optional arguments from the CL*/
+0003 if N=='' | N==","  then N=4                      /*Not specified?  Then use the default.*/
+0004 if datatype(seed, 'W')  then call random ,,seed  /*use repeatability seed for RANDOM BIF*/
+0005 nh= N**2;   @.=;    nn= nh - 1;    w= length(nn) /*define/initialize some handy values. */
+0006 $=                                               /*$: will hold the solution for testing*/
+0007 do i=1  for nn;  $= $  i                  /* [◄]  build a solution for testing.  */
+0008 end   /*i*/
+0009 done= $                                          /* [↓]  scramble the tiles in puzzle.  */
+0010 do j=1  for nn;  a= random(1, words($) );    @.j= word($, a);   $= delword($, a, 1)
+0011 end   /*j*/
+0012 /*═══════════════════ play the 15─puzzle 'til done or quit.*/
+0013 do  until puzz==done & @.nh==''               /*perform moves until puzzle is solved.*/
+0014 call getmv                                    /*get user's move(s)  and  validate it.*/
+0015 if errMsg\==''  then do;  say sep errMsg;       iterate        /*possible error msg? */
+0016 end
+0017 call showGrid 0                               /*don't display puzzle, just find hole.*/
+0018 if wordpos(x, !)==0  then do;  say sep  'tile '     x     " can't be moved.";   iterate
+0019 end
+0020 @.hole= x;    @.tile=
+0021 call showGrid 0                               /*move specified tile ───► puzzle hole.*/
+0022 end   /*until*/           /*═════════════════════════════════════════════════════════*/
+0023 
+0024 call showGrid 1;    say;     say sep  'Congratulations!   The'      nn"-puzzle is solved."
+0025 exit 0                                           /*stick a fork in it,  we're all done. */
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 getmv: x= 0;   sep= copies('─', 8);     pad= left('', 1 + length(sep) )   /*pad=9 blanks*/
+0028 prompt= sep    'Please enter a tile number  or  numbers '     sep     " (or Quit)."
+0029 if queued()==0  then do;    say;    call showGrid 1;     say;      say prompt
+0030 end
+0031 parse pull x . 1 ox . 1 . zx;   upper x   /*obtain a number (or numbers) from CL.*/
+0032 if abbrev('QUIT', x, 1)  then do;   say;   say;    say sep  "quitting.";      exit
+0033 end
+0034 if words(zx)>0  then do;  parse var  zx    xq;     queue xq
+0035 end                  /* [↑]  Extra moves?  Stack for later. */
+0036 select                             /* [↓]  Check for possible errors/typos*/
+0037 when x==''              then errMsg= "nothing entered."
+0038 when \datatype(x, 'N')  then errMsg= "tile number isn't numeric: "        ox
+0039 when \datatype(x, 'W')  then errMsg= "tile number isn't an integer: "     ox
+0040 when x=0                then errMsg= "tile number can't be zero: "        ox
+0041 when x<0                then errMsg= "tile number can't be negative: "    ox
+0042 when x>nn               then errMsg= "tile number can't be greater than"  nn
+0043 otherwise                    errMsg=
+0044 end   /*select*/                   /* [↑]  verify the human entered data. */
+0045 return
+0046 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0047 showGrid: parse arg show;       !.=;                      x= x/1;       #= 0;        puzz=
+0048 top= '╔'copies( copies("═", w)'╦', N);        top= left( top, length(top) -1)"╗"
+0049 bar= '╠'copies( copies("═", w)'╬', N);        bar= left( bar, length(bar) -1)"╣"
+0050 bot= '╚'copies( copies("═", w)'╩', N);        bot= left( bot, length(bot) -1)"╝"
+0051 if show  then say pad top
+0052 
+0053 do   r=1  for N;     z= '║'
+0054 do c=1  for N;     #= #+1;     y= @.#;      puzz= puzz y;        !.r.c= y
+0055 _= right(@.#, w)"║";           z= z || _              /* [↓]  find hole*/
+0056 if @.# == ''  then do;    hole= #;     holeRow= r;     holeCol= c;    end
+0057 if @.# == x   then do;    tile= #;     tileRow= r;     tileCol= c;    end
+0058 end   /*c*/                                           /* [↑]  find  X. */
+0059 if show  then do;    say pad z;     if r\==N  then say pad bar;         end
+0060 end     /*r*/
+0061 
+0062 rm=holeRow-1;   rp=holeRow+1;  cm=holeCol-1;  cp=holeCol+1   /*possible moves.*/
+0063 !=!.rm.holeCol  !.rp.holeCol   !.holeRow.cm   !.holeRow.cp   /* legal   moves.*/
+0064 if show  then say pad bot;                  return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 show             47
+002 x                47
+003 puzz             47 54
+004 top              48 48
+005 bar              49 49
+006 bot              50 50
+007 r                53
+008 z                53 55
+009 c                54
+010 y                54
+011 hole             56
+012 holeRow          56
+013 holeCol          56
+014 tile             57
+015 tileRow          57
+016 tileCol          57
+017 rm               62
+018 rp               62
+019 cm               62
+020 cp               62
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           5 10 20 20
+002 !.               -> newV2.           47 54
+003 $                -> newV3            6 7 10
+004 #                -> newV4            47 54
+005 _                -> newV5            55
+006 !                -> newV6            63

@@ -1,0 +1,107 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX program calculates the gamma function using Spouge's approximation with 87 digits*/
+0002 e=2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138
+0003 numeric digits length(e)   -  length(.)          /*use the number of decimal digits in E*/
+0004 c.=  0
+0005 # = 40                                           /*#:  the number of steps in GAMMA func*/
+0006 call sq gamma(-3/2),  3/4
+0007 call sq gamma(-1/2), -1/2
+0008 call sq gamma( 1/2),   1
+0009 call si gamma(  1 )
+0010 call sq gamma( 3/2),   2
+0011 call si gamma(  2 )
+0012 call sq gamma( 5/2),  4/3
+0013 call si gamma(  3 )
+0014 call sq gamma( 7/2),  8/15
+0015 call si gamma(  4 )
+0016 exit                                             /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 gamma: procedure expose c. e #; parse arg z;         #p= # + 1
+0019 accm = c.1
+0020 if accm==0  then do;  accm= sqrt( 2*pi() )
+0021 c.1 = accm
+0022 kfact = 1
+0023 do k=2  to #
+0024 c.k= exp(#p-k) * pow(#p-k, k-1.5) / kfact
+0025 kfact = kfact  *  -(k-1)
+0026 end   /*k*/
+0027 end
+0028 
+0029 do j=2  to #;   accm = accm   +   c.j / (z+j-1)
+0030 end   /*k*/
+0031 
+0032 return (accm * exp(-(z+#)) * pow(z+#, z+0.5) ) / z
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 pi: return 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348
+0035 fmt:    parse arg n,p,a;  _= format(n,p,a);  L= length(_);      return left( strip0(_), L)
+0036 isInt:  return datatype(arg(1), 'W')                      /*is the argument an integer? */
+0037 sq:     procedure expose #; parse arg x,mu; say fmt(x,9,#)  fmt((x*mu)**2,9,#);   return
+0038 si:     procedure expose #; parse arg x;    say fmt(x,9,#);                       return
+0039 strip0: procedure; arg _; if pos(., _)\==0  then _= strip(strip(_,'T',0),'T',.);  return _
+0040 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0041 exp: procedure expose e; arg x; ix= x%1; if abs(x-ix)>.5  then ix=ix+sign(x); x= x-ix; z=1
+0042 _=1;  w=1;    do j=1;  _= _*x/j;    z= (z+_)/1;      if z==w  then leave;         w=z
+0043 end  /*j*/;           if z\==0  then z= e**ix * z;             return z
+0044 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0045 ln:     procedure; parse arg x; call e; ig= x>1.5; is= 1-2*(ig\==1); ii= 0; xx= x
+0046 do while ig & xx>1.5 | \ig & xx<.5; _=e
+0047 do k=-1; iz=xx*_**-is; if k>=0&(ig&iz<1|\ig&iz>.5)  then leave; _=_*_; izz=iz; end
+0048 xx= izz; ii= ii+is*2**k;   end   /*while*/;      x= x*e**-ii-1;  z=0;  _= -1;  p=z
+0049 do k=1; _=-_*x;  z=z+_/k;  if z=p  then leave;  p=z; end;  /*k*/;    return z+ii
+0050 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0051 pow:    procedure; parse arg x,y;  if y=0  then return 1;  if x=0  then return 0
+0052 if isInt(y)  then return x**y;          if isInt(1/y)  then return root(x, 1/y)
+0053 if abs(y//1)=.5  then return sqrt(x)**sign(y)*x**(y%1);     return exp( y*ln(x) )
+0054 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0055 root:   procedure; parse arg x 1 ox,y 1 oy;     if x=0 | y=1  then return x/1
+0056 if \isInt(y)  then return $pow(x, 1/y)
+0057 if y==2  then return sqrt(x); if y==-2  then return 1/sqrt(x); return rooti(x,y)/1
+0058 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0059 rooti:  x=abs(x); y=abs(y); a= digits() + 5;  m= y-1;  d= 5
+0060 parse value format(x,2,1,,0) 'E0'  with  ? 'E' _ .;   g= (?/y'E'_ % y) + (x>1)
+0061 do until d==a;   d=min(d+d, a);  numeric digits d;  o=0
+0062 do until o=g;  o=g;  g= format((m*g**y+x)/y/g**m,,d-2);  end;  end
+0063 _= g*sign(ox);  if oy<0  then _= 1/_;                                     return _
+0064 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0065 sqrt: procedure; parse arg x;  if x=0  then return 0;  d=digits();  numeric digits;  h=d+6
+0066 numeric form; m.=9; parse value format(x,2,1,,0) 'E0' with g "E" _ .; g=g *.5'e'_ %2
+0067 do j=0  while h>9;        m.j=h;                 h=h%2+1;          end  /*j*/
+0068 do k=j+5  to 0  by -1;    numeric digits m.k;    g=(g+x/g)*.5;     end  /*k*/
+0069 numeric digits d;     return g/1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                65
+002 d                65
+003 h                65 67
+004 m.               66 67
+005 a                59
+006 m                59
+007 d                59 61
+008 izz              47
+009 z                48 49
+010 p                48 49
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                66 66 68
+024 j                67
+025 k                68
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #p               -> newV1            18
+002 #                -> newV2            5
+003 _                -> newV3            35 39 42 42 46 47 48 49 60 63 63 66
+004 ?                -> newV4            60

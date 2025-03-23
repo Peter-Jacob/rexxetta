@@ -1,0 +1,59 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX pgm simulates scenarios for a two─bullet Russian roulette game with a 6 cyl. gun.*/
+0002 parse arg cyls tests seed .                      /*obtain optional arguments from the CL*/
+0003 if  cyls=='' |  cyls==","  then  cyls=      6    /*Not specified?  Then use the default.*/
+0004 if tests=='' | tests==","  then tests= 100000    /* "      "         "   "   "     "    */
+0005 if datatype(seed, 'W')  then call random ,,seed  /* "      "         "   "   "     "    */
+0006 cyls_ = cyls - 1;          @0= copies(0, cyls)   /*shortcut placeholder for cylinders-1 */
+0007 @abc= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'               /*indices for the various options used.*/
+0008 scenarios= 'LSLSFsF  LSLSFF  LLSFSF  LLSFF'      /*the list of scenarios to be tested.  */
+0009 #= words(scenarios)                              /*the number of actions in a scenario. */
+0010 /*The scenarios are case insensitive.  */
+0011 do m=1  for #;     q= word(scenarios, m) /*test each of the scenarios specified.*/
+0012 sum= 0                /*initialize the  sum  to zero.        */
+0013 do tests;       sum= sum + method()   /*added the sums up for the percentages*/
+0014 end   /*tests*/
+0015 pc= left( (sum * 100 / tests)"%",  7)
+0016 say act()   '  (option'     substr(@abc, m, 1)")   produces  "    pc    ' deaths.'
+0017 end   /*m*/
+0018 exit 0                                           /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 fire:   != left(@, 1);      @= right(@, cyls_)left(@, 1);   /* ◄──── next cyl.*/  return !
+0021 load:   if left(@, 1)  then @= right(@, cyls_)left(@, 1);  @= 1||right(@, cyls_); return
+0022 spin:   ?= random(1, cyls);    if ?\==cyls  then @= substr(@ || @, ? + 1, cyls);  return
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 method: @= @0;   do a=1  for length(q);          y= substr(q, a, 1)
+0025 if y=='L'  then call load
+0026 else if y=='S'  then call spin
+0027 else if y=='F'  then if fire()  then return 1
+0028 end   /*a*/;                                                    return 0
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 act:    $=;      do a=1  for length(q);          y= substr(q, a, 1)
+0031 if y=='L'  then $= $", load"
+0032 if y=='S'  then $= $", spin"
+0033 if y=='F'  then $= $", fire"
+0034 end   /*a*/;                  return right( strip( strip($, , ",") ), 45)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 cyls             2 3
+002 tests            2 4
+003 seed             2
+004 cyls_            6
+005 scenarios        8
+006 m                11
+007 q                11
+008 sum              12 13
+009 pc               15
+010 a                24 30
+011 y                24 30
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @abc             -> newV1            7
+002 @0               -> newV2            6
+003 #                -> newV3            9
+004 @                -> newV4            20 21 22
+005 $                -> newV5            31 32 33

@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program plays guess the number  game with a human;  the computer picks the number*/
+0002 low=   1                                       /*the lower range for the guessing game*/
+0003 high= 100                                       /* "  upper   "    "   "      "      " */
+0004 try=   0                                       /*the number of valid (guess) attempts.*/
+0005 r= random(low, high)                         /*get a random number  (low ───► high).*/
+0006 lows= 'too_low  too_small too_little below under underneath   too_puny'
+0007 highs= 'too_high too_big   too_much   above over  over_the_top too_huge'
+0008 erm= '***error***'
+0009 @gtn= "guess the number, it's between"
+0010 prompt= centre(@gtn   low     'and'     high     '(inclusive)  ───or───  Quit:', 79, "─")
+0011 /* [↓]  BY 0 ─── used to  LEAVE  a loop*/
+0012 do ask=0  by 0;     say;      say prompt;      say;     pull g;     g= space(g);    say
+0013 do validate=0  by 0                          /*DO index required; LEAVE instruction.*/
+0014 select
+0015 when g==''                 then iterate ask
+0016 when abbrev('QUIT', g, 1)  then exit                              /*what a whoos.*/
+0017 when words(g) \== 1        then say erm    'too many numbers entered:'        g
+0018 when \datatype(g, 'N')     then say erm g  "isn't numeric"
+0019 when \datatype(g, 'W')     then say erm g  "isn't a whole number"
+0020 when g<low                 then say erm g  'is below the lower limit of'     low
+0021 when g>high                then say erm g  'is above the higher limit of'   high
+0022 otherwise       leave  /*validate*/
+0023 end   /*select*/
+0024 iterate ask
+0025 end      /*validate*/
+0026 
+0027 try= try + 1
+0028 if g=r  then leave
+0029 if g>r  then what= word(highs, random(1, words(highs) ) )
+0030 else what= word( lows, random(1, words( lows) ) )
+0031 say 'your guess of'     g     "is"      translate(what, , "_").
+0032 end        /*ask*/
+0033 /*stick a fork in it,  we're all done. */
+0034 if try==1  then say 'Gadzooks!!!       You guessed the number right away!'
+0035 else say 'Congratulations!, you guessed the number in '     try     " tries."
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 low              2
+002 high             3
+003 try              4 27
+004 r                5
+005 lows             6
+006 highs            7
+007 erm              8
+008 prompt           10
+009 ask              12
+010 g                12
+011 validate         13
+012 what             29
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @gtn             -> newV1            9

@@ -1,0 +1,78 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX program uses the Minkowski question─mark function to convert a continued fraction*/
+0002 numeric digits 40                                /*use enough dec. digits for precision.*/
+0003 say fmt( mink(  0.5 * (1+sqrt(5) ) ) )     fmt( 5/3 )
+0004 say fmt( minkI(-5/9) )                     fmt( (sqrt(13) - 7)  /  6)
+0005 say fmt( mink( minkI(0.718281828) ) )      fmt( mink( minkI(.1213141516171819) ) )
+0006 exit 0                                           /*stick a fork in it,  we're all done. */
+0007 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0008 floor: procedure; parse arg x;    t= trunc(x);     return t   -   (x<0)  *  (x\=t)
+0009 fmt:   procedure: parse arg a;    d= digits();     return right( format(a, , d-2, 0), d+5)
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 mink:  procedure:  parse arg x;   p= x % 1;        if x>1 | x<0  then return p + mink(x-p)
+0012 q= 1;    s= 1;    m= 0;    n= 0;    d= 1;   y= p
+0013 r= p + 1
+0014 do forever;   d= d * 0.5;      if y+d=y | d=0  then leave   /*d= d÷2*/
+0015 m= p + r;                      if m<0   | p<0  then leave
+0016 n= q + s;                      if n<0          then leave
+0017 if x<m/n      then do;   r= m;       s= n;           end
+0018 else do;   y= y + d;   p= m;   q= n;   end
+0019 end   /*forever*/
+0020 return y + d
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 minkI: procedure;  parse arg x;  p= floor(x);   if x>1 | x<0  then return p + minkI(x-p)
+0023 if x=1 | x=0  then return x
+0024 cur= 0;                limit= 200;       $=               /*limit: max iterations*/
+0025 #= 1                                                      /*#:  is the count.    */
+0026 do  until #==limit | words($)==limit;                        x= x * 2
+0027 if cur==0  then if x<1  then      #= # + 1
+0028 else do;  $= $ #;  #= 1;   cur= 1;  x= x-1;  end
+0029 else if x>1  then do;           #= # + 1;        x= x-1;  end
+0030 else do;  $= $ #;  #= 1;   cur= 0;           end
+0031 if x==floor(x)          then do;           $= $ #;  leave;           end
+0032 end   /*until*/
+0033 z= words($)
+0034 ret= 1 / word($, z)
+0035 do j=z  for z  by -1;    ret= word($, j)    +    1 / ret
+0036 end   /*j*/
+0037 return 1 / ret
+0038 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0039 sqrt: procedure; parse arg x;  if x=0  then return 0;  d=digits();  numeric digits;  h=d+6
+0040 numeric form; m.=9; parse value format(x,2,1,,0) 'E0' with g "E" _ .; g=g *.5'e'_ %2
+0041 do j=0  while h>9;     m.j= h;             h= h % 2 + 1;      end  /*j*/
+0042 do k=j+5  to 0  by -1; numeric digits m.k; g= (g + x/g) * .5; end  /*k*/; return g
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                39
+002 d                39
+003 h                39 41
+004 m.               40 41
+005 until            26
+006 z                33
+007 ret              34 35
+008 j                35 41
+009 r                13 17
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                40 40 42
+024 k                42
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            24 28 30 31
+002 #                -> newV2            25 27 28 29 30
+003 _                -> newV3            40

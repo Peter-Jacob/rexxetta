@@ -1,0 +1,22 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX program deletes a file and a folder in the  current directory  and  the root.    */
+0002 trace off                                        /*suppress REXX error messages from DOS*/
+0003 aFile= 'input.txt'                               /*name of a  file  to be deleted.      */
+0004 aDir = 'docs'                                    /*name of a folder to be removed.      */
+0005 do j=1  for 2                     /*perform this  DO  loop exactly twice.*/
+0006 'ERASE'  aFile                    /*erase this  file in the current dir. */
+0007 'RMDIR'  "/s /q"  aDir            /*remove the folder "  "     "     "   */
+0008 if j==1  then 'CD \'              /*make the  current dir  the  root dir.*/
+0009 end                               /* [↑]  just do   CD \    command once.*/
+0010 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 aFile            3
+002 aDir             4
+003 j                5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

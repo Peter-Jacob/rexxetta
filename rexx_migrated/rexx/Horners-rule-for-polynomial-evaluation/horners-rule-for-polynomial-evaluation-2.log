@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 27.07.2012 Walter Pachl
+0003 *            coefficients reversed to descending order of power
+0004 *            I'm used to x**2+x-3
+0005 *            equation formatting prettified (coefficients 1 and 0)
+0006 *--------------------------------------------------------------------*/
+0007 Numeric Digits 30                /* use extra numeric precision.   */
+0008 Parse Arg x poly                 /* get value of x and coefficients*/
+0009 rpoly=''
+0010 Do p=0 To words(poly)-1
+0011 rpoly=rpoly word(poly,words(poly)-p)
+0012 End
+0013 poly=rpoly
+0014 equ=''                           /* start with equation clean slate*/
+0015 deg=words(poly)-1
+0016 pdeg=deg
+0017 Do Until deg<0                   /* get the equation's coefficients*/
+0018 Parse Var poly c.deg poly      /* in descending order of powers  */
+0019 c.deg=c.deg+0                  /* normalize it                   */
+0020 If c.deg>0 & deg<pdeg Then     /* positive and not first term    */
+0021 prefix='+'                   /*  prefix a + sign.              */
+0022 Else prefix=''
+0023 Select
+0024 When deg=0 Then term=c.deg
+0025 When deg=1 Then
+0026 If c.deg=1 Then term='x'
+0027 Else term=c.deg'*x'
+0028 Otherwise
+0029 If c.deg=1 Then term='x^'deg
+0030 Else term=c.deg'*x^'deg
+0031 End
+0032 If c.deg<>0 Then               /* build up the equation          */
+0033 equ=equ||prefix||term
+0034 deg=deg-1
+0035 End
+0036 a=c.pdeg
+0037 Do p=pdeg To 1 By -1             /* apply Horner's rule.           */
+0038 pm1=p-1
+0039 a=a*x+c.pm1
+0040 End
+0041 Say '        x = ' x
+0042 Say '   degree = ' pdeg
+0043 Say ' equation = ' equ
+0044 Say ' '
+0045 Say '   result = ' a
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 poly             18 18
+002 c.               18 19
+003 prefix           21
+004 term             26 29
+005 equ              33
+006 deg              34
+007 a                36 39
+008 p                37
+009 pm1              38
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

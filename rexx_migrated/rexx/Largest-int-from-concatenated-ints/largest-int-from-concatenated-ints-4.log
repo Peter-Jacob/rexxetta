@@ -1,0 +1,100 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program constructs the largest integer from an integer list using concatenation.*/
+0002 l.='';    l.1 = '1 34 3 98 9 76 45 4'           /*the  1st  integer list to be used.   */
+0003 l.2 = '54 546 548 60'                 /* "   2nd     "      "   "  "   "     */
+0004 l.3 = ' 4  45  54  5'                 /* "   3rd     "      "   "  "   "     */
+0005 l.4 = ' 4  45  54  5  6.6e77'         /* "   4th     "      "   "  "   "     */
+0006 l.5 = ' 3 3 .2'                       /* "   5th     "      "   "  "   "     */
+0007 l.6 = ' 4  45  54  5  6.6e1001'       /* "   6th     "      "   "  "   "     */
+0008 l.7 = ' 4.0000 45 54 5.00'            /* "   7th     "      "   "  "   "     */
+0009 l.8 = ' 10e999999999 5'               /* "   8th     "      "   "  "   "     */
+0010 l_length=0
+0011 Do li=1 By 1 While l.li<>''
+0012 l_length=max(l_length,length(space(l.li)))
+0013 End
+0014 
+0015 Do li=1 By 1 While l.li<>''
+0016 z=''
+0017 msg=''
+0018 Do j=1 To words(l.li)
+0019 int=integer(word(l.li,j))
+0020 If int='?' Then Do
+0021 Say left(space(l.li),l_length) '-> ** invalid ** bad list item:' word(l.li,j) msg
+0022 Iterate li
+0023 End
+0024 Else
+0025 z=z int
+0026 End
+0027 zz=largeint(z)
+0028 If length(zz)<60 Then
+0029 Say left(space(l.li),l_length) '->' zz
+0030 Else
+0031 Say left(space(l.li),l_length) '->' left(zz,5)'...'right(zz,5)
+0032 End
+0033 Exit
+0034 
+0035 integer: Procedure Expose msg
+0036 Numeric Digits 1000
+0037 Parse Arg z
+0038 If Datatype(z,'W') Then
+0039 Return z/1
+0040 Else Do
+0041 If Datatype(z,'NUM') Then Do
+0042 Do i=1 To 6 Until dig>=999999999
+0043 dig= digits()*10
+0044 dig=min(dig,999999999)
+0045 Numeric Digits dig
+0046 If Datatype(z,'W') Then
+0047 Return z/1
+0048 End
+0049 msg='cannot convert it to an integer'
+0050 Return '?'
+0051 End
+0052 Else Do
+0053 msg='not a number (larger than what this REXX can handle)'
+0054 Return '?'
+0055 End
+0056 End
+0057 
+0058 largeint: Procedure
+0059 Parse Arg list
+0060 w.0=words(list)
+0061 Do i=1 To w.0
+0062 w.i=word(list,i)
+0063 End
+0064 Do wx=1 To w.0-1
+0065 Do wy=wx+1 To w.0
+0066 xx=w.wx
+0067 yy=w.wy
+0068 xy=xx||yy
+0069 yx=yy||xx
+0070 if xy < yx then do
+0071 /* swap xx and yy */
+0072 w.wx = yy
+0073 w.wy = xx
+0074 end
+0075 End
+0076 End
+0077 list=''
+0078 Do ww=1 To w.0
+0079 list=list w.ww
+0080 End
+0081 Return space(list,0)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 list             59 77 79
+002 w.               60 62 72 73
+003 i                61
+004 wx               64
+005 wy               65
+006 xx               66
+007 yy               67
+008 xy               68
+009 yx               69
+010 ww               78
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

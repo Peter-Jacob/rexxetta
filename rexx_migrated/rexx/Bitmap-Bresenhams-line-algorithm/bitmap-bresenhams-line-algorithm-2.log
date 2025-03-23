@@ -1,0 +1,64 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 21.05.2014  Walter Pachl
+0003 * Implementing the pseudo code of
+0004 *    http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+0005 * under 'Simplification'
+0006 **********************************************************************/
+0007 grid.='.'
+0008 Do i=-2 To  7; grid.i.0='-'; End
+0009 Do j=-4 To 11; grid.0.j='|'; End
+0010 grid.0.0='+'
+0011 Call line -1,-3,6,10
+0012 Do j=11 To -4 By -1
+0013 ol=format(j,2)' '
+0014 Do i=-2 To 7
+0015 ol=ol||grid.i.j
+0016 End
+0017 Say ol
+0018 End
+0019 Say '   2101234567'
+0020 Exit
+0021 line: Procedure Expose grid.
+0022 Parse Arg x0, y0, x1, y1
+0023 dx = abs(x1-x0)
+0024 dy = abs(y1-y0)
+0025 if x0 < x1 then sx = 1
+0026 else sx = -1
+0027 if y0 < y1 then sy = 1
+0028 else sy = -1
+0029 err = dx-dy
+0030 
+0031 Do Forever
+0032 grid.x0.y0='X'
+0033 if x0 = x1 & y0 = y1 Then Leave
+0034 e2 = 2*err
+0035 if e2 > -dy then do
+0036 err = err - dy
+0037 x0 = x0 + sx
+0038 end
+0039 if e2 < dx then do
+0040 err = err + dx
+0041 y0 = y0 + sy
+0042 end
+0043 end
+0044 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x0               22 37
+002 y0               22 41
+003 x1               22
+004 y1               22
+005 dx               23
+006 dy               24
+007 sx               25
+008 sy               27
+009 err              29 36 40
+010 grid.            32
+011 e2               34
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

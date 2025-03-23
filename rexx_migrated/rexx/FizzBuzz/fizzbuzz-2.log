@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX program displays numbers  1 ──► 100  (some transformed) for the FizzBuzz problem.*/
+0002 /*╔═══════════════════════════════════╗*/
+0003 do j=1  to 100                                 /*║                                   ║*/
+0004 select                                     /*║                                   ║*/
+0005 when j//15==0  then say 'FizzBuzz'         /*║ The divisors  (//)  of the  WHENs ║*/
+0006 when j//5 ==0  then say '    Buzz'         /*║ must be in  descending  order.    ║*/
+0007 when j//3 ==0  then say '    Fizz'         /*║                                   ║*/
+0008 otherwise           say right(j, 8)        /*╚═══════════════════════════════════╝*/
+0009 end   /*select*/
+0010 end       /*j*/                                /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                3
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

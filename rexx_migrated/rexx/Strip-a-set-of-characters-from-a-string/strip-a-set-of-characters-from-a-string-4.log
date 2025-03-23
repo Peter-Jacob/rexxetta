@@ -1,0 +1,21 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 stripchars: Procedure
+0002 Parse Arg i,s                 /* get input and chars to be removed */
+0003 o=''                          /* initialize result                 */
+0004 Do While i\==''               /* loop through input                */
+0005 Parse Var i c +1 i          /* get one character                 */
+0006 If pos(c,s)=0 Then          /* it's not to be removed            */
+0007 o=o||c                    /* append it to the result           */
+0008 End
+0009 Return o                      /* return the result                 */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 i                5 5
+002 c                5
+003 o                7
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

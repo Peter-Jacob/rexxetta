@@ -1,0 +1,94 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*REXX program converts a  decimal  or  rational fraction  to a  continued fraction.    */
+0002 numeric digits 230                               /*determines how many terms to be gened*/
+0003 say '              1/2  ──► CF: '   r2cf( '1/2'      )
+0004 say '               3   ──► CF: '   r2cf(   3        )
+0005 say '             23/8  ──► CF: '   r2cf( '23/8'     )
+0006 say '             13/11 ──► CF: '   r2cf( '13/11'    )
+0007 say '             22/7  ──► CF: '   r2cf( '22/7 '    )
+0008 say '                       ___'
+0009 say '───────── attempts at √ 2.'
+0010 say '14142/1e4          ──► CF: '   r2cf( '14142/1e4 '          )
+0011 say '141421/1e5         ──► CF: '   r2cf( '141421/1e5 '         )
+0012 say '1414214/1e6        ──► CF: '   r2cf( '1414214/1e6 '        )
+0013 say '14142136/1e7       ──► CF: '   r2cf( '14142136/1e7 '       )
+0014 say '141421356/1e8      ──► CF: '   r2cf( '141421356/1e8 '      )
+0015 say '1414213562/1e9     ──► CF: '   r2cf( '1414213562/1e9 '     )
+0016 say '14142135624/1e10   ──► CF: '   r2cf( '14142135624/1e10 '   )
+0017 say '141421356237/1e11  ──► CF: '   r2cf( '141421356237/1e11 '  )
+0018 say '1414213562373/1e12 ──► CF: '   r2cf( '1414213562373/1e12 ' )
+0019 say '√2                 ──► CF: '   r2cf(  sqrt(2)              )
+0020 say
+0021 say '───────── an attempt at pi'
+0022 say 'pi                 ──► CF: '   r2cf(  pi() )
+0023 exit                                             /*stick a fork in it,  we're all done. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 $maxFact: procedure;  parse arg x 1 _x,y;   y=10**(digits()-1);   b=0;  h=1;  a=1;     g=0
+0026 do while a<=y & g<=y;  n=trunc(_x);  _=a;  a=n*a+b;   b=_;  _=g;  g=n*g+h; h=_
+0027 if n=_x | a/g=x  then do; if a>y | g>y  then iterate; b=a;  h=g;  leave;   end
+0028 _x=1/(_x-n);  end;                           return  b'/'h
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 pi: return 3.1415926535897932384626433832795028841971693993751058209749445923078164062862,
+0031 || 089986280348253421170679821480865132823066470938446095505822317253594081284,
+0032 || 811174502841027019385211055596446229489549303819644288109756659334461284756,
+0033 || 48233786783165271                        /* ··· should  ≥  NUMERIC DIGITS */
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 r2cf: procedure; parse arg g 1 s 2;  $=;     if s=='-'  then g=substr(g, 2)
+0036 else s=
+0037 if pos(., g)\==0  then do;  if \datatype(g, 'N')  then call serr 'not numeric:'   g
+0038 g=$maxfact(g)
+0039 end
+0040 if pos('/', g)==0      then g=g"/"1
+0041 parse var  g   n  '/'  d
+0042 if \datatype(n, 'W')   then call serr    "a numerator isn't an integer:"    n
+0043 if \datatype(d, 'W')   then call serr  "a denominator isn't an integer:"    d
+0044 if d=0                 then call serr  'a denominator is zero'
+0045 n=abs(n)                                         /*ensure numerator is positive.  */
+0046 do  while  d\==0;      _=d    /*where the rubber meets the road*/
+0047 $=$  s || (n%d)               /*append another number to list. */
+0048 d=n // d;              n=_    /* %  is int div,  // is modulus.*/
+0049 end   /*while*/
+0050 return strip($)
+0051 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0052 serr: say;    say '***error***';    say;    say arg(1);     say;    exit 13
+0053 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0054 sqrt: procedure; parse arg x;  if x=0  then return 0;  d=digits();   h=d+6;   numeric form
+0055 m.=9; numeric digits; parse value format(x,2,1,,0) 'E0' with g 'E' _ .; g=g*.5'e'_%2
+0056 do j=0  while h>9;      m.j=h;               h=h%2+1;       end /*j*/
+0057 do k=j+5  to 0  by -1;  numeric digits m.k;  g=(g+x/g)*.5;  end /*k*/
+0058 numeric digits d;                      return g/1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                54
+002 d                54
+003 h                54 56
+004 m.               55 56
+005 a                25 26
+006 g                25 26 55 55 57
+007 while            26
+008 n                26
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 j                56
+024 k                57
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _x               -> newV1            25 28
+002 _                -> newV2            26 26 46 55
+003 $                -> newV3            35 47

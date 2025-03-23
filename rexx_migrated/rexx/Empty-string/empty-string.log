@@ -1,0 +1,69 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program shows how to assign an empty string, & then check for empty/not-empty str*/
+0002 
+0003 /*─────────────── 3 simple ways to assign an empty string to a variable.*/
+0004 auk=''          /*uses two single quotes (also called  apostrophes);  easier to peruse. */
+0005 ide=""          /*uses two quotes,  sometimes called a  double quote.                   */
+0006 doe=            /*··· nothing at all   (which in this case, a null value is assigned.   */
+0007 
+0008 /*─────────────── assigning multiple null values to vars, 2 methods are:*/
+0009 parse var doe emu pug yak nit moa owl pas jay koi ern ewe fae gar hob
+0010 
+0011 /*where  emu, pug, yak, ···  (and the rest) are all set to a null value.*/
+0012 
+0013 /*───or─── (with less clutter ─── or more, depending on your perception)*/
+0014 parse value 0 with . ant ape ant imp fly tui paa elo dab cub bat ayu
+0015 /*where the value of  zero  is skipped,  and  the rest are set to  null,*/
+0016 /*which is the next value  AFTER  the  0  (zero):   nothing (or a null).*/
+0017 
+0018 /*─────────────── how to check that a string is empty, several methods: */
+0019 if cat==''         then say "the feline is not here."
+0020 if pig==""         then say 'no ham today.'
+0021 if length(gnu)==0  then say "the wildebeest's stomach is empty and hungry."
+0022 if length(ips)=0   then say "checking with   ==   instead of  =  is faster"
+0023 if length(hub)<1   then method = "this is rather obtuse,  don't do as I do ···"
+0024 
+0025 nit=''                                           /*assign an empty string to a lice egg.*/
+0026 if cow==nit        then say 'the cow has no milk today.'
+0027 
+0028 /*─────────────── how to check that a string isn't empty, several ways: */
+0029 if dog\==''        then say "the dogs are out!"
+0030 /*most REXXes support the ¬ character. */
+0031 if fox¬==''        then say "and the fox is in the henhouse."
+0032 if length(rat)>0   then say "the rat is singing" /*an obscure-ish (or ugly) way to test.*/
+0033 
+0034 if elk==''         then nop; else say "long way obtuse for an elk to be tested."
+0035 
+0036 if length(eel)\==0 then fish=eel                 /*a fast compare (than below), & quick.*/
+0037 if length(cod)\=0  then fish=cod                 /*a not-as-fast compare.               */
+0038 
+0039 /*────────────────────────── anyway, as they say: "choose your poison." */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 doe              9
+002 emu              9
+003 pug              9
+004 yak              9
+005 nit              9 25
+006 moa              9
+007 owl              9
+008 pas              9
+009 ant              14 14
+010 ape              14
+011 imp              14
+012 fly              14
+013 tui              14
+014 paa              14
+015 elo              14
+016 dab              14
+017 cub              14
+018 bat              14
+019 ayu              14
+020 method           23
+021 fish             36 37
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

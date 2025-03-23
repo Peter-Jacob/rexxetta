@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program finds the  persistence and multiplicative  digital root  of some numbers.*/
+0002 numeric digits 100                               /*increase the number of decimal digits*/
+0003 parse arg x                                      /*obtain optional arguments from the CL*/
+0004 if x='' | x=","  then x=123321 7739 893 899998   /*Not specified?  Then use the default.*/
+0005 say center('number', 8)      ' persistence   multiplicative digital root'
+0006 say copies('─'     , 8)      ' ───────────   ───────────────────────────'
+0007 /* [↑]  the title  and  separator.     */
+0008 do j=1  for words(x);        n=word(x, j)   /*process each number in the   X  list.*/
+0009 parse value  MDR(n)   with   mp mdr         /*obtain the persistence and the  MDR. */
+0010 say right(n,8) center(mp,13) center(mdr,30) /*display a number,  persistence,  MDR.*/
+0011 end   /*j*/                                 /* [↑]  show MP & MDR for each number. */
+0012 say copies('─'     , 8)      ' ───────────   ───────────────────────────'
+0013 say; say;                target=5
+0014 say 'MDR        first '  target  " numbers that have a matching MDR"
+0015 say '═══   ═══════════════════════════════════════════════════'
+0016 
+0017 do k=0  for 10; hits=0;   _=                /*show numbers that have an MDR of  K. */
+0018 do m=k  until hits==target                /*find target numbers with an MDR of K.*/
+0019 if word( MDR(m), 2)\==k  then iterate     /*is this the  MDR  that's wanted?     */
+0020 hits=hits + 1;       _=space(_ m',')      /*yes, we got a hit,  add to the list. */
+0021 end   /*m*/                               /* [↑]  built a list of MDRs that = K. */
+0022 say " "k':     ['strip(_, , ',')"]"         /*display the  K  (MDR)  and the list. */
+0023 end     /*k*/                               /* [↑]  done with the   K   MDR list.  */
+0024 say '═══   ═══════════════════════════════════════════════════'
+0025 exit 0                                           /*stick a fork in it,  we're all done. */
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 MDR: procedure; parse arg y; y=abs(y)            /*get the number and determine the MDR.*/
+0028 do p=1      until  y<10;    parse var  y  r  2
+0029 do k=2  to length(y);   r=r * substr(y, k, 1)
+0030 end   /*k*/
+0031 y=r
+0032 end       /*p*/               /* [↑]  wash, rinse, and repeat ···    */
+0033 return p r                       /*return the persistence and the  MDR. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                28 31
+002 r                28 29
+003 k                29
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            17 20

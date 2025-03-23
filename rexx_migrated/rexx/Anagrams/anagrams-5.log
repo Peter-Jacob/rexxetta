@@ -1,0 +1,73 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program finds words with the largest set of anagrams (same size)
+0002 * 07.08.2013 Walter Pachl
+0003 * sorta for word compression courtesy Gerard Schildberger,
+0004 *                            modified, however, to obey lowercase
+0005 * 10.08.2013 Walter Pachl take care of mixed case dictionary
+0006 *                         following Version 1's method
+0007 **********************************************************************/
+0008 Parse Value 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z',
+0009 With  a b c d e f g h i j k l m n o p q r s t u v w x y z
+0010 Call time 'R'
+0011 ifid='unixdict.txt'              /* input file identifier          */
+0012 words=0                          /* number of usable words         */
+0013 maxl=0                           /* maximum number of anagrams     */
+0014 wl.=''                           /* wl.ws words that have ws       */
+0015 Do ri=1 By 1 While lines(ifid)\==0 /* read each word in file       */
+0016 word=space(linein(ifid),0)     /* pick off a word from the input.*/
+0017 If length(word)<3 Then         /* onesies and twosies can't win. */
+0018 Iterate
+0019 If\datatype(word,'M') Then     /* not an anagramable word        */
+0020 Iterate
+0021 words=words+1                  /* count of (useable) words.      */
+0022 ws=sorta(word)                 /* sort the letters in the word.  */
+0023 wl.ws=wl.ws word               /* add word to list of ws         */
+0024 wln=words(wl.ws)               /* number of anagrams with ws     */
+0025 Select
+0026 When wln>maxl Then Do        /* a new maximum                  */
+0027 maxl=wln                   /* use this                       */
+0028 wsl=ws                     /* list of resulting ws values    */
+0029 End
+0030 When wln=maxl Then           /* same as the one found          */
+0031 wsl=wsl ws                 /* add ws to the list             */
+0032 Otherwise                    /* shorter                        */
+0033 Nop                        /* not yet of interest            */
+0034 End
+0035 End
+0036 Say ' '
+0037 Say copies('-',10) ri-1 'words in the dictionary file: ' ifid
+0038 Say copies(' ',10) words 'thereof are anagram candidates'
+0039 Say ' '
+0040 Say 'There are' words(wsl) 'set(s) of anagrams with' maxl,
+0041 'elements each:'
+0042 Say ' '
+0043 Do while wsl<>''
+0044 Parse Var wsl ws wsl
+0045 Say '    'wl.ws
+0046 End
+0047 Say time('E')
+0048 Exit
+0049 sorta:
+0050 /**********************************************************************
+0051 * sort the characters in word_p (lowercase translated to uppercase)
+0052 * 'chARa' -> 'AACHR'
+0053 **********************************************************************/
+0054 Parse Upper Arg word_p
+0055 c.=''
+0056 Do While word_p>''
+0057 Parse Var word_p cc +1 word_p
+0058 c.cc=c.cc||cc
+0059 End
+0060 Return c.a||c.b||c.c||c.d||c.e||c.f||c.g||c.h||c.i||c.j||c.k||c.l||,
+0061 c.m||c.n||c.o||c.p||c.q||c.r||c.s||c.t||c.u||c.v||c.w||c.x||c.y||c.z
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 word_p           57 57
+002 cc               57
+003 c.               58
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

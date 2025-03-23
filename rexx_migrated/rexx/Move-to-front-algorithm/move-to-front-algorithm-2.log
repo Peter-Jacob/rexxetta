@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates the  move─to─front  algorithm  encode/decode  symbol table. */
+0002 parse arg xxx;   if xxx=''  then xxx= 'broood bananaaa hiphophiphop'  /*use the default?*/
+0003 one= 1                          /*(offset) for this task's requirement.*/
+0004 do j=1  for words(xxx);    x= word(xxx, j)     /*process a single word at a time.     */
+0005 @= 'abcdefghijklmnopqrstuvwxyz';      @@= @    /*symbol table: the lowercase alphabet */
+0006 $=                                             /*set the decode string to a   null.   */
+0007 do k=1  for length(x); z= substr(x, k, 1)  /*encrypt a symbol in the word.        */
+0008 _= pos(z, @);      if _==0  then iterate   /*the symbol position in symbol table. */
+0009 $= $  (_ - one);   @= z || delstr(@, _, 1) /*(re─)adjust the symbol table string. */
+0010 end   /*k*/                                /* [↑]   the  move─to─front  encoding. */
+0011 !=                                             /*set the encode string to a   null.   */
+0012 do m=1  for words($);  n= word($, m) + one /*decode the sequence table string.    */
+0013 y= substr(@@, n, 1);   != !  ||  y         /*the decode symbol for the   N   word.*/
+0014 @@= y || delstr(@@, n, 1)                  /*rebuild the symbol table string.     */
+0015 end   /*m*/                                /* [↑]   the  move─to─front  decoding. */
+0016 say '     word: '  left(x, 20)  "encoding:"  left($, 35)   word('wrong OK', 1 + (!==x) )
+0017 end       /*j*/                                /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 xxx              2 2
+002 one              3
+003 j                4
+004 x                4
+005 k                7
+006 z                7
+007 m                12
+008 n                12
+009 y                13
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @@               -> newV1            5 14
+002 @                -> newV2            5 9
+003 $                -> newV3            6 9
+004 _                -> newV4            8
+005 !                -> newV5            11 13

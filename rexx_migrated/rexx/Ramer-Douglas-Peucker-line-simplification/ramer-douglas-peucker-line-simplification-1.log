@@ -1,0 +1,53 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX program uses the  Ramer─Douglas─Peucker (RDP)  line simplification algorithm  for*/
+0002 /*───────────────────────────── reducing the number of points used to define its shape. */
+0003 parse arg epsilon pts                            /*obtain optional arguments from the CL*/
+0004 if epsilon='' | epsilon=","   then epsilon= 1    /*Not specified?  Then use the default.*/
+0005 if pts=''  then pts= '(0,0) (1,0.1) (2,-0.1) (3,5) (4,6) (5,7) (6,8.1) (7,9) (8,9) (9,9)'
+0006 pts= space(pts)                                  /*elide all superfluous blanks.        */
+0007 say '  error threshold: '   epsilon  /*echo the error threshold to the term.*/
+0008 say ' points specified: '   pts      /*  "   "    shape points   "  "    "  */
+0009 $= RDP(pts)                                      /*invoke Ramer─Douglas─Peucker function*/
+0010 say 'points simplified: '   rez($)   /*display points with () ───► terminal.*/
+0011 exit 0                                           /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 bld: parse arg _; #= words(_); dMax=-#; idx=1; do j=1  for #; @.j= word(_, j); end; return
+0014 px:  parse arg _;          return word( translate(_, , ','),  1)   /*obtain the X coörd.*/
+0015 py:  parse arg _;          return word( translate(_, , ','),  2)   /*   "    "  Y   "   */
+0016 reb: parse arg a,b,,_;                  do k=a  to b;  _= _ @.k;    end;   return strip(_)
+0017 rez: parse arg z,_;   do k=1  for words(z); _= _ '('word(z, k)") "; end;   return strip(_)
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 RDP: procedure expose epsilon;    call bld  space( translate(arg(1), , ')(][}{') )
+0020 L= px(@.#) - px(@.1)
+0021 H= py(@.#) - py(@.1)                        /* [↓] find point IDX with max distance*/
+0022 do i=2  to #-1
+0023 d= abs(H*px(@.i) - L*py(@.i) + px(@.#)*py(@.1) - py(@.#)*px(@.1))
+0024 if d>dMax  then do;   idx= i;   dMax= d
+0025 end
+0026 end   /*i*/             /* [↑]  D is the perpendicular distance*/
+0027 
+0028 if dMax>epsilon  then do;   r= RDP( reb(1, idx) )
+0029 return subword(r, 1, words(r) - 1)     RDP( reb(idx, #) )
+0030 end
+0031 return @.1  @.#
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                17
+002 k                17
+003 L                20
+004 H                21
+005 i                22
+006 d                23
+007 idx              24
+008 dMax             24
+009 r                28
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           13
+002 $                -> newV2            9
+003 _                -> newV3            13 14 15 16 16 17 17
+004 #                -> newV4            13

@@ -1,0 +1,523 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /* REXX ****************************************** Version 11.12.2015 **
+0002 * Rexx Tokenizer to find function invocations
+0003 *-----------------------------------------------------------------------
+0004 * Tokenization remembers the following for each token
+0005 * t.i       text of token
+0006 * t.i.0t    type of token: Cx/V/K/N/O/S/L
+0007 *             comment/variable/keyword/constant/operator/string/label
+0008 * t.i.0il   line of token in the input
+0009 * t.i.0ic   col of token in the input
+0010 * t.i.0prev index of token starting previous instruction
+0011 * t.i.0ol   line of token in the output
+0012 * t.i.0oc   col of token in the output
+0013 *---------------------------------------------------------------------*/
+0014 Call time 'R'
+0015 Parse Upper Arg fid '(' options
+0016 If fid='?' Then Do
+0017 Say 'Tokenike a REXX proram and list the function invocations found'
+0018 Say '  which are of the form symbol(... or ''string''(...'
+0019 Say '  (the left parenthesis must immediately follow the symbol'
+0020 Say '  or literal string.)'
+0021 Say 'Syntax:'
+0022 Say '  TKZ pgm < ( <Debug> <Tokens> >'
+0023 Exit
+0024 End
+0025 g.=0
+0026 Call init                         /* Initialize constants etc.      */
+0027 g.0cont='01'x
+0028 g.0breakc='02'x
+0029 cnt.=0
+0030 Call readin                       /* Read input file into l.*       */
+0031 Call tokenize                     /* Tokenize the input             */
+0032 tk=''
+0033 Call process_tokens
+0034 g.0fun_list=wordsort(g.0fun_list)
+0035 Do While g.0fun_list>''
+0036 Parse Var g.0fun_list fun g.0fun_list
+0037 Say right(cnt.fun,3) fun
+0038 End
+0039 Say time('E') 'seconds elapsed for' t.0 'tokens in' g.0lines 'lines.'
+0040 Exit
+0041 
+0042 init:
+0043 /***********************************************************************
+0044 * Initialize constants etc.
+0045 ***********************************************************************/
+0046 g.=''
+0047 g.0debug=0                        /* set debug off by default       */
+0048 
+0049 fid=strip(fid)
+0050 If fid='' Then                    /* no file specified              */
+0051 Exit exit(12 'no input file specified')
+0052 Parse Var fid fn '.'
+0053 
+0054 os=options                        /* options specified on command   */
+0055 g.0debug=0                        /* turn off debug output          */
+0056 g.0tokens=0                       /* No token file                  */
+0057 Do While os<>''                   /* process them individually      */
+0058 Parse Upper Var os o os         /* pick one                       */
+0059 Select
+0060 When abbrev('DEBUG',o,1) Then /* Debug specified                */
+0061 g.0debug=1                  /* turn on debug output           */
+0062 When abbrev('TOKENS',o,1) Then /* Write a file with tokens      */
+0063 g.0tokens=1
+0064 Otherwise                     /* anything else                  */
+0065 Say 'Unknown option:' o     /* tell the user and ignore it    */
+0066 End
+0067 End
+0068 
+0069 If g.0debug Then Do
+0070 g.0dbg=fn'.dbg'; '@erase' g.0dbg
+0071 End
+0072 If g.0tokens Then Do
+0073 g.0tkf=fn'.tok'; '@erase' g.0tkf
+0074 End
+0075 
+0076 /***********************************************************************
+0077 * Language specifics
+0078 ***********************************************************************/
+0079 g.0special='+-*/%''";:<>^\=|,()& '/* special characters             */
+0080 /* chars that may start a var */
+0081 g.0a='abcdefghijklmnopqrstuvwxyz'||,
+0082 'ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$!?_'
+0083 g.0n='1234567890'                 /* numeric characters             */
+0084 g.0vc=g.0a||g.0n||'.'             /* var-character                  */
+0085 /* multi-character operators      */
+0086 g.0opx='&& ** // << <<= <= <> == >< >= >> >>=',
+0087 '^< ^<< ^= ^== ^> ^>> \< \<< \= \== \> \>> ||'
+0088 
+0089 t.=''                             /* token list                     */
+0090 Return
+0091 
+0092 readin:
+0093 /***********************************************************************
+0094 * Read the file to be formatted
+0095 ***********************************************************************/
+0096 lc=''
+0097 i=0
+0098 g.0lines=0
+0099 Do While lines(fid)<>0
+0100 li=linein(fid)
+0101 g.0lines=g.0lines+1
+0102 If i>0 Then
+0103 lc=strip(l.i,'T')
+0104 If right(lc,1)=',' Then Do
+0105 l.i=left(lc,length(lc)-1) li
+0106 End
+0107 Else Do
+0108 i=i+1
+0109 l.i=li
+0110 End
+0111 End
+0112 l.0=i
+0113 Call lineout fid
+0114 t=l.0+1
+0115 l.t=g.0eof                        /* add a stopper at program end   */
+0116 l.0=t                             /* adjust number of lines         */
+0117 g.0il=t                           /* remember end of program        */
+0118 Return
+0119 
+0120 tokenize:
+0121 /***********************************************************************
+0122 * First perform tokenization
+0123 * Input:  l.*  Program text
+0124 * Output: t.*  Token list
+0125 *         t.0t.i token type CA CB CC C comment begin/middle/end
+0126 *                           S          string
+0127 *                           O          operator (special character)
+0128 *                           V          variable symbol
+0129 *                           N          constant
+0130 *                           X          end of text
+0131 * Note: special characters are treated as separate tokens
+0132 ***********************************************************************/
+0133 li=0                              /* line index                     */
+0134 ti=0                              /* token index                    */
+0135 Do While li<l.0                   /* as long as there is more input */
+0136 li=li+1                         /* index of next line             */
+0137 l=l.li                          /* next line to be processed      */
+0138 g.0newline=1
+0139 g.0cc=0                         /* current column                 */
+0140 Call dsp l.li                   /* debug output                   */
+0141 If l='' Then                    /* empty line                     */
+0142 Call addtoken '/*--*/','C'    /* preserve with special token    */
+0143 Do While l<>''                  /* work through the line          */
+0144 nbc=verify(l,' ')             /* first non-blank column         */
+0145 g.0cc=g.0cc+nbc               /* advance to this                */
+0146 If g.0newline='' Then Do
+0147 If t.ti.0ic='' Then
+0148 t.ti.0ic=0
+0149 If g.0cc=t.ti.0ic+length(t.ti) Then Do
+0150 tj=ti+1
+0151 t.tj.0ad=1
+0152 End
+0153 End
+0154 l=substr(l,nbc)               /* and continue with rest of line */
+0155 Parse Var l c +1 l 1 c2 +2    /* get character(s)               */
+0156 g.0tb=g.0cc                   /* remember where token starts    */
+0157 Select                        /* take a decision                */
+0158 When c2='/*' Then           /* comment starts here            */
+0159 Call comment              /* process comment                */
+0160 When pos(c,'''"')>0 Then    /* literal string starts here     */
+0161 Call string c             /* process literal string         */
+0162 Otherwise                   /* neither comment nor literal    */
+0163 Call token                /* get other token                */
+0164 End                         /* cmt, string, or token done     */
+0165 End                           /* end of loop over line          */
+0166 End                             /* end of loop over program       */
+0167 t.0=ti                            /* store number of tokens         */
+0168 Call dsp ti 'tokens' l.0 'lines'
+0169 Return
+0170 comment:
+0171 /***********************************************************************
+0172 * Parse a comment
+0173 * Nested comments are supported
+0174 ***********************************************************************/
+0175 cbeg=t.ti.0il
+0176 l=substr(l,2)                     /* continue after slash-asterisk  */
+0177 g.0cc=g.0cc+1                     /* update current char position   */
+0178 t='/*'                            /* token so far                   */
+0179 incmt=1                           /* indicate "within a comment"    */
+0180 Do Until incmt=0                  /* loop until done                */
+0181 bc=pos('/*',l)                  /* next begin comment, if any     */
+0182 ec=pos('*/',l)                  /* next end   comment, if any     */
+0183 Select                          /* decide                         */
+0184 When bc>0 &,                  /* begin-comment found            */
+0185 (ec=0 | bc<ec) Then Do   /* and no end-comment or later    */
+0186 t=t||left(l,bc+1)           /* add this all to token          */
+0187 incmt=incmt+1               /* increment comment nest-depth   */
+0188 l=substr(l,bc+2)            /* continue after slash-asterisk  */
+0189 g.0cc=g.0cc+bc+1            /* update current char position   */
+0190 End
+0191 When ec>0 Then Do             /* end-comment found              */
+0192 t=t||left(l,ec+1)           /* add all to token               */
+0193 incmt=incmt-1               /* decrement nesting              */
+0194 l=substr(l,ec+2)            /* continue after asterisk-slash  */
+0195 g.0cc=g.0cc+ec+1            /* update current char position   */
+0196 End
+0197 Otherwise Do                  /* no further comment bracket     */
+0198 Call addtoken t||l,ct()     /* rest of line to token          */
+0199 li=li+1                     /* proceed to next line           */
+0200 l=l.li                      /* contents of next line          */
+0201 g.0newline=1
+0202 If l=g.0eof Then Do
+0203 Say 'Comment started in line' cbeg 'is not closed before EOF'
+0204 Exit err(58)
+0205 End
+0206 g.0cc=0                     /* current char (none)            */
+0207 g.0tb=1                     /* token (comment) starts here    */
+0208 End
+0209 End
+0210 End
+0211 Call addtoken t,ct()             /* last (or only) comment token    */
+0212 If pos('*debug*',t)>0 Then g.0debug=1
+0213 Return
+0214 
+0215 ct:
+0216 /***********************************************************************
+0217 * Comment type
+0218 ***********************************************************************/
+0219 If incmt>0 Then Do                /* within a comment               */
+0220 If t.ti.0t='CA' |,              /* prev. token was start or cont  */
+0221 t.ti.0t='CB' Then Return 'CB'  /* this is continuation         */
+0222 Else Return 'CA'  /* this is start                */
+0223 End
+0224 Else Do                           /* comment is over                */
+0225 If t.ti.0t='CA' |,              /* prev. token was start or cont  */
+0226 t.ti.0t='CB' Then Return 'CC'  /* this is final part           */
+0227 Else Return 'C'   /* this is just a comment       */
+0228 End
+0229 string:
+0230 /***********************************************************************
+0231 * Parse a string
+0232 * take care of '111'B and '123'X
+0233 ***********************************************************************/
+0234 Parse Arg delim                  /* string delimiter found          */
+0235 t=delim                          /* star building the token         */
+0236 instr=1                          /* note we are within a string     */
+0237 g.0ss=li
+0238 Do Until instr=0                 /* continue until it is over       */
+0239 se=pos(delim,l)                /* ending delimiter                */
+0240 If se>0 Then Do                /* found                           */
+0241 If substr(l,se+1,1)=delim Then Do /* but it is doubled          */
+0242 t=t||left(l,se+1)          /* so add all so far to token      */
+0243 l=substr(l,se+2)           /* and take rest of line           */
+0244 g.0cc=g.0cc+se+1           /* and set current character pos   */
+0245 End
+0246 Else Do                      /* not another one                 */
+0247 instr=0                    /* string is done                  */
+0248 t=t||left(l,se)            /* add the string data to token    */
+0249 l=substr(l,se+1)           /* take the rest of the line       */
+0250 g.0cc=g.0cc+se             /* and set current character pos   */
+0251 If pos(translate(left(l,1)),'BX')>0 Then
+0252 If pos(substr(l,2,1),g.0vc)=0 Then Do
+0253 t=t||left(l,1)         /* add the char to the token       */
+0254 l=substr(l,2)          /* take the rest of the line       */
+0255 g.0cc=g.0cc+1          /* and set current character pos   */
+0256 End
+0257 End
+0258 End
+0259 Else Do                        /* not found                       */
+0260 Call addtoken t||l,'S'       /* store the token                 */
+0261 g.0lasttoken=''              /* reset this switch               */
+0262 li=li+1                      /* go on to the next line          */
+0263 If li>l.0 Then               /* there is no next line           */
+0264 Exit err(60,'string starting in line' g.0ss,
+0265 'does not end before end of file')
+0266 Else
+0267 Say 'string starting at line' g.0ss 'extended over line boundary'
+0268 l=l.li                       /* take contents of the next line  */
+0269 g.0cc=1                      /* current char position           */
+0270 g.0tb=1                      /* ??                              */
+0271 End
+0272 End
+0273 Call addtoken t,'S'              /* store the token                 */
+0274 Return
+0275 token:
+0276 /***********************************************************************
+0277 * Parse a token
+0278 ***********************************************************************/
+0279 IF c=g.0comma & l='' Then Do
+0280 t=g.0cont
+0281 type='O'                        /* O (for operator - not quite...)*/
+0282 End
+0283 Else Do
+0284 If pos(c,g.0special)>0 Then Do  /* a special character            */
+0285 t=c                           /* take it as is                  */
+0286 type='O'                      /* O (for operator - not quite...)*/
+0287 End
+0288 Else Do                         /* some other character           */
+0289 nsp=verify(l,g.0special,'M')  /* find delimiting character      */
+0290 If nsp>0 Then Do              /* some character found           */
+0291 t=c||left(l,nsp-1)          /* take all up to this character  */
+0292 l=substr(l,nsp)             /* and continue from there        */
+0293 End
+0294 Else Do                       /* none found                     */
+0295 t=c||l                      /* add rest of line to token      */
+0296 l=''                        /* and all is used up             */
+0297 End
+0298 g.0cc=g.0cc+length(t)-1       /* adjust current char position   */
+0299 If pos(right(t,1),'eE')>0 &,  /* consider nxxxE+nn case         */
+0300 pos(left(l,1),'+-')>0 Then Do
+0301 If pos(left(t,1),'.1234567890')>0 Then /* start . or digit    */
+0302 If pos(substr(l,2,1),'1234567890')>0 Then Do /* dig after+- */
+0303 nsp=verify(substr(l,2),g.0special,'M')+1 /* find end      */
+0304 If nsp>1 Then           /* delimiting character found     */
+0305 exp=substr(l,2,nsp-2)   /* exponent (if numeric)        */
+0306 Else
+0307 exp=substr(l,2)
+0308 If verify(exp,'0123456789')=0 Then Do
+0309 t=t||left(l,1)||exp
+0310 l=substr(l,length(exp)+2)
+0311 g.0cc=g.0cc+length(exp)+2
+0312 End
+0313 End
+0314 End
+0315 Select
+0316 When isvar(t) Then          /* token qualifies as variable    */
+0317 type='V'
+0318 When isconst(t) Then        /* token is a constant symbol     */
+0319 type='N'
+0320 When t=g.0eof   Then        /* token is end of file indication*/
+0321 type='X'
+0322 Otherwise Do                /* anything else is an error      */
+0323 Say 'li='li
+0324 Say l
+0325 Say 'token error'
+0326 Trace ?R
+0327 Exit err(62,'token' t 'is neither variable nor constant')
+0328 End
+0329 End
+0330 If left(l,1)='(' Then
+0331 type=type||'F'
+0332 End
+0333 End
+0334 Call addtoken t,type              /* store the token                */
+0335 Return
+0336 addtoken:
+0337 /***********************************************************************
+0338 * Add a token to the token list
+0339 ***********************************************************************/
+0340 Parse Arg t,type                  /* token and its type             */
+0341 If type='O' Then Do               /* operator (special character)   */
+0342 If pos(t,'><=&|/*')>0 Then Do   /* char for composite operator    */
+0343 If wordpos(t.ti||t,g.0opx)>0 Then Do  /*  composite operator    */
+0344 t.ti=t.ti||t                /* use concatenation              */
+0345 /* does not handle =/**/=         */
+0346 t=''                        /* we are done                    */
+0347 Return
+0348 End
+0349 End
+0350 End
+0351 
+0352 If type='CC' & t='*/' Then Do     /* The special case for SPA       */
+0353 Return
+0354 End
+0355 
+0356 ti=ti+1                           /* increment index                */
+0357 t.ti=t                            /* store token's value            */
+0358 t.ti.0t=left(type,1)              /*  and its type                  */
+0359 t.ti.0nl=g.0newline               /* token starts a new line        */
+0360 g.0newline=''                     /* reset new line switch          */
+0361 If t.ti.0t='C' Then Do
+0362 t.ti.0t=type
+0363 If left(t.ti,3)='/* ' &,
+0364 right(t.ti,3)=' */' Then
+0365 t.ti='/*' strip(substr(t.ti,4,length(t.ti)-6)) '*/'
+0366 End
+0367 t.ti.0f=substr(type,2,1)          /* 'F' if possibly a function     */
+0368 Call setpos ti li g.0tb           /*    and its position            */
+0369 If left(type,1)='C' Then          /* ??? */
+0370 If left(t.ti,2)<>'/*' Then Do
+0371 ts=strip(t.ti,'L')
+0372 t.ti.0oc=t.ti.0oc+length(t.ti)-length(ts)
+0373 t.ti=ts
+0374 End
+0375 If t.ti.0ol='' Then t.ti.0ol=li
+0376 If t.ti.0oc='' Then t.ti.0oc=0
+0377 t.ti.0il=t.ti.0ol                 /*    and its position            */
+0378 t.ti.0ic=t.ti.0oc                 /*    and its position            */
+0379 Call dsp ti t.ti t.ti.0il'/'t.ti.0ic '->' t.ti.0ol'/'t.ti.0oc
+0380 t=''                              /* reset token variable           */
+0381 Return
+0382 
+0383 lookback:
+0384 /***********************************************************************
+0385 * Look back if...
+0386 ***********************************************************************/
+0387 Do i_=ti To 1 By -1
+0388 Select
+0389 When left(t.i_.0t,1)='C' Then Nop
+0390 When t.i_.0used<>1 &,
+0391 (t.i_=g.0comma |,
+0392 t.i_=g.0cont)  Then Do
+0393 t.i_.0used=1
+0394 t.i_=g.0cont
+0395 Return '0'
+0396 End
+0397 Otherwise
+0398 Return '1'
+0399 End
+0400 End
+0401 Return '1'
+0402 
+0403 isvar:
+0404 /***********************************************************************
+0405 * Determine if a string qualifies as variable name
+0406 ***********************************************************************/
+0407 Parse Arg a_ +1 b_
+0408 res=(pos(a_,g.0a)>0) &,
+0409 (verify(b_,g.0a||g.0n||'.')=0)
+0410 Return res
+0411 
+0412 isconst:
+0413 /***********************************************************************
+0414 * Determine if a string qualifies as constant
+0415 ***********************************************************************/
+0416 Parse Arg a_
+0417 res=(verify(a_,g.0a||g.0n||'.+-')=0) /* ??? */
+0418 Return res
+0419 
+0420 setpos:
+0421 Parse Arg seti sol soc
+0422 setz='setpos:' t.seti t.seti.0ol'/'t.seti.0oc '-->',
+0423 sol'/'soc '('sigl')'
+0424 Call dsp setz
+0425 t.seti.0ol=sol
+0426 t.seti.0oc=soc
+0427 Return
+0428 
+0429 process_tokens:
+0430 /***********************************************************************
+0431 * Process the token list
+0432 ***********************************************************************/
+0433 Do i=1 To t.0
+0434 If g.0tokens Then
+0435 Call lineout g.0tkf,right(i,4) right(t.i.0il,3)'.'left(t.i.0ic,3),
+0436 right(t.i.0ol,3)'.'left(t.i.0oc,3),
+0437 left(t.i.0t,2) left(t.i,25)
+0438 If t.i='(' Then Do
+0439 j=i-1
+0440 If t.j.0ol=t.i.0il & ,
+0441 t.j.0oc+length(t.j)=t.i.0ic &,
+0442 pos(t.j.0t,'VS')>0 Then
+0443 Call store_f t.j
+0444 End
+0445 End
+0446 If g.0tokens Then
+0447 Call lineout g.0tkf
+0448 Return
+0449 
+0450 store_f:
+0451 Parse Arg funct
+0452 If wordpos(funct,g.0fun_list)=0 then
+0453 g.0fun_list=g.0fun_list funct
+0454 cnt.funct=cnt.funct+1
+0455 Return
+0456 
+0457 dsp:
+0458 /***********************************************************************
+0459 * Record (and display) a debug line
+0460 ***********************************************************************/
+0461 Parse Arg ol_.1
+0462 If g.0debug>0 Then
+0463 Call lineout g.0dbg,ol_.1
+0464 If g.0debug>1 Then
+0465 Say ol_.1
+0466 Return
+0467 
+0468 wordsort: Procedure
+0469 /**********************************************************************
+0470 * Sort the list of words supplied as argument. Return the sorted list
+0471 **********************************************************************/
+0472 Parse Arg wl
+0473 wa.=''
+0474 wa.0=0
+0475 Do While wl<>''
+0476 Parse Var wl w wl
+0477 Do i=1 To wa.0
+0478 If wa.i>w Then Leave
+0479 End
+0480 If i<=wa.0 Then Do
+0481 Do j=wa.0 To i By -1
+0482 ii=j+1
+0483 wa.ii=wa.j
+0484 End
+0485 End
+0486 wa.i=w
+0487 wa.0=wa.0+1
+0488 End
+0489 swl=''
+0490 Do i=1 To wa.0
+0491 swl=swl wa.i
+0492 End
+0493 Return strip(swl)
+0494 
+0495 err:
+0496 /***********************************************************************
+0497 * Diagnostic error exit
+0498 ***********************************************************************/
+0499 Parse Arg errnum, errtxt
+0500 Say 'err:' errnum  errtxt
+0501 If t.ti.0il>g.0il Then
+0502 Say 'Error' arg(1) 'at end of file'
+0503 Else Do
+0504 Say 'Error' arg(1) 'around line' t.ti.0il', column' t.ti.0ic
+0505 _=t.ti.0il
+0506 Say l._
+0507 Say copies(' ',t.ti.0ic-1)'|'
+0508 End
+0509 If errtxt<>'' Then Say '  'errtxt
+0510 Exit 12
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 l                155 155
+002 c                155
+003 c2               155
+004 g.               156
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

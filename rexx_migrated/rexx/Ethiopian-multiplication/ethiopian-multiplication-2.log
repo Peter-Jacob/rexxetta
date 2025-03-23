@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program multiplies two integers by the  Ethiopian  (or Russian peasant)  method. */
+0002 numeric digits 3000                              /*handle some gihugeic integers.       */
+0003 parse arg a b _ .                                /*get two numbers from the command line*/
+0004 if a==''              then call error  "1st argument wasn't specified."
+0005 if b==''              then call error  "2nd argument wasn't specified."
+0006 if _\==''             then call error  "too many arguments were specified: "  _
+0007 if \datatype(a, 'W')  then call error  "1st argument isn't an integer: "      a
+0008 if \datatype(b, 'N')  then call error  "2nd argument isn't a valid number: "  b
+0009 p=eMult(a, b)                                    /*Ethiopian or Russian peasant method. */
+0010 w=max(length(a), length(b), length(p))           /*find the maximum width of 3 numbers. */
+0011 say  '      a='  right(a, w)                     /*use right justification to display A.*/
+0012 say  '      b='  right(b, w)                     /* "    "         "        "    "    B.*/
+0013 say  'product='  right(p, w)                     /* "    "         "        "    "    P.*/
+0014 exit                                             /*stick a fork in it,  we're all done. */
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 eMult:   procedure;  parse arg x,y;  s=sign(x)   /*obtain the two arguments; sign for X.*/
+0017 $=0                                     /*product of the two integers (so far).*/
+0018 do  while x\==0            /*keep processing while   X   not zero.*/
+0019 if \isEven(x)  then $=$+y  /*if odd,  then add   Y   to product.  */
+0020 x= halve(x)                /*invoke the  HALVE   function.        */
+0021 y=double(y)                /*   "    "   DOUBLE      "            */
+0022 end   /*while*/            /* [↑]  Ethiopian multiplication method*/
+0023 return $*s/1                            /*maintain the correct sign for product*/
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 double:  return  arg(1)  * 2                     /*   *   is REXX's  multiplication.    */
+0026 halve:   return  arg(1)  % 2                     /*   %    "   "     integer division.  */
+0027 isEven:  return  arg(1) // 2 == 0                /*   //   "   "     division remainder.*/
+0028 error:   say '***error!***' arg(1);    exit 13   /*display an error message to terminal.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                16 20
+002 y                16 21
+003 s                16
+004 while            18
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            3
+002 $                -> newV2            17 19

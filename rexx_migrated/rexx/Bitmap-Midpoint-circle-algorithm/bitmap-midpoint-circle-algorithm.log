@@ -1,0 +1,59 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program  plots  three circles  using  midpoint/Bresenham's circle algorithm.     */
+0002 @.= '·'                                          /*fill the array with middle─dots char.*/
+0003 minX= 0;    maxX= 0;     minY= 0;     maxY= 0    /*initialize the minimums and maximums.*/
+0004 call drawCircle   0,   0,   8,   '#'             /*plot 1st circle with pound character.*/
+0005 call drawCircle   0,   0,  11,   '$'             /*  "  2nd    "     "  dollar    "     */
+0006 call drawCircle   0,   0,  19,   '@'             /*  "  3rd    "     "  commercial at.  */
+0007 border= 2                                        /*BORDER:  shows  N  extra grid points.*/
+0008 minX= minX - border*2;    maxX= maxX + border*2  /*adjust min and max  X  to show border*/
+0009 minY= minY - border  ;    maxY= maxY + border    /*   "    "   "   "   Y   "   "     "  */
+0010 if @.0.0==@.  then @.0.0= '┼'                    /*maybe define the plot's axis origin. */
+0011 /*define the plot's horizontal grid──┐ */
+0012 do h=minX  to maxX;  if @.h.0==@.  then @.h.0= '─';  end             /* ◄───────────┘ */
+0013 do v=minY  to maxY;  if @.0.v==@.  then @.0.v= '│';  end             /* ◄──────────┐  */
+0014 /*define the plot's vertical grid───┘  */
+0015 do y=maxY  by -1  to minY;   _=             /* [↓]  draw grid from  top ──► bottom.*/
+0016 do x=minX  to maxX;  _= _ || @.x.y  /* ◄───   "    "    "  left ──► right. */
+0017 end   /*x*/                         /* [↑]  a grid row should be finished. */
+0018 say _                                       /*display a single row of the grid.    */
+0019 end           /*y*/
+0020 exit                                             /*stick a fork in it,  we're all done. */
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 drawCircle: procedure expose @. minX maxX minY maxY
+0023 parse arg xx,yy,r 1 y,plotChar;     fx= 1;    fy= -2*r /*get X,Y coördinates*/
+0024 f= 1 - r
+0025 do x=0  while  x<y  /*▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒*/
+0026 if f>=0  then  do;  y= y - 1;   fy= fy + 2;   f= f + fy;   end  /*▒*/
+0027 fx= fx + 2;   f= f + fx         /*▒*/
+0028 call plotPoint  xx+x,  yy+y                                     /*▒*/
+0029 call plotPoint  xx+y,  yy+x                                     /*▒*/
+0030 call plotPoint  xx+y,  yy-x                                     /*▒*/
+0031 call plotPoint  xx+x,  yy-y                                     /*▒*/
+0032 call plotPoint  xx-y,  yy+x                                     /*▒*/
+0033 call plotPoint  xx-x,  yy+y                                     /*▒*/
+0034 call plotPoint  xx-x,  yy-y                                     /*▒*/
+0035 call plotPoint  xx-y,  yy-x                                     /*▒*/
+0036 end   /*x*/         /* [↑]  place plot points ══► plot.▒▒▒▒▒▒▒▒▒▒▒▒*/
+0037 return
+0038 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0039 plotPoint: parse arg c,r;      @.c.r= plotChar   /*assign a character to be plotted.    */
+0040 minX= min(minX,c);  maxX= max(maxX,c) /*determine the minimum and maximum  X.*/
+0041 minY= min(minY,r);  maxY= max(maxY,r) /*    "      "     "     "     "     Y.*/
+0042 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 c                39
+002 r                39
+003 minX             40
+004 maxX             40
+005 minY             41
+006 maxY             41
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 10 12 13 39
+002 _                -> newV2            15 16

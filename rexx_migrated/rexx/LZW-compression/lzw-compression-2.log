@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program compresses text using the  LZW  (Lempel─Ziv─Welch), and reconstitutes it.*/
+0002 $$$= '"There is nothing permanent except change."   ───   Heraclitus  [540 ── 475 BCE]'
+0003 parse arg text;   if text=''  then text= $$$     /*get an optional argument from the CL.*/
+0004 say 'original text='  text          /* [↑]  Not specified? Then use default*/
+0005 cypher= LZWc(text)                               /*compress text using the LZW algorithm*/
+0006 say 'reconstituted='  LZWd(cypher)  /*display the reconstituted string.    */
+0007 say;         say ' LZW integers='       cypher   /*   "     "  LZW  integers used.      */
+0008 exit 0                                           /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 LZWi: arg i,@.; #=256;  do j=0  for #; _=d2c(j); if i  then @.j=_; else @._=j; end; return
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 LZWc: procedure; parse arg y,,$;  call LZWi 0; w=                      /*LZW   compress.*/
+0013 do k=1  for length(y)+1;            z= w || substr(y, k, 1)
+0014 if @.z==''  then do;  $= $ @.w;   @.z= #;   #= # + 1;   w= substr(y, k, 1);   end
+0015 else w= z                                  /*#: the dictionary size.*/
+0016 end   /*k*/;                      return substr($, 2)  /*elide a leading blank. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 LZWd: procedure; parse arg x y;   call LZWi 1;    $= @.x;       w= $   /*LZW decompress.*/
+0019 do k=1  for words(y);             z= word(y, k)
+0020 if @.z\=='' | @.k==" "  then ?= @.z
+0021 else if z==#  then ?= w || left(w, 1)
+0022 $= $ || ?
+0023 @.#= w || left(?, 1);   w= ?;     #= # + 1                     /*bump dict. size*/
+0024 end   /*k*/;                      return $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                18
+002 y                18
+003 w                18 23
+004 k                19
+005 z                19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $$$              -> newV1            2
+002 @.               -> newV2.           10 14 23
+003 #                -> newV3            10 14 23
+004 _                -> newV4            10
+005 $                -> newV5            12 14 18 22
+006 ?                -> newV6            20

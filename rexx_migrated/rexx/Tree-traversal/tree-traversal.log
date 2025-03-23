@@ -1,0 +1,344 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Tree traversal
+0003 =           1
+0004 =          / \
+0005 =         /   \
+0006 =        /     \
+0007 =       2       3
+0008 =      / \     /
+0009 =     4   5   6
+0010 =    /       / \
+0011 =   7       8   9
+0012 =
+0013 = The correct output should look like this:
+0014 =  preorder:    1 2 4 7 5 3 6 8 9
+0015 =  level-order: 1 2 3 4 5 6 7 8 9
+0016 =  postorder:   7 4 5 2 8 9 6 3 1
+0017 =  inorder:     7 4 2 5 1 8 6 9 3
+0018 
+0019 * 17.06.2012 Walter Pachl not thoroughly tested
+0020 **********************************************************************/
+0021 debug=0
+0022 wl_soll=1 2 4 7 5 3 6 8 9
+0023 il_soll=7 4 2 5 1 8 6 9 3
+0024 pl_soll=7 4 5 2 8 9 6 3 1
+0025 ll_soll=1 2 3 4 5 6 7 8 9
+0026 
+0027 Call mktree
+0028 wl.=''; wl='' /* preorder    */
+0029 ll.=''; ll='' /* level-order */
+0030 il='' /* inorder     */
+0031 pl='' /* postorder   */
+0032 
+0033 /**********************************************************************
+0034 * First walk the tree and construct preorder and level-order lists
+0035 **********************************************************************/
+0036 done.=0
+0037 lvl=1
+0038 z=root
+0039 Call note z
+0040 Do Until z=0
+0041 z=go_next(z)
+0042 Call note z
+0043 End
+0044 Call show 'preorder:   ',wl,wl_soll
+0045 Do lvl=1 To 4
+0046 ll=ll ll.lvl
+0047 End
+0048 Call show 'level-order:',ll,ll_soll
+0049 
+0050 /**********************************************************************
+0051 * Next construct postorder list
+0052 **********************************************************************/
+0053 done.=0
+0054 ridone.=0
+0055 z=lbot(root)
+0056 Call notep z
+0057 Do Until z=0
+0058 br=brother(z)
+0059 If br>0 &,
+0060 done.br=0 Then Do
+0061 ridone.br=1
+0062 z=lbot(br)
+0063 Call notep z
+0064 End
+0065 Else
+0066 z=father(z)
+0067 Call notep z
+0068 End
+0069 Call show 'postorder:  ',pl,pl_soll
+0070 
+0071 /**********************************************************************
+0072 * Finally construct inorder list
+0073 **********************************************************************/
+0074 done.=0
+0075 ridone.=0
+0076 z=lbot(root)
+0077 Call notei z
+0078 Do Until z=0
+0079 z=father(z)
+0080 Call notei z
+0081 ri=node.z.0rite
+0082 If ridone.z=0 Then Do
+0083 ridone.z=1
+0084 If ri>0 Then Do
+0085 z=lbot(ri)
+0086 Call notei z
+0087 End
+0088 End
+0089 End
+0090 
+0091 /**********************************************************************
+0092 * And now show the results and check them for correctness
+0093 **********************************************************************/
+0094 Call show 'inorder:    ',il,il_soll
+0095 
+0096 Exit
+0097 
+0098 show: Parse Arg Which,have,soll
+0099 /**********************************************************************
+0100 * Show our result and show it it's correct
+0101 **********************************************************************/
+0102 have=space(have)
+0103 If have=soll Then
+0104 tag=''
+0105 Else
+0106 tag='*wrong*'
+0107 Say which have tag
+0108 If tag<>'' Then
+0109 Say '------------>'soll 'is the expected result'
+0110 Return
+0111 
+0112 brother: Procedure Expose node.
+0113 /**********************************************************************
+0114 * Return the right node of this node's father or 0
+0115 **********************************************************************/
+0116 Parse arg no
+0117 nof=node.no.0father
+0118 brot1=node.nof.0rite
+0119 Return brot1
+0120 
+0121 notei: Procedure Expose debug il done.
+0122 /**********************************************************************
+0123 * append the given node to il
+0124 **********************************************************************/
+0125 Parse Arg nd
+0126 If nd<>0 &,
+0127 done.nd=0 Then
+0128 il=il nd
+0129 If debug Then
+0130 Say 'notei' nd
+0131 done.nd=1
+0132 Return
+0133 
+0134 notep: Procedure Expose debug pl done.
+0135 /**********************************************************************
+0136 * append the given node to pl
+0137 **********************************************************************/
+0138 Parse Arg nd
+0139 If nd<>0 &,
+0140 done.nd=0 Then Do
+0141 pl=pl nd
+0142 If debug Then
+0143 Say 'notep' nd
+0144 End
+0145 done.nd=1
+0146 Return
+0147 
+0148 father: Procedure Expose node.
+0149 /**********************************************************************
+0150 * Return the father of the argument
+0151 * or 0 if the root is given as argument
+0152 **********************************************************************/
+0153 Parse Arg nd
+0154 Return node.nd.0father
+0155 
+0156 lbot: Procedure Expose node.
+0157 /**********************************************************************
+0158 * From node z: Walk down on the left side until you reach the bottom
+0159 * and return the bottom node
+0160 * If z has no left son (at the bottom of the tree) returm itself
+0161 **********************************************************************/
+0162 Parse Arg z
+0163 Do i=1 To 100
+0164 If node.z.0left<>0 Then
+0165 z=node.z.0left
+0166 Else
+0167 Leave
+0168 End
+0169 Return z
+0170 
+0171 note:
+0172 /**********************************************************************
+0173 * add the node to the preorder list unless it's already there
+0174 * add the node to the level list
+0175 **********************************************************************/
+0176 If z<>0 &,                           /* it's a node                */
+0177 done.z=0 Then Do                  /* not yet done               */
+0178 wl=wl z                            /* add it to the preorder list*/
+0179 ll.lvl=ll.lvl z                    /* add it to the level list   */
+0180 done.z=1                           /* remember it's done         */
+0181 End
+0182 Return
+0183 
+0184 go_next: Procedure Expose node. lvl
+0185 /**********************************************************************
+0186 * find the next node to visit in the treewalk
+0187 **********************************************************************/
+0188 next=0
+0189 Parse arg z
+0190 If node.z.0left<>0 Then Do           /* there is a left son        */
+0191 If node.z.0left.done=0 Then Do     /* we have not visited it     */
+0192 next=node.z.0left                /* so we go there             */
+0193 node.z.0left.done=1              /* note we were here          */
+0194 lvl=lvl+1                        /* increase the level         */
+0195 End
+0196 End
+0197 If next=0 Then Do                    /* not moved yet              */
+0198 If node.z.0rite<>0 Then Do         /* there is a right son       */
+0199 If node.z.0rite.done=0 Then Do   /* we have not visited it     */
+0200 next=node.z.0rite              /* so we go there             */
+0201 node.z.0rite.done=1            /* note we were here          */
+0202 lvl=lvl+1                      /* increase the level         */
+0203 End
+0204 End
+0205 End
+0206 If next=0 Then Do                    /* not moved yet              */
+0207 next=node.z.0father                /* go to the father           */
+0208 lvl=lvl-1                          /* decrease the level         */
+0209 End
+0210 Return next                          /* that's the next node       */
+0211 /* or zero if we are done     */
+0212 
+0213 mknode: Procedure Expose node.
+0214 /**********************************************************************
+0215 * create a new node
+0216 **********************************************************************/
+0217 Parse Arg name
+0218 z=node.0+1
+0219 node.z.0name=name
+0220 node.z.0father=0
+0221 node.z.0left  =0
+0222 node.z.0rite  =0
+0223 node.0=z
+0224 Return z                        /* number of the node just created */
+0225 
+0226 attleft: Procedure Expose node.
+0227 /**********************************************************************
+0228 * make son the left son of father
+0229 **********************************************************************/
+0230 Parse Arg son,father
+0231 node.son.0father=father
+0232 z=node.father.0left
+0233 If z<>0 Then Do
+0234 node.z.0father=son
+0235 node.son.0left=z
+0236 End
+0237 node.father.0left=son
+0238 Return
+0239 
+0240 attrite: Procedure Expose node.
+0241 /**********************************************************************
+0242 * make son the right son of father
+0243 **********************************************************************/
+0244 Parse Arg son,father
+0245 node.son.0father=father
+0246 z=node.father.0rite
+0247 If z<>0 Then Do
+0248 node.z.0father=son
+0249 node.son.0rite=z
+0250 End
+0251 node.father.0rite=son
+0252 le=node.father.0left
+0253 If le>0 Then
+0254 node.le.0brother=node.father.0rite
+0255 Return
+0256 
+0257 mktree: Procedure Expose node. root
+0258 /**********************************************************************
+0259 * build the tree according to the task
+0260 **********************************************************************/
+0261 node.=0
+0262 a=mknode('A'); root=a
+0263 b=mknode('B'); Call attleft b,a
+0264 c=mknode('C'); Call attrite c,a
+0265 d=mknode('D'); Call attleft d,b
+0266 e=mknode('E'); Call attrite e,b
+0267 f=mknode('F'); Call attleft f,c
+0268 g=mknode('G'); Call attleft g,d
+0269 h=mknode('H'); Call attleft h,f
+0270 i=mknode('I'); Call attrite i,f
+0271 Call show_tree 1
+0272 Return
+0273 
+0274 show_tree: Procedure Expose node.
+0275 /**********************************************************************
+0276 * Show the tree
+0277 *         f
+0278 *     l1   1  r1
+0279 *   l   r   l   r
+0280 *  l r l r l r l r
+0281 * 12345678901234567890
+0282 **********************************************************************/
+0283 Parse Arg f
+0284 l.=''
+0285 l.1=overlay(f   ,l.1, 9)
+0286 
+0287 l1=node.f.0left        ;l.2=overlay(l1  ,l.2, 5)
+0288 /*b1=node.f.0brother     ;l.2=overlay(b1  ,l.2, 9) */
+0289 r1=node.f.0rite        ;l.2=overlay(r1  ,l.2,13)
+0290 
+0291 l1g=node.l1.0left      ;l.3=overlay(l1g ,l.3, 3)
+0292 /*b1g=node.l1.0brother   ;l.3=overlay(b1g ,l.3, 5) */
+0293 r1g=node.l1.0rite      ;l.3=overlay(r1g ,l.3, 7)
+0294 
+0295 l2g=node.r1.0left      ;l.3=overlay(l2g ,l.3,11)
+0296 /*b2g=node.r1.0brother   ;l.3=overlay(b2g ,l.3,13) */
+0297 r2g=node.r1.0rite      ;l.3=overlay(r2g ,l.3,15)
+0298 
+0299 l1ls=node.l1g.0left    ;l.4=overlay(l1ls,l.4, 2)
+0300 /*b1ls=node.l1g.0brother ;l.4=overlay(b1ls,l.4, 3) */
+0301 r1ls=node.l1g.0rite    ;l.4=overlay(r1ls,l.4, 4)
+0302 
+0303 l1rs=node.r1g.0left    ;l.4=overlay(l1rs,l.4, 6)
+0304 /*b1rs=node.r1g.0brother ;l.4=overlay(b1rs,l.4, 7) */
+0305 r1rs=node.r1g.0rite    ;l.4=overlay(r1rs,l.4, 8)
+0306 
+0307 l2ls=node.l2g.0left    ;l.4=overlay(l2ls,l.4,10)
+0308 /*b2ls=node.l2g.0brother ;l.4=overlay(b2ls,l.4,11) */
+0309 r2ls=node.l2g.0rite    ;l.4=overlay(r2ls,l.4,12)
+0310 
+0311 l2rs=node.r2g.0left    ;l.4=overlay(l2rs,l.4,14)
+0312 /*b2rs=node.r2g.0brother ;l.4=overlay(b2rs,l.4,15) */
+0313 r2rs=node.r2g.0rite    ;l.4=overlay(r2rs,l.4,16)
+0314 Do i=1 To 4
+0315 Say translate(l.i,' ','0')
+0316 Say ''
+0317 End
+0318 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 f                283
+002 l.               284 285 287 289 291 293 295 297 299 301 303 305 307 309 311 313
+003 l1               287
+004 r1               289
+005 l1g              291
+006 r1g              293
+007 l2g              295
+008 r2g              297
+009 l1ls             299
+010 r1ls             301
+011 l1rs             303
+012 r1rs             305
+013 l2ls             307
+014 r2ls             309
+015 l2rs             311
+016 r2rs             313
+017 i                314
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,104 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /* REXX - Tarjan's Algorithm                        */
+0002 /* Vertices are numbered 1 to 8 (instead of 0 to 7) */
+0003 g='[2] [3] [1] [2 3 5] [4 6] [3 7] [6] [5 7 8]'
+0004 gg=g
+0005 Do i=1 By 1 While gg>''
+0006 Parse Var gg '[' g.i ']' gg
+0007 name.i=i-1
+0008 End
+0009 g.0=i-1
+0010 index.=0
+0011 lowlink.=0
+0012 stacked.=0
+0013 stack.=0
+0014 x=1
+0015 Do n=1 To g.0
+0016 If index.n=0 Then
+0017 If strong_connect(n)=0 Then
+0018 Return
+0019 End
+0020 Exit
+0021 
+0022 strong_connect: Procedure Expose x g. index. lowlink. stacked. stack. name.
+0023 Parse Arg n
+0024 index.n = x
+0025 lowlink.n = x
+0026 stacked.n = 1
+0027 Call stack n
+0028 x=x+1
+0029 Do b=1 To words(g.n)
+0030 Call show_all
+0031 nb=word(g.n,b)
+0032 If index.nb=0 Then Do
+0033 If strong_connect(nb)=0 Then
+0034 Return 0
+0035 If lowlink.nb < lowlink.n Then
+0036 lowlink.n = lowlink.nb
+0037 End
+0038 Else Do
+0039 If stacked.nb = 1 Then
+0040 If index.nb < lowlink.n Then
+0041 lowlink.n = index.nb
+0042 end
+0043 end
+0044 if lowlink.n=index.n then Do
+0045 c=''
+0046 Do z=stack.0 By -1
+0047 w=stack.z
+0048 stacked.w=0
+0049 stack.0=stack.0-1
+0050 c=name.w c
+0051 If w=n Then Do
+0052 Say '['space(c)']'
+0053 Return 1
+0054 End
+0055 End
+0056 End
+0057 Return 1
+0058 
+0059 stack: Procedure Expose stack.
+0060 Parse Arg m
+0061 z=stack.0+1
+0062 stack.z=m
+0063 stack.0=z
+0064 Return
+0065 
+0066 /* The following were used for debugging (and understanding) */
+0067 
+0068 show_all: Return
+0069 ind='Index  '
+0070 low='Lowlink'
+0071 sta='Stacked'
+0072 Do z=1 To g.0
+0073 ind=ind index.z
+0074 low=low lowlink.z
+0075 sta=sta stacked.z
+0076 End
+0077 Say ind
+0078 Say low
+0079 Say sta
+0080 Return
+0081 
+0082 show_stack:
+0083 ol='Stack'
+0084 Do z=1 To stack.0
+0085 ol=ol stack.z
+0086 End
+0087 Say ol
+0088 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 m                60
+002 z                61 72 84
+003 stack.           62 63
+004 ind              69 73
+005 low              70 74
+006 sta              71 75
+007 ol               83 85
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

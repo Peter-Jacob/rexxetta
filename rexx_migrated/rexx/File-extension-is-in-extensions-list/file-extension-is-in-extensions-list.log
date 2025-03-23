@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX pgm displays if a filename has a known extension  (as per a list of extensions). */
+0002 $= 'zip rar 7z gz archive A## tar.bz2';  upper $ /*a list of "allowable" file extensions*/
+0003 parse arg fn                                     /*obtain optional argument from the CL.*/
+0004 @.=                                              /*define the default for the  @. array.*/
+0005 if fn\=''  then       @.1 =  strip(fn)           /*A filename specified?   Then use it. */
+0006 else do;   @.1 = "MyData.a##"         /*No    "        "        Else use list*/
+0007 @.2 = "MyData.tar.Gz"
+0008 @.3 = "MyData.gzip"
+0009 @.4 = "MyData.7z.backup"
+0010 @.5 = "MyData..."
+0011 @.6 = "MyData"
+0012 @.7 = "MyData_v1.0.tar.bz2"
+0013 @.8 = "MyData_v1.0.bz2"
+0014 end
+0015 #= words($)
+0016 
+0017 do j=1  while @.j\=='';   @@= @.j;   upper @@  /*traipse through @ file extension list*/
+0018 do k=1  for #  until right(@@, L)==x       /*Search $ list, is extension in list? */
+0019 x= . || word($, k);  L=length(x)           /*construct the extension of the file. */
+0020 end   /*k*/                                /* [↓]  display file, and a nay or yea.*/
+0021 say  right(@.j, 40)     ' '      right( word( "false true",  1 + (k<=#) ),  5)
+0022 end       /*j*/                                /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 fn               3
+002 j                17
+003 k                18
+004 x                19
+005 L                19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           4 5 6 7 8 9 10 11 12 13
+002 @@               -> newV2            17
+003 $                -> newV3            2
+004 #                -> newV4            15

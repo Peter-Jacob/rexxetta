@@ -1,0 +1,22 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /* HTTP hello server */
+0002 response.1 = 'HTTP/1.1 200 OK' || '0D0A'X,
+0003 || 'Connection: close' || '0D0A'X,
+0004 || 'Content-Type: text/html' || '0D0A0D0A'X
+0005 response.2 = '<!DOCTYPE html>' || '0A'X,
+0006 || '<html><head><title>Hello, Rosetta</title></head>' || '0A'X,
+0007 || '<body><h2>Goodbye, World!</h2></body>' || '0A'X,
+0008 || '<!-- Shout out from the Rosetta Code programming chrestomathy --></html>' || '0A'X
+0009 
+0010 DO FOREVER
+0011 ADDRESS SYSTEM 'nc -l 8080' WITH INPUT STEM response.
+0012 END
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 response.        2 5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

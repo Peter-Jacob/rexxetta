@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*rexx*/
+0002 
+0003 call test 'kitten'      ,'sitting'
+0004 call test 'rosettacode' ,'raisethysword'
+0005 call test 'Sunday'      ,'Saturday'
+0006 call test 'Vladimir_Levenshtein[1965]',,
+0007 'Vladimir_Levenshtein[1965]'
+0008 call test 'this_algorithm_is_similar_to',,
+0009 'Damerau-Levenshtein_distance'
+0010 call test '','abc'
+0011 Exit
+0012 
+0013 
+0014 test: Procedure
+0015 Parse Arg s,t
+0016 ld.=''
+0017 Say '          1st string  = >'s'<'
+0018 Say '          2nd string  = >'t'<'
+0019 Say 'Levenshtein distance  =' LevenshteinDistance(s,length(s),t,length(t))
+0020 Say ''
+0021 Return
+0022 
+0023 
+0024 LevenshteinDistance: Procedure Expose ld.
+0025 /* sl and tl are the number of characters in string s and t respectively */
+0026 Parse Arg s,sl,t,tl
+0027 If ld.sl.tl<>'' Then
+0028 Return ld.sl.tl
+0029 Select
+0030 When sl=0 Then ld.sl.tl=tl
+0031 When tl=0 Then ld.sl.tl=sl
+0032 Otherwise Do
+0033 /* test if last characters of the strings match */
+0034 cost=substr(s,sl,1)<>substr(t,tl,1)
+0035 /* return minimum of delete char from s, delete char from t,
+0036 and delete char from both */
+0037 ld.sl.tl=min(LevenshteinDistance(s,sl-1,t,tl  )+1,,
+0038 LevenshteinDistance(s,sl  ,t,tl-1)+1,,
+0039 LevenshteinDistance(s,sl-1,t,tl-1)+cost)
+0040 End
+0041 End
+0042 Return ld.sl.tl
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                26
+002 sl               26
+003 t                26
+004 tl               26
+005 cost             34
+006 ld.              37
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

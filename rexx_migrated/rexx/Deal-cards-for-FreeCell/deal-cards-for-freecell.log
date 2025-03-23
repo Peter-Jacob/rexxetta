@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX program deals cards for a specific  FreeCell solitaire  card game  (0 ──► 32767).*/
+0002 numeric digits 15                                /*ensure enough digits for the random #*/
+0003 parse arg game cols .                            /*obtain optional arguments from the CL*/
+0004 if game=='' | game==","  then game=1             /*No game specified?  Then use default.*/
+0005 if cols=='' | cols==","  then cols=8             /* " cols     "         "   "     "    */
+0006 state=game                                       /*seed random # generator with game num*/
+0007 if 8=='f8'x  then suit= "cdhs"                   /*EBCDIC?   Then use letters for suits.*/
+0008 else suit= "♣♦♥♠"                   /* ASCII?     "   "  symbols  "    "   */
+0009 rank= 'A23456789tJQK'                            /*t  in the rank represents a ten (10).*/
+0010 pad=left('', 13)                                 /*used for indentation for the tableau.*/
+0011 say center('tableau for FreeCell game' game, 50, "─")   /*show title for FreeCell game #*/
+0012 say                                              /* [↓]  @  is an array of all 52 cards.*/
+0013 #=-1;  do   r=1  for length(rank)                /*build the deck  first   by the rank. */
+0014 do s=1  for length(suit);       #=#+1   /*  "    "    "  secondly  "  "  suit. */
+0015 @.#=substr(rank, r,1)substr(suit, s,1)  /*build the $ array one card at at time*/
+0016 end   /*s*/                             /* [↑]  first card is number  0 (zero).*/
+0017 end     /*r*/                             /* [↑]  build deck per FreeCell rules. */
+0018 $=pad                                            /*@: cards to be dealt, eight at a time*/
+0019 do cards=51  by -1  for 52                /* [↓]  deal the cards for the tableau.*/
+0020 ?=rand() // (cards+1)                     /*get next rand#;  card # is remainder.*/
+0021 $=$ @.?;                 @.?=@.cards      /*swap two cards:  use random and last.*/
+0022 if words($)==cols  then do;  say $; $=pad /*deal FreeCell cards for the tableau. */
+0023 end
+0024 end   /*cards*/                           /*normally, 8 cards are dealt to a row.*/
+0025 /* [↓]  residual cards may exist.      */
+0026 if $\=''  then say $                             /*Any residual cards in the tableau ?  */
+0027 exit                                             /*stick a fork in it,  we're all done. */
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 rand:  state=(214013*state + 2531011) // 2**31;  return state % 2**16   /*FreeCell rand#*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 game             3 4
+002 cols             3 5
+003 state            6
+004 suit             7
+005 rank             9
+006 pad              10
+007 r                13
+008 s                14
+009 cards            19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           15 21
+002 #                -> newV2            13 14
+003 $                -> newV3            18 21 22
+004 ?                -> newV4            20

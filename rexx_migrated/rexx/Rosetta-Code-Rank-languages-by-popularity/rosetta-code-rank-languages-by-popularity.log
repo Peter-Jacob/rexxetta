@@ -1,0 +1,144 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program reads two files  and  displays a  ranked list  of Rosetta Code languages.*/
+0002 parse arg catFID lanFID outFID .                 /*obtain optional arguments from the CL*/
+0003 call init                                        /*initialize some  REXX  variables.    */
+0004 call get                                         /*obtain data from two separate files. */
+0005 call eSort #,0                                   /*sort languages along with members.   */
+0006 call tSort                                       /*  "      "     that are tied in rank.*/
+0007 call eSort #,1                                   /*  "      "     along with members.   */
+0008 call out                                         /*create the  RC_POP.OUT (output) file.*/
+0009 exit 0                                           /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 commas: parse arg _;   do jc=length(_)-3  to 1  by -3; _= insert(",",_,jc); end;  return _
+0012 s:      if arg(1)==1  then return arg(3);      return word(arg(2) 's',1)   /*pluralizer.*/
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 eSort: procedure expose #. @. !tr.;    arg N,p2;     h= N      /*sort: number of members*/
+0015 do     while  h>1;         h= h % 2                /*halve number of records*/
+0016 do i=1  for N-h;         j= i;         k= h + i  /*sort this part of list.*/
+0017 if p2  then do  while !tR.k==!tR.j  &  @.k>@.j   /*this uses a hard swap ↓*/
+0018 @= @.j;  #= !tR.j;  @.j= @.k;  !tR.j= !tR.k;   @.k= @;  !tR.k= #
+0019 if h>=j  then leave;               j= j - h;     k= k - h
+0020 end   /*while !tR.k==···*/
+0021 else do  while #.k<#.j                    /*this uses a hard swap ↓*/
+0022 @= @.j;  #= #.j;    @.j= @.k;    #.j= #.k;     @.k= @;    #.k= #
+0023 if h>=j  then leave;               j= j - h;     k= k - h
+0024 end   /*while #.k<···*/
+0025 end               /*i*/           /*hard swaps needed for embedded blanks.*/
+0026 end                 /*while h>1*/;               return
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 get: langs= 0;           call rdr 'languages'    /*assign languages  ───►  L.ααα        */
+0029 call rdr 'categories'   /*append categories ───► catHeap       */
+0030 #= 0
+0031 do j=1  until  catHeap==''            /*process the heap of categories.      */
+0032 parse var catHeap cat.j (sep) catHeap /*get a category from the  catHeap.    */
+0033 parse var cat.j  cat.j '<' "(" mems . /*untangle the strange─looking string. */
+0034 cat.j= space(cat.j); ?=cat.j; upper ? /*remove any superfluous blanks.       */
+0035 if ?=='' | \L.?          then iterate /*it's blank  or  it's not a language. */
+0036 if pos(',', mems)\==0    then mems= space(translate(mems,,","), 0) /*¬commas.*/
+0037 if \datatype(mems, 'W')  then iterate /*is the "members" number not numeric? */
+0038 #.0= #.0 + mems                       /*bump the number of  members  found.  */
+0039 if u.?\==0  then do;     do f=1  for #  until ?==@u.f
+0040 end   /*f*/
+0041 #.f= #.f + mems; iterate j   /*languages in different cases.*/
+0042 end                  /* [↑]  handle any possible duplicates.*/
+0043 u.?= u.? + 1;       #= # + 1          /*bump a couple of counters.           */
+0044 #.#= #.# + mems;  @.#= cat.j;  @u.#=? /*bump the counter;  assign it (upper).*/
+0045 end   /*j*/
+0046 
+0047 !.=;        @tno= '(total) number of'       /*array holds indication of TIED langs.*/
+0048 call tell right(commas(#),    9) @tno 'languages detected in the category file'
+0049 call tell right(commas(langs),9) '   "       "    "     "         "     "  "  language   "
+0050 call tell right(commas(#.0),  9) @tno 'entries (solutions) detected', , 1;    term= 0
+0051 return                                      /*don't show any more msgs──►term. [↑] */
+0052 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0053 init: sep= '█';  L.=0;  #.=0;  u.=#.;  catHeap=;  term=1;  old.= /*assign some REXX vars*/
+0054 if catFID==''  then catFID= "RC_POP.CAT"   /*Not specified?  Then use the default.*/
+0055 if lanFID==''  then lanFID= "RC_POP.LAN"   /* "      "         "   "   "     "    */
+0056 if outFID==''  then outFID= "RC_POP.OUT"   /* "      "         "   "   "     "    */
+0057 call tell center('timestamp: '  date()  time("Civil"),79,'═'), 2, 1;      return
+0058 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0059 out:  w= length( commas(#) );     rank= 0        /* [↓]  show by ascending rank of lang.*/
+0060 do t=#  by -1  for #;   rank= rank + 1 /*bump rank of a programming language. */
+0061 call tell   right('rank:'    right(commas(!tR.t), w),  20-1)      right(!.t, 7),
+0062 right('('commas(#.t)  left("entr"s(#.t, 'ies', "y")')', 9), 20)  @.t
+0063 end   /*#*/                            /* [↑]   S(···)   pluralizes a word.   */
+0064 call tell left('', 27)  "☼  end─of─list.  ☼", 1, 2;      return    /*bottom title.*/
+0065 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0066 rdr:  arg which 2;        igAst= 1               /*ARG uppers WHICH, obtain the 1st char*/
+0067 if which=='L'  then inFID= lanFID          /*use this fileID for the  languages.  */
+0068 if which=='C'  then inFID= catFID          /* "    "     "    "   "   categories. */
+0069 Uyir=  'α«ëα«»α«┐α«░α»ì/Uyir'              /*Unicode (in text)  name for  Uyir    */
+0070 old.0= '╬£C++'     ;    new.0= "µC++"      /*Unicode ╬£C++  ───► ASCII─8: µC++    */
+0071 old.1= 'UC++'      ;    new.1= "µC++"      /*old      UC++  ───► ASCII─8: µC++    */
+0072 old.2= '╨£╨Ü-'     ;    new.2= "MK-"       /*Unicode ╨£╨Ü─  ───► ASCII-8: MK-     */
+0073 old.3= 'D├⌐j├á'    ;    new.3= "Déjà"      /*Unicode ├⌐j├á  ───► ASCII─8: Déjà    */
+0074 old.4= 'Cach├⌐'    ;    new.4= "Caché"     /*Unicode Cach├⌐ ───► ASCII─8: Caché   */
+0075 old.5= '??-61/52'  ;    new.5= "MK-61/52"  /*somewhere past, a mis─translated: MK-*/
+0076 old.6= 'F┼ìrmul├ª' ;    new.6= 'Fôrmulæ'   /*Unicode        ───► ASCII─8: Fôrmulæ */
+0077 old.7= '╨£iniZinc' ;    new.7= 'MiniZinc'  /*Unicode        ───► ASCII─8: MiniZinc*/
+0078 old.8=  Uyir       ;    new.8= 'Uyir'      /*Unicode        ───► ASCII─8: Uyir    */
+0079 old.9= 'Perl 6'    ;    new.9= 'Raku'      /* (old name)    ───► (new name)       */
+0080 
+0081 do recs=0   while  lines(inFID) \== 0    /*read a file, a single line at a time.*/
+0082 $= translate( linein(inFID), , '9'x)     /*handle any stray  TAB  ('09'x) chars.*/
+0083 $$= space($);   if $$==''  then iterate  /*ignore all blank lines in the file(s)*/
+0084 do v=0  while old.v \== ''       /*translate Unicode variations of langs*/
+0085 if pos(old.v, $$) \==0  then $$= changestr(old.v, $$, new.v)
+0086 end   /*v*/                      /* [↑]  handle different lang spellings*/
+0087 if igAst  then do;  igAst= pos(' * ', $)==0;      if igAst  then iterate;      end
+0088 if pos('RETRIEVED FROM', translate($$))\==0  then leave   /*pseudo End─Of─Data?.*/
+0089 if which=='L'  then do;  if left($$, 1)\=="*"  then iterate  /*lang ¬legitimate?*/
+0090 parse upper var   $$   '*'  $$  "<";    $$= space($$)
+0091 if $$==''  then iterate;                L.$$= 1
+0092 langs= langs + 1     /*bump number of languages found. */
+0093 iterate
+0094 end                  /* [↓]  extract computer language name.*/
+0095 if left($$, 1)=='*'  then $$= sep  ||  space( substr($$, 2) )
+0096 catHeap= catHeap  $$                     /*append to the catHeap (CATegory) heap*/
+0097 end   /*recs*/
+0098 call  tell   right( commas(recs), 9)       'records read from file: '        inFID
+0099 return
+0100 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0101 tell:          do '0'arg(2);   call lineout outFID," "     ;   if term  then say ;     end
+0102 call lineout outFID,arg(1)  ;   if term  then say arg(1)
+0103 do '0'arg(3);   call lineout outFID," "     ;   if term  then say ;     end
+0104 return       /*show BEFORE blank lines (if any), message, show AFTER blank lines.*/
+0105 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0106 tSort: tied=;                            r= 0    /*add true rank (tR) ───► the entries. */
+0107 do j=#  by -1  for #;     r= r+1;   tR= r;   !tR.j= r;   jp= j+1;   jm= j-1
+0108 if tied==''  then pR= r;  tied=   /*handle when language rank is untied. */
+0109 if #.j==#.jp | #.j==#.jm  then do;    !.j= '[tied]';     tied= !.j;     end
+0110 if #.j==#.jp              then do;    tR= pR;            !tR.j= pR;     end
+0111 else pR= r
+0112 end   /*j*/;      return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 L.               91
+002 langs            92
+003 catHeap          96
+004 r                106 107
+005 j                107
+006 tR               107 110
+007 jp               107
+008 jm               107
+009 pR               108
+010 tied             108 109
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 (sep)            -> newV1            32
+002 !tR.             -> newV2.           18 18 107 110
+003 @tno             -> newV3            47
+004 @u.              -> newV4.           44
+005 @.               -> newV5.           18 18 22 22 44
+006 #.               -> newV6.           22 22 38 41 44 53
+007 !.               -> newV7.           47 109
+008 $$               -> newV8            83 85 90 90 90 95
+009 _                -> newV9            11 11
+010 @                -> newV10           18 22
+011 #                -> newV11           18 22 30 43
+012 ?                -> newV12           34
+013 $                -> newV13           82

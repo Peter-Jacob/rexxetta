@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates  hashing  of a  stemmed array  (from a key or multiple keys)*/
+0002 key.=                                            /*names of the nine regular polygons.  */
+0003 vals= 'triangle quadrilateral pentagon hexagon heptagon octagon nonagon decagon dodecagon'
+0004 key.1='thuhree  vour          phive    sicks   zeaven   ate     nein    den     duzun'
+0005 key.2='three    four          five     six     seven    eight   nine    ten     twelve'
+0006 key.3='3        4             5        6       7        8       9       10      12'
+0007 key.4='III      IV            V        VI      VII      VIII    IX      X       XII'
+0008 key.5='iii      iv            v        vi      vii      viii    ix      x       xii'
+0009 hash.='───(not defined)───'                      /* [↑]  blanks added to humorous keys  */
+0010 /*      just because it looks prettier.*/
+0011 do k=1  while key.k\==''
+0012 call hash vals,key.k                       /*hash the   keys   to the   values.   */
+0013 end   /*k*/
+0014 
+0015 parse arg query .                                /*obtain what was specified on the C.L.*/
+0016 if query\==''  then say 'key:'   left(query,40)   "value:"   hash.query
+0017 exit                                             /*stick a fork in it,  we're all done. */
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 hash: parse arg @val,@key
+0020 do j=1  for words(@key);          map= word(@key, j)
+0021 hash.map= word(@val, j)
+0022 end   /*j*/
+0023 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                20
+002 map              20
+003 hash.            21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @val             -> newV1            19
+002 @key             -> newV2            19

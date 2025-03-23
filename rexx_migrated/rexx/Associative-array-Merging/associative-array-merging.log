@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program merges two associative arrays  (requiring an external list of indices).  */
+0002 $.=                                              /*define default value(s) for arrays.  */
+0003 @.wAAn= 21;      @.wKey= 7;       @.wVal= 7      /*max widths of:  AAname, keys, values.*/
+0004 call defAA  'base',     "name Rocket Skates",   'price 12.75',   "color yellow"
+0005 call defAA  'update',   "price 15.25",          "color red",     'year 1974'
+0006 call show   'base'
+0007 call show   'update'
+0008 call show   'new'
+0009 exit                                             /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 defAA: procedure expose $. @.;  parse arg AAn;      new= 'new'   /*get AA name; set NEW.*/
+0012 do j=2  to arg();   parse value arg(j)  with  key val   /*obtain key and value.*/
+0013 $.AAn.key= val                          /*assign a  value  to a  key for AAn.  */
+0014 if wordpos(key, $.AAN.?keys)==0  then $.AAn.?keys= $.AAn.?keys key
+0015 /* [↑]  add to key list if not in list.*/
+0016 $.new.key= val                          /*assign a  value  to a  key for "new".*/
+0017 if wordpos(key, $.new.?keys)==0  then $.new.?keys= $.new.?keys key
+0018 /* [↑]  add to key list if not in list.*/
+0019 @.wKey= max(@.wKey, length(key) )       /*find max width of a name of a  key.  */
+0020 @.wVal= max(@.wVal, length(val) )       /*  "   "    "    " "   "   " "  value.*/
+0021 @.wAA = max(@.wAAn, length(AAn) )       /*  "   "    "    " "   "   "    array.*/
+0022 end   /*j*/
+0023 return
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 show:  procedure expose $. @.;  parse arg AAn;      say;     _= '═'    /*set title char.*/
+0026 do j=1  for words($.AAn.?keys)                                /*process keys.  */
+0027 if j==1  then say  center('associate array', @.wAAn,     _)  ,
+0028 center("key"            , @.wKey,     _)  ,
+0029 center('value'          , @.wVal + 2, _)
+0030 key= word($.AAn.?keys, j)                              /*get the name of a key.*/
+0031 say center(AAn, @.wAAn)  right(key, @.wKey)  $.AAn.key /*show some information.*/
+0032 end   /*j*/
+0033 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 AAn              25
+002 j                26
+003 key              30
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $.               -> newV1.           2 13 14 16 17
+002 @.               -> newV2.           3 3 3 19 20 21
+003 _                -> newV3            25

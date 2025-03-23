@@ -1,0 +1,34 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 'dir a2.txt'
+0002 Say 'rc='rc
+0003 'dir 33.*'
+0004 Say 'rc='rc
+0005 
+0006 Call square 5
+0007 Say 'RESULT='result
+0008 Say 'SIGL='sigl
+0009 
+0010 x2=square(3) /* just a simle example */
+0011 Say '3**2='||x2
+0012 
+0013 Signal On Novalue
+0014 x=y   /* y was not yet assigned a value */
+0015 
+0016 Exit
+0017 square: Procedure Expose sigl
+0018 Say 'square was invoked from line' sigl':' sourceline(sigl)
+0019 Return arg(1)**2
+0020 
+0021 Novalue:
+0022 Say 'NOVALUE encountered in line' sigl':' sourceline(sigl)
+0023 Exit
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x2               10
+002 x                14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

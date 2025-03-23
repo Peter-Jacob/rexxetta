@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX*/
+0002 Call random ,,1000
+0003 Do i=1 To 10
+0004 a.i=random(20)
+0005 End
+0006 a.0=i-1
+0007 Call show 'vorher '
+0008 Call bubble_sort
+0009 Call show 'nachher'
+0010 Exit
+0011 bubble_sort: Procedure Expose a.
+0012 Do Until no_more_swaps
+0013 no_more_swaps=1
+0014 Do i=1 To a.0-1
+0015 i1=i+1
+0016 if a.i > a.i1 Then Do
+0017 temp=a.i; a.i=a.i1; a.i1=temp
+0018 no_more_swaps=0
+0019 End
+0020 End
+0021 End
+0022 Return
+0023 show:
+0024 l=''; Do i=1 To a.0; l=l a.i; End; Say arg(1)':'l
+0025 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 i                3 14 24
+002 a.               4 6 17 17
+003 no_more_swaps    13 18
+004 i1               15
+005 temp             17
+006 l                24 24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

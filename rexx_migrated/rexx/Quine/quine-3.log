@@ -1,0 +1,69 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /* Rexx */
+0002 
+0003 Q = "'"
+0004 Queue '/* Rexx */'
+0005 Queue ''
+0006 Queue 'Q = "$"'
+0007 Queue '&QQQ'
+0008 Queue ''
+0009 Queue 'X = 0'
+0010 Queue 'Do while Queued() \= 0'
+0011 Queue '  Parse pull code'
+0012 Queue '  X = X + 1; codel.0 = X; codel.X = code'
+0013 Queue '  End'
+0014 Queue ''
+0015 Queue 'Do x_ = 1 for codel.0'
+0016 Queue '  line = codel.x_'
+0017 Queue '  If abbrev(line, "Q = ") then Do'
+0018 Queue '    line = translate(line, Q, "$")'
+0019 Queue '    End'
+0020 Queue '  If line = "&QQQ" then Do'
+0021 Queue '    Do y_ = 1 to codel.0'
+0022 Queue '      qline = codel.y_'
+0023 Queue '      Say "Queue" Q || qline || Q'
+0024 Queue '      End y_'
+0025 Queue '    End'
+0026 Queue '  else Do'
+0027 Queue '    Say line'
+0028 Queue '    End'
+0029 Queue '  End x_'
+0030 Queue ''
+0031 
+0032 X = 0
+0033 Do while Queued() \= 0
+0034 Parse pull code
+0035 X = X + 1; codel.0 = X; codel.X = code
+0036 End
+0037 
+0038 Do x_ = 1 for codel.0
+0039 line = codel.x_
+0040 If abbrev(line, "Q = ") then Do
+0041 line = translate(line, Q, "$")
+0042 End
+0043 If line = "&QQQ" then Do
+0044 Do y_ = 1 to codel.0
+0045 qline = codel.y_
+0046 Say "Queue" Q || qline || Q
+0047 End y_
+0048 End
+0049 else Do
+0050 Say line
+0051 End
+0052 End x_
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             34
+002 code             34
+003 X                35
+004 codel.           35 35
+005 x_               38
+006 line             39 41
+007 y_               44
+008 qline            45
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

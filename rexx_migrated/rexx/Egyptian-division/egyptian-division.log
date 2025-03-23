@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program performs division on positive integers using the Egyptian division method*/
+0002 numeric digits 1000                              /*support gihugic numbers & be gung-ho.*/
+0003 parse arg n d .                                  /*obtain optional arguments from the CL*/
+0004 if d=='' | d==","  then do;  n= 580;    d= 34    /*Not specified?  Then use the defaults*/
+0005 end
+0006 call EgyptDiv n, d                               /*invoke the Egyptian Division function*/
+0007 parse var result q r                             /*extract the quotient & the remainder.*/
+0008 say n   ' divided by '       d       " is "       q       ' with a remainder of '      r
+0009 exit                                             /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 EgyptDiv: procedure;  parse arg num,dem          /*obtain the numerator and denominator.*/
+0012 p= 1;                       t= dem     /*initialize the double & power values.*/
+0013 do #=1  until t>num      /*construct the power & doubling lists.*/
+0014 pow.#= p;     p= p + p   /*build power  entry; bump power value.*/
+0015 dbl.#= t;     t= t + t   /*  "  doubling  "  ;   " doubling val.*/
+0016 end   /*#*/
+0017 acc=0;  ans=0                          /*initialize accumulator & answer to 0 */
+0018 do s=#   by -1   for #   /* [↓]  process the table "backwards". */
+0019 sum= acc + dbl.s         /*compute the sum (to be used for test)*/
+0020 if sum>num  then iterate /*Is sum to big?  Then ignore this step*/
+0021 acc= sum                 /*use the "new" sum for the accumulator*/
+0022 ans= ans + pow.s         /*calculate the (newer) running answer.*/
+0023 end   /*s*/
+0024 return ans  num-acc                    /*return the answer and the remainder. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 num              11
+002 dem              11
+003 p                12 14
+004 t                12 15
+005 pow.             14
+006 dbl.             15
+007 acc              17 21
+008 ans              17 22
+009 s                18
+010 sum              19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            13

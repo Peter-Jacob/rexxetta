@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX program shows how to  assign and/or display  values of a multi─dimensional array.*/
+0002 /*REXX arrays can start anywhere.      */
+0003 y.=0                                             /*set all values of   Y   array to  0. */
+0004 /* [↑]  bounds need not be specified.  */
+0005 #=0                                              /*the count for the number of   SAYs.  */
+0006 y.4.3.2.0= 3**7                                  /*set penultimate element to   2187    */
+0007 do       i=0  for 5
+0008 do     j=0  for 4
+0009 do   k=0  for 3
+0010 do m=0  for 2;   #=#+1             /*bump the  SAY  counter.*/
+0011 /*the 1st SAY──► */         say  'y.'i"."j'.'k"."m   '='   y.i.j.k.m
+0012 end   /*m*/
+0013 end     /*k*/
+0014 end       /*j*/
+0015 end         /*i*/
+0016 say
+0017 say '# of elements displayed = '  #              /*should be   5 * 4 * 3 * 2    or   5! */
+0018 exit                                             /*stick a fork in it,  we're all done. */
+0019 
+0020 /* [↓]   other versions of the first (REXX)   SAY   instruction. */
+0021 say  'y.' || i || . || k || . || m  '='  y.i.j.k.m
+0022 say  'y.'||i||.||k||.||m            '='  y.i.j.k.m
+0023 say  'y.'i||.||k||.||m              '='  y.i.j.k.m
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y.               3 6
+002 i                7
+003 j                8
+004 k                9
+005 m                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            5 10

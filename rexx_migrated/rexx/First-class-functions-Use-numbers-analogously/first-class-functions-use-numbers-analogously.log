@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program to use a  first-class function  to  use numbers analogously.             */
+0002 nums=   2.0     4.0      6.0                     /*various numbers,  can have fractions.*/
+0003 invs= 1/2.0   1/4.0    1/6.0                     /*inverses of the above (real) numbers.*/
+0004 m=   0.5                                      /*multiplier when invoking new function*/
+0005 do j=1  for words(nums);   num= word(nums, j);  inv= word(invs, j)
+0006 nf= multiplier(num, inv);  interpret call nf m       /*sets the var RESULT.*/
+0007 say 'number=' @(num)    'inverse=' @(inv)    'm=' @(m)    'result=' @(result)
+0008 end   /*j*/
+0009 exit                                             /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 @:          return left( arg(1) / 1, 15)         /*format the number,  left justified.  */
+0012 multiplier: procedure expose n1n2; parse arg n1,n2;   n1n2= n1 * n2;   return 'a_new_func'
+0013 a_new_func: return n1n2 * arg(1)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n1               12
+002 n2               12
+003 n1n2             12
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

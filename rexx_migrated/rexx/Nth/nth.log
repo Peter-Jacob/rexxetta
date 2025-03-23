@@ -1,0 +1,81 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program shows ranges of numbers with ordinal (st/nd/rd/th) suffixes attached.*/
+0002 Call tell 0,25                      /* display the  1st  range of numbers  */
+0003 Call tell 250,265                   /* "       "    2nd    "    "    "     */
+0004 Call tell 1000,1025                 /* "       "    3rd    "    "    "     */
+0005 Exit                                /* stick a fork in it,  we're all done */
+0006 /*-------------------------------------------------------------------------*/
+0007 tell: Procedure
+0008 Parse Arg low,high                /* get the Low and High numbers        */
+0009 out.=''
+0010 Do n=low To high                  /* process the range, from low         */
+0011 out.1=out.1 th(n)
+0012 out.2=out.2 th2(n)
+0013 out.3=out.3 th3(n)
+0014 End
+0015 Say 'numbers from' low 'to' high '(inclusive):' /*display the output     */
+0016 Say strip(out.1)
+0017 Say ''
+0018 If out.2<>out.1 Then Say 'th2 must be wrong'
+0019 If out.3<>out.1 Then Say 'th3 must be wrong'
+0020 Return
+0021 /*-------------------------------------------------------------------------*/
+0022 th:                                 /* compact original                    */
+0023 Parse Arg z
+0024 x=abs(z)
+0025 Return z||word('th st nd rd',1+x//10*(x//100%10\==1)*(x//10<4))
+0026 /*-------------------------------------------------------------------------*/
+0027 th2:                                /* rather verbose logic                */
+0028 Parse Arg z
+0029 x=abs(z)
+0030 Select
+0031 When length(x)=1 Then
+0032 If x<4 Then
+0033 suffix=word('th st nd rd',x+1)
+0034 Else
+0035 suffix='th'
+0036 When suffixstr(x,length(x)-1,1)=1 Then
+0037 suffix='th'
+0038 When right(x,1)<4 Then
+0039 suffix=word('th st nd rd',right(x,1)+1)
+0040 Otherwise
+0041 suffix='th'
+0042 End
+0043 Return z||suffix
+0044 /*-------------------------------------------------------------------------*/
+0045 th3:                                /* compact yet quite readable          */
+0046 Parse Arg z
+0047 Parse Value reverse(z) with last +1 prev +1
+0048 If last<4 &,                      /* last digit is 0,1,2,3               */
+0049 prev<>1 Then                   /* and number is not **1x              */
+0050 suffix=word('th st nd rd',last+1)
+0051 Else                              /* all oher cases                      */
+0052 suffix='th'
+0053 Return z||suffix
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                46
+002 x                29
+003 suffix           33 35 37 39 41 50 52
+004 n                10
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 last             47
+019 prev             47
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

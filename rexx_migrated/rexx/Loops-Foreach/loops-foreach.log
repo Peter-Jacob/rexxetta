@@ -1,0 +1,17 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 days = 'zuntik montik dinstik mitvokh donershtik fraytik shabes'
+0002 
+0003 do j=1  for words(days)              /*loop through days of the week. */
+0004 say word(days,j)                     /*display the weekday to screen. */
+0005 end   /*j*/
+0006 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 days             1
+002 j                3
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

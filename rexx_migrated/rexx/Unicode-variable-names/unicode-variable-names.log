@@ -1,0 +1,15 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program (using the R4 REXX interpreter) which uses a Greek delta char).*/
+0002 'chcp'  1253  "> NUL"                  /*ensure we're using correct code page.*/
+0003 Δ=1                                    /*define delta (variable name  Δ)  to 1*/
+0004 Δ=Δ+1                                  /*bump the delta REXX variable by unity*/
+0005 say 'Δ=' Δ                             /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 Δ               -> newV1            3 4

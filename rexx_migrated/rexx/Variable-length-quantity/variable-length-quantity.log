@@ -1,0 +1,39 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program displays  (and also tests/verifies)  some numbers as  octets.            */
+0002 nums = x2d(200000)     x2d(1fffff)       2097172      2097151
+0003 #=words(nums)
+0004 say '  number       hex       octet    original'
+0005 say '══════════ ══════════ ══════════ ══════════'
+0006 ok=1
+0007 do j=1  for #;      @.j= word(nums,j)
+0008 onum.j=octet(@.j)
+0009 orig.j=  x2d( space(onum.j, 0) )
+0010 w=10
+0011 say center(@.j, w)     center(d2x(@.j), w)     center(onum.j, w)    center(orig.j, w)
+0012 if @.j\==orig.j  then ok=0
+0013 end   /*j*/
+0014 say
+0015 if ok  then say 'All '   #    " numbers are OK." /*all  of the numbers are   good.      */
+0016 else say "Some numbers are not OK."       /*some of the numbers are  ¬good.      */
+0017 exit                                             /*stick a fork in it,  we're all done. */
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 octet: procedure;  parse arg z,$                 /*obtain  Z  from the passed arguments.*/
+0020 x=d2x(z)                                  /*convert Z  to a hexadecimal octet.   */
+0021 do j=length(x)  by -2  to 1   /*process the  "little"  end first.    */
+0022 $= substr(x, j-1, 2, 0)   $   /*pad odd hexadecimal characters with  */
+0023 end   /*j*/                   /*           ···  a zero on the left.  */
+0024 return strip($)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                19
+002 x                20
+003 j                21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           7
+002 #                -> newV2            3
+003 $                -> newV3            19 22

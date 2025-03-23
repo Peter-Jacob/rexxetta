@@ -1,0 +1,54 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * show 100 random points of an annulus with radius 10 to 15
+0003 * 18.06.2014 Walter Pachl 'derived/simplified' from REXX version 1
+0004 *--------------------------------------------------------------------*/
+0005 Parse Arg points low high scale . /* allow parms from command line.*/
+0006 If points=='' Then  points=100    /* number of points              */
+0007 If low==''    Then  low=10        /* inner radius                  */
+0008 If high==''   Then  high=15       /* outer radius                  */
+0009 If scale==''  Then  scale=2       /* horizontal scaling            */
+0010 low2=low**2
+0011 high2=high**2
+0012 /* first compute all possible points                               */
+0013 point.=0
+0014 Do x=-high To high
+0015 x2=x*x
+0016 Do y=-high To high
+0017 y2=y*y
+0018 s=x2+y2
+0019 If s>=low2 &s<=high2 Then Do
+0020 z=point.0+1
+0021 point.z=x y
+0022 point.0=z
+0023 End
+0024 End
+0025 End
+0026 plotchar='O'
+0027 line.=''
+0028 np=point.0                           /* available points           */
+0029 Do j=1 To points                     /* pick the needed points     */
+0030 r=random(1,np)
+0031 Parse Var point.r x y              /* coordinates                */
+0032 line.y=overlay(plotchar,line.y,scale*(x+high)+1) /* put into line*/
+0033 point.r=point.np                   /* replace taken point by last*/
+0034 np=np-1                            /* reduce available points    */
+0035 If np=0 Then Leave                 /* all possible points taken  */
+0036 End
+0037 /* now draw the picture                                              */
+0038 Do y=-high To high
+0039 Say line.y
+0040 End
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 point.           31 33
+002 x                31
+003 y                31 38
+004 line.            32
+005 np               34
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

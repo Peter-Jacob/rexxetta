@@ -1,0 +1,61 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program computes and displays the Isqrt  (integer square root)  of some integers.*/
+0002 numeric digits 200                               /*insure 'nuff decimal digs for results*/
+0003 parse arg range power base .                     /*obtain optional arguments from the CL*/
+0004 if range=='' | range==","  then range= 0..65     /*Not specified?  Then use the default.*/
+0005 if power=='' | power==","  then power= 1..73     /* "      "         "   "   "     "    */
+0006 if base =='' | base ==","  then base =     7     /* "      "         "   "   "     "    */
+0007 parse var  range   rLO  '..'  rHI;     if rHI==''  then rHI= rLO      /*handle a range? */
+0008 parse var  power   pLO  '..'  pHI;     if pHI==''  then pHI= pLO      /*   "   "   "    */
+0009 $=
+0010 do j=rLO  to rHI  while rHI>0        /*compute Isqrt for a range of integers*/
+0011 $= $ commas( Isqrt(j) )              /*append the Isqrt to a list for output*/
+0012 end   /*j*/
+0013 $= strip($)                                      /*elide the leading blank in the list. */
+0014 say center(' Isqrt for numbers: '   rLO   " ──► "  rHI' ',  length($),  "─")
+0015 say strip($)                                     /*$  has a leading blank for 1st number*/
+0016 say
+0017 z= base ** pHI                                   /*compute  max. exponentiation product.*/
+0018 Lp= max(30, length( commas(       z) ) )         /*length of "          "          "    */
+0019 Lr= max(20, length( commas( Isqrt(z) ) ) )       /* "     "    "  "   "  Isqrt of above.*/
+0020 say 'index'   center(base"**index", Lp)       center('Isqrt', Lr)        /*show a title.*/
+0021 say '─────'   copies("─",           Lp)       copies('─',     Lr)        /*  "  " header*/
+0022 
+0023 do j=pLO  to pHI  by 2  while pHI>0;                              x= base ** j
+0024 say center(j, 5)  right( commas(x), Lp)      right( commas( Isqrt(x) ),  Lr)
+0025 end   /*j*/                          /* [↑]  show a bunch of powers & Isqrt.*/
+0026 exit 0                                           /*stick a fork in it,  we're all done. */
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 commas: parse arg _;  do jc=length(_)-3  to 1  by -3; _=insert(',', _, jc); end;  return _
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 Isqrt: procedure; parse arg x                    /*obtain the only passed argument  X.  */
+0031 x= x % 1                                  /*convert possible real X to an integer*/     /* ◄■■■■■■■  optional. */
+0032 q= 1                                      /*initialize the  Q  variable to unity.*/
+0033 do until q>x      /*find a  Q  that is greater than  X.  */
+0034 q= q * 4          /*multiply   Q   by four.              */
+0035 end   /*until*/
+0036 r= 0                                      /*R:    will be the integer sqrt of X. */
+0037 do while q>1                    /*keep processing while  Q  is > than 1*/
+0038 q= q % 4                        /*divide  Q  by four  (no remainder).  */
+0039 t= x - r - q                    /*compute a temporary variable.        */
+0040 r= r % 2                        /*divide  R  by two   (no remainder).  */
+0041 if t >= 0  then do              /*if   T  is non─negative  ...         */
+0042 x= t            /*recompute the value of  X            */
+0043 r= r + q        /*    "      "    "    "  R            */
+0044 end
+0045 end   /*while*/
+0046 return r                                  /*return the integer square root of X. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                30 31 42
+002 q                32 34 38
+003 r                36 40 43
+004 t                39
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            9 11 13
+002 _                -> newV2            28 28

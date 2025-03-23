@@ -1,0 +1,64 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program  plots/draws line segments  using the  Bresenham's line  (2D) algorithm. */
+0002 parse arg data                                   /*obtain optional arguments from the CL*/
+0003 if data=''  then data= "(1,8)  (8,16)  (16,8)  (8,1)  (1,8)"         /* ◄──── a rhombus.*/
+0004 data= translate(data, , '()[]{}/,:;')            /*elide chaff from the data points.    */
+0005 @.= '·'                                          /*use mid─dots chars (plot background).*/
+0006 do points=1  while data\=''           /*put the data points into an array (!)*/
+0007 parse var data x y data; !.points=x y /*extract the line segments.           */
+0008 if points==1  then do;  minX= x;  maxX= x;  minY= y;  maxY= y     /*1st case.*/
+0009 end
+0010 minX= min(minX,x);   maxX= max(maxX,x);   minY= min(minY,y);  maxY= max(maxY,y)
+0011 end   /*points*/                      /* [↑]  data points pairs in array  !. */
+0012 border= 2                                        /*border:  is extra space around plot. */
+0013 minX= minX - border*2;    maxX= maxX + border*2  /*min and max  X  for the plot display.*/
+0014 minY= minY - border  ;    maxY= maxY + border    /* "   "   "   Y   "   "    "     "    */
+0015 
+0016 do x=minX  to maxX;  @.x.0= '─';  end /*draw a dash from    left ───►  right.*/
+0017 do y=minY  to maxY;  @.0.y= '│';  end /*draw a pipe from  lowest ───► highest*/
+0018 @.0.0= '┼'                                       /*define the plot's origin axis point. */
+0019 do seg=2  to points-1;     _= seg - 1 /*obtain the  X and Y  line coördinates*/
+0020 call drawLine  !._, !.seg             /*draw (plot) a line segment.          */
+0021 end      /*seg*/                      /* [↑]  drawing the line segments.     */
+0022 /* [↓]  display the plot to terminal.  */
+0023 do    y=maxY  to minY  by -1;   _=    /*display the plot one line at a time. */
+0024 do x=minX  to maxX;  _= _ || @.x.y /*construct/build a line of the plot.  */
+0025 end   /*x*/                        /*      (a line is a "row" of points.) */
+0026 say _                                 /*display a line of the plot──►terminal*/
+0027 end      /*y*/                        /* [↑]  all done plotting the points.  */
+0028 exit                                             /*stick a fork in it,  we're all done. */
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 drawLine: procedure expose @.; parse arg  x y,xf yf;    parse value  '-1 -1'   with  sx sy
+0031 dx= abs(xf-x);    if x<xf  then sx= 1  /*obtain  X  range, determine the slope*/
+0032 dy= abs(yf-y);    if y<yf  then sy= 1  /*   "    Y    "        "      "    "  */
+0033 err= dx - dy                           /*calculate error between adjustments. */
+0034 /*Θ  is the plot character for points. */
+0035 do  forever;           @.x.y= 'Θ'  /*plot the points until it's complete. */
+0036 if x=xf  &  y=yf  then return      /*are the plot points at the finish?   */
+0037 err2= err + err                    /*calculate  double  the error value.  */
+0038 if err2 > -dy  then  do;    err= err - dy;    x= x + sx;     end
+0039 if err2 <  dx  then  do;    err= err + dx;    y= y + sy;     end
+0040 end   /*forever*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                30 38
+002 y                30 39
+003 xf               30
+004 yf               30
+005 maxX             8 10 13
+006 minY             8 10 14
+007 sx               30 31
+008 sy               30 32
+009 dx               31
+010 dy               32
+011 err              33 38 39
+012 err2             37
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           5 16 17 18 35
+002 !.               -> newV2.           7
+003 _                -> newV3            19 23 24

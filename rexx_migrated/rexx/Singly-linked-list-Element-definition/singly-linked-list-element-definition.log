@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates how to create and show a single-linked list.*/
+0002 @.=0                                   /*define a null linked list.     */
+0003 call set@ 3                            /*linked list:  12 Proth Primes. */
+0004 call set@ 5
+0005 call set@ 13
+0006 call set@ 17
+0007 call set@ 41
+0008 call set@ 97
+0009 call set@ 113
+0010 call set@ 193
+0011 call set@ 241
+0012 call set@ 257
+0013 call set@ 353
+0014 call set@ 449
+0015 w=@.max_width                          /*use the maximum width of nums. */
+0016 call list@                             /*list all the elements in list. */
+0017 exit                                   /*stick a fork in it, we're done.*/
+0018 /*──────────────────────────────────LIST@ subroutine────────────────────*/
+0019 list@: say;  w=max(7, @.max_width )    /*use the max width of nums or 7.*/
+0020 say center('item',6)        center('value',w)        center('next',6)
+0021 say center(''    ,6,'─')    center(''     ,w,'─')    center(''    ,6,'─')
+0022 p=1
+0023 do j=1  until p==0      /*show all entries of linked list*/
+0024 say  right(j,6)   right(@.p._value,w)   right(@.p._next,6)
+0025 p=@.p._next
+0026 end   /*j*/
+0027 return
+0028 /*──────────────────────────────────SET@ subroutine─────────────────────*/
+0029 set@: procedure expose @.; parse arg y /*get element to be added to list*/
+0030 _=@._last                              /*set the previous last element. */
+0031 n=_+1                                  /*bump last ptr in linked list.  */
+0032 @._._next=n                            /*set the  next  pointer value.  */
+0033 @._last=n                              /*define next item in linked list*/
+0034 @.n._value=y                           /*set item to the value specified*/
+0035 @.n._next=0                            /*set the  next  pointer value.  */
+0036 @..y=n                                 /*set a locator pointer to self. */
+0037 @.max_width=max(@.max_width,length(y)) /*set maximum width of any value.*/
+0038 return                                 /*return to invoker of this sub. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                29
+002 n                31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 32 33 34 35 36 37
+002 _                -> newV2            30

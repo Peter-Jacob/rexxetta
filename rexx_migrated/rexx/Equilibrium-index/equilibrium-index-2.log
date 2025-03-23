@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 30.06.2014 Walter Pachl
+0003 *--------------------------------------------------------------------*/
+0004 parse arg l
+0005 say '         array list:' strip(l)
+0006 x.=0
+0007 Do i=1 To words(l)
+0008 x.i=word(l,i)
+0009 End
+0010 n=i-1
+0011 ans=strip(equilibriumIndices())
+0012 n=words(ans)
+0013 Select
+0014 When n=0 Then Say 'There''s no equilibrium index'
+0015 When n=1 Then Say 'equilibrium index  :' ans
+0016 Otherwise     Say 'equilibrium indices:' ans
+0017 End
+0018 Say '---'
+0019 exit
+0020 equilibriumIndices: procedure expose x. n
+0021 sum.=0
+0022 sum=0
+0023 eil=''
+0024 Do i=1 To n
+0025 sum=sum+x.i
+0026 sum.i=sum
+0027 End
+0028 Do i=1 To n
+0029 im1=i-1
+0030 If sum.im1=(sum.n-x.i)/2 Then
+0031 eil=eil im1
+0032 End
+0033 Return eil
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 l                4
+002 x.               6 8
+003 i                7 24 28
+004 n                10 12
+005 ans              11
+006 sum.             21 26
+007 sum              22 25
+008 eil              23 31
+009 im1              29
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

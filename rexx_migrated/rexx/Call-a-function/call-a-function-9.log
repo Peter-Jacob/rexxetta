@@ -1,0 +1,88 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 29.07.2013 Walter Pachl trying to address the task concisely
+0003 ***********************************************************************
+0004 * f1 Calling a function that requires no arguments
+0005 * f2 Calling a function with a fixed number of arguments
+0006 * f3 Calling a function with optional arguments
+0007 * f4 Calling a function with a variable number of arguments
+0008 * f5 Calling a function with named arguments
+0009 * f6 Using a function in statement context
+0010 * f7 Using a function within an expression
+0011 * f8 Obtaining the return value of a function
+0012 *       f8(...) is replaced by the returned value
+0013 *       call f8 ...  returned value is in special vatiable RESULT
+0014 * f9 Distinguishing built-in functions and user-defined functions
+0015 *       bif is enforced by using its name quoted in uppercase
+0016 * fa,fb Distinguishing subroutines and functions
+0017 * Stating whether arguments are passed by value or by reference
+0018 *       Arguments are passed by value
+0019 *       ooRexx supports passing by reference (Use Arg instruction)
+0020 * Is partial application possible and how
+0021 *       no ideas
+0022 **********************************************************************/
+0023 say f1()
+0024 Say f2(1,2,3)
+0025 say f2(1,2,3,4)
+0026 say f3(1,,,4)
+0027 Say f4(1,2)
+0028 Say f4(1,2,3)
+0029 a=4700; b=11;
+0030 Say f5('A','B')
+0031 f6()  /* returned value is used as command */
+0032 x=f7()**2
+0033 call f8 1,2; Say result '=' f8(1,2)
+0034 f9: Say 'DATE'('S') date()
+0035 call fa 11,22; Say result '=' fa(1,,
+0036 2) /* the second comma above is for line continuation */
+0037 Signal On Syntax
+0038 Call fb 1,2
+0039 x=fb(1,2)
+0040 Exit
+0041 f1: Return 'f1 doesn''t need an argument'
+0042 f2: If arg()=3 Then
+0043 Return 'f2: Sum of 3 arguments:' arg(1)+arg(2)+arg(3)
+0044 Else
+0045 Return 'f2: Invalid invocation:' arg() 'arguments. Needed: 3'
+0046 f3: sum=0
+0047 do i=1 To arg()
+0048 If arg(i,'E')=0 Then Say 'f3: Argument' i 'omitted'
+0049 Else sum=sum+arg(i)
+0050 End
+0051 Return 'f3 sum=' sum
+0052 f4: sum=0; Do i=1 To arg(); sum=sum+arg(i); End
+0053 Return 'f4: Sum of' arg() 'arguments is' sum
+0054 f5: Parse Arg p1,p2
+0055 Say 'f5: Argument 1 ('p1') contains' value(p1)
+0056 Say 'f5: Argument 2 ('p2') contains' value(p2)
+0057 Return 'f5: sum='value(p1)+value(p2)
+0058 f6: Say 'f6: dir ft.rex'
+0059 Return 'dir ft.rex'
+0060 f7: Say 'f7 returns 7'
+0061 Return 7
+0062 f8: Say 'f8 returns arg(1)+arg(2)'
+0063 Return arg(1)+arg(2)
+0064 date: Say 'date is my date function'
+0065 Return translate('ef/gh/abcd','DATE'('S'),'abcdefgh')
+0066 fa: Say 'fa returns arg(1)+arg(2)'
+0067 Return arg(1)+arg(2)
+0068 fb: Say 'fb:' arg(1)','arg(2)
+0069 Return
+0070 
+0071 Syntax:
+0072 Say 'Syntax raised in line' sigl
+0073 Say sourceline(sigl)
+0074 Say 'rc='rc '('errortext(rc)')'
+0075 If sigl=39 Then
+0076 Say 'fb cannot be invoked as function (it does not return a value'
+0077 Exit
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 p1               54
+002 p2               54
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

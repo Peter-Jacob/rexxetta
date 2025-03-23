@@ -1,0 +1,26 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX program gets the source function (source code) and */
+0002 /*───────────────────────── displays the number of lines. */
+0003 #=sourceline()
+0004 do j=1  for sourceline()
+0005 say 'line'  right(j, length(#) )  '──►'   ,
+0006 strip( sourceline(j), 'T')
+0007 end   /*j*/
+0008 say
+0009 parse source x y sID
+0010 say  'The name of the  source file (program) is: '    sID
+0011 say  'The number of lines in the source program: '     #
+0012 /*stick a fork in it, we're all done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 source           9
+002 x                9
+003 y                9
+004 sID              9
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            3

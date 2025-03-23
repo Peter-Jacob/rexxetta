@@ -1,0 +1,31 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrate case sensitive REXX  index  names  (for compound variables). */
+0002 
+0003 /*  ┌──◄── all 3 indices (for an array variable)  are unique  (as far as array index). */
+0004 /*  │                                                                                  */
+0005 /*  ↓                                                                                  */
+0006 x= 'dog';  dogname.x= "Gunner"                   /*assign an array index,  lowercase dog*/
+0007 x= 'Dog';  dogname.x= "Thor"                     /*   "    "   "     "   capitalized Dog*/
+0008 x= 'DOG';  dogname.x= "Jax"                      /*   "    "   "     "     uppercase DOG*/
+0009 x= 'doG';  dogname.x= "Rex"                      /*   "    "   "     "       mixed   doG*/
+0010 
+0011 say center('using compound variables', 35, "═")   /*title.*/
+0012 say
+0013 
+0014 _= 'dog';  say "dogname.dog="  dogname._         /*display an array index, lowercase dog*/
+0015 _= 'Dog';  say "dogname.Dog="  dogname._         /*   "     "   "     "  capitalized Dog*/
+0016 _= 'DOG';  say "dogname.DOG="  dogname._         /*   "     "   "     "    uppercase DOG*/
+0017 _= 'doG';  say "dogname.doG="  dogname._         /*   "     "   "     "      mixed   doG*/
+0018 
+0019 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                6 7 8 9
+002 dogname.         6 7 8 9
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            14 15 16 17

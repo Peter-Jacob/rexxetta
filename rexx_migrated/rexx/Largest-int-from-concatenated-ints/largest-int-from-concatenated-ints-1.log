@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program constructs the largest integer  from an integer list using concatenation.*/
+0002 @.=.;     @.1 =   1   34    3  98  9  76  45  4  /*the  1st  integer list to be used.   */
+0003 @.2 =  54  546  548  60                /* "   2nd     "      "   "  "   "     */
+0004 @.3 =   4   45   54   5                /* "   3rd     "      "   "  "   "     */
+0005 w=0                                              /* [↓]   process all the integer lists.*/
+0006 do j=1  while @.j\==.;         z= space(@.j) /*keep truckin' until lists exhausted. */
+0007 w=max(w, length(z) );          $=            /*obtain maximum width to align output.*/
+0008 do  while z\='';  idx= 1;  big= norm(1)  /*keep examining the list  until  done.*/
+0009 do k=2  to  words(z);    #= norm(k)    /*obtain an a number from the list.    */
+0010 L= max(length(big), length(#) )        /*get the maximum length of the integer*/
+0011 if left(#, L, left(#, 1) )   <<=   left(big, L, left(big, 1) )    then iterate
+0012 big= #;                  idx= k        /*we found a new biggie (and the index)*/
+0013 end   /*k*/                            /* [↑]  find max concatenated integer. */
+0014 z= delword(z, idx, 1)                    /*delete this maximum integer from list*/
+0015 $= $  ||  big                            /*append   "     "       "    ───►  $. */
+0016 end     /*while z*/                      /* [↑]  process all integers in a list.*/
+0017 say 'largest concatenatated integer from '  left( space(@.j), w)    " is ─────► "    $
+0018 end         /*j*/                            /* [↑]  process each list of integers. */
+0019 exit 0                                           /*stick a fork in it,  we're all done. */
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 norm: arg i;  #= word(z, i);  er= '***error***';  if left(#, 1)=="-"  then #= substr(#, 2)
+0022 if \datatype(#,'W')  then do; say er # "isn't an integer."; exit 13; end; return #/1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 w                5 7
+002 j                6
+003 z                6 14
+004 while            8
+005 idx              8 12
+006 big              8 12
+007 k                9
+008 L                10
+009 er               21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 2 3 4
+002 $                -> newV2            7 15
+003 #                -> newV3            9 21 21

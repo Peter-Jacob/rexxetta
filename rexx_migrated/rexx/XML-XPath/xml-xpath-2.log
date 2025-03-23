@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:36
+-------------------------------------------------------------------------
+0001 /*REXX program to parse various queries on an XML document  (from a file).    */
+0002 iFID='XPATH.XML'                       /*name of the input  XML  file (doc).  */
+0003 $=                                     /*string will contain the file's text. */
+0004 do j=1  while  lines(iFID)\==0    /*read the entire file into a string.  */
+0005 $=$ linein(iFID)                  /*append the line to the  $  string.   */
+0006 end   /*j*/
+0007 /* [↓]  display 1st ITEM in document.  */
+0008 call parser 'item', 0                  /*go and parse the all the  ITEMs.     */
+0009 say center('first item:',@L.1,'─')     /*display a nicely formatted header.   */
+0010 say @.1;    say                        /*display the first  ITEM  found.      */
+0011 
+0012 call parser 'price'                    /*go and parse all the   PRICEs.       */
+0013 say center('prices:',length(@@@),'─')  /*display a nicely formatted header.   */
+0014 say @@@;    say                        /*display a list of all the prices.    */
+0015 
+0016 call parser 'name'
+0017 say center('names:',@L,'─')            /*display a nicely formatted header.   */
+0018 do k=1  for #  /*display all the names in the list.   */
+0019 say @.k        /*display a name from the  NAMES  list.*/
+0020 end   /*k*/
+0021 exit                                   /*stick a fork in it,  we're all done. */
+0022 /*────────────────────────────────────────────────────────────────────────────*/
+0023 parser:  parse arg yy,tail,,@. @@. @@@;   $$=$;  @L=9;  yb='<'yy;   ye='</'yy">"
+0024 tail=word(tail 1, 1)                                /*use a tail  ">"  or not?*/
+0025 do #=1  until  $$=''                          /*parse complete XML doc. */
+0026 if tail  then parse  var  $$  (yb) '>' @@.# (ye) $$         /*find meat.*/
+0027 else parse  var  $$  (yb)     @@.# (ye) $$         /*  "    "  */
+0028 @.#=space(@@.#);   @@@=space(@@@ @.#)         /*shrink;  @@@=list of YY.*/
+0029 @L.#=length(@.#);  @L=max(@L,@L.#)            /*length; maximum length. */
+0030 end   /*#*/
+0031 #=#-1                                               /*adjust # of thing found.*/
+0032 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 (yb)             -> newV1            26 27
+002 (ye)             -> newV2            26 27
+003 @@.              -> newV3.           23 26 27
+004 @@@              -> newV4            23 28
+005 @L.              -> newV5.           29
+006 @.               -> newV6.           23 28
+007 $$               -> newV7            23 26 26 27 27
+008 @L               -> newV8            23 29
+009 $                -> newV9            3 5
+010 #                -> newV10           25 31

@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX program validates that the  last digit (the check digit)  of a  CUSIP  is valid. */
+0002 @.=
+0003 parse arg @.1 .
+0004 if @.1=='' | @.1==","  then do;   @.1= 037833100       /* Apple Incorporated            */
+0005 @.2= 17275R102       /* Cisco Systems                 */
+0006 @.3= 38259P508       /* Google Incorporated           */
+0007 @.4= 594918104       /* Microsoft Corporation         */
+0008 @.5= 68389X106       /* Oracle Corporation (incorrect)*/
+0009 @.6= 68389X105       /* Oracle Corporation            */
+0010 end
+0011 
+0012 do j=1  while @.j\='';   chkDig=CUSIPchk(@.j)     /*calculate check digit from func*/
+0013 OK=word("isn't is", 1 + (chkDig==right(@.j,1) ) ) /*validate  check digit with func*/
+0014 say 'CUSIP '    @.j    right(OK, 6)     "valid."  /*display the CUSIP and validity.*/
+0015 end   /*j*/
+0016 exit                                             /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 CUSIPchk: procedure; arg x 9;  $=0;         abc= '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ*@#'
+0019 /* [↓]  if  Y  isn' found,  then POS returns zero.*/
+0020 do k=1  for 8;   y=substr(x,k,1) /*get a character. */
+0021 #=pos(y, abc) - 1                /*get its position.*/
+0022 if #   == -1  then return 0      /*invalid character*/
+0023 if k//2==  0  then #=#+#         /*K even? double it*/
+0024 $=$ + #%10 + #//10
+0025 end      /*k*/
+0026 return (10-$//10) // 10
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                12
+002 chkDig           12
+003 OK               13
+004 abc              18
+005 k                20
+006 y                20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 3 4 5 6 7 8 9
+002 $                -> newV2            18 24
+003 #                -> newV3            21 23

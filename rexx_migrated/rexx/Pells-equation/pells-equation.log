@@ -1,0 +1,62 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program to solve Pell's equation for the smallest solution of positive integers. */
+0002 numeric digits 2200                              /*ensure enough decimal digs for answer*/
+0003 parse arg $                                      /*obtain optional arguments from the CL*/
+0004 if $=='' | $==","  then $= 61 109 181 277        /*Not specified?  Then use the defaults*/
+0005 d= 28                                            /*used for aligning the output numbers.*/
+0006 do j=1  for words($);    #= word($, j)    /*process all the numbers in the list. */
+0007 parse value   pells(#)   with   x  y      /*extract the two values of  X  and  Y.*/
+0008 cx= comma(x);       Lcx= length(cx);           cy=  comma(y);       Lcy= length(cy)
+0009 say 'x^2 -'right(#, max(4, length(#)))    "* y^2 == 1" ,
+0010 ' when x='right(cx, max(d, Lcx))     "  and y="right(cy, max(d, Lcy))
+0011 end   /*j*/
+0012 exit 0                                           /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 comma: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?= insert(',', ?, jc); end;  return ?
+0015 floor: procedure; parse arg x;  _= x % 1;          return  _   -    (x < 0)   *   (x \= _)
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 iSqrt: procedure; parse arg x;  r= 0;     q= 1;           do  while q<=x;  q= q * 4;   end
+0018 do  while q>1; q= q%4; _= x-r-q; r= r%2; if _>=0  then do; x= _; r= r+q; end; end
+0019 return r                                  /*R:  is the integer square root of X. */
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 pells: procedure; parse arg n; x= iSqrt(n);  y=x /*obtain arg;  obtain integer sqrt of N*/
+0022 parse value  1 0   with   e1 e2  1  f2 f1 /*assign values for: E1, E2, and F2, F1*/
+0023 z= 1;        r= x + x
+0024 do  until ( (e2 + x*f2)**2  -  n*f2*f2)  ==  1
+0025 y= r*z  -  y;     z= floor( (n - y*y) / z)
+0026 r= floor( (x + y  ) / z)
+0027 parse value  e2   r*e2  +  e1     with     e1  e2
+0028 parse value  f2   r*f2  +  f1     with     f1  f2
+0029 end   /*until*/
+0030 return e2  +  x * f2     f2
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                21
+002 x                21
+003 y                21 25
+004 while            17
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 e1               22 27
+012 e2               22 27
+013 f2               22 28
+014 f1               22 28
+015 z                23 25
+016 r                23 26
+017 until            24
+018 cx               8
+019 Lcx              8
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            3 4
+002 #                -> newV2            6
+003 ?                -> newV3            14 14
+004 _                -> newV4            15 18

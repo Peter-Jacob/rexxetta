@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX program to display the first  N  Motzkin numbers,  and if that number is prime.  */
+0002 numeric digits 92                                /*max number of decimal digits for task*/
+0003 parse arg n .                                    /*obtain optional argument from the CL.*/
+0004 if n=='' | n==","  then n= 42                    /*Not specified?  Then use the default.*/
+0005 w= length(n) + 1;  wm= digits()%4                /*define maximum widths for two columns*/
+0006 say center('n', w     )   center("Motzkin[n]", wm)       center(' primality', 11)
+0007 say center('' , w, "─")   center(''          , wm, "─")  center('',           11, "─")
+0008 @.= 1                                            /*define default vale for the @. array.*/
+0009 do m=0  for n                              /*step through indices for Motzkin #'s.*/
+0010 if m>1  then @.m= (@(m-1)*(m+m+1) + @(m-2)*(m*3-3))%(m+2)  /*calculate a Motzkin #*/
+0011 call show                                  /*display a Motzkin number ──► terminal*/
+0012 end   /*m*/
+0013 
+0014 say center('' , w, "─")   center(''          , wm, "─")  center('',           11, "─")
+0015 exit 0                                           /*stick a fork in it,  we're all done. */
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 @:      parse arg i;          return @.i         /*return function expression based on I*/
+0018 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end; return ?
+0019 prime:  if isPrime(@.m)  then return "   prime";                                 return ''
+0020 show:   y= commas(@.m);  say right(m, w)  right(y, max(wm, length(y)))  prime(); return
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 isPrime: procedure expose p?. p#. p_.;  parse arg x     /*persistent P·· REXX variables.*/
+0023 if symbol('P?.#')\=='VAR'  then         /*1st time here?   Then define primes. */
+0024 do                                    /*L is a list of some low primes < 100.*/
+0025 L= 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97 101
+0026 p?.=0                                 /* [↓]  define P_index,  P,  P squared.*/
+0027 do i=1  for words(L);   _= word(L,i);   p?._= 1;   p#.i= _;   p_.i= _*_
+0028 end   /*i*/;                   p?.0= x2d(3632c8eb5af3b) /*bypass big ÷*/
+0029 p?.n= _ + 4                           /*define next prime after last prime.  */
+0030 p?.#= i - 1                           /*define the number of primes found.   */
+0031 end                                   /* p?.  p#.  p_   must be unique.      */
+0032 if x<p?.n  then return p?.x             /*special case, handle some low primes.*/
+0033 if x==p?.0 then return 1                /*save a number of primality divisions.*/
+0034 parse var  x   ''   -1   _              /*obtain right─most decimal digit of X.*/
+0035 if    _==5  then return 0;  if x//2 ==0  then return 0   /*X ÷ by 5?  X ÷ by 2?*/
+0036 if x//3==0  then return 0;  if x//7 ==0  then return 0   /*" "  " 3?  " "  " 7?*/
+0037 /*weed numbers that're ≥ 11 multiples. */
+0038 do j=5  to p?.#  while p_.j<=x;  if x//p#.j ==0  then return 0
+0039 end   /*j*/
+0040 /*weed numbers that're>high multiple Ps*/
+0041 do k=p?.n  by 6  while k*k<=x;   if x//k    ==0  then return 0
+0042 if x//(k+2)==0  then return 0
+0043 end   /*k*/;           return 1       /*Passed all divisions?   It's a prime.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                34
+002 j                38
+003 k                41
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           8 10
+002 ?                -> newV2            18 18
+003 _                -> newV3            27 34

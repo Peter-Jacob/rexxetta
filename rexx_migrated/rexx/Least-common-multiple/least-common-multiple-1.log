@@ -1,0 +1,50 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*REXX program finds the  LCM  (Least Common Multiple)  of any number of integers.      */
+0002 numeric digits 10000                             /*can handle 10k decimal digit numbers.*/
+0003 say 'the LCM of      19  and   0                   is ───►  '     lcm(19    0            )
+0004 say 'the LCM of       0  and  85                   is ───►  '     lcm( 0   85            )
+0005 say 'the LCM of      14  and  -6                   is ───►  '     lcm(14,  -6            )
+0006 say 'the LCM of      18  and  12                   is ───►  '     lcm(18   12            )
+0007 say 'the LCM of      18  and  12  and  -5          is ───►  '     lcm(18   12,   -5      )
+0008 say 'the LCM of      18  and  12  and  -5  and  97 is ───►  '     lcm(18,  12,   -5,   97)
+0009 say 'the LCM of 2**19-1  and  2**521-1             is ───►  '     lcm(2**19-1    2**521-1)
+0010 /* [↑]   7th  &  13th  Mersenne primes.*/
+0011 exit                                             /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 lcm: procedure; parse arg $,_; $=$ _;           do i=3  to arg();  $=$ arg(i);  end  /*i*/
+0014 parse var $ x $                                  /*obtain the first value in args. */
+0015 x=abs(x)                                         /*use the absolute value of  X.   */
+0016 do  while $\==''                       /*process the remainder of args.  */
+0017 parse var $ ! $;    if !<0  then !=-!  /*pick off the next arg (ABS val).*/
+0018 if !==0  then return 0                 /*if zero, then LCM is also zero. */
+0019 d=x*!                                  /*calculate part of the LCM here. */
+0020 do  until !==0;    parse  value   x//!  !     with     !  x
+0021 end   /*until*/                 /* [↑]  this is a short & fast GCD*/
+0022 x=d%x                                  /*divide the pre─calculated value.*/
+0023 end   /*while*/                        /* [↑]  process subsequent args.  */
+0024 return x                                         /*return with the LCM of the args.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 d                19
+002 until            20
+003 NORMAL.3         
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 x                20 22
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            13 13 13 14 14 17 17
+002 _                -> newV2            13
+003 !                -> newV3            17 17 20

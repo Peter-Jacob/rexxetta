@@ -1,0 +1,29 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*╔════════════════════════════════════════════════════════════════════╗
+0002 ║ Distinguishing built-in functions and user-defined functions.      ║
+0003 ║                                                                    ║
+0004 ║ One objective of the REXX language is to allow the user to use any ║
+0005 ║ function  (or subroutine)  name whether or not there is a built-in ║
+0006 ║ function with the same name  (there isn't a penality for this).    ║
+0007 ╚════════════════════════════════════════════════════════════════════╝*/
+0008 
+0009 /*date:  as in going out with someone. */
+0010 qqq= date()                                      /*number of real dates that Bob was on.*/
+0011 /*hopefully, it accurately counts dates*/
+0012 say "Bob's been out"  qqq  'times.'
+0013 www= 'DATE'("USA")                               /*returns date in format   mm/dd/yyyy  */
+0014 /*any function in quotes is external.  */
+0015 exit                                             /*stick a fork in it,  we're all done. */
+0016 
+0017 date: return 4                                   /*Bob only "went out" 4 times, no need */
+0018 /* to actually count, he quit after 4. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 qqq              10
+002 www              13
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

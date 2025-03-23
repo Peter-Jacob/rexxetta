@@ -1,0 +1,34 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program  calculates and displays  some values for the  Ackermann function.       */
+0002 high=24
+0003 do     j=0  to 3;                    say
+0004 do k=0  to high % (max(1, j))
+0005 call tell_Ack  j, k
+0006 end   /*k*/
+0007 end       /*j*/
+0008 exit                                             /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 tell_Ack:  parse arg mm,nn;   calls=0            /*display an echo message to terminal. */
+0011 #=right(nn,length(high))
+0012 say 'Ackermann('mm", "#')='right(ackermann(mm, nn), high),
+0013 left('', 12)     'calls='right(calls, high)
+0014 return
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 ackermann: procedure expose calls                /*compute value of Ackermann function. */
+0017 parse arg m,n;   calls=calls+1
+0018 if m==0  then return n + 1
+0019 if n==0  then return ackermann(m-1, 1)
+0020 if m==2  then return n + 3 + n
+0021 return ackermann(m-1, ackermann(m, n-1) )
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 m                17
+002 n                17
+003 calls            17
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            11

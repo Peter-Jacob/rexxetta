@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX pgm converts & displays a base ten integer to a negative base number (up to -71).*/
+0002 @=' converted to base ';      numeric digits 300 /*be able to handle ginormous numbers. */
+0003 n=      10;  b=  -2;   q= nBase(n, b);   say right(n, 20)  @  right(b,3)  '────►'  q  ok()
+0004 n=     146;  b=  -3;   q= nBase(n, b);   say right(n, 20)  @  right(b,3)  '────►'  q  ok()
+0005 n=      15;  b= -10;   q= nBase(n, b);   say right(n, 20)  @  right(b,3)  '────►'  q  ok()
+0006 n=     -15;  b= -10;   q= nBase(n, b);   say right(n, 20)  @  right(b,3)  '────►'  q  ok()
+0007 n=       0;  b=  -5;   q= nBase(n, b);   say right(n, 20)  @  right(b,3)  '────►'  q  ok()
+0008 n=-6284695;  b= -62;   q= nBase(n, b);   say right(n, 20)  @  right(b,3)  '────►'  q  ok()
+0009 exit                                             /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 _Base: !='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz /*+-!éáµ' /*sym*/
+0012 parse arg $;        m= length(!);           L= length(x);             p= 0
+0013 if r<-m | r>-2 then do;  say 'base' r "must be in range: -2 ───► -"m; exit 13;  end
+0014 return
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 nBase: procedure; parse arg x,r;   call _Base    /*get args; $  will be integer result. */
+0017 do  while x\==0              /*keep processing while  X  isn't zero.*/
+0018 z=x // r;         x= x % r   /*calculate remainder; calculate int ÷.*/
+0019 if z<0  then do;  z= z - r   /*subtract a negative  R  from  Z ◄──┐ */
+0020 x= x + 1   /*bump  X  by one.                   │ */
+0021 end             /*                   Funny "add" ►───┘ */
+0022 $=substr(!, z+1, 1)$         /*prepend the new numeral to the result*/
+0023 end   /*while*/
+0024 if $==''  then return 0;    return $      /*possibly adjust for a  zero  value.  */
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 ok:    if pBase(q, b)\=n  then return ' ◄──error in negative base calculation';  return ''
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 pBase: procedure; parse arg x,r;   call _Base 0  /*get args; $  will be integer result. */
+0029 do j=L  by -1  for L         /*process each of the numerals in  X.  */
+0030 v=pos( substr(x,j,1), !) - 1 /*use base  R  for the numeral's value.*/
+0031 $= $ + v * r**p;    p= p + 1 /*add it to $ (result); bump power by 1*/
+0032 end   /*j*/                  /* [↑]  process the number "bottom-up".*/
+0033 return $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                3 4 5 6 7 8
+002 b                3 4 5 6 7 8
+003 q                3 4 5 6 7 8
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            2

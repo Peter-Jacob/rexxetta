@@ -1,0 +1,49 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX program scores the   Bulls & Cows   game with  CBLFs  (Carbon Based Life Forms). */
+0002 ?=; do  until length(?)==4;   r= random(1, 9)  /*generate a unique four-digit number.   */
+0003 if pos(r,?)\==0  then iterate;  ?= ? || r  /*don't allow a repeated digit/numeral.  */
+0004 end   /*until length*/                     /* [↑]  builds a unique four-digit number*/
+0005 $= '──────── [Bulls & Cows]  '                 /*a literal that is part of the prompt.  */
+0006 do  until  bulls==4;      say              /*play until guessed  or  enters  "Quit".*/
+0007 say $  'Please enter a 4-digit guess (with no zeroes)   [or Quit]:'
+0008 pull n;  n=space(n, 0);   if abbrev('QUIT', n, 1)  then exit   /*user wants to quit?*/
+0009 q=?;   L= length(n);   bulls= 0;   cows= 0 /*initialize some REXX variables.        */
+0010 do j=1  for L;    if substr(n, j, 1)\==substr(q, j, 1)  then iterate  /*is bull?*/
+0011 bulls= bulls +1;  q= overlay(., q, j)  /*bump the bull count;  disallow for cow.*/
+0012 end   /*j*/                            /* [↑]  bull count───────────────────────*/
+0013 /*is cow? */
+0014 do k=1  for L;   _= substr(n, k, 1);           if pos(_, q)==0  then iterate
+0015 cows=cows + 1;   q= translate(q, , _)  /*bump the cow count;  allow mult digits.*/
+0016 end   /*k*/                            /* [↑]  cow  count───────────────────────*/
+0017 say;                  @= 'You got'   bulls
+0018 if L\==0  &  bulls\==4  then say $  @  'bull's(bulls)    "and"    cows   'cow's(cows).
+0019 end   /*until bulls*/
+0020 say "          ┌─────────────────────────────────────────┐"
+0021 say "          │                                         │"
+0022 say "          │  Congratulations, you've guessed it !!  │"
+0023 say "          │                                         │"
+0024 say "          └─────────────────────────────────────────┘"
+0025 exit                                             /*stick a fork in it,  we're all done. */
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 s:  if arg(1)==1  then return '';   return "s"   /*this function handles pluralization. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 until            2 6
+002 r                2
+003 n                8
+004 q                9 11 15
+005 L                9
+006 bulls            9 11
+007 cows             9 15
+008 j                10
+009 k                14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 ?                -> newV1            2 3
+002 $                -> newV2            5
+003 _                -> newV3            14
+004 @                -> newV4            17

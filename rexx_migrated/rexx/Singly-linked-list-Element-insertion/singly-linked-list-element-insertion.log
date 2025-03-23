@@ -1,0 +1,76 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates how to create a single-linked list       */
+0002 /* and how to insert an element                                      */
+0003 z.=0                              /* define a null linked z.       */
+0004 Call set_list 3                   /* linked list:  12 Proth primes */
+0005 Call set_list 5 /*see https://mathworld.wolfram.com/ProthPrime.html*/
+0006 Call set_list 13
+0007 Call set_list 17
+0008 Call set_list 41
+0009 Call set_list 97
+0010 Call set_list 113
+0011 Call set_list 193
+0012 Call set_list 241
+0013 Call set_list 257
+0014 Call set_list 353
+0015 Call set_list 449
+0016 Call show_list
+0017 newval=100                    /* Insert this value                 */
+0018 after=97                      /* after the element with this value */
+0019 nnn=z..after                  /* position of z´this value          */
+0020 Call ins_list nnn,newval       /* perform the insertion             */
+0021 Say ''
+0022 Say 'a new value of' newval 'has been inserted',
+0023 'after element having the value:' after
+0024 Call show_list
+0025 Exit                              /* stick a fork in it, we're done.*/
+0026 
+0027 set_list: Procedure Expose z.
+0028 Parse Arg value                    /* get element to be added to list*/
+0029 last=z.0                           /* set the previous last element. */
+0030 new=z.0+1                          /* set the new ast element.       */
+0031 z.0=new                            /* define next item in linked list*/
+0032 z.last.0next=new                   /* set the  next  pointer value.  */
+0033 z.new.0value=value                 /* set item to the value specified*/
+0034 z.new.0next=0                      /* set the  next  pointer value.  */
+0035 z..value=new                       /* set a locator pointer to self. */
+0036 z.0width=max(z.0width,length(value)) /*set maximum width of any value*/
+0037 Return
+0038 
+0039 ins_list: Procedure Expose z.
+0040 Parse Arg nnn,value
+0041 z.0=z.0+1                          /* bump number of list elements.  */
+0042 last=z.0                           /* position of the new value      */
+0043 z.last.0value=value                /* store the new value            */
+0044 z.last.0next=z.nnn.0next           /* uptate the pointers to the     */
+0045 z.nnn.0next=last                   /* next element                   */
+0046 z..value=last                      /* store position of the new value*/
+0047 z.0width=max(z.0width,length(value)) /*set maximum width of any value*/
+0048 Return
+0049 
+0050 show_list:
+0051 Say
+0052 w=max(7,z.0width)                    /* use the max width of nums or 7.*/
+0053 Say center('item',6) 'position' center('value',w) center('next',6)
+0054 Say center('',6,'-') '--------' center('',w,'-') center('',6,'-')
+0055 p=1
+0056 Do j=1 Until p==0                 /* show all entries of linked list*/
+0057 Say right(j,6) right(p,8) right(z.p.0value,w) right(z.p.0next,6)
+0058 p=z.p.0next
+0059 End                             /* j                              */
+0060 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 nnn              40
+002 value            40
+003 z.               41 43 44 45 46 47
+004 last             42
+005 w                52
+006 p                55 58
+007 j                56
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

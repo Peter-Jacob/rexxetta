@@ -1,0 +1,60 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program generates a  chess position (random pieces & positions)  in a FEN format.*/
+0002 parse arg seed CBs .                             /*obtain optional arguments from the CL*/
+0003 if datatype(seed,'W')  then call random ,,seed   /*SEED given for RANDOM repeatability? */
+0004 if CBs=='' | CBs==","  then CBs=1                /*CBs:  number of generated ChessBoards*/
+0005 /* [↓]  maybe display any # of boards. */
+0006 do boards=1  for abs(CBs)                  /* [↓]  maybe display separator & title*/
+0007 if sign(CBs)\==CBs  then do;   say;   say center(' board' boards" ", 79, '▒');   end
+0008 @.=.; !.=@.                                /*initialize the chessboard to be empty*/
+0009 do p=1  for random(2, 32)      /*generate a random number of chessmen.*/
+0010 if p<3  then call piece 'k'    /*a   king   of each color.            */
+0011 else call piece substr('bnpqr', random(1, 5), 1)
+0012 end  /*p*/                     /* [↑]  place a piece on the chessboard*/
+0013 call cb                                    /*display the ChessBoard  and  its FEN.*/
+0014 end          /*boards*/                    /* [↑]  CB ≡  ─    ─                   */
+0015 exit                                             /*stick a fork in it,  we're all done. */
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 cb: fen=;  do   r=8  for 8  by -1;  $=                       /*the board rank  (so far).*/
+0018 do f=8  for 8  by -1;  $= $  ||  @.r.f          /*append the board file.   */
+0019 end   /*f*/
+0020 say $                                             /*display the board rank.  */
+0021 do e=8  for 8  by -1;  $= changestr( copies(., e),  $, e)    /* . ≡ filler.*/
+0022 end   /*e*/
+0023 fen= fen  ||  $  ||  left('/', r\==1)             /*append / if not 1st rank.*/
+0024 end     /*r*/                                     /* [↑]  append $ str to FEN*/
+0025 say                                                      /*display a blank sep. line*/
+0026 say 'FEN='fen   "w - - 0 1"                              /*Forsyth─Edwards Notation.*/
+0027 return                                                   /* [↑]  display chessboard.*/
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 piece: parse arg x;    if p//2  then upper x;   arg ux           /*use white if  odd  P.*/
+0030 if CBs<0 & p>2  then if random(1)  then upper x           /*CBs>0?  Use balanced.*/
+0031 /*[↓]  # isn't changed.*/
+0032 do #=0  by 0;  r= random(1, 8);   f= random(1, 8)       /*random rank and file.*/
+0033 if @.r.f\==.   then iterate                             /*is position occupied?*/
+0034 if (x=='p'  & r==1)  |  (x=="P"  & r==8)  then iterate  /*any promoting pawn?  */
+0035 /*[↑]  skip these pawns*/
+0036 if ux=='K'  then do    rr=r-1 for 3                     /*[↓]  neighbor ≡ king?*/
+0037 do ff=f-1 for 3;  if !.rr.ff=='K'  then iterate #   /*king?*/
+0038 end   /*rr*/                        /*[↑]  neighbor ≡ king?*/
+0039 end      /*ff*/                        /*[↑]  we're all done. */
+0040 @.r.f=  x                                               /*put random piece.    */
+0041 !.r.f= ux;  return                                      /* "     "     "  upper*/
+0042 end   /*#*/                                             /*#: isn't incremented.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                29
+002 r                32
+003 f                32
+004 rr               36
+005 ff               37
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           8 40
+002 !.               -> newV2.           8 41
+003 $                -> newV3            17 18 21
+004 #                -> newV4            32

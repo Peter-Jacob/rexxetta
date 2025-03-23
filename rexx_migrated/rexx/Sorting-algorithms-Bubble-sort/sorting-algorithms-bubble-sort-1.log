@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program sorts an array  (of any kind of items)  using the  bubble─sort algorithm.*/
+0002 call gen                                         /*generate the array elements  (items).*/
+0003 call show   'before sort'                        /*show the  before  array elements.    */
+0004 say copies('▒', 70)                         /*show a separator line (before/after).*/
+0005 call bSort         #                             /*invoke the bubble sort  with # items.*/
+0006 call show   ' after sort'                        /*show the  after   array elements.    */
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 bSort: procedure expose @.;  parse arg n         /*N: is the number of @ array elements.*/
+0010 do m=n-1  by -1  until ok;         ok=1 /*keep sorting the  @ array until done.*/
+0011 do j=1  for m;  k=j+1;  if @.j<=@.k  then iterate       /*elements in order? */
+0012 _=@.j;  @.j=@.k;  @.k=_;         ok=0 /*swap two elements;  flag as not done.*/
+0013 end   /*j*/
+0014 end     /*m*/;        return
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 gen: @.=;         @.1 = '---letters of the Hebrew alphabet---' ;   @.13= "kaph    [kaf]"
+0017 @.2 = '====================================' ;   @.14= "lamed"
+0018 @.3 = 'aleph   [alef]'                       ;   @.15= "mem"
+0019 @.4 = 'beth    [bet]'                        ;   @.16= "nun"
+0020 @.5 = 'gimel'                                ;   @.17= "samekh"
+0021 @.6 = 'daleth  [dalet]'                      ;   @.18= "ayin"
+0022 @.7 = 'he'                                   ;   @.19= "pe"
+0023 @.8 = 'waw     [vav]'                        ;   @.20= "sadhe   [tsadi]"
+0024 @.9 = 'zayin'                                ;   @.21= "qoph    [qof]"
+0025 @.10= 'heth    [het]'                        ;   @.22= "resh"
+0026 @.11= 'teth    [tet]'                        ;   @.23= "shin"
+0027 @.12= 'yod'                                  ;   @.24= "taw     [tav]"
+0028 do #=1  until @.#=='';  end;      #=#-1  /*determine #elements in list; adjust #*/
+0029 return
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 show:   do j=1  for #; say '     element' right(j,length(#)) arg(1)":"  @.j; end;   return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                9
+002 m                10
+003 ok               10 12
+004 j                11
+005 k                11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           12 12 16 16 17 17 18 18 19 19 20 20 21 21 22 22 23 23 24 24 25 25 26 26 27 27
+002 _                -> newV2            12
+003 #                -> newV3            28 28

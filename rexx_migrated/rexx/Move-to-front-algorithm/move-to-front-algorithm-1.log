@@ -1,0 +1,53 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 25.05.2014 Walter Pachl
+0003 * REXX strings start with position 1
+0004 **********************************************************************/
+0005 Call enc_dec 'broood'
+0006 Call enc_dec 'bananaaa'
+0007 Call enc_dec 'hiphophiphop'
+0008 Exit
+0009 enc_dec: Procedure
+0010 Parse Arg in
+0011 st='abcdefghijklmnopqrstuvwxyz'
+0012 sta=st /* remember this for decoding */
+0013 enc=''
+0014 Do i=1 To length(in)
+0015 c=substr(in,i,1)
+0016 p=pos(c,st)
+0017 enc=enc (p-1)
+0018 st=c||left(st,p-1)substr(st,p+1)
+0019 End
+0020 Say ' in='in
+0021 Say 'sta='sta 'original symbol table'
+0022 Say 'enc='enc
+0023 Say ' st='st  'symbol table after encoding'
+0024 out=''
+0025 Do i=1 To words(enc)
+0026 k=word(enc,i)+1
+0027 out=out||substr(sta,k,1)
+0028 sta=substr(sta,k,1)left(sta,k-1)substr(sta,k+1)
+0029 End
+0030 Say 'out='out
+0031 Say ' '
+0032 If out==in Then Nop
+0033 Else
+0034 Say 'all wrong!!'
+0035 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 in               10
+002 st               11 18
+003 sta              12 28
+004 enc              13 17
+005 i                14 25
+006 c                15
+007 p                16
+008 out              24 27
+009 k                26
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,121 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates  Soundex codes  from some words  or  from the command line.*/
+0002 _=;   @.=                                        /*set a couple of vars to "null".*/
+0003 parse arg @.0 .                                  /*allow input from command line. */
+0004 @.1   = "12346"         ;        #.1   = '0000'
+0005 @.4   = "4-H"           ;        #.4   = 'H000'
+0006 @.11  = "Ashcraft"      ;        #.11  = 'A261'
+0007 @.12  = "Ashcroft"      ;        #.12  = 'A261'
+0008 @.18  = "auerbach"      ;        #.18  = 'A612'
+0009 @.20  = "Baragwanath"   ;        #.20  = 'B625'
+0010 @.22  = "bar"           ;        #.22  = 'B600'
+0011 @.23  = "barre"         ;        #.23  = 'B600'
+0012 @.20  = "Baragwanath"   ;        #.20  = 'B625'
+0013 @.28  = "Burroughs"     ;        #.28  = 'B620'
+0014 @.29  = "Burrows"       ;        #.29  = 'B620'
+0015 @.30  = "C.I.A."        ;        #.30  = 'C000'
+0016 @.37  = "coöp"          ;        #.37  = 'C100'
+0017 @.43  = "D-day"         ;        #.43  = 'D000'
+0018 @.44  = "d jay"         ;        #.44  = 'D200'
+0019 @.45  = "de la Rosa"    ;        #.45  = 'D462'
+0020 @.46  = "Donnell"       ;        #.46  = 'D540'
+0021 @.47  = "Dracula"       ;        #.47  = 'D624'
+0022 @.48  = "Drakula"       ;        #.48  = 'D624'
+0023 @.49  = "Du Pont"       ;        #.49  = 'D153'
+0024 @.50  = "Ekzampul"      ;        #.50  = 'E251'
+0025 @.51  = "example"       ;        #.51  = 'E251'
+0026 @.55  = "Ellery"        ;        #.55  = 'E460'
+0027 @.59  = "Euler"         ;        #.59  = 'E460'
+0028 @.60  = "F.B.I."        ;        #.60  = 'F000'
+0029 @.70  = "Gauss"         ;        #.70  = 'G200'
+0030 @.71  = "Ghosh"         ;        #.71  = 'G200'
+0031 @.72  = "Gutierrez"     ;        #.72  = 'G362'
+0032 @.80  = "he"            ;        #.80  = 'H000'
+0033 @.81  = "Heilbronn"     ;        #.81  = 'H416'
+0034 @.84  = "Hilbert"       ;        #.84  = 'H416'
+0035 @.100 = "Jackson"       ;        #.100 = 'J250'
+0036 @.104 = "Johnny"        ;        #.104 = 'J500'
+0037 @.105 = "Jonny"         ;        #.105 = 'J500'
+0038 @.110 = "Kant"          ;        #.110 = 'K530'
+0039 @.116 = "Knuth"         ;        #.116 = 'K530'
+0040 @.120 = "Ladd"          ;        #.120 = 'L300'
+0041 @.124 = "Llyod"         ;        #.124 = 'L300'
+0042 @.125 = "Lee"           ;        #.125 = 'L000'
+0043 @.126 = "Lissajous"     ;        #.126 = 'L222'
+0044 @.128 = "Lukasiewicz"   ;        #.128 = 'L222'
+0045 @.130 = "naïve"         ;        #.130 = 'N100'
+0046 @.141 = "Miller"        ;        #.141 = 'M460'
+0047 @.143 = "Moses"         ;        #.143 = 'M220'
+0048 @.146 = "Moskowitz"     ;        #.146 = 'M232'
+0049 @.147 = "Moskovitz"     ;        #.147 = 'M213'
+0050 @.150 = "O'Conner"      ;        #.150 = 'O256'
+0051 @.151 = "O'Connor"      ;        #.151 = 'O256'
+0052 @.152 = "O'Hara"        ;        #.152 = 'O600'
+0053 @.153 = "O'Mally"       ;        #.153 = 'O540'
+0054 @.161 = "Peters"        ;        #.161 = 'P362'
+0055 @.162 = "Peterson"      ;        #.162 = 'P362'
+0056 @.165 = "Pfister"       ;        #.165 = 'P236'
+0057 @.180 = "R2-D2"         ;        #.180 = 'R300'
+0058 @.182 = "rÄ≈sumÅ∙"      ;        #.182 = 'R250'
+0059 @.184 = "Robert"        ;        #.184 = 'R163'
+0060 @.185 = "Rupert"        ;        #.185 = 'R163'
+0061 @.187 = "Rubin"         ;        #.187 = 'R150'
+0062 @.191 = "Soundex"       ;        #.191 = 'S532'
+0063 @.192 = "sownteks"      ;        #.192 = 'S532'
+0064 @.199 = "Swhgler"       ;        #.199 = 'S460'
+0065 @.202 = "'til"          ;        #.202 = 'T400'
+0066 @.208 = "Tymczak"       ;        #.208 = 'T522'
+0067 @.216 = "Uhrbach"       ;        #.216 = 'U612'
+0068 @.221 = "Van de Graaff" ;        #.221 = 'V532'
+0069 @.222 = "VanDeusen"     ;        #.222 = 'V532'
+0070 @.230 = "Washington"    ;        #.230 = 'W252'
+0071 @.233 = "Wheaton"       ;        #.233 = 'W350'
+0072 @.234 = "Williams"      ;        #.234 = 'W452'
+0073 @.236 = "Woolcock"      ;        #.236 = 'W422'
+0074 
+0075 do k=0  for 300;     if @.k==''  then iterate;        $=soundex(@.k)
+0076 say word('nope [ok]', 1 +($==#.k | k==0))   _   $   "is the Soundex for"   @.k
+0077 if k==0  then leave
+0078 end   /*k*/
+0079 exit                                                   /*stick a fork in it, we're done.*/
+0080 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0081 soundex: procedure;     arg x                             /*ARG uppercases the var   X. */
+0082 old_alphabet= 'AEIOUYHWBFPVCGJKQSXZDTLMNR'
+0083 new_alphabet= '@@@@@@**111122222222334556'
+0084 word=                                            /* [+]  exclude  non-letters. */
+0085 do i=1  for length(x);  _=substr(x, i, 1) /*obtain a character from word*/
+0086 if datatype(_,'M')  then word=word || _   /*Upper/lower letter?  Then OK*/
+0087 end   /*i*/
+0088 
+0089 value=strip(left(word, 1))                       /*1st character is left alone.*/
+0090 word=translate(word, new_alphabet, old_alphabet) /*define the current  word.   */
+0091 prev=translate(value,new_alphabet, old_alphabet) /*   "    "  previous   "     */
+0092 
+0093 do j=2  to length(word)                        /*process remainder of word.  */
+0094 ?=substr(word, j, 1)
+0095 if ?\==prev & datatype(?,'W')  then do;  value=value || ?;  prev=?;  end
+0096 else if ?=='@'  then prev=?
+0097 end   /*j*/
+0098 
+0099 return left(value,4,0)                           /*padded value with zeroes.   */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 k                75
+002 old_alphabet     82
+003 new_alphabet     83
+004 word             84 86 90
+005 i                85
+006 value            89 95
+007 prev             91 95
+008 j                93
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73
+002 #.               -> newV2.           4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73
+003 _                -> newV3            2 85
+004 $                -> newV4            75
+005 ?                -> newV5            94

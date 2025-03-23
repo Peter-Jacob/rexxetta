@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 03.02.2013 Walter Pachl
+0003 * 19.04.2013 mid 3 is now a function returning the middle 3 digits
+0004 *            or an error indication
+0005 **********************************************************************/
+0006 sl='123 12345 1234567 987654321 10001 -10001 -123 -100 100 -12345',
+0007 '2 -1 -10 2002 -2002 0 abc 1e3 -17e-3'
+0008 Do While sl<>''                        /* loop through test values   */
+0009 Parse Var sl s sl                    /* pick next value            */
+0010 Say left(s,12) '->' mid3(s)          /* test it                    */
+0011 End
+0012 Exit
+0013 
+0014 mid3: Procedure
+0015 Parse arg d                            /* take the argument          */
+0016 Select                                 /* first test for valid input */
+0017 When datatype(d)<>'NUM'   Then  Return 'not a number'
+0018 When pos('E',translate(d))>0 Then  Return 'not just digits'
+0019 When length(abs(d))<3     Then  Return 'less than 3 digits'
+0020 When length(abs(d))//2<>1 Then  Return 'not an odd number of digits'
+0021 Otherwise Do                         /* input is ok                */
+0022 dx=abs(d)                          /* get rid of optional sign   */
+0023 ld=length(dx)                      /* length of digit string     */
+0024 z=(ld-3)/2                         /* number of digits to cut    */
+0025 res=substr(dx,z+1,3)               /* get middle 3 digits        */
+0026 End
+0027 End
+0028 Return res
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 d                15
+002 dx               22
+003 ld               23
+004 z                24
+005 res              25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

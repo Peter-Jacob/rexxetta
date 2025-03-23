@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /* REXX  Modular exponentiation */
+0002 
+0003 say powerMod(,
+0004 2988348162058574136915891421498819466320163312926952423791023078876139,,
+0005 2351399303373464486466122544523690094744975233415544072992656881240319,,
+0006 1e40)
+0007 return
+0008 
+0009 powerMod: procedure
+0010 parse arg base, exponent, modulus
+0011 
+0012 /* we need a numeric precision of twice the modulus size,    */
+0013 /* the exponent size, or the base size, whichever is largest */
+0014 numeric digits max(2 * length(format(modulus, , , 0)),,
+0015 length(format(exponent, , , 0)), length(format(base, , , 0)))
+0016 
+0017 result = 1
+0018 base = base // modulus
+0019 do while exponent > 0
+0020 if exponent // 2 = 1 then
+0021 result = result * base // modulus
+0022 base = base * base // modulus
+0023 exponent = exponent % 2
+0024 end
+0025 return result
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 base             10 18 22
+002 exponent         10 23
+003 modulus          10
+004 result           17 21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

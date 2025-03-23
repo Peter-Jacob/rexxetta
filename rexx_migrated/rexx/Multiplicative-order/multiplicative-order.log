@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX pgm computes multiplicative order of a minimum integer  N  such that  a^n mod m≡1*/
+0002 wa= 0;  wm= 0     /*       ═a═   ══m══     */    /*maximum widths of the A and M values.*/
+0003 @.=.;                @.1=   3      10
+0004 @.2=  37    1000
+0005 @.3=  37   10000
+0006 @.4=  37    3343
+0007 @.5=  37    3344
+0008 @.6=   2    1000
+0009 pad= left('', 9)
+0010 d= 500                                           /*use 500 decimal digits for a starter.*/
+0011 do w=1  for 2                               /*when W≡1, find max widths of A and M.*/
+0012 do j=1  while @.j\==.;         parse var  @.j     a  .  1  r  m  ,  n
+0013 if w==1  then do;  wa= max(wa, length(a) );     wm= max(wm, length(m) );    iterate
+0014 end
+0015 if m//a==0  then n= ' [solution not possible]'     /*test co─prime for  A and B. */
+0016 numeric digits d                          /*start with  100  decimal digits.     */
+0017 if n==''  then do n= 2;    p= r * a       /*compute product──may have an exponent*/
+0018 parse  var  p  'E'  _      /*try to extract the exponent from  P. */
+0019 if _\==''   then do;  numeric digits _+d  /*bump the decimal digs.*/
+0020 p=r*a               /*recalculate integer P.*/
+0021 end
+0022 if p//m==1  then leave     /*now, perform the nitty─gritty modulo.*/
+0023 r= p                       /*assign product to R for next multiply*/
+0024 end   /*n*/                /* [↑]    //   is really  ÷  remainder.*/
+0025 say pad  'a='  right(a,wa)  pad  "m=" right(m,wm)  pad  'multiplicative order:'   n
+0026 end   /*j*/
+0027 end     /*w*/                               /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 p                18 20
+002 r                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           3 3 4 5 6 7 8 12
+002 _                -> newV2            18

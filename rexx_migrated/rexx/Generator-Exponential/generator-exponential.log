@@ -1,0 +1,52 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates how to use a  generator  (also known as an  iterator).      */
+0002 parse arg N .;   if N=='' |  N==","  then N=20   /*N  not specified?   Then use default.*/
+0003 @.=                                              /* [↓]  calculate squares,cubes,pureSq.*/
+0004 do i=1  for N;   call Gsquare     i
+0005 call Gcube       i
+0006 call GpureSquare i     /*these are  cube─free  square numbers.*/
+0007 end   /*i*/
+0008 
+0009 do k=1  for N;  @.pureSquare.k=;  end /*k*/ /*this is used to drop  1st  N  values.*/
+0010 
+0011 w=length(N+10);               ps= 'pure square'  /*the width of the numbers;  a literal.*/
+0012 
+0013 do m=N+1  for 10;    say ps   right(m, w)":"     right(GpureSquare(m), 3*w)
+0014 end       /*m*/
+0015 exit                                             /*stick a fork in it,  we're all done. */
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 Gpower:      procedure expose @.;       parse arg x,p;   q=@.pow.x.p
+0018 if q\==''  then return q;  _=x**p;          @.pow.x.p=_
+0019 return _
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 Gsquare:     procedure expose @.;       parse arg x;     q=@.square.x
+0022 if q==''  then @.square.x=Gpower(x, 2)
+0023 return @.square.x
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 Gcube:       procedure expose @.;       parse arg x;     q=@.cube.x
+0026 if q==''  then @.cube.x=Gpower(x, 3)        _=@.cube.x;     @.3pow._=1
+0027 return @.cube.x
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 GpureSquare: procedure expose @.;       parse arg x;     q=@.pureSquare.x
+0030 if q\==''  then return q
+0031 #=0
+0032 do j=1  until #==x;  ?=Gpower(j, 2)        /*search for pure square. */
+0033 if @.3pow.?==1  then iterate               /*is it a power of three? */
+0034 #=#+1;               @.pureSquare.#=?      /*assign next pureSquare. */
+0035 end   /*j*/
+0036 return @.pureSquare.x
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                29
+002 q                29
+003 j                32
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           3 9 18 22 26 26 34
+002 _                -> newV2            18
+003 #                -> newV3            31 34
+004 ?                -> newV4            32

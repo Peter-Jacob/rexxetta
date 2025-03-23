@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX program  compute and displays  a sampling of  combinations  and  permutations.   */
+0002 numeric digits 100                               /*use 100 decimal digits of precision. */
+0003 
+0004 do      j=1  for  12;                _=    /*show all permutations from  1 ──► 12.*/
+0005 do k=1  for   j                       /*step through all  J  permutations.   */
+0006 _=_  'P('j","k')='perm(j,k)" "        /*add an extra blank between numbers.  */
+0007 end       /*k*/
+0008 say strip(_)                               /*show the permutations horizontally.  */
+0009 end           /*j*/
+0010 say                                              /*display a blank line for readability.*/
+0011 do      j=10  to  60  by 10;         _=    /*show some combinations  10 ──►  60.  */
+0012 do k= 1  to   j  by j%5               /*step through some combinations.      */
+0013 _=_  'C('j","k')='comb(j,k)" "        /*add an extra blank between numbers.  */
+0014 end   /*k*/
+0015 say strip(_)                               /*show the combinations horizontally.  */
+0016 end           /*j*/
+0017 say                                              /*display a blank line for readability.*/
+0018 numeric digits 20                                /*force floating point for big numbers.*/
+0019 
+0020 do      j=5  to 15000      by 1000;  _=    /*show a few permutations, big numbers.*/
+0021 do k=1  to  j  for 5  by j%10         /*step through some  J  permutations.  */
+0022 _=_  'P('j","k')='perm(j,k)" "        /*add an extra blank between numbers.  */
+0023 end      /*k*/
+0024 say strip(_)                               /*show the permutations horizontally.  */
+0025 end           /*j*/
+0026 say                                              /*display a blank line for readability.*/
+0027 do      j=100  to 1000  by 100;      _=    /*show a few combinations, big numbers.*/
+0028 do k=  1  to    j  by j%5             /*step through some combinations.      */
+0029 _=_  'C('j","k')='comb(j,k)" "        /*add an extra blank between numbers.  */
+0030 end      /*k*/
+0031 say strip(_)                               /*show the combinations horizontally.  */
+0032 end           /*j*/
+0033 exit                                             /*stick a fork in it,  we're all done. */
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 perm:      procedure; parse arg x,y;      call .combPerm;                         return _
+0036 .combPerm:                          _=1;    do j=x-y+1  to x;    _=_*j;  end;     return _
+0037 !:         procedure; parse arg x;  !=1;    do j=2      to x;    !=!*j;  end;     return !
+0038 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0039 comb:      procedure; parse arg x,y              /*arguments:  X  things,  Y  at-a-time.*/
+0040 if y   >x   then return 0  /*oops-say, an error,  too big a chunk.*/
+0041 if x   =y   then return 1  /*X  things are the same as chunk size.*/
+0042 if x-y <y   then y=x - y   /*switch things around for speed.      */
+0043 call .combPerm             /*call subroutine to do heavy lifting. */
+0044 return _ / !(y)            /*just perform one last division.      */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                39
+002 y                39 42
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            4 6 11 13 20 22 27 29 36
+002 !                -> newV2            37 37

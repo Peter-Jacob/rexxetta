@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX pgm reduces fractions by "crossing out" matching digits in nominator&denominator.*/
+0002 parse arg high show .                            /*obtain optional arguments from the CL*/
+0003 if high=='' | high==","  then high=  4           /*Not specified?  Then use the default.*/
+0004 if show=='' | show==","  then show= 12           /* "      "         "   "   "     "    */
+0005 say center(' some samples of reduced fractions by crossing out digits ', 79, "═")
+0006 $.=0                                             /*placeholder array for counts; init. 0*/
+0007 do L=2  to high;      say                  /*do 2-dig fractions to HIGH-dig fract.*/
+0008 lim= 10**L - 1       /*calculate the upper limit just once. */
+0009 do n=10**(L-1)  to lim                  /*generate some  N  digit  fractions.  */
+0010 if pos(0, n) \==0  then iterate         /*Does  it  have a zero?  Then skip it.*/
+0011 if hasDup(n)       then iterate         /*  "    "    "  " dup?     "    "   " */
+0012 
+0013 do d=n+1     to lim                           /*only process like-sized #'s */
+0014 if pos(0, d)\==0         then iterate         /*Have a zero? Then skip it.  */
+0015 if verify(d, n, 'M')==0  then iterate         /*No digs in common?  Skip it.*/
+0016 if hasDup(d)             then iterate         /*Any digs are dups?    "   " */
+0017 q= n/d                                        /*compute quotient just once. */
+0018 do e=1  for L;     xo= substr(n, e, 1)  /*try crossing out each digit.*/
+0019 nn= space( translate(n, , xo), 0)       /*elide from the numerator.   */
+0020 dd= space( translate(d, , xo), 0)       /*  "     "   "  denominator. */
+0021 if nn/dd \== q  then iterate            /*Not the same quotient? Skip.*/
+0022 $.L=    $.L    + 1                      /*Eureka!   We found one.     */
+0023 $.L.xo= $.L.xo + 1                      /*count the silly reduction.  */
+0024 if $.L>show  then iterate               /*Too many found?  Don't show.*/
+0025 say center(n'/'d   " = "   nn'/'dd  "  by crossing out the" xo"'s.", 79)
+0026 end   /*e*/
+0027 end         /*d*/
+0028 end            /*n*/
+0029 end               /*L*/
+0030 say;                  @with= ' with crossed-out' /* [↓]  show counts for any reductions.*/
+0031 do k=1  for 9                              /*traipse through each cross─out digit.*/
+0032 if $.k==0  then iterate                    /*Is this a zero count?  Then skip it. */
+0033 say;    say center('There are '     $.k     " "k'-digit fractions.', 79, "═")
+0034 @for= '          For ' /*literal for SAY indentation (below). */
+0035 do #=1  for 9;   if $.k.#==0  then iterate
+0036 say @for    k"-digit fractions, there are "    right($.k.#, k-1)   @with   #"'s."
+0037 end   /*#*/
+0038 end      /*k*/
+0039 exit                                             /*stick a fork in it,  we're all done. */
+0040 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0041 hasDup: parse arg x;          /* if L<2  then return 0 */           /*L will never be 1.*/
+0042 do i=1  for L-1;      if pos(substr(x,i,1), substr(x,i+1)) \== 0  then return 1
+0043 end   /*i*/;                                                           return 0
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                41
+002 i                42
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @with            -> newV1            30
+002 @for             -> newV2            34
+003 $.               -> newV3.           6 22 23
+004 #                -> newV4            35

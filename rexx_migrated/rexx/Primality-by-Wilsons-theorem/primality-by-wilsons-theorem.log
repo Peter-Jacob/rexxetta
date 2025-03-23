@@ -1,0 +1,73 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX pgm tests for primality via Wilson's theorem: a # is prime if p divides (p-1)! +1*/
+0002 parse arg LO zz                                  /*obtain optional arguments from the CL*/
+0003 if LO=='' | LO==","  then LO= 120                /*Not specified?  Then use the default.*/
+0004 if zz ='' | zz =","  then zz=2 3 9 15 29 37 47 57 67 77 87 97 237 409 659 /*use default?*/
+0005 sw= linesize() - 1;  if sw<1  then sw= 79        /*obtain the terminal's screen width.  */
+0006 digs = digits()                                  /*the current number of decimal digits.*/
+0007 #= 0                                             /*number of  (LO)  primes found so far.*/
+0008 !.= 1                                            /*placeholder for factorial memoization*/
+0009 $=                                               /*     "      to hold a list of primes.*/
+0010 do p=1  until #=LO;         oDigs= digs      /*remember the number of decimal digits*/
+0011 ?= isPrimeW(p)                               /*test primality using Wilson's theorem*/
+0012 if digs>Odigs  then numeric digits digs      /*use larger number for decimal digits?*/
+0013 if \?  then iterate                          /*if not prime, then ignore this number*/
+0014 #= # + 1;                   $= $ p           /*bump prime counter; add prime to list*/
+0015 end   /*p*/
+0016 
+0017 call show 'The first '    LO    " prime numbers are:"
+0018 w= max( length(LO), length(word(reverse(zz),1))) /*used to align the number being tested*/
+0019 @is.0= "            isn't";     @is.1= 'is'      /*2 literals used for display: is/ain't*/
+0020 say
+0021 do z=1  for words(zz);      oDigs= digs      /*remember the number of decimal digits*/
+0022 p= word(zz, z)                               /*get a number from user─supplied list.*/
+0023 ?= isPrimeW(p)                               /*test primality using Wilson's theorem*/
+0024 if digs>Odigs  then numeric digits digs      /*use larger number for decimal digits?*/
+0025 say right(p, max(w,length(p) ) )       @is.?      "prime."
+0026 end   /*z*/
+0027 exit                                             /*stick a fork in it,  we're all done. */
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 isPrimeW: procedure expose !. digs;  parse arg x '' -1 last;        != 1;       xm= x - 1
+0030 if x<2                   then return 0 /*is the number too small to be prime? */
+0031 if x==2 | x==5           then return 1 /*is the number a two or a five?       */
+0032 if last//2==0 | last==5  then return 0 /*is the last decimal digit even or 5? */
+0033 if !.xm\==1  then != !.xm              /*has the factorial been pre─computed? */
+0034 else do;  if xm>!.0  then do; base= !.0+1; _= !.0;  != !._; end
+0035 else     base= 2        /* [↑] use shortcut.*/
+0036 do j=!.0+1  to xm;  != ! * j  /*compute factorial.*/
+0037 if pos(., !)\==0  then do;  parse var !  'E'  expon
+0038 numeric digits expon +99
+0039 digs = digits()
+0040 end    /* [↑] has exponent,*/
+0041 end   /*j*/                   /*bump numeric digs.*/
+0042 if xm<999  then do; !.xm=!; !.0=xm; end /*assign factorial. */
+0043 end                                     /*only save small #s*/
+0044 if (!+1)//x==0  then return 1                             /*X  is     a prime.*/
+0045 return 0                             /*"  isn't  "   "   */
+0046 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0047 show: parse arg header,oo;     say header        /*display header for the first N primes*/
+0048 w= length( word($, LO) )                   /*used to align prime numbers in $ list*/
+0049 do k=1  for LO; _= right( word($, k), w) /*build list for displaying the primes.*/
+0050 if length(oo _)>sw  then do;  say substr(oo,2);  oo=;  end  /*a line overflowed?*/
+0051 oo= oo _                                                    /*display a line.   */
+0052 end   /*k*/                                                 /*does pretty print.*/
+0053 if oo\=''  then say substr(oo, 2);  return /*display residual (if any overflowed).*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 header           47
+002 oo               47 50 51
+003 w                48
+004 k                49
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @is.             -> newV1.           19 19
+002 !.               -> newV2.           8 42 42
+003 #                -> newV3            7 14
+004 $                -> newV4            9 14
+005 ?                -> newV5            11 23
+006 !                -> newV6            29 33 34 36 37
+007 _                -> newV7            34 49

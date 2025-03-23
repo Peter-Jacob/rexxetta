@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program creates, builds, and displays a table of given  U.S.A.  postal addresses.*/
+0002 @usa.=;   @usa.0=0;      $='@USA.'                   /*initialize array and first value.*/
+0003 @usa.0=@usa.0 + 1                                    /*bump the unique number for usage.*/
+0004 call USA '_city'  ,  'Boston'
+0005 call USA '_state' ,  'MA'
+0006 call USA '_addr1' ,  "51 Franklin Street"
+0007 call USA '_name'  ,  "FSF Inc."
+0008 call USA '_zip'   ,  '02110-1301'
+0009 @usa.0=@usa.0 + 1                                    /*bump the unique number for usage.*/
+0010 call USA '_city'  ,  'Washington'
+0011 call USA '_state' ,  'DC'
+0012 call USA '_addr1' ,  "The Oval Office"
+0013 call USA '_addr2' ,  "1600 Pennsylvania Avenue NW"
+0014 call USA '_name'  ,  "The White House"
+0015 call USA '_zip'   ,  20500         /*no need for quotes for a number. */
+0016 call USA 'list'
+0017 exit                                            /*stick a fork in it,  we're all done. */
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 tell: parse arg a; z=value($||#"."a); if z\='' then say right(translate(a,,'_'),9) "──►" z
+0020 return
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 USA: procedure expose @usa. $;  parse arg what;  arg ?
+0023 if ?=='LIST'  then do #=1  for @usa.0
+0024 call tell '_name'
+0025 do j=1  until z='';  call tell "_addr"j;  end
+0026 call tell '_city'
+0027 call tell '_state'
+0028 call tell '_zip'
+0029 say copies('─', 45)
+0030 end  /*#*/
+0031 else do;      call value $ || @usa.0'.'what   , arg(2)
+0032 call value $ || @usa.0'.upHist' , userid() date() time()
+0033 end
+0034 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 what             22
+002 j                25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @usa.            -> newV1.           2 2 3 9
+002 $                -> newV2            2
+003 #                -> newV3            23

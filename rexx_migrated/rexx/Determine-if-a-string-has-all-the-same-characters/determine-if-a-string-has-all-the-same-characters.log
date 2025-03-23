@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX program verifies that  all characters  in a string are all the same (character). */
+0002 @chr= '     [character'                               /* define a literal used for  SAY.*/
+0003 @all= 'all the same character for string (length'     /*    "   "    "     "    "    "  */
+0004 @.=                                              /*define a default for the  @.  array. */
+0005 parse arg x                                      /*obtain optional argument from the CL.*/
+0006 if x\=''  then       @.1= x                      /*if user specified an arg, use that.  */
+0007 else do;   @.1=                        /*use this null string if no arg given.*/
+0008 @.2= '   '                  /* "    "          "    "  "  "    "   */
+0009 @.3= 2                      /* "    "          "    "  "  "    "   */
+0010 @.4= 333                    /* "    "          "    "  "  "    "   */
+0011 @.5= .55                    /* "    "          "    "  "  "    "   */
+0012 @.6= 'tttTTT'               /* "    "          "    "  "  "    "   */
+0013 @.7= 4444 444k              /* "    "          "    "  "  "    "   */
+0014 end                               /* [↑]  seventh value contains a blank.*/
+0015 
+0016 do j=1;    L= length(@.j)                   /*obtain the length of an array element*/
+0017 if j>1  &  L==0     then leave              /*if arg is null and  J>1, then leave. */
+0018 r= allSame(@.j)                             /*R:  ≡0,  or the location of bad char.*/
+0019 if r\==0  then ?= substr(@.j,r,1)           /*if  not  monolithic, obtain the char.*/
+0020 if r==0   then say '   ' @all L"):"  @.j
+0021 else say 'not' @all L"):"  @.j  @chr ?  "('"c2x(?)"'x)  at position"  r"]."
+0022 end   /*j*/
+0023 exit                                             /*stick a fork in it,  we're all done. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 allSame: procedure; parse arg y                  /*get a value from the argument list.  */
+0026 if y==''  then return 0                 /*if  Y  is null,  then return 0 (zero)*/
+0027 return verify(y, left(y,1) )            /*All chars the same?   Return 0 (zero)*/
+0028 /*                else  return location*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @chr             -> newV1            2
+002 @all             -> newV2            3
+003 @.               -> newV3.           4 6 7 8 9 10 11 12 13
+004 ?                -> newV4            19

@@ -1,0 +1,77 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates a 3x3 sandpile model by addition with toppling & avalanches.*/
+0002 @.= 0;   size= 3                                 /*assign 0 to all grid cells; grid size*/
+0003 call init   1,      1 2 0    2 1 1    0 1 3      /*   "   grains of sand──► sandpile 1. */
+0004 call init   2,      2 1 3    1 0 1    0 1 0      /*   "      "    "   "  "     "     2  */
+0005 call init   3,      3 3 3    3 3 3    3 3 3      /*   "      "    "   "  "     "     3  */
+0006 call init 's3_id',  2 1 2    1 0 1    2 1 2      /*   "      "    "   "  "     "    3_id*/
+0007 call show   1                                    /*display sandpile  1  to the terminal.*/
+0008 call show   2                                    /*   "        "     2   "  "      "    */
+0009 call  add   1, 2, 'sum1',           'adding sandpile  s1  and  s2  yields:'
+0010 call show 'sum1'
+0011 call  add   2, 1, 'sum2',           'adding sandpile  s2  and  s1  yields:'
+0012 call show 'sum2'
+0013 call  eq? 'sum1', 'sum2'                         /*is  sum1  the same as  sum2 ?        */
+0014 call show   3
+0015 call show 's3_id'
+0016 call  add   3,     's3_id', 'sum3', 'adding sandpile  s3  and  s3_id  yields:'
+0017 call show 'sum3'
+0018 call  add 's3_id', 's3_id', 'sum4', 'adding sandpile  s3_id  and  s3_id  yields:'
+0019 call show 'sum4'
+0020 call  eq? 'sum4',  's3_id'                       /*is  sum4  the same as  s3_id ?       */
+0021 exit 0                                           /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 @get: procedure expose @.; parse arg grid,r,c    ;                      return @.grid.r.c
+0024 @set: procedure expose @.; parse arg grid,r,c,val;  @.grid.r.c= val;    return
+0025 tran: procedure; parse arg a;  if datatype(a,'W')  then a='s'a;         return a
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 add:  parse arg x, y, t;    if t==''  then t= 'sum';  xx= tran(x);  yy= tran(y)
+0028 do r=1  for size;   do c=1  for size;   @.t.r.c= @.xx.r.c  +  @.yy.r.c
+0029 end   /*c*/
+0030 end   /*r*/;    say arg(4);             call norm t;            return
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 eq?:  parse arg x, y;   xx= tran(x);      yy= tran(y);      ?= 1
+0033 do r=1  for size;         do c=1  for size;         ?= ?  &  (@.xx.r.c==@.yy.r.c)
+0034 end   /*c*/
+0035 end   /*r*/
+0036 if ?  then say  'comparison of '      xx       " and "       yy':  same.'
+0037 else say  'comparison of '      xx       " and "       yy':  not the same.'
+0038 return
+0039 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0040 init: parse arg x, $;   xx= tran(x);   #= 0;      pad= left('', 8);   ind= left('', 45)
+0041 do r=1  for size;   do c=1  for size;     #= # + 1;           @.xx.r.c= word($, #)
+0042 end   /*c*/
+0043 end   /*r*/;                              shows= 0;             return
+0044 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0045 norm: procedure expose @. size; parse arg x;        xx= tran(x);            recurse= 0
+0046 do r=1  for size;     do c=1  for size;     if @.xx.r.c<=size  then iterate
+0047 recurse= 1;              @.xx.r.c= @.xx.r.c - 4
+0048 call @set  xx, r-1, c  , @get(xx, r-1, c  )   +   1
+0049 call @set  xx, r+1, c  , @get(xx, r+1, c  )   +   1
+0050 call @set  xx, r  , c-1, @get(xx, r  , c-1)   +   1
+0051 call @set  xx, r  , c+1, @get(xx, r  , c+1)   +   1
+0052 end   /*c*/
+0053 end   /*r*/;    if recurse  then call norm xx;                  return
+0054 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0055 show: parse arg x;  xx= tran(x);  say ind center("sandpile" xx,25,'─')  /*show the title*/
+0056 do r=1  for size;  $=;      do c=1  for size;   $= $  @.xx.r.c  /*build a row.  */
+0057 end   /*c*/
+0058 say ind pad $                                                   /*display a row.*/
+0059 end   /*r*/;     shows= shows + 1;     if shows==1  then say;   return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                55
+002 xx               55
+003 r                56
+004 c                56
+005 shows            59
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 24 28 41 47
+002 ?                -> newV2            32 33
+003 $                -> newV3            40 56 56
+004 #                -> newV4            40 41

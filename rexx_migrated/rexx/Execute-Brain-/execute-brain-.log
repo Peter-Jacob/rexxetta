@@ -1,0 +1,72 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program implements the   Brainf*ck   (self─censored)  language.                  */
+0002 @.=0                                             /*initialize the infinite  "tape".     */
+0003 p =0                                             /*the  "tape"  cell  pointer.          */
+0004 ! =0                                             /* !   is the instruction pointer (IP).*/
+0005 parse arg $                                      /*allow user to specify a BrainF*ck pgm*/
+0006 /* ┌──◄── No program? Then use default;*/
+0007 if $=''  then $=,                                /* ↓      it displays:  Hello, World!  */
+0008 "++++++++++             initialize cell #0  to 10;   then loop:         ",
+0009 "[   > +++++++              add  7 to cell #1;  final result:  70       ",
+0010 "    > ++++++++++           add 10 to cell #2;  final result: 100       ",
+0011 "    > +++                  add  3 to cell #3;  final result   30       ",
+0012 "    > +                    add  1 to cell #4;  final result   10       ",
+0013 "    <<<< -      ]      decrement  cell #0                              ",
+0014 "> ++ .                 display 'H'    which is  ASCII  72 (decimal)    ",
+0015 "> + .                  display 'e'    which is  ASCII 101 (decimal)    ",
+0016 "+++++++ ..             display 'll'   which is  ASCII 108 (decimal) {2}",
+0017 "+++ .                  display 'o'    which is  ASCII 111 (decimal)    ",
+0018 "> ++ .                 display ' '    which is  ASCII  32 (decimal)    ",
+0019 "<< +++++++++++++++ .   display 'W'    which is  ASCII  87 (decimal)    ",
+0020 "> .                    display 'o'    which is  ASCII 111 (decimal)    ",
+0021 "+++ .                  display 'r'    which is  ASCII 114 (decimal)    ",
+0022 "------ .               display 'l'    which is  ASCII 108 (decimal)    ",
+0023 "-------- .             display 'd'    which is  ASCII 100 (decimal)    ",
+0024 "> + .                  display '!'    which is  ASCII  33 (decimal)    "
+0025 /* [↑]   note the  Brainf*ck  comments.*/
+0026 do !=1  while  !\==0  &  !<=length($)       /*keep executing  BF  as long as IP ¬ 0*/
+0027 parse var  $  =(!)  x  +1                   /*obtain a  Brainf*ck instruction  (x),*/
+0028 /*···it's the same as  x=substr($,!,1) */
+0029 select                                    /*examine the current instruction.     */
+0030 when x=='+'  then @.p=@.p + 1             /*increment the   "tape" cell    by  1 */
+0031 when x=='-'  then @.p=@.p - 1             /*decrement  "       "     "      "  " */
+0032 when x=='>'  then   p=  p + 1             /*increment  "  instruction ptr   "  " */
+0033 when x=='<'  then   p=  p - 1             /*decrement  "       "       "    "  " */
+0034 when x=='['  then != forward()            /*go  forward to   ]+1   if  @.P = 0.  */
+0035 when x==']'  then !=backward()            /* " backward  "   [+1    "   "  ¬ "   */
+0036 when x== .   then call charout , d2c(@.p) /*display a  "tape"  cell to terminal. */
+0037 when x==','  then do;  say 'input a value:';  parse pull @.p;  end
+0038 otherwise    iterate
+0039 end   /*select*/
+0040 end     /*forever*/
+0041 exit                                             /*stick a fork in it,  we're all done. */
+0042 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0043 forward:  if @.p\==0  then return !;  c=1        /*C: ◄───  is the   [   nested counter.*/
+0044 do k=!+1  to length($);        ?=substr($, k, 1)
+0045 if ?=='['  then do; c=c+1;     iterate;                   end
+0046 if ?==']'  then do; c=c-1;     if c==0  then leave;       end
+0047 end   /*k*/
+0048 return k
+0049 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0050 backward: if @.p==0   then return !;  c=1        /*C: ◄───  is the   ]   nested counter.*/
+0051 do k=!-1  to 1  by -1;         ?=substr($, k, 1)
+0052 if ?==']'  then do; c=c+1;     iterate;                   end
+0053 if ?=='['  then do; c=c-1;     if c==0  then return k+1;  end
+0054 end   /*k*/
+0055 return k
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             37
+002 c                43 45 46 50 52 53
+003 k                44 51
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 =(!)             -> newV1            27
+002 @.               -> newV2.           2 37
+003 !                -> newV3            4 26
+004 $                -> newV4            5 7 27
+005 ?                -> newV5            44 51

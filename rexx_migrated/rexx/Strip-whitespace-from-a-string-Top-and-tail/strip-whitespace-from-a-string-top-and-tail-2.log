@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 01.1.2012 Walter Pachl taking care of all non-printable chars
+0003 **********************************************************************/
+0004 pc='abcdefghijklmnopqrstuvwxyz'
+0005 pc=pc||translate(pc)'äöüÄÖÜß1234567890!"§&/()=?*+''#;:_,.-<>^!'
+0006 x01='01'x
+0007 s=x01||'  Hi  '||x01||' there!  '||x01
+0008 say pc                                 /* all printable characters   */
+0009 s=x01||'  Hi  '||x01||' there!  '||x01 /* my source string           */
+0010 Say 's >'s'<'                          /* show it                    */
+0011 p1=verify(s,pc,'M')                    /* find first printable char  */
+0012 sl=substr(s,p1)                        /* start with it              */
+0013 Say 'sl>'sl'<'
+0014 sr=reverse(s)
+0015 p2=verify(sr,pc,'M')                   /* find last printable char   */
+0016 sr=left(s,length(s)-p2+1)              /* end with it                */
+0017 Say 'sr>'sr'<'
+0018 sb=substr(s,p1,length(s)-p1-p2+1)      /* remove leading & trailing  */
+0019 Say 'sb>'space(sb)'!'                  /* whitespace                 */
+0020 sa=translate(s,pc,pc!!xrange('00'x,'FF'x)) /* all nonprintable chars */
+0021 /* are translated to blanks */
+0022 sa=space(sa)                           /* eliminate them except 1    */
+0023 Say 'sa>'sa'<'<'                       /* between words              */
+0024 s0=space(sa,0)                         /* remove all whitespace      */
+0025 Say 's0>'s0'<'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pc               4 5
+002 x01              6
+003 s                7 9
+004 p1               11
+005 sl               12
+006 sr               14 16
+007 p2               15
+008 sb               18
+009 sa               20 22
+010 s0               24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

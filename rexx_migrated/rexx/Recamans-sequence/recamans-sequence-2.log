@@ -1,0 +1,67 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX program computes & displays the Recaman sequence           */
+0002 /*improved using version 1's method for task 3                    */
+0003 Call time 'R'                  /* Start timer                     */
+0004 Parse Arg n
+0005 If n='' Then n=15
+0006 Say 'the first' n 'elements:' recaman(n)
+0007 Say ans.2
+0008 Say ans.3
+0009 Say time('E') 'seconds elapsed'
+0010 Exit
+0011 
+0012 recaman:
+0013 Parse Arg n                    /* Wanted number of elements       */
+0014 have.=0                        /* Number not yet in sequence      */
+0015 e.0=0                          /* First element                   */
+0016 have.0=1                       /*   is in the sequence            */
+0017 s=0                            /* Sequence to be shodn            */
+0018 done=0                         /* turn on first duplicate switch  */
+0019 d.=0
+0020 d.0=1
+0021 dn=1                           /* number of elements <=1000       */
+0022 Do i=1 until dn==1001         /* Loop until all found            */
+0023 ip=i-1                       /* previous index                  */
+0024 temp=e.ip-i                  /* potential next element          */
+0025 If temp>0 & have.temp=0 Then /*   to be used                    */
+0026 Nop
+0027 Else                         /* compute the alternative         */
+0028 temp=e.ip+i
+0029 e.i=temp                     /* Set next element                */
+0030 If words(s)<n Then           /* not enough in output            */
+0031 s=s temp                   /* add the element to the output   */
+0032 If temp<=1000 Then Do        /* eligible for task 3             */
+0033 If d.temp=0 Then Do        /* not yet encountered             */
+0034 d.temp=1                 /* Remember it's there             */
+0035 dn=dn+1                  /* count of integers<=1000 found   */
+0036 End
+0037 End
+0038 If done=0 & have.temp=1 Then Do
+0039 ans.2='First duplicate ('temp') added in iteration' i,
+0040 'elapsed:' time('E') 'seconds'
+0041 done=1
+0042 End
+0043 ans.3='Element number' i 'is the last to satisfy task 3. It is' temp
+0044 Have.temp=1
+0045 End
+0046 Return s
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                13
+002 have.            14 16
+003 e.               15 29
+004 s                17 31
+005 done             18 41
+006 d.               19 20 34
+007 dn               21 35
+008 i                22
+009 ip               23
+010 temp             24 28
+011 ans.             39 43
+012 Have.            44
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

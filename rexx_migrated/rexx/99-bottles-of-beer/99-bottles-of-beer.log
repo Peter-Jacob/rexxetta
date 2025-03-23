@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program displays lyrics to the infamous song   "99 Bottles of Beer on the Wall". */
+0002 parse arg N .;     if N=='' | N==","  then N=99  /*allow number of bottles be specified.*/
+0003 /* [↓]  downward count of beer bottles.*/
+0004 do #=N  by -1  for N                        /*start the countdown and singdown.    */
+0005 say #  'bottle's(#)  "of beer on the wall," /*sing the number bottles of beer.     */
+0006 say #  'bottle's(#)  "of beer."             /*     ··· and also the song's refrain.*/
+0007 say 'Take one down, pass it around,'        /*take a beer bottle  ─── and share it.*/
+0008 m= # - 1                                    /*M:  the number of bottles we have now*/
+0009 if m==0  then m= 'no'                       /*use word  "no"  instead of numeric 0.*/
+0010 say m  'bottle's(m)  "of beer on the wall." /*sing the beer bottle inventory.      */
+0011 say                                         /*show a blank line between the verses.*/
+0012 end   /*#*/                                 /*PSA:   Please drink responsibly.     */
+0013 /*Not quite tanked?   Then sing it.    */
+0014 say 'No more bottles of beer on the wall,'       /*Finally!            The last verse.  */
+0015 say 'no more bottles of beer.'                   /*this is sooooooo sad and forlorn ··· */
+0016 say 'Go to the store and buy some more,'         /*obtain replenishment of the beer.    */
+0017 say  N    'bottles of beer on the wall.'         /*all is well in the ole town tavern.  */
+0018 exit                                             /*we're all done,  and also sloshed !. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 s:  if arg(1)=1  then return '';    return 's'   /*simple pluralizer for gooder English.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                2 2
+002 m                8 9
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            4

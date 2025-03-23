@@ -1,0 +1,110 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 Numeric Digits 100
+0002 Do r=0 To 20
+0003 ra=r-1
+0004 If r=0 Then
+0005 f.r.1=1
+0006 Else Do
+0007 rsum=0
+0008 Do c=2 To r+1
+0009 ca=c-1
+0010 f.r.c=fdivide(fmultiply(f.ra.ca,r),c)
+0011 rsum=fsum(rsum,f.r.c)
+0012 End
+0013 f.r.1=fsubtract(1,rsum)
+0014 End
+0015 End
+0016 Do r=0 To 9
+0017 ol=''
+0018 Do c=1 To r+1
+0019 ol=ol right(f.r.c,5)
+0020 End
+0021 Say ol
+0022 End
+0023 Say ''
+0024 x=0
+0025 Do c=1 To 18
+0026 x=fsum(x,fmultiply(f.17.c,(1000**c)))
+0027 End
+0028 Say k(x)
+0029 s=0
+0030 Do k=1 To 1000
+0031 s=s+k**17
+0032 End
+0033 Say s
+0034 Exit
+0035 
+0036 fmultiply: Procedure
+0037 Parse Arg a,b
+0038 Parse Var a ad '/' an
+0039 Parse Var b bd '/' bn
+0040 If an='' Then an=1
+0041 If bn='' Then bn=1
+0042 res=(abs(ad)*abs(bd))'/'||(an*bn)
+0043 Return s(ad,bd)k(res)
+0044 
+0045 fdivide: Procedure
+0046 Parse Arg a,b
+0047 Parse Var a ad '/' an
+0048 Parse Var b bd '/' bn
+0049 If an='' Then an=1
+0050 If bn='' Then bn=1
+0051 res=s(ad,bd)(abs(ad)*bn)'/'||(an*abs(bd))
+0052 Return k(res)
+0053 
+0054 fsum: Procedure
+0055 Parse Arg a,b
+0056 Parse Var a ad '/' an
+0057 Parse Var b bd '/' bn
+0058 If an='' Then an=1
+0059 If bn='' Then bn=1
+0060 n=an*bn
+0061 d=ad*bn+bd*an
+0062 res=d'/'n
+0063 Return k(res)
+0064 
+0065 fsubtract: Procedure
+0066 Parse Arg a,b
+0067 Parse Var a ad '/' an
+0068 Parse Var b bd '/' bn
+0069 If an='' Then an=1
+0070 If bn='' Then bn=1
+0071 n=an*bn
+0072 d=ad*bn-bd*an
+0073 res=d'/'n
+0074 Return k(res)
+0075 
+0076 s: Procedure
+0077 Parse Arg ad,bd
+0078 s=sign(ad)*sign(bd)
+0079 If s<0 Then Return '-'
+0080 Else Return ''
+0081 
+0082 k: Procedure
+0083 Parse Arg a
+0084 Parse Var a ad '/' an
+0085 Select
+0086 When ad=0 Then Return 0
+0087 When an=1 Then Return ad
+0088 Otherwise Do
+0089 g=gcd(ad,an)
+0090 ad=ad/g
+0091 an=an/g
+0092 Return ad'/'an
+0093 End
+0094 End
+0095 
+0096 gcd: procedure
+0097 Parse Arg a,b
+0098 if b = 0 then return abs(a)
+0099 return gcd(b,a//b)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                97
+002 b                97
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

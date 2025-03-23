@@ -1,0 +1,47 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /*REXX pgm to calculate N numbers (sums) in the harmonic series and also when they > X. */
+0002 parse arg digs sums high ints                    /*obtain optional arguments from the CL*/
+0003 if digs='' | digs=","  then digs= 80             /*Not specified?  Then use the default.*/
+0004 if sums='' | sums=","  then sums= 20             /* "      "         "   "   "      "   */
+0005 if high='' | high=","  then high= 10             /* "      "         "   "   "      "   */
+0006 if ints='' | ints=","  then ints= 1 2 3 4 5 6 7 8 9 10  /*Not specified? "   "      "   */
+0007 w= length(sums) + 2                              /*width of Nth harmonic index + suffix.*/
+0008 numeric digits digs                              /*have REXX use more numeric dec. digs.*/
+0009 s= 0                    /*initialize harmonic series sum to 0. */
+0010 do j=1  for sums;  s= s + 1/j              /*calc  "sums" of harmonic series nums.*/
+0011 @iter= right((j)th(j), w)                  /*obtain a nicely formatted sum index. */
+0012 say right(@iter, w)  'harmonic sum ──►'  s /*indent the output to the terminal.   */
+0013 end   /*j*/
+0014 say                                              /*have a blank line between output sets*/
+0015 many= words(ints)                                /*obtain number of limits to be used.  */
+0016 z= word(ints, 1)                                 /*   "   the first   "     "  "   "    */
+0017 lastInt= word(ints, many)                        /*   "    "  last    "     "  "   "    */
+0018 w= length(lastInt)                               /*W:  is the maximum width of any limit*/
+0019 #= 1                                             /*a pointer to a list of integer limits*/
+0020 s= 0                         /*initialize harmonic series sum to 0. */
+0021 do j=1;       s= s + 1/j                   /*calculate sums of harmonic sum index.*/
+0022 if s<=z  then iterate                      /*Is sum <= a limit?  Then keep going. */
+0023 iter= commas(j)th(j)                       /*obtain a nicely formatted sum index. */
+0024 L= length(iter)                            /*obtain length so as to align output. */
+0025 @iter= right(iter, max(L, 25) )            /*indent the output to the terminal.   */
+0026 say @iter " iteration of the harmonic series, the sum is greater than "  right(z, w)
+0027 #= # + 1                                   /*bump the pointer to the next limit.  */
+0028 if #>many  then leave                      /*Are at the end of the limits?  Done. */
+0029 z= word(ints, #)                           /*point to the next limit to be used.  */
+0030 end   /*j*/                                /* [↑]  above indices are unity─based. */
+0031 exit 0                                           /*stick a fork in it,  we're all done. */
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+0034 th:     parse arg x;  return word('th st nd rd', 1 + (x//10) *(x//100%10\==1) *(x//10<4))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                34
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @iter            -> newV1            11 25
+002 #                -> newV2            19 27
+003 ?                -> newV3            33 33

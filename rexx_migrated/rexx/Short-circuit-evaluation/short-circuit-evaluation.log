@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX programs demonstrates short─circuit evaluation testing  (in an   IF   statement).*/
+0002 parse arg LO HI .                                /*obtain optional arguments from the CL*/
+0003 if LO=='' | LO==","  then LO= -2                 /*Not specified?  Then use the default.*/
+0004 if HI=='' | HI==","  then HI=  2                 /* "      "         "   "   "     "    */
+0005 
+0006 do j=LO  to HI                          /*process from the  low  to  the  high.*/
+0007 x=a(j)  &  b(j)                         /*compute  function A  and  function B */
+0008 y=a(j)  |  b(j)                         /*   "         "    "   or      "    " */
+0009 if \y  then y=b(j)                      /*   "         "    B   (for negation).*/
+0010 say  copies('═', 30)        '  x=' || x            '  y='y                '  j='j
+0011 say
+0012 end   /*j*/
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 a: say '      A  entered with:'  arg(1);    return abs( arg(1) // 2)   /*1=odd, 0=even  */
+0016 b: say '      B  entered with:'  arg(1);    return arg(1) < 0          /*1=neg, 0=if not*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 LO               2 3
+002 HI               2 4
+003 j                6
+004 x                7
+005 y                8 9
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

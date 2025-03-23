@@ -1,0 +1,220 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*- REXX --------------------------------------------------------------
+0002 * pref.b  Preferences of boy b
+0003 * pref.g  Preferences of girl g
+0004 * boys    List of boys
+0005 * girls   List of girls
+0006 * plist   List of proposals
+0007 * mlist   List of (current) matches
+0008 * glist   List of girls to be matched
+0009 * glist.b List of girls that proposed to boy b
+0010 * blen    maximum length of boys' names
+0011 * glen    maximum length of girls' names
+0012 ---------------------------------------------------------------------*/
+0013 
+0014 pref.Charlotte=translate('Bingley Darcy Collins Wickham ')
+0015 pref.Elisabeth=translate('Wickham Darcy Bingley Collins ')
+0016 pref.Jane     =translate('Bingley Wickham Darcy Collins ')
+0017 pref.Lydia    =translate('Bingley Wickham Darcy Collins ')
+0018 
+0019 pref.Bingley  =translate('Jane Elisabeth Lydia Charlotte')
+0020 pref.Collins  =translate('Jane Elisabeth Lydia Charlotte')
+0021 pref.Darcy    =translate('Elisabeth Jane Charlotte Lydia')
+0022 pref.Wickham  =translate('Lydia Jane Elisabeth Charlotte')
+0023 
+0024 pref.ABE='ABI EVE CATH IVY JAN DEE FAY BEA HOPE GAY'
+0025 pref.BOB='CATH HOPE ABI DEE EVE FAY BEA JAN IVY GAY'
+0026 pref.COL='HOPE EVE ABI DEE BEA FAY IVY GAY CATH JAN'
+0027 pref.DAN='IVY FAY DEE GAY HOPE EVE JAN BEA CATH ABI'
+0028 pref.ED='JAN DEE BEA CATH FAY EVE ABI IVY HOPE GAY'
+0029 pref.FRED='BEA ABI DEE GAY EVE IVY CATH JAN HOPE FAY'
+0030 pref.GAV='GAY EVE IVY BEA CATH ABI DEE HOPE JAN FAY'
+0031 pref.HAL='ABI EVE HOPE FAY IVY CATH JAN BEA GAY DEE'
+0032 pref.IAN='HOPE CATH DEE GAY BEA ABI FAY IVY JAN EVE'
+0033 pref.JON='ABI FAY JAN GAY EVE BEA DEE CATH IVY HOPE'
+0034 
+0035 pref.ABI='BOB FRED JON GAV IAN ABE DAN ED COL HAL'
+0036 pref.BEA='BOB ABE COL FRED GAV DAN IAN ED JON HAL'
+0037 pref.CATH='FRED BOB ED GAV HAL COL IAN ABE DAN JON'
+0038 pref.DEE='FRED JON COL ABE IAN HAL GAV DAN BOB ED'
+0039 pref.EVE='JON HAL FRED DAN ABE GAV COL ED IAN BOB'
+0040 pref.FAY='BOB ABE ED IAN JON DAN FRED GAV COL HAL'
+0041 pref.GAY='JON GAV HAL FRED BOB ABE COL ED DAN IAN'
+0042 pref.HOPE='GAV JON BOB ABE IAN DAN HAL ED COL FRED'
+0043 pref.IVY='IAN COL HAL GAV FRED BOB ABE ED JON DAN'
+0044 pref.JAN='ED HAL GAV ABE BOB JON COL IAN FRED DAN'
+0045 
+0046 If arg(1)>'' Then Do
+0047 Say 'Input from task description'
+0048 boys='ABE BOB COL DAN ED FRED GAV HAL IAN JON'
+0049 girls='ABI BEA CATH DEE EVE FAY GAY HOPE IVY JAN'
+0050 End
+0051 Else Do
+0052 Say 'Input from link'
+0053 girls=translate('Charlotte Elisabeth Jane  Lydia')
+0054 boys =translate('Bingley   Collins   Darcy Wickham')
+0055 End
+0056 
+0057 debug=0
+0058 blen=0
+0059 Do i=1 To words(boys)
+0060 blen=max(blen,length(word(boys,i)))
+0061 End
+0062 glen=0
+0063 Do i=1 To words(girls)
+0064 glen=max(glen,length(word(girls,i)))
+0065 End
+0066 glist=girls
+0067 mlist=''
+0068 Do ri=1 By 1 Until glist=''            /* as long as there are girls */
+0069 Call dbg 'Round' ri
+0070 plist=''                             /* no proposals in this round */
+0071 glist.=''
+0072 Do gi=1 To words(glist)              /* loop over free girls       */
+0073 gg=word(glist,gi)                  /* an unmathed girl           */
+0074 b=word(pref.gg,1)                  /* her preferred boy          */
+0075 plist=plist gg'-'||b               /* remember this proposal     */
+0076 glist.b=glist.b gg                 /* add girl to the boy's list */
+0077 Call dbg left(gg,glen) 'proposes to' b  /* tell the user              */
+0078 End
+0079 Do bi=1 To words(boys)               /* loop over all boys         */
+0080 b=word(boys,bi)                    /* one of them                */
+0081 If glist.b>'' Then                 /* if he's got proposals      */
+0082 Call dbg b 'has these proposals' glist.b /* show them               */
+0083 End
+0084 Do bi=1 To words(boys)               /* loop over all boys         */
+0085 b=word(boys,bi)                    /* one of them                */
+0086 bm=pos(b'*',mlist)                 /* has he been matched yet?   */
+0087 Select
+0088 When words(glist.b)=1 Then Do    /* one girl proposed for him  */
+0089 gg=word(glist.b,1)             /* the proposing girl         */
+0090 If bm=0 Then Do                /* no, he hasn't              */
+0091 Call dbg b 'accepts' gg           /* is accepted                */
+0092 Call set_mlist 'A',mlist b||'*'||gg /* add match to mlist  */
+0093 Call set_glist 'A',remove(gg,glist) /* remove gg from glist*/
+0094 pref.gg=remove(b,pref.gg)    /* remove b from gg's preflist*/
+0095 End
+0096 Else Do                        /* boy has been matched       */
+0097 Parse Var mlist =(bm) '*' go ' ' /* to girl go             */
+0098 If wordpos(gg,pref.b)<wordpos(go,pref.b) Then Do
+0099 /* the proposing girl is preferred to the current one */
+0100 /* so we replace go by gg     */
+0101 Call set_mlist 'B',repl(mlist,b||'*'||gg,b||'*'||go)
+0102 Call dbg b 'releases' go
+0103 Call dbg b 'accepts ' gg
+0104 Call set_glist 'B',glist go  /* add go to list of girls  */
+0105 Call set_glist 'C',remove(gg,glist) /* and remove gg     */
+0106 End
+0107 pref.gg=remove(b,pref.gg)    /* remove b from gg's preflist*/
+0108 End
+0109 End
+0110 When words(glist.b)>1 Then
+0111 Call pick_1
+0112 Otherwise Nop
+0113 End
+0114 End
+0115 Call dbg 'Matches   :' mlist
+0116 Call dbg 'free girls:' glist
+0117 Call check 'L'
+0118 End
+0119 Say 'Success at round' (ri-1)
+0120 Do While mlist>''
+0121 Parse Var mlist boy '*' girl mlist
+0122 Say left(boy,blen) 'matches' girl
+0123 End
+0124 Exit
+0125 
+0126 pick_1:
+0127 If bm>0 Then Do                /* boy has been matched       */
+0128 Parse Var mlist =(bm) '*' go ' ' /* to girl go             */
+0129 pmin=wordpos(go,pref.b)
+0130 End
+0131 Else Do
+0132 go=''
+0133 pmin=99
+0134 End
+0135 Do gi=1 To words(glist.b)
+0136 gt=word(glist.b,gi)
+0137 gp=wordpos(gt,pref.b)
+0138 If gp<pmin Then Do
+0139 pmin=gp
+0140 gg=gt
+0141 End
+0142 End
+0143 If bm=0 Then Do
+0144 Call dbg b 'accepts' gg           /* is accepted                */
+0145 Call set_mlist 'A',mlist b||'*'||gg /* add match to mlist  */
+0146 Call set_glist 'A',remove(gg,glist) /* remove gg from glist*/
+0147 pref.gg=remove(b,pref.gg)    /* remove b from gg's preflist*/
+0148 End
+0149 Else Do
+0150 If gg<>go Then Do
+0151 Call set_mlist 'B',repl(mlist,b||'*'||gg,b||'*'||go)
+0152 Call dbg b 'releases' go
+0153 Call dbg b 'accepts ' gg
+0154 Call set_glist 'B',glist go  /* add go to list of girls  */
+0155 Call set_glist 'C',remove(gg,glist) /* and remove gg     */
+0156 pref.gg=remove(b,pref.gg)  /* remove b from gg's preflist*/
+0157 End
+0158 End
+0159 Return
+0160 
+0161 remove:
+0162 Parse Arg needle,haystack
+0163 pp=pos(needle,haystack)
+0164 If pp>0 Then
+0165 res=left(haystack,pp-1) substr(haystack,pp+length(needle))
+0166 Else
+0167 res=haystack
+0168 Return space(res)
+0169 
+0170 set_mlist:
+0171 Parse Arg where,new_mlist
+0172 Call dbg 'set_mlist' where':' mlist
+0173 mlist=space(new_mlist)
+0174 Call dbg 'set_mlist ->' mlist
+0175 Call dbg ''
+0176 Return
+0177 
+0178 set_glist:
+0179 Parse Arg where,new_glist
+0180 Call dbg 'set_glist' where':' glist
+0181 glist=new_glist
+0182 Call dbg 'set_glist ->' glist
+0183 Call dbg ''
+0184 Return
+0185 
+0186 check:
+0187 If words(mlist)+words(glist)<>words(boys) Then Do
+0188 Call dbg 'FEHLER bei' arg(1) (words(mlist)+words(glist))'<>10'
+0189 say 'match='mlist'<'
+0190 say '   glist='glist'<'
+0191 End
+0192 Return
+0193 
+0194 dbg:
+0195 If debug Then
+0196 Call dbg arg(1)
+0197 Return
+0198 repl: Procedure
+0199 Parse Arg s,new,old
+0200 Do i=1 To 100 Until p=0
+0201 p=pos(old,s)
+0202 If p>0 Then
+0203 s=left(s,p-1)||new||substr(s,p+length(old))
+0204 End
+0205 Return s
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                199 203
+002 new              199
+003 old              199
+004 i                200
+005 p                201
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 =(bm)            -> newV1            97 128

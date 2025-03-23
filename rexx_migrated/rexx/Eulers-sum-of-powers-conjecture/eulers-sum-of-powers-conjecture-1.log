@@ -1,0 +1,67 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program finds unique positive integers for ────────── aⁿ+bⁿ+cⁿ+dⁿ==xⁿ  where n=5 */
+0002 parse arg L H N .                                /*get optional  LOW, HIGH,  #solutions.*/
+0003 if L=='' | L==","  then L=   0  + 1              /*Not specified?  Then use the default.*/
+0004 if H=='' | H==","  then H= 250  - 1              /* "      "         "   "   "     "    */
+0005 if N=='' | N==","  then N=   1                   /* "      "         "   "   "     "    */
+0006 w= length(H)                                     /*W:  used for display aligned numbers.*/
+0007 say center(' 'subword(sourceLine(1), 9, 3)" ", 70 +5*w, '─')  /*show title from 1st line*/
+0008 numeric digits 1000                              /*be able to handle the next expression*/
+0009 numeric digits max(9, length(3*H**5) )           /* "   "   "    "   3* [H to 5th power]*/
+0010 bH= H - 2;                 cH= H - 1             /*calculate the upper  DO  loop limits.*/
+0011 !.= 0                                            /* [↓]  define values of  5th  powers. */
+0012 do pow=1  for H;    @.pow= pow**5;     _= @.pow;        !._= 1;          $._= pow
+0013 end   /*pow*/
+0014 ?.= !.
+0015 do    j=4   for H-3                       /*use the range of:   four  to   cH.   */
+0016 do k=j+1  to H;  _= @.k - @.j;  ?._= 1 /*compute the   xⁿ - dⁿ    differences.*/
+0017 end   /*k*/                            /* [↑]  diff. is always positive as k>j*/
+0018 end      /*j*/                            /*define [↑]    5th  power differences.*/
+0019 #= 0                                             /*#:  is the number of solutions found.*/   /* [↓]  for N=∞ solutions.*/
+0020 do       a=L    to H-3                       /*traipse through possible  A  values. */   /*◄──done       246 times.*/
+0021 do     b=a+1  to bH;      s1= @.a + @.b    /*   "       "        "     B    "     */   /*◄──done    30,381 times.*/
+0022 do   c=b+1  to cH;      s2= s1  + @.c    /*   "       "        "     C    "     */   /*◄──done 2,511,496 times.*/
+0023 if ?.s2  then do d=c+1  to H;  s= s2+@.d /*find the appropriate solution.       */
+0024 if !.s  then call show     /*Is it a solution?   Then display it. */
+0025 end   /*d*/                /* [↑]    !.S  is a boolean.           */
+0026 end                 /*c*/
+0027 end                   /*b*/
+0028 end                     /*a*/
+0029 
+0030 if #==0  then say "Didn't find a solution.";           exit 0
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 show: _= left('', 5);     #= # + 1               /*_:  used as a spacer; bump # counter.*/
+0033 say _  'solution'   right(#, length(N))":"  _  'a='right(a, w)   _  "b="right(b, w),
+0034 _  'c='right(c, w)     _    "d="right(d, w)     _    'x='right($.s, w+1)
+0035 if #<N  then return                        /*return, keep searching for more sols.*/
+0036 exit #                                     /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 L                2 3
+002 H                2 4
+003 N                2 5
+004 w                6
+005 bH               10
+006 cH               10
+007 pow              12
+008 j                15
+009 k                16
+010 a                20
+011 b                21
+012 s1               21
+013 c                22
+014 s2               22
+015 d                23
+016 s                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           11 12
+002 @.               -> newV2.           12
+003 $.               -> newV3.           12
+004 ?.               -> newV4.           14 16
+005 _                -> newV5            12 16
+006 #                -> newV6            19 32

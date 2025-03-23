@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX pgm counts the number of twin prime pairs under a specified number N (or a list).*/
+0002 parse arg $ .                                    /*get optional number of primes to find*/
+0003 if $='' | $=","  then $= 10 100 1000 10000 100000 1000000 10000000  /*No $? Use default.*/
+0004 w= length( commas( word($, words($) ) ) )        /*get length of the last number in list*/
+0005 @found= ' twin prime pairs found under '         /*literal used in the showing of output*/
+0006 
+0007 do i=1  for words($);       x= word($, i) /*process each N─limit in the  $  list.*/
+0008 say right( commas(genP(x)), 20)     @found     right(commas(x), max(length(x), w) )
+0009 end   /*i*/
+0010 exit 0                                           /*stick a fork in it,  we're all done. */
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 commas:  parse arg _;  do ?=length(_)-3  to 1  by -3; _=insert(',', _, ?); end;   return _
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 genP: parse arg y; @.1=2;  @.2=3;  @.3=5;  @.4=7;  @.5=11;  @.6=13; #= 6; tp= 2; sq.6= 169
+0015 if y>10  then tp= tp+1
+0016 do j=@.#+2  by 2  for max(0, y%2-@.#%2-1)      /*find odd primes from here on. */
+0017 parse var  j   ''  -1  _                /*obtain the last digit of the  J  var.*/
+0018 if    _==5  then iterate;  if j// 3==0  then iterate  /*J ÷ by 5?   J ÷ by  3? */
+0019 if j//7==0  then iterate;  if j//11==0  then iterate  /*" "  " 7?   " "  " 11? */
+0020 /* [↓]  divide by the primes.   ___    */
+0021 do k=6  to #  while  sq.k<=j      /*divide  J  by other primes ≤ √ J     */
+0022 if j//@.k == 0  then iterate j    /*÷ by prev. prime?  ¬prime     ___    */
+0023 end   /*k*/                       /* [↑]   only divide up to     √ J     */
+0024 prev= @.#;  #= #+1;  sq.#= j*j;  @.#= j /*save prev. P; bump # primes; assign P*/
+0025 if j-2==prev   then tp= tp + 1          /*This & previous prime twins? Bump TP.*/
+0026 end         /*j*/;            return tp
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                17
+002 k                21
+003 prev             24
+004 sq.              24
+005 tp               25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @found           -> newV1            5
+002 @.               -> newV2.           14 14 14 14 14 14 24
+003 $                -> newV3            2 3
+004 _                -> newV4            12 12 17
+005 ?                -> newV5            12
+006 #                -> newV6            14 24

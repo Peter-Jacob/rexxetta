@@ -1,0 +1,79 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program to check for balanced brackets [] **********************
+0002 * test strings and random string generation copied from Version 1
+0003 * the rest restructured (shortened) to some extent
+0004 * and output made reproducible (random with a seed)
+0005 * 10.07.2012 Walter Pachl
+0006 **********************************************************************/
+0007 yesno.0 = 'unbalanced'
+0008 yesno.1 = '  balanced'
+0009 done.=0                           /* memory what's been done         */
+0010 n=0                               /* number of tests                 */
+0011 Call testbal '[][][][[]]'         /* first some user written tests   */
+0012 Call testbal '[][][][[]]]['
+0013 Call testbal '['
+0014 Call testbal ']'
+0015 Call testbal '[]'
+0016 Call testbal ']['
+0017 Call testbal '][]['
+0018 Call testbal '[[]]'
+0019 Call testbal '[[[[[[[]]]]]]]'
+0020 Call testbal '[[[[[]]]][]'
+0021 Call testbal '[][]'
+0022 Call testbal '[]][[]'
+0023 Call testbal ']]][[[[]'
+0024 Call testbal ']'
+0025 Call testbal '['
+0026 /* then some random generated ones */
+0027 Call random 1,2,12345             /* call random with a seed         */
+0028 /* makes test reproducible         */
+0029 do Until n=30                     /* up to 30 tests                  */
+0030 s=rand(random(1,8))             /* a 01 etc. string of length 4-32 */
+0031 q=translate(s,'[]',01)          /* turn digits into brackets       */
+0032 if done.q then                  /* string was already here         */
+0033 iterate                       /* don't test again                */
+0034 call testbal q                  /* test balance                    */
+0035 End
+0036 exit
+0037 
+0038 testbal:                    /* test the given string and show result */
+0039 n=n+1                           /* number of tests                 */
+0040 Parse Arg q                     /* get string to be tested         */
+0041 done.q=1                        /* mark as done                    */
+0042 call checkBal q                 /* test balance                    */
+0043 lq=format(length(q),2)
+0044 say right(n,2) lq yesno.result q/* show result and string          */
+0045 Return
+0046 
+0047 /*-----------------------------------PAND subroutine-----------------*/
+0048 pand: p=random(0,1);    return p || \p
+0049 /*-----------------------------------RAND subroutine-----------------*/
+0050 rand: pp=pand();   pp=pand()pp;    pp=copies(pp,arg(1))
+0051 i=random(2,length(pp));      pp=left(pp,i-1)substr(pp,i)
+0052 return pp
+0053 
+0054 checkBal: procedure               /*check for balanced brackets ()   */
+0055 Parse arg y
+0056 nest=0;
+0057 do While y<>''
+0058 Parse Var y c +1 y            /*pick off one character at a time */
+0059 if c='[' then                 /* opening bracket                 */
+0060 nest=nest+1                 /* increment nesting               */
+0061 else do                       /* closing bracket                 */
+0062 if nest=0 then              /* not allowed                     */
+0063 return 0;                 /* no success                      */
+0064 nest=nest-1                 /* decrement nesting               */
+0065 end
+0066 end
+0067 return nest=0                   /* nest=0 -> balanced              */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                58 58
+002 c                58
+003 nest             60 64
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

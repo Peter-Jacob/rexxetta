@@ -1,0 +1,61 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * Implementation of http://keisan.casio.com/exec/system/14059932254941
+0003 *--------------------------------------------------------------------*/
+0004 xl='0 1  2  3  4  5   6   7   8   9  10'
+0005 yl='1 6 17 34 57 86 121 162 209 262 321'
+0006 n=11
+0007 Do i=1 To n
+0008 Parse Var xl x.i xl
+0009 Parse Var yl y.i yl
+0010 End
+0011 xm=0
+0012 ym=0
+0013 x2m=0
+0014 x3m=0
+0015 x4m=0
+0016 xym=0
+0017 x2ym=0
+0018 Do i=1 To n
+0019 xm=xm+x.i
+0020 ym=ym+y.i
+0021 x2m=x2m+x.i**2
+0022 x3m=x3m+x.i**3
+0023 x4m=x4m+x.i**4
+0024 xym=xym+x.i*y.i
+0025 x2ym=x2ym+(x.i**2)*y.i
+0026 End
+0027 xm =xm /n
+0028 ym =ym /n
+0029 x2m=x2m/n
+0030 x3m=x3m/n
+0031 x4m=x4m/n
+0032 xym=xym/n
+0033 x2ym=x2ym/n
+0034 Sxx=x2m-xm**2
+0035 Sxy=xym-xm*ym
+0036 Sxx2=x3m-xm*x2m
+0037 Sx2x2=x4m-x2m**2
+0038 Sx2y=x2ym-x2m*ym
+0039 B=(Sxy*Sx2x2-Sx2y*Sxx2)/(Sxx*Sx2x2-Sxx2**2)
+0040 C=(Sx2y*Sxx-Sxy*Sxx2)/(Sxx*Sx2x2-Sxx2**2)
+0041 A=ym-B*xm-C*x2m
+0042 Say 'y='a'+'||b'*x+'c'*x**2'
+0043 Say ' Input  "Approximation"'
+0044 Say ' x   y     y1'
+0045 Do i=1 To 11
+0046 Say right(x.i,2) right(y.i,3) format(fun(x.i),5,3)
+0047 End
+0048 Exit
+0049 fun:
+0050 Parse Arg x
+0051 Return a+b*x+c*x**2
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                50
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

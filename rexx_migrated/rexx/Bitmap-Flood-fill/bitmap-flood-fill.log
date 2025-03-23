@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates a  method  to  perform a  flood fill  of an area.          */
+0002 black= '000000000000000000000000'b               /*define the black color  (using bits).*/
+0003 red  = '000000000000000011111111'b               /*   "    "   red    "       "     "   */
+0004 green= '000000001111111100000000'b               /*   "    "  green   "       "     "   */
+0005 white= '111111111111111111111111'b               /*   "    "  white   "       "     "   */
+0006 /*image is defined to the test image.  */
+0007 hx= 125;          hy= 125                        /*define limits  (X,Y)  for the image. */
+0008 area= white;      call fill 125,  25, red        /*fill the white area in red.          */
+0009 area= black;      call fill 125, 125, green      /*fill the center orb in green.        */
+0010 exit                                             /*stick a fork in it,  we're all done. */
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 fill: procedure expose image. hx hy area;  parse arg x,y,fill_color   /*obtain the args.*/
+0013 if x<1 | x>hx | y<1 | y>hy   then return   /*X or Y  are outside of the image area*/
+0014 pixel= image.x.y                           /*obtain the color of the  X,Y  pixel. */
+0015 if pixel \== area  then return             /*the pixel has already been filled    */
+0016 /*with the  fill_color,  or we are not */
+0017 /*within the area to be filled.        */
+0018 image.x.y= fill_color                      /*color desired area with fill_color.  */
+0019 pixel= @(x  , y-1);   if pixel==area  then call fill x  , y-1, fill_color  /*north*/
+0020 pixel= @(x-1, y  );   if pixel==area  then call fill x-1, y  , fill_color  /*west */
+0021 pixel= @(x+1, y  );   if pixel==area  then call fill x+1, y  , fill_color  /*east */
+0022 pixel= @(x  , y+1);   if pixel==area  then call fill x  , y+1, fill_color  /*south*/
+0023 return
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 @:    parse arg $x,$y;      return image.$x.$y   /*return with color of the  X,Y  pixel.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $x               -> newV1            25
+002 $y               -> newV2            25

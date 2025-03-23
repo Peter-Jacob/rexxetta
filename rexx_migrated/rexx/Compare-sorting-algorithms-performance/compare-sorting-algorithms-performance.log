@@ -1,0 +1,296 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX pgm compares various sorts for 3 types of input sequences: ones/ascending/random.*/
+0002 parse arg ranges start# seed .                   /*obtain optional arguments from the CL*/
+0003 if ranges=='' | ranges==","  then ranges=     5  /*Not Specified?  Then use the default.*/
+0004 if start#=='' | start#==","  then start#=   250  /* "      "         "   "   "     "    */
+0005 if   seed=='' |   seed==","  then   seed=  1946  /*use a repeatable seed for RANDOM  BIF*/
+0006 if datatype(seed, 'W')  then call random ,,seed  /*Specified?  Then use as a RANDOM seed*/
+0007 kinds= 3;      hdr=;       #= start#             /*hardcoded/fixed number of datum kinds*/
+0008 do ra=1  for ranges
+0009 hdr= hdr || center( commas(#) "numbers", 25)'│'  /*(top) header for the output title.*/
+0010 do ki=1  for kinds
+0011 call gen@@ #, ki
+0012 call set@;  call time 'R';  call bubble     #;     bubble.ra.ki= format(time("E"),,2)
+0013 call set@;  call time 'R';  call cocktail   #;   cocktail.ra.ki= format(time("E"),,2)
+0014 call set@;  call time 'R';  call cocktailSB #; cocktailSB.ra.ki= format(time("E"),,2)
+0015 call set@;  call time 'R';  call comb       #;       comb.ra.ki= format(time("E"),,2)
+0016 call set@;  call time 'R';  call exchange   #;   exchange.ra.ki= format(time("E"),,2)
+0017 call set@;  call time 'R';  call gnome      #;      gnome.ra.ki= format(time("E"),,2)
+0018 call set@;  call time 'R';  call heap       #;       heap.ra.ki= format(time("E"),,2)
+0019 call set@;  call time 'R';  call insertion  #;  insertion.ra.ki= format(time("E"),,2)
+0020 call set@;  call time 'R';  call merge      #;      merge.ra.ki= format(time("E"),,2)
+0021 call set@;  call time 'R';  call pancake    #;    pancake.ra.ki= format(time("E"),,2)
+0022 call set@;  call time 'R';  call quick      #;      quick.ra.ki= format(time("E"),,2)
+0023 call set@;  call time 'R';  call radix      #;      radix.ra.ki= format(time("E"),,2)
+0024 call set@;  call time 'R';  call selection  #;  selection.ra.ki= format(time("E"),,2)
+0025 call set@;  call time 'R';  call shell      #;      shell.ra.ki= format(time("E"),,2)
+0026 end   /*ki*/
+0027 #= # + #                                                         /*double # elements.*/
+0028 end     /*ra*/
+0029 say;                             say;    say                        /*say blank sep line*/
+0030 say center('         ', 11     ) "│"left(hdr, length(hdr)-1)"│"     /*replace last char.*/
+0031 reps= ' allONES  ascend  random │'      /*build a title bar.*/
+0032 xreps=       copies( center(reps, length(reps)), ranges)            /*replicate ranges. */
+0033 creps= left(xreps, length(xreps)-1)"│"                              /*replace last char.*/
+0034 say center('sort type', 11     ) "│"creps;                       Lr= length(reps)
+0035 xcreps= copies( left('', Lr-1, '─')"┼", ranges)
+0036 say center(''         , 12, '─')"┼"left(xcreps, length(xcreps)-1)"┤"
+0037 call show 'bubble'                               /* ◄──── show results for bubble  sort.*/
+0038 call show 'cocktail'                             /* ◄────   "     "     "  cocktail   " */
+0039 call show 'cocktailSB'    /*+Shifting Bounds*/   /* ◄────   "     "     "  cocktailSB " */
+0040 call show 'comb'                                 /* ◄────   "     "     "  comb       " */
+0041 call show 'exchange'                             /* ◄────   "     "     "  exchange   " */
+0042 call show 'gnome'                                /* ◄────   "     "     "  gnome      " */
+0043 call show 'heap'                                 /* ◄────   "     "     "  heap       " */
+0044 call show 'insertion'                            /* ◄────   "     "     "  insertion  " */
+0045 call show 'merge'                                /* ◄────   "     "     "  merge      " */
+0046 call show 'pancake'                              /* ◄────   "     "     "  pancake    " */
+0047 call show 'quick'                                /* ◄────   "     "     "  quick      " */
+0048 call show 'radix'                                /* ◄────   "     "     "  radix      " */
+0049 call show 'selection'                            /* ◄────   "     "     "  shell      " */
+0050 call show 'shell'                                /* ◄────   "     "     "  shell      " */
+0051 say translate(center(''         , 12, '─')"┴"left(xcreps, length(xcreps)-1)"┘",  '┴', "┼")
+0052 exit 0                                           /*stick a fork in it,  we're all done. */
+0053 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0054 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+0055 inOrder: parse arg n; do j=1  for n-1;  k= j+1;  if @.j>@.k  then return 0; end;  return 1
+0056 set@:   @.=;          do a=1  for #;                 @.a= @@.a;             end;  return
+0057 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0058 gen@@: procedure expose @@.; parse arg n,kind;  nn= min(n, 100000)     /*1e5≡REXX's max.*/
+0059 do j=1 for nn;      select
+0060 when kind==1  then  @@.j= 1               /*all ones. */
+0061 when kind==2  then  @@.j= j               /*ascending.*/
+0062 when kind==3  then  @@.j= random(, nn)    /*random.   */
+0063 end   /*select*/
+0064 end   /*j*/;                                              return
+0065 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0066 show:  parse arg aa;  _= left(aa, 11)  "│"
+0067 do   ra=1  for ranges
+0068 do ki=1  for kinds
+0069 _= _  right( value(aa || . || ra || . || ki),  7, ' ')
+0070 end   /*k*/
+0071 _= _  "│"
+0072 end     /*r*/;       say _;             return
+0073 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0074 bubble:   procedure expose @.;  parse arg n         /*N: is the number of  @  elements. */
+0075 do m=n-1  by -1  until ok;         ok=1 /*keep sorting  @  array until done.*/
+0076 do j=1  for m;  k=j+1;  if @.j<=@.k  then iterate    /*elements in order? */
+0077 _=@.j;  @.j=@.k;  @.k=_;         ok=0 /*swap 2 elements; flag as not done.*/
+0078 end   /*j*/
+0079 end     /*m*/;                                              return
+0080 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0081 cocktail: procedure expose @.;    parse arg N;   nn= N-1     /*N:  is number of items.  */
+0082 do until done;   done= 1
+0083 do j=1   for nn;                jp= j+1
+0084 if @.j>@.jp  then do;  done=0;  _=@.j;  @.j=@.jp;  @.jp=_;  end
+0085 end   /*j*/
+0086 if done  then leave                              /*No swaps done?  Finished.*/
+0087 do k=nn  for nn  by -1;         kp= k+1
+0088 if @.k>@.kp  then do;  done=0;  _=@.k;  @.k=@.kp;  @.kp=_;  end
+0089 end   /*k*/
+0090 end       /*until*/;                                        return
+0091 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0092 cocktailsb: procedure expose @.;    parse arg N              /*N:  is number of items.  */
+0093 end$= N - 1;     beg$= 1
+0094 do while beg$ <= end$
+0095 beg$$= end$;               end$$= beg$
+0096 do j=beg$ to end$;                   jp= j + 1
+0097 if @.j>@.jp  then do;  _=@.j;  @.j=@.jp;  @.jp=_;  end$$=j;  end
+0098 end   /*j*/
+0099 end$= end$$ - 1
+0100 do k=end$  to beg$  by -1;           kp= k + 1
+0101 if @.k>@.kp  then do;  _=@.k;  @.k=@.kp;  @.kp=_;  beg$$=k;  end
+0102 end   /*k*/
+0103 beg$= beg$$ + 1
+0104 end       /*while*/;                                        return
+0105 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0106 comb:  procedure expose @.;   parse arg n        /*N:  is the number of  @  elements.   */
+0107 g= n-1                                    /*G:  is the gap between the sort COMBs*/
+0108 do  until g<=1 & done;    done= 1   /*assume sort is done  (so far).       */
+0109 g= g * 0.8  % 1                     /*equivalent to:   g= trunc( g / 1.25) */
+0110 if g==0  then g= 1                  /*handle case of the gap is too small. */
+0111 do j=1  until $>=n;    $= j + g  /*$:     a temporary index  (pointer). */
+0112 if @.j>@.$  then do;   _= @.j;     @.j= @.$;    @.$= _;    done= 0;    end
+0113 end   /*j*/                      /* [↑]  swap two elements in the array.*/
+0114 end      /*until*/;       return
+0115 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0116 exchange: procedure expose @.;  parse arg n 1 h  /*both  N  and  H  have the array size.*/
+0117 do while h>1;                      h= h % 2
+0118 do i=1  for n-h;       j= i;    k= h+i
+0119 do while @.k<@.j
+0120 _= @.j;  @.j= @.k;  @.k= _;  if h>=j  then leave;  j= j-h;  k= k-h
+0121 end   /*while @.k<@.j*/
+0122 end      /*i*/
+0123 end         /*while h>1*/;                       return
+0124 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0125 gnome: procedure expose @.;  parse arg n;      k= 2               /*N: is number items. */
+0126 do j=3  while k<=n;                  p= k - 1           /*P: is previous item.*/
+0127 if @.p<<=@.k  then do;      k= j;    iterate;   end     /*order is OK so far. */
+0128 _= @.p;       @.p= @.k;     @.k= _                      /*swap two @ entries. */
+0129 k= k - 1;     if k==1  then k= j;    else j= j-1        /*test for 1st index. */
+0130 end    /*j*/;                                return
+0131 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0132 heap:  procedure expose @.; arg n;  do j=n%2  by -1  to 1;   call heapS j,n;  end  /*j*/
+0133 do n=n  by -1  to 2;    _= @.1;    @.1= @.n;    @.n= _;   call heapS 1,n-1
+0134 end   /*n*/;           return       /* [↑]  swap two elements; and shuffle.*/
+0135 
+0136 heapS: procedure expose @.;  parse arg i,n;        $= @.i            /*obtain parent.*/
+0137 do  while i+i<=n;   j= i+i;   k= j+1;    if k<=n  then  if @.k>@.j  then j= k
+0138 if $>=@.j  then leave;      @.i= @.j;    i= j
+0139 end   /*while*/;            @.i= $;      return            /*define lowest.*/
+0140 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0141 insertion:  procedure expose @.;   parse arg n
+0142 do i=2  to n;   $= @.i;       do j=i-1  by -1  to 1  while @.j>$
+0143 _= j + 1;        @._= @.j
+0144 end   /*j*/
+0145 _= j + 1;       @._= $
+0146 end   /*i*/;                                         return
+0147 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0148 merge: procedure expose @. !.;   parse arg n, L;   if L==''  then do;  !.=;  L= 1;  end
+0149 if n==1  then return;     h= L + 1
+0150 if n==2  then do; if @.L>@.h  then do; _=@.h; @.h=@.L; @.L=_; end; return;  end
+0151 m= n % 2                                     /* [↑]  handle case of two items.*/
+0152 call merge  n-m, L+m                         /*divide items  to the left   ···*/
+0153 call merger m,   L,   1                      /*   "     "     "  "  right  ···*/
+0154 i= 1;                     j= L + m
+0155 do k=L  while k<j                 /*whilst items on right exist ···*/
+0156 if j==L+n  |  !.i<=@.j  then do;     @.k= !.i;     i= i + 1;      end
+0157 else do;     @.k= @.j;     j= j + 1;      end
+0158 end   /*k*/;                         return
+0159 
+0160 merger: procedure expose @. !.;  parse arg n,L,T
+0161 if n==1  then do;  !.T= @.L;                                       return;  end
+0162 if n==2  then do;  h= L + 1;   q= T + 1;  !.q= @.L;    !.T= @.h;   return;  end
+0163 m= n % 2                                    /* [↑]  handle case of two items.*/
+0164 call merge  m,   L                          /*divide items  to the left   ···*/
+0165 call merger n-m, L+m, m+T                   /*   "     "     "  "  right  ···*/
+0166 i= L;                     j= m + T
+0167 do k=T  while k<j                 /*whilst items on left exist  ···*/
+0168 if j==T+n  |  @.i<=!.j  then do;     !.k= @.i;     i= i + 1;      end
+0169 else do;     !.k= !.j;     j= j + 1;      end
+0170 end   /*k*/;                         return
+0171 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0172 pancake: procedure expose @.;   parse arg n .;               if inOrder(n)  then return
+0173 do n=n  by -1  for n-1
+0174 != @.1;   ?= 1;                do j=2  to n;    if @.j<=!  then iterate
+0175 != @.j;          ?= j
+0176 end   /*j*/
+0177 call panFlip ?;   call panFlip n
+0178 end   /*n*/;                                               return
+0179 
+0180 panFlip: parse arg y;  do i=1  for (y+1)%2; yi=y-i+1; _=@.i; @.i=@.yi; @.yi=_; end; return
+0181 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0182 quick: procedure expose @.; a.1=1; parse arg b.1; $= 1 /*access @.; get #; define pivot.*/
+0183 if inOrder(b.1)  then return
+0184 do  while  $\==0;     L= a.$;    t= b.$;     $= $-1;   if t<2  then iterate
+0185 H= L+t-1;             ?= L+t%2
+0186 if @.H<@.L  then if @.?<@.H  then do;  p=@.H;  @.H=@.L;  end
+0187 else if @.?>@.L  then p=@.L
+0188 else do;  p=@.?;  @.?=@.L;  end
+0189 else if @.?<@.L  then p=@.L
+0190 else if @.?>@.H  then do;  p=@.H;  @.H=@.L;  end
+0191 else do;  p=@.?;  @.?=@.L;  end
+0192 j= L+1;                           k=h
+0193 do forever
+0194 do j=j         while j<k & @.j<=p;  end     /*a tinie─tiny loop.*/
+0195 do k=k  by -1  while j<k & @.k>=p;  end     /*another   "    "  */
+0196 if j>=k  then leave                             /*segment finished? */
+0197 _= @.j;       @.j= @.k;             @.k= _      /*swap J&K elements.*/
+0198 end   /*forever*/
+0199 $= $+1;            k= j-1;   @.L= @.k;     @.k= p
+0200 if j<=?  then do;  a.$= j;   b.$= H-j+1;   $= $+1;  a.$= L;  b.$= k-L;    end
+0201 else do;  a.$= L;   b.$= k-L;     $= $+1;  a.$= j;  b.$= H-j+1;  end
+0202 end          /*while $¬==0*/;              return
+0203 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0204 radix:   procedure expose @.;  parse arg size,w;   mote= c2d(' ');    #= 1;   !.#._n= size
+0205 !.#._b= 1;                     if w==''  then w= 8
+0206 !.#._i= 1;  do i=1  for size;  y=@.i;  @.i= right(abs(y), w, 0);  if y<0  then @.i= '-'@.i
+0207 end  /*i*/                                            /* [↑]  negative case.*/
+0208 
+0209 do  while #\==0;  ctr.= 0;  L= 'ffff'x;   low= !.#._b;   n= !.#._n;   $= !.#._i;   H=
+0210 #= #-1                                                      /* [↑]   is the radix. */
+0211 do j=low  for n;      parse var  @.j  =($)  _  +1;    ctr._= ctr._ + 1
+0212 if ctr._==1 & _\==''  then do;  if _<<L  then L=_;    if _>>H  then H=_
+0213 end  /*  ↑↑                                       */
+0214 end   /*j*/                     /*  └┴─────◄───  <<   is a strict comparison.*/
+0215 _=                                    /*      ┌──◄───  >>    " "    "        "     */
+0216 if L>>H  then iterate                 /*◄─────┘                                    */
+0217 if L==H & ctr._==0  then do; #= #+1;  !.#._b= low;  !.#._n= n;  !.#._i= $+1;  iterate
+0218 end
+0219 L= c2d(L);   H= c2d(H);      ?= ctr._ + low;        top._= ?;          ts= mote
+0220 max= L
+0221 do k=L  to H;   _= d2c(k, 1);   c= ctr._  /* [↓]  swap 2 item radices.*/
+0222 if c>ts  then parse value  c k  with  ts max;     ?= ?+c;       top._= ?
+0223 end   /*k*/
+0224 piv= low                                    /*set PIVot to the low part of the sort*/
+0225 do  while piv<low+n
+0226 it= @.piv
+0227 do forever;     parse var it  =($)  _  +1;         c= top._ -1
+0228 if piv>=c  then leave;   top._= c;    ?= @.c;    @.c= it;    it= ?
+0229 end   /*forever*/
+0230 top._= piv;                         @.piv= it;        piv= piv + ctr._
+0231 end   /*while piv<low+n */
+0232 i= max
+0233 do  until i==max;  _= d2c(i, 1);     i= i+1;     if i>H  then i= L;     d= ctr._
+0234 if d<=mote  then do;         if d<2  then iterate;          b= top._
+0235 do k=b+1  for d-1;                       q= @.k
+0236 do j=k-1  by -1  to b  while q<<@.j;  jp= j+1;   @.jp= @.j
+0237 end   /*j*/
+0238 jp= j+1;   @.jp= q
+0239 end     /*k*/
+0240 iterate
+0241 end
+0242 #= #+1;       !.#._b= top._;       !.#._n= d;        !.#._i= $ + 1
+0243 end   /*until i==max*/
+0244 end        /*while #\==0 */
+0245 #= 0                                             /* [↓↓↓]  handle neg. and pos. arrays. */
+0246 do i=size  by -1  for size;    if @.i>=0  then iterate;     #= #+1;      @@.#= @.i
+0247 end   /*i*/
+0248 do j=1  for size;   if @.j>=0  then do;  #= #+1;   @@.#= @.j;  end;    @.j= @@.j+0
+0249 end   /*j*/                              /* [↑↑↑]  combine 2 lists into 1 list. */
+0250 return
+0251 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0252 selection: procedure expose @.;  parse arg n
+0253 do j=1  for n-1;         _= @.j;         p= j
+0254 do k=j+1  to n;      if @.k>=_  then iterate
+0255 _= @.k;              p= k      /*this item is out─of─order, swap later*/
+0256 end   /*k*/
+0257 if p==j  then iterate              /*if the same, the order of items is OK*/
+0258 _= @.j;     @.j= @.p;    @.p=      /*swap 2 items that're out─of─sequence.*/
+0259 end       /*j*/;         return
+0260 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0261 shell: procedure expose @.;   parse arg N        /*obtain the  N  from the argument list*/
+0262 i= N % 2                                  /*%   is integer division in REXX.     */
+0263 do  while i\==0
+0264 do j=i+1  to N;    k= j;      p= k-i         /*P: previous item*/
+0265 _= @.j
+0266 do  while k>=i+1 & @.p>_;   @.k= @.p;    k= k-i;    p= k-i
+0267 end   /*while k≥i+1*/
+0268 @.k= _
+0269 end          /*j*/
+0270 if i==2  then i= 1
+0271 else i= i * 5 % 11
+0272 end                 /*while i¬==0*/;                  return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                261
+002 i                262 270
+003 while            263 266
+004 j                264
+005 k                264 266
+006 p                264 266
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 =($)             -> newV1            211 227
+002 @@.              -> newV2.           246 248
+003 @.               -> newV3.           56 77 77 84 84 88 88 97 97 101 101 112 112 120 120 128 128 133 133 138 139 143 145 150 150 156 157 180 180 186 188 190 191 197 197 199 199 206 206 211 228 230 236 238 248 258 258 266 268
+004 !.               -> newV4.           148 161 162 162 168 169 204 205 206 217 217 217 242 242 242
+005 #                -> newV5            7 27 204 210 217 242 245 246 248
+006 ?                -> newV6            54 54 174 175 185 219 222 228
+007 _                -> newV7            66 69 71 77 84 88 97 101 112 120 128 133 143 145 150 180 197 211 215 221 227 233 253 255 258 265
+008 $                -> newV8            111 136 142 182 184 199 200 201 209
+009 !                -> newV9            174 175

@@ -1,0 +1,196 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Same Fringe
+0003 *           1                A                 A
+0004 *          / \              / \               / \
+0005 *         /   \            /   \             /   \
+0006 *        /     \          /     \           /     \
+0007 *       2       3        B       C         B       C
+0008 *      / \     /        / \     /         / \     /
+0009 *     4   5   6        D   E   F         D   E   F
+0010 *    /       / \      /       / \       /       / \
+0011 *   7       8   9    G       H   I     G       *   I
+0012 *
+0013 * 23.08.2012 Walter Pachl derived from
+0014 *                            http://rosettacode.org/wiki/Tree_traversal
+0015 * Tree A: A B D G E C F H I
+0016 * Tree B: A B D G E C F * I
+0017 **********************************************************************/
+0018 debug=0
+0019 node.=0
+0020 lvl=0
+0021 
+0022 Call mktree 'A'
+0023 Call mktree 'B'
+0024 
+0025 done.=0
+0026 za=root.a; leafa=node.a.za.0name
+0027 zb=root.a; leafb=node.b.zb.0name
+0028 done.a.za=1
+0029 done.b.zb=1
+0030 Do i=1 To 12
+0031 if leafa=leafb Then Do
+0032 If leafa=0 Then Do
+0033 Say 'Fringes are equal'
+0034 Leave
+0035 End
+0036 Say leafa '=' leafb
+0037 Do j=1 To 12 Until done.a.za=0
+0038 za=go_next(za,'A'); leafa=node.a.za.0name
+0039 End
+0040 done.a.za=1
+0041 Do j=1 To 12 Until done.b.zb=0
+0042 zb=go_next(zb,'B'); leafb=node.b.zb.0name
+0043 End
+0044 done.b.zb=1
+0045 End
+0046 Else Do
+0047 Select
+0048 When leafa=0 Then
+0049 Say leafb 'exceeds leaves in tree A'
+0050 When leafb=0 Then
+0051 Say leafa 'exceeds leaves in tree B'
+0052 Otherwise
+0053 Say 'First difference' leafa '<>' leafb
+0054 End
+0055 Leave
+0056 End
+0057 End
+0058 Exit
+0059 
+0060 
+0061 note:
+0062 /**********************************************************************
+0063 * add the node to the preorder list unless it's already there
+0064 * add the node to the level list
+0065 **********************************************************************/
+0066 Parse Arg z,t
+0067 If z<>0 &,                           /* it's a node                */
+0068 done.z=0 Then Do                  /* not yet done               */
+0069 wl.t=wl.t z                        /* add it to the preorder list*/
+0070 ll.lvl=ll.lvl z                    /* add it to the level list   */
+0071 done.z=1                           /* remember it's done         */
+0072 leafl=leafl node.t.z.0name
+0073 End
+0074 Return
+0075 
+0076 go_next: Procedure Expose node. lvl
+0077 /**********************************************************************
+0078 * find the next node to visit in the treewalk
+0079 **********************************************************************/
+0080 next=0
+0081 Parse arg z,t
+0082 If node.t.z.0left<>0 Then Do         /* there is a left son        */
+0083 If node.t.z.0left.done=0 Then Do   /* we have not visited it     */
+0084 next=node.t.z.0left              /* so we go there             */
+0085 node.t.z.0left.done=1            /* note we were here          */
+0086 lvl=lvl+1                        /* increase the level         */
+0087 End
+0088 End
+0089 If next=0 Then Do                    /* not moved yet              */
+0090 If node.t.z.0rite<>0 Then Do       /* there is a right son       */
+0091 If node.t.z.0rite.done=0 Then Do /* we have not visited it     */
+0092 next=node.t.z.0rite            /* so we go there             */
+0093 node.t.z.0rite.done=1          /* note we were here          */
+0094 lvl=lvl+1                      /* increase the level         */
+0095 End
+0096 End
+0097 End
+0098 If next=0 Then Do                    /* not moved yet              */
+0099 next=node.t.z.0father              /* go to the father           */
+0100 lvl=lvl-1                          /* decrease the level         */
+0101 End
+0102 Return next                          /* that's the next node       */
+0103 /* or zero if we are done     */
+0104 
+0105 mknode: Procedure Expose node.
+0106 /**********************************************************************
+0107 * create a new node
+0108 **********************************************************************/
+0109 Parse Arg name,t
+0110 z=node.t.0+1
+0111 node.t.z.0name=name
+0112 node.t.z.0father=0
+0113 node.t.z.0left =0
+0114 node.t.z.0rite =0
+0115 node.t.0=z
+0116 Return z                        /* number of the node just created */
+0117 
+0118 attleft: Procedure Expose node.
+0119 /**********************************************************************
+0120 * make son the left son of father
+0121 **********************************************************************/
+0122 Parse Arg son,father,t
+0123 node.t.son.0father=father
+0124 z=node.t.father.0left
+0125 If z<>0 Then Do
+0126 node.t.z.0father=son
+0127 node.t.son.0left=z
+0128 End
+0129 node.t.father.0left=son
+0130 Return
+0131 
+0132 attrite: Procedure Expose node.
+0133 /**********************************************************************
+0134 * make son the right son of father
+0135 **********************************************************************/
+0136 Parse Arg son,father,t
+0137 node.t.son.0father=father
+0138 z=node.t.father.0rite
+0139 If z<>0 Then Do
+0140 node.t.z.0father=son
+0141 node.t.son.0rite=z
+0142 End
+0143 node.t.father.0rite=son
+0144 le=node.t.father.0left
+0145 If le>0 Then
+0146 node.t.le.0brother=node.t.father.0rite
+0147 Return
+0148 
+0149 mktree: Procedure Expose node. root.
+0150 /**********************************************************************
+0151 * build the tree according to the task
+0152 **********************************************************************/
+0153 Parse Arg t
+0154 If t='A' Then Do
+0155 a=mknode('A',t); root.t=a
+0156 b=mknode('B',t); Call attleft b,a,t
+0157 c=mknode('C',t); Call attrite c,a,t
+0158 d=mknode('D',t); Call attleft d,b,t
+0159 e=mknode('E',t); Call attrite e,b,t
+0160 f=mknode('F',t); Call attleft f,c,t
+0161 g=mknode('G',t); Call attleft g,d,t
+0162 h=mknode('H',t); Call attleft h,f,t
+0163 i=mknode('I',t); Call attrite i,f,t
+0164 End
+0165 Else Do
+0166 a=mknode('A',t); root.t=a
+0167 b=mknode('B',t); Call attleft b,a,t
+0168 c=mknode('C',t); Call attrite c,a,t
+0169 d=mknode('D',t); Call attleft d,b,t
+0170 e=mknode('E',t); Call attrite e,b,t
+0171 f=mknode('F',t); Call attleft f,c,t
+0172 g=mknode('G',t); Call attleft g,d,t
+0173 h=mknode('*',t); Call attleft h,f,t
+0174 i=mknode('I',t); Call attrite i,f,t
+0175 End
+0176 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 t                153
+002 a                155 166
+003 root.            155 166
+004 b                156 167
+005 c                157 168
+006 d                158 169
+007 e                159 170
+008 f                160 171
+009 g                161 172
+010 h                162 173
+011 i                163 174
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

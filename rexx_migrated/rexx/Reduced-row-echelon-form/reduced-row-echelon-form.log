@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX pgm performs Reduced Row Echelon Form (RREF), AKA row canonical form on a matrix)*/
+0002 cols= 0;  w= 0;   @. =0                          /*max cols in a row; max width; matrix.*/
+0003 mat.=;                  mat.1=  '    1   2   -1      -4   '
+0004 mat.2=  '    2   3   -1     -11   '
+0005 mat.3=  '   -2   0   -3      22   '
+0006 do r=1  until mat.r=='';      _=mat.r  /*build  @.row.col  from (matrix) mat.X*/
+0007 do c=1  until _='';       parse  var   _    @.r.c  _
+0008 w= max(w, length(@.r.c) + 1) /*find the maximum width of an element.*/
+0009 end   /*c*/
+0010 cols= max(cols, c)                     /*save the maximum number of columns.  */
+0011 end   /*r*/
+0012 rows= r-1                                        /*adjust the row count (from DO loop). */
+0013 call showMat  'original matrix'                  /*display the original matrix──►screen.*/
+0014 != 1                                             /*set the working column pointer to  1.*/
+0015 /* ┌──────────────────────◄────────────────◄──── Reduced Row Echelon Form on matrix.*/
+0016 do r=1  for rows  while cols>!                 /*begin to perform the heavy lifting.  */
+0017 j= r                                           /*use a subsitute index for the DO loop*/
+0018 do  while  @.j.!==0;    j= j + 1
+0019 if j==rows  then do;    j= r;     != ! + 1;    if cols==!  then leave r;     end
+0020 end      /*while*/
+0021 /* [↓]  swap rows J,R (but not if same)*/
+0022 do _=1  for cols  while j\==r;    parse value   @.r._  @.j._    with    @.j._  @._._
+0023 end      /*_*/
+0024 ?= @.r.!
+0025 do d=1  for cols  while ?\=1;     @.r.d= @.r.d / ?
+0026 end      /*d*/                             /* [↑] divide row J by @.r.p ──unless≡1*/
+0027 do k=1  for rows;             ?= @.k.! /*subtract (row K)   @.r.s  from row K.*/
+0028 if k==r | ?=0  then iterate            /*skip  if  row K is the same as row R.*/
+0029 do s=1  for cols;          @.k.s= @.k.s   -   ? * @.r.s
+0030 end   /*s*/
+0031 end      /*k*/                         /* [↑]  for the rest of numbers in row.*/
+0032 != !+1                                         /*bump the working column pointer.     */
+0033 end          /*r*/
+0034 
+0035 call showMat  'matrix RREF'                      /*display the reduced row echelon form.*/
+0036 exit                                             /*stick a fork in it,  we're all done. */
+0037 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0038 showMat: parse arg title;          say;  say center(title, 3 + (cols+1) * w, '─');    say
+0039 do      r=1  for rows;   _=
+0040 do c=1  for cols
+0041 if @.r.c==''  then do;   say "***error*** matrix element isn't defined:"
+0042 say 'row'    r",  column"    c'.';        exit 13
+0043 end
+0044 _= _  right(@.r.c, w)
+0045 end   /*c*/
+0046 say _                                 /*display a matrix row to the terminal.*/
+0047 end        /*r*/;       return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 title            38
+002 r                39
+003 c                40
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 7 22 22 25 29
+002 _                -> newV2            6 7 7 22 39 44
+003 !                -> newV3            14 19 32
+004 ?                -> newV4            24 27

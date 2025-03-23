@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 zz= 'llo world!'          /*─────────────── using literal abuttal.────────────*/
+0002 zz= 'he'zz                /*This won't work if the variable name is  X  or  B */
+0003 say zz
+0004 
+0005 
+0006 gg = "llo world!"         /*─────────────── using literal concatenation.──────*/
+0007 gg = 'he' || gg
+0008 say gg
+0009 
+0010 
+0011 aString= 'llo world!'     /*─────────────── using variable concatenation.─────*/
+0012 bString= "he"
+0013 aString= bString || aString
+0014 say aString
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 zz               1 2
+002 gg               6 7
+003 aString          11 13
+004 bString          12
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,65 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program solves the knapsack/unbounded problem: highest value, weight, and volume.*/
+0002 
+0003 /*   value                   weight                   volume */
+0004 maxPanacea= 0              /*  ═══════                  ══════                   ══════ */
+0005 maxIchor  = 0;      panacea.$ = 3000  ;      panacea.w =  0.3 ;       panacea.v = 0.025
+0006 maxGold   = 0;        ichor.$ = 1800  ;        ichor.w =  0.2 ;         ichor.v = 0.015
+0007 max$      = 0;         gold.$ = 2500  ;         gold.w =  2   ;          gold.v = 0.002
+0008 now.      = 0;         sack.$ =    0  ;         sack.w = 25   ;          sack.v = 0.25
+0009 
+0010 maxPanacea= min(sack.w / panacea.w,     sack.v / panacea.v)
+0011 maxIchor  = min(sack.w /   ichor.w,     sack.v /   ichor.v)
+0012 maxGold   = min(sack.w /    gold.w,     sack.v /    gold.v)
+0013 
+0014 do     p=0  to maxPanacea
+0015 do   i=0  to maxIchor
+0016 do g=0  to maxGold
+0017 now.$= g * gold.$     +     i * ichor.$     +     p * panacea.$
+0018 now.w= g * gold.w     +     i * ichor.w     +     p * panacea.w
+0019 now.v= g * gold.v     +     i * ichor.v     +     p * panacea.v
+0020 if now.w > sack.w  |  now.v  > sack.v  then iterate
+0021 if now.$ > max$  then do;   maxP= p;          maxI= i;            maxG= g
+0022 max$= now.$;      maxW= now.w;        maxV= now.v
+0023 end
+0024 end  /*g  (gold)   */
+0025 end    /*i  (ichor)  */
+0026 end      /*p  (panacea)*/
+0027 
+0028 Ctot = maxP + maxI + maxG;                 L = length(Ctot) + 1
+0029 say '    panacea in sack:'     right(maxP, L)
+0030 say '     ichors in sack:'     right(maxI, L)
+0031 say ' gold items in sack:'     right(maxG, L)
+0032 say '════════════════════'     copies("═", L)
+0033 say 'carrying a total of:'     right(cTot, L)
+0034 say left('', 40)     "total  value: "        max$ / 1
+0035 say left('', 40)     "total weight: "        maxW / 1
+0036 say left('', 40)     "total volume: "        maxV / 1
+0037 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 maxPanacea       4 10
+002 maxIchor         5 11
+003 panacea.         5 5 5
+004 maxGold          6 12
+005 ichor.           6 6 6
+006 max$             7 22
+007 gold.            7 7 7
+008 now.             8 17 18 19
+009 sack.            8 8 8
+010 p                14
+011 i                15
+012 g                16
+013 maxP             21
+014 maxI             21
+015 maxG             21
+016 maxW             22
+017 maxV             22
+018 Ctot             28
+019 L                28
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

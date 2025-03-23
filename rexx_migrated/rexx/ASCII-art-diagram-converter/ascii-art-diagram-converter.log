@@ -1,0 +1,87 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program  interprets  an  ASCII art diagram  for  names  and  their bit length(s).*/
+0002 numeric digits 100                               /*be able to handle large numbers.     */
+0003 er= '***error*** illegal input txt'              /*a literal used for error messages.   */
+0004 parse arg iFID test .                            /*obtain optional input─FID & test─data*/
+0005 if iFID=='' | iFID==","  then iFID= 'ASCIIART.TXT'               /*use the default iFID.*/
+0006 if test=='' | test==","  then test= 'cafe8050800000808080000a'   /* "   "     "    data.*/
+0007 w= 0;         wb= 0;      !.= 0;     $=          /*W   (max width name),  bits,  names. */
+0008 @.= 0;        @.0= 1                             /*!.α   is structure bit position.     */
+0009 /* [↓]  read the input text file (iFID)*/
+0010 do j=1  while lines(iFID)\==0;     q= linein(iFID);             say  '■■■■■text►'q
+0011 q= strip(q);          if q==''  then iterate /*strip leading and trailing blanks.   */
+0012 _L= left(q, 1);       _R= right(q, 1)        /*get extreme left and right characters*/
+0013 /* [↓]  is this record an "in-between"?*/
+0014 if _L=='+'  then do;  if verify(q, '+-')\==0  then say er    "(invalid grid):"     q
+0015 iterate                /*skip this record, it's a single "+". */
+0016 end
+0017 if _L\=='|'  |  _R\=="|"   then do;   say er  '(boundary): '   q;   iterate
+0018 end
+0019 do  until q=='|';  parse var  q    '|'  x  "|"  -1  q   /*parse record for names.*/
+0020 n= strip(x);       w= max(w, length(n) );   if n==''  then leave     /*is N null?*/
+0021 if words(n)\==1         then do;  say er '(invalid name): '  n;     iterate j
+0022 end          /* [↑]  add more name validations.     */
+0023 $$= $;     nn= n;  upper $$ n             /*$$ and N  could be a mixed─case name.*/
+0024 if wordpos(nn, $$)\==0  then do;  say er '(dup name):'       n;     iterate j
+0025 end
+0026 $= $ n                                    /*add the   N   (name)  to the $ list. */
+0027 #= words($);     !.#= (length(x) + 1) % 3 /*assign the number of bits for  N.    */
+0028 wb= max(wb, !.#)                          /*max # of bits; # names prev. to this.*/
+0029 prev= # - 1;     @.#= @.prev + !.prev     /*number of names previous to this name*/
+0030 end   /*until*/
+0031 end      /*j*/
+0032 say
+0033 if j==1  then do;   say er   '   (file not found): '     iFID;            exit 12
+0034 end
+0035 do k=1  for words($)
+0036 say right( word($, k), w)right(!.k, 4)        "bits,  bit position:"right(@.k, 5)
+0037 end   /*k*/
+0038 say                                              /* [↓]  Any (hex) data to test?        */
+0039 L= length(test);      if L==0  then exit         /*stick a fork in it,  we're all done. */
+0040 bits= x2b(test)                                  /*convert test data to a bit string.   */
+0041 wm= length( x2d( b2x( copies(1, wb) ) ) )  +  1  /*used for displaying max width numbers*/
+0042 say 'test (hex)='    test                 "    length="   L          'hexadecimal digits.'
+0043 say
+0044 do r=1  by 8+8  to L*4;   _1= substr(bits, r, 8, 0);    _2= substr(bits, r+8, 8, 0)
+0045 say 'test (bit)='    _1   _2   "   hex="    lower( b2x(_1) )     lower( b2x(_2) )
+0046 end   /*r*/
+0047 say
+0048 do m=1  for words($)                      /*show some hexadecimal strings──►term.*/
+0049 _= lower( b2x( substr( bits, @.m, !.m) )) /*show the hex string in lowercase.    */
+0050 say right( word($, m), w+2)     '  decimal='right( x2d(_), wm)      "      hex="  _
+0051 end   /*m*/
+0052 exit 0                                           /*stick a fork in it,  we're all done. */
+0053 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0054 lower: l= 'abcdefghijklmnopqrstuvwxyz';  u=l;  upper u;    return translate( arg(1), l, u)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 q                19 19
+002 x                19
+003 n                20
+004 w                20
+005 nn               23
+006 wb               28
+007 prev             29
+008 k                35
+009 L                39
+010 bits             40
+011 wm               41
+012 r                44
+013 m                48
+014 u                54
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           7 27
+002 @.               -> newV2.           8 8 29
+003 _L               -> newV3            12
+004 _R               -> newV4            12
+005 $$               -> newV5            23
+006 _1               -> newV6            44
+007 _2               -> newV7            44
+008 $                -> newV8            7 26
+009 #                -> newV9            27
+010 _                -> newV10           49

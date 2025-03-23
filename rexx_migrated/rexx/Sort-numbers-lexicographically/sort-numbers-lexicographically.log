@@ -1,0 +1,52 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX pgm displays a horizontal list of a  range of numbers  sorted  lexicographically.*/
+0002 parse arg LO HI INC .                            /*obtain optional arguments from the CL*/
+0003 if  LO=='' |  LO==","  then  LO=  1              /*Not specified?  Then use the default.*/
+0004 if  HI=='' |  HI==","  then  HI= 13              /* "      "         "   "   "     "    */
+0005 if INC=='' | INC==","  then INC=  1              /* "      "         "   "   "     "    */
+0006 #= 0                                             /*for actual sort, start array with  1.*/
+0007 do j=LO  to  HI  by  INC       /*construct an array from  LO   to  HI.*/
+0008 #= # + 1;        @.#= j / 1    /*bump counter;  define array element. */
+0009 end   /*j*/                    /* [↑]  Also, normalize the element #. */
+0010 call Lsort #                                     /*sort numeric array with a simple sort*/
+0011 $=                                               /*initialize a horizontal numeric list.*/
+0012 do k=1  for  #;    $= $','@.k  /*construct      "         "      "    */
+0013 end   /*k*/                    /* [↑]  prefix each number with a comma*/
+0014 /* [↓]  display a continued  SAY  text.*/
+0015 say 'for   '  LO"──►"HI     ' by '     INC     " (inclusive), "         # ,
+0016 ' elements sorted lexicographically:'
+0017 say  '['strip($, "L", ',')"]"                    /*strip leading comma, bracket the list*/
+0018 exit                                             /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 Lsort: procedure expose @.; parse arg n;  m= n-1 /*N: is the number of @ array elements.*/
+0021 do m=m  by -1  until ok;          ok= 1   /*keep sorting the  @ array until done.*/
+0022 do j=1  for m;  k= j+1;  if @.j>>@.k  then parse value @.j @.k 0 with @.k @.j ok
+0023 end   /*j*/                            /* [↑]  swap 2 elements, flag as ¬done.*/
+0024 end      /*m*/;    return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                20
+002 m                20 21
+003 ok               21 22
+004 j                22
+005 k                22
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           8 22 22
+002 #                -> newV2            6 8
+003 $                -> newV3            11 12

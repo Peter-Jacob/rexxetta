@@ -1,0 +1,102 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program to reads a (DOS) directory  and  finds and displays files that identical.*/
+0002 sep=center(' files are identical in size and content: ',79,"═")    /*define the header. */
+0003 parse arg !;     if !all(arg())  then exit                         /*boilerplate HELP(?)*/
+0004 signal on halt;  signal on novalue;  signal on syntax              /*handle exceptions, */
+0005 
+0006 if \!dos  then call err 'this program requires the DOS [environment].'
+0007 call getTFID                                     /*defines a temporary  File ID for DOS.*/
+0008 arg maxSize aDir                                 /*obtain optional arguments from the CL*/
+0009 if maxSize='' | maxSize="," then maxSize=1000000 /*filesize limit (in bytes) [1 million]*/
+0010 if \isInt(maxSize)      then call err  "maxSize isn't an integer:"       maxSize
+0011 if maxSize<0            then call err  "maxSize can't be negative:"      maxSize
+0012 if maxSize=0            then call err  "maxSize can't be zero:"          maxSize
+0013 aDir=strip(aDir)                                 /*remove any leading or trailing blanks*/
+0014 if right(aDir,3)=='*.*' then aDir=substr(aDir,1,length(aDir)-3)   /*adjust the dir name.*/
+0015 if right(aDir,1)\=='\'  then aDir=aDir"\"        /*possibly add a trailing backslash [\]*/
+0016 @dir    = 'DIR'                                  /*literal for the (DOS)  DIR  command. */
+0017 @dirNots= '/a-d-s-h'                             /*ignore DIRs, SYSTEM, and HIDDEN files*/
+0018 @dirOpts= '/oS /s'                               /*sort DIR's (+ subdirs) files by size.*/
+0019 @filter = '| FIND "/"'                           /*the "lines" must have a slash [/].   */
+0020 @erase  = 'ERASE'                                /*literal for the (DOS)  ERASE command.*/
+0021 @dir aDir @dirNots @dirOpts @filter '>' tFID     /*(DOS) DIR  output ──► temporary file.*/
+0022 pFN=                                             /*the previous  filename and filesize. */
+0023 pSZ=;  do j=0  while lines(tFID)\==0             /*process each of the files in the list*/
+0024 aLine=linein(tFID)                        /*obtain (DOS) DIR's output about a FID*/
+0025 parse var aLine . . sz fn                 /*obtain the filesize and its fileID.  */
+0026 sz=space(translate(sz,,','),0)            /*elide any commas from the size number*/
+0027 if sz>maxSize  then leave                 /*Is the file > maximum?  Ignore file. */
+0028 /* [↓]  files identical?  (1st million)*/
+0029 if sz==pSZ  then  if charin(aDir||pFN,1,sz)==charin(aDir||FN,1,sz)  then do
+0030 say sep
+0031 say pLine
+0032 say aLine
+0033 say
+0034 end
+0035 pSZ=sz;      pFN=FN;      pLine=aLine     /*remember the previous stuff for later*/
+0036 end   /*j*/
+0037 
+0038 say j  'file's(j)  "examined in"  aDir           /*show information to the screen.*/
+0039 if lines(tFID)\==0  then 'ERASE'  tFID           /*do housecleaning  (delete temp file).*/
+0040 exit                                             /*stick a fork in it,  we're all done. */
+0041 /*═════════════════════════════general 1─line subs══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════*/
+0042 !all:  !!=!;!=space(!);upper !;call !fid;!nt=right(!var('OS'),2)=="NT";!cls=word('CLS VMFCLEAR CLRSCREEN',1+!cms+!tso*2);if arg(1)\==1 then return 0;if wordpos(!,"? ?SAMPLES ?AUTHOR ?FLOW")==0 then return 0;!call=']$H';call "$H" !fn !;!call=;return 1
+0043 !cal:  if symbol('!CALL')\=="VAR" then !call=; return !call
+0044 !env:  !env='ENVIRONMENT'; if !sys=="MSDOS" | !brexx | !r4 | !roo  then !env='SYSTEM'; if !os2  then !env="OS2"!env; !ebcdic=1=='f1'x;     return
+0045 !fid:  parse upper source !sys !fun !fid . 1 . . !fn !ft !fm .; call !sys; if !dos  then do; _=lastpos('\',!fn); !fm=left(!fn,_); !fn=substr(!fn,_+1); parse var !fn !fn "." !ft; end;     return word(0 !fn !ft !fm, 1+('0'arg(1)))
+0046 !rex:  parse upper version !ver !vernum !verdate .; !brexx='BY'==!vernum; !kexx="KEXX"==!ver; !pcrexx='REXX/PERSONAL'==!ver | "REXX/PC"==!ver; !r4='REXX-R4'==!ver; !regina="REXX-REGINA"==left(!ver,11); !roo='REXX-ROO'==!ver; call !env;   return
+0047 !sys:  !cms=!sys=='CMS'; !os2=!sys=="OS2"; !tso=!sys=='TSO' | !sys=="MVS"; !vse=!sys=='VSE'; !dos=pos("DOS",!sys)\==0|pos('WIN',!sys)\==0|!sys=="CMD"; call !rex;                          return
+0048 !var:  call !fid; if !kexx  then return space(dosenv(arg(1)));             return space(value(arg(1),,!env))
+0049 err:       say;  say;  say  center(' error! ', 60, "*");  say;  do j=1  for arg();  say arg(j);  say;  end;  say;  exit 13
+0050 getdTFID:  tfid=p(!var("TMP") !var('TEMP') homedrive()"\"); if substr(tfid,2,1)==':'&substr(tfid,3,1)\=="\" then tfid=insert('\',t,2);        return strip(tfid,"T",'\')"\"arg(1)'.'arg(2)
+0051 getTFID:   if symbol('TFID')=="LIT" then tfid=; if tfid\=='' then return tfid; gfn=word(arg(1) !fn,1);gft=word(arg(2) "TMP",1); tfid='TEMP';if !tso  then tfid=gfn"."gft;if !cms  then tfid=gfn','gft",A4";if !dos then tfid=getdTFID(gfn,gft);return tfid
+0052 halt:      call err 'program has been halted.'
+0053 homedrive: if symbol('HOMEDRIVE')\=="VAR"  then homedrive=p(!var('HOMEDRIVE') "C:");   return homedrive
+0054 isint:     return datatype(arg(1),'W')
+0055 novalue:   syntax:   call err 'REXX program' condition("C") 'error',condition("D"),'REXX source statement (line' sigl"):",sourceline(sigl)
+0056 p:         return word(arg(1),1)
+0057 s:         if arg(1)==1  then return arg(3);   return word(arg(2) 's',1)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 version          46
+002 j                49
+003 tfid             50 51 51 51 51
+004 gfn              51
+005 gft              51
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @dirNots         -> newV1            17
+002 @dirOpts         -> newV2            18
+003 !verdate         -> newV3            46
+004 @filter          -> newV4            19
+005 !ebcdic          -> newV5            44
+006 !vernum          -> newV6            46
+007 !pcrexx          -> newV7            46
+008 !regina          -> newV8            46
+009 @erase           -> newV9            20
+010 !brexx           -> newV10           46
+011 !call            -> newV11           42 42
+012 !kexx            -> newV12           46
+013 @dir             -> newV13           16
+014 !cls             -> newV14           42
+015 !env             -> newV15           44 44
+016 !sys             -> newV16           45
+017 !fun             -> newV17           45
+018 !fid             -> newV18           45
+019 !ver             -> newV19           46
+020 !roo             -> newV20           46
+021 !os2             -> newV21           47
+022 !tso             -> newV22           47
+023 !vse             -> newV23           47
+024 !dos             -> newV24           47
+025 !nt              -> newV25           42
+026 !fn              -> newV26           45 45 45 45
+027 !ft              -> newV27           45 45
+028 !fm              -> newV28           45 45
+029 !r4              -> newV29           46
+030 !                -> newV30           3 42
+031 _                -> newV31           45

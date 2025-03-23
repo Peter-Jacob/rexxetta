@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program displays the   (x, y)  coördinates  (at the end of a swinging pendulum). */
+0002 parse arg cycles Plength theta .                 /*obtain optional argument from the CL.*/
+0003 if  cycles=='' |  cycles==","  then  cycles=  60 /*Not specified?  Then use the default.*/
+0004 if pLength=='' | pLength==","  then pLength=  10 /* "      "         "   "   "     "    */
+0005 if   theta=='' |   theta==","  then   theta=  30 /* "      "         "   "   "     "    */
+0006 theta= theta / 180 * pi()                        /* 'cause that's the way  Ada  did it. */
+0007 was= time('R')                                   /*obtain the current elapsed time (was)*/
+0008 g= -9.81                                         /*gravitation constant  (for earth).   */
+0009 speed= 0                                         /*velocity of the pendulum, now resting*/
+0010 do cycles;            call delay 1/20   /*swing the pendulum a number of times.*/
+0011 now= time('E')                          /*obtain the current time (in seconds).*/
+0012 duration= now - was                     /*calculate duration since last cycle. */
+0013 acceleration= g / pLength * sin(theta)  /*compute the pendulum acceleration.   */
+0014 x= sin(theta) * pLength                 /*calculate  X  coördinate of pendulum.*/
+0015 y= cos(theta) * pLength                 /*    "      Y       "           "     */
+0016 speed= speed + acceleration * duration  /*calculate "   speed      "     "     */
+0017 theta= theta + speed        * duration  /*    "     "   angle      "     "     */
+0018 was= now                                /*save the elapsed time as it was then.*/
+0019 say right('X: ',20)   fmt(x)      right("Y: ", 10)        fmt(y)
+0020 end   /*cycles*/
+0021 exit 0                                           /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 fmt:  procedure; parse arg z;  return left('', z>=0)format(z, , digits() - 1)   /*align#*/
+0024 pi:   pi= 3.1415926535897932384626433832795028841971693993751058209749445923078; return pi
+0025 r2r:  return arg(1)  //  (pi() * 2)              /*normalize radians ──► a unit circle. */
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 cos:  procedure; parse arg x; x=r2r(x); numeric fuzz min(6,digits()-3);  z=1;  _=1;  x=x*x
+0028 p=z; do k=2  by 2; _=-_*x/(k*(k-1)); z=z+_;  if z=p  then leave; p=z; end;  return z
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 sin:  procedure; parse arg x; x=r2r(x); _=x; numeric fuzz min(5, max(1,digits()-3)); q=x*x
+0031 z=x;   do k=2  by 2  until p=z;  p= z;  _= -_*q/(k*k+k);   z= z+_;   end;   return z
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                30 30
+002 q                30
+003 z                31 31
+004 k                31
+005 p                31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            27 28 30 31

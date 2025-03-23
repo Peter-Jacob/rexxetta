@@ -1,0 +1,24 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX program determines if the   STDIN   is a   terminal device   or  other.          */
+0002 signal on syntax                                 /*if syntax error, then jump ──► SYNTAX*/
+0003 say  'output device:'  testSTDIN()               /*displays   terminal   ──or──   other */
+0004 exit 0                                           /*stick a fork in it,  we're all done. */
+0005 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0006 testSTDIN: syntax.=1;  signal .; .: z.= sigl;  call linein ,2; ..:  syntax.= 0; return z..
+0007 /* [↑]  must/should be all on one line.*/
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 syntax:  z..= 'other'                            /*when a SYNTAX error occurs, come here*/
+0010 if syntax.  then do                              /*are we handling  STDIN  thingy error?*/
+0011 if sigl==z.  then z..= 'terminal';    signal ..     /*is this a stdin ?*/
+0012 end                             /* [↑]   can't use a   RETURN   here.  */
+0013 
+0014 /*    ···  handle other REXX syntax errors here  ···   */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z.               11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

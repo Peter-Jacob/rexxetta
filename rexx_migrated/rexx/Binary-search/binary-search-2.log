@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /* REXX program finds a value in a list of integers                    */
+0002 /*  using an iterative binary search.                                  */
+0003 list=3 7 13 19 23 31 43 47 61 73 83 89 103 109 113 131 139 151 167 181 193 199,
+0004 229 233 241 271 283 293 313 317 337 349 353 359 383 389 401 409 421 433 443,
+0005 449 463 467 491 503 509 523 547 571 577 601 619 643 647 661 677 683 691 709,
+0006 743 761 773 797 811 823 829 839 859 863 883 887 911 919 941 953 971 983 1013
+0007 /* list: a list of some low weak primes.                               */
+0008 Parse Arg needle                      /* get a number to be looked for */
+0009 If needle=="" Then
+0010 Call exit "***error***  no argument specified."
+0011 low=1
+0012 high=words(list)
+0013 Do While low<=high
+0014 mid=(low+high)%2
+0015 y=word(list,mid)
+0016 Select
+0017 When y=needle Then
+0018 Call exit needle "is in the list, its index is:" mid'.'
+0019 When y>needle Then         /* too high                             */
+0020 high=mid-1               /* set upper nound                      */
+0021 Otherwise                  /* too low                              */
+0022 low=mid+1                /* set lower limit                      */
+0023 End
+0024 End
+0025 Call exit needle "wasn't found in the list."
+0026 
+0027 exit: Say arg(1)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 needle           8
+002 low              11 22
+003 high             12 20
+004 While            13
+005 mid              14
+006 y                15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,91 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*--------------------------------------------------------------------
+0002 * 19.09.2014 Walter Pachl translated from FORTRAN
+0003 * While this program works with all REXX interpreters,
+0004 * see section ooRexx for a version that utilizes the ooRexx features
+0005 *-------------------------------------------------------------------*/
+0006 maxweight = 15.0
+0007 input.0=0
+0008 Call init_input 'beef',    3.8, 36.0
+0009 Call init_input 'pork',    5.4, 43.0
+0010 Call init_input 'ham',     3.6, 90.0
+0011 Call init_input 'greaves', 2.4, 45.0
+0012 Call init_input 'flitch',  4.0, 30.0
+0013 Call init_input 'brawn',   2.5, 56.0
+0014 Call init_input 'welt',    3.7, 67.0
+0015 Call init_input 'salami',  3.0, 95.0
+0016 Call init_input 'sausage', 5.9, 98.0
+0017 
+0018 /* sort the items by descending value per unit of weight */
+0019 Do i = 1 to input.0
+0020 Parse Var input.i name '*' weight '*' value
+0021 vpu=value/weight;
+0022 If i=1 Then Do
+0023 item.0=1
+0024 item.1=input.1
+0025 vpu.1=vpu
+0026 End
+0027 Else Do
+0028 Do ii=1 To item.0
+0029 If vpu.ii<vpu Then
+0030 Leave
+0031 End
+0032 Do jj=item.0 To ii By -1
+0033 jj1=jj+1
+0034 item.jj1=item.jj
+0035 vpu.jj1=vpu.jj
+0036 End
+0037 item.ii=input.i
+0038 vpu.ii=vpu
+0039 item.0=item.0+1
+0040 End
+0041 End
+0042 Say '#    vpu name    weight   value'
+0043 Do i=1 To item.0
+0044 Parse Var item.i name '*' weight '*' value
+0045 Say i format(vpu.i,2,3) left(name,7) format(weight,2,3) format(value,3,3)
+0046 End
+0047 
+0048 total_weight=0
+0049 total_value =0
+0050 Say ' '
+0051 Say 'Item     Weight   Value'
+0052 Do i=1 To item.0
+0053 Parse Var item.i name '*' weight '*' value
+0054 if total_weight+weight < maxweight then Do
+0055 total_weight = total_weight + weight
+0056 total_value  = total_value + value
+0057 Say left(name,7) format(weight,3,3) format(value,3,3)
+0058 End
+0059 Else Do
+0060 weight=maxweight-total_weight
+0061 value=weight*vpu.i
+0062 total_value = total_value + value
+0063 total_weight = maxweight
+0064 Say left(name,7) format(weight,3,3) format(value,3,3)
+0065 Leave
+0066 End
+0067 End
+0068 Say copies('-',23)
+0069 Say 'total ' format(total_weight,4,3) format(total_value,3,3)
+0070 Exit
+0071 
+0072 init_input: Procedure Expose input.
+0073 Parse Arg name,weight,value
+0074 i=input.0+1
+0075 input.i=name'*'weight'*'value
+0076 input.0=i
+0077 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 name             73
+002 weight           73
+003 value            73
+004 i                74
+005 input.           75 76
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

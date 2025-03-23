@@ -1,0 +1,50 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program shows  different ways to  compare  two character strings.*/
+0002 say 'This is an '      word('ASCII EBCDIC', 1+(1=='f1'))        ' system.'
+0003 say
+0004 cat = 'cat'
+0005 animal = 'dog'
+0006 if animal =  cat  then say $(animal) "is lexically equal to"        $(cat)
+0007 if animal \= cat  then say $(animal) "is not lexically equal to"    $(cat)
+0008 if animal >  cat  then say $(animal) "is lexically higher than"     $(cat)
+0009 if animal <  cat  then say $(animal) "is lexically lower than"      $(cat)
+0010 if animal >  cat  then say $(animal) "is not lexically lower than"  $(cat)
+0011 if animal <  cat  then say $(animal) "is not lexically higher than" $(cat)
+0012 
+0013 /*──── [↑]  The above comparative operators don't */
+0014 /*────consider any leading and/or trailing white- */
+0015 /*────space when making comparisons, but the case */
+0016 /*────is honored  (uppercase, lowercase).         */
+0017 
+0018 fatcat='  cat  '      /*pad the cat with leading and trailing blanks.   */
+0019 if fatcat =  cat  then say $(fatcat) " is equal to"                 $(cat)
+0020 
+0021 /*────To consider any whitespace in a comparison, */
+0022 /*────we need to use strict comparative operators.*/
+0023 
+0024 if fatcat == cat  then say $(fatcat) "is strictly equal to"         $(cat)
+0025 
+0026 /*────To perform caseless comparisons, the easiest*/
+0027 /*────method would be to uppercase a copy of both */
+0028 /*────operands.  Uppercasing is only done for the */
+0029 /*────Latin (or Roman) alphabet in REXX.    [↓]   */
+0030 kat='cAt'
+0031 if caselessComp(cat,kat)  then  say $(cat) 'and' $(kat) "are equal caseless"
+0032 exit                                   /*stick a fork in it, we're done.*/
+0033 /*──────────────────────────────────$ subroutine────────────────────────*/
+0034 $:  return '──►'arg(1)'◄──'            /*bracket the string with ──►α◄──*/
+0035 /*──────────────────────────────────CASELESSCOMP subroutine─────────────*/
+0036 caselessComp:  procedure;  arg a,b     /*ARG  uppercases the A & B args.*/
+0037 return a==b             /*if exactly equal, return  1.   */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 cat              4
+002 animal           5
+003 fatcat           18
+004 kat              30
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

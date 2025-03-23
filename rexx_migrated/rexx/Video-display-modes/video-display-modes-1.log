@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program to switch video display modes based on columns and lines.*/
+0002 
+0003 parse arg cols lines .
+0004 'MODE'   "CON:       COLS="cols     'LINES='lines
+0005 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 cols             3
+002 lines            3
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

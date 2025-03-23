@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program finds the largest proper divisors of all numbers  (up to a given limit). */
+0002 parse arg n cols .                               /*obtain optional argument from the CL.*/
+0003 if    n=='' |    n==","  then    n= 101          /*Not specified?  Then use the default.*/
+0004 if cols=='' | cols==","  then cols=  10          /* "      "         "   "   "     "    */
+0005 w= length(n)  +  1                               /*W:  the length of any output column. */
+0006 @LPD = "largest proper divisor of  N,  where  N  < "       n
+0007 idx = 1                                          /*initialize the index (output counter)*/
+0008 say ' index │'center(@LPD,  1 + cols*(w+1)     ) /*display the title for the output.    */
+0009 say '───────┼'center(""  ,  1 + cols*(w+1), '─') /*   "     "   sep   "   "     "       */
+0010 $=                                               /*a list of largest proper divs so far.*/
+0011 do j=1  for n-1;  $= $ right(LPDIV(j), w)   /*add a largest proper divisor ──► list*/
+0012 if j//cols\==0  then iterate                /*have we populated a line of output?  */
+0013 say center(idx, 7)'│'  substr($, 2);   $=   /*display what we have so far  (cols). */
+0014 idx= idx + cols                             /*bump the  index  count for the output*/
+0015 end   /*j*/
+0016 
+0017 if $\==''  then say center(idx, 7)"│"  substr($, 2)  /*possible display residual output.*/
+0018 say '───────┴'center(""  ,  1 + cols*(w+1), '─') /*display the foot separator.          */
+0019 exit 0                                           /*stick a fork in it,  we're all done. */
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 LPDIV:  procedure; parse arg x;  if x<4  then return 1   /*obtain  X;  test if  X < 4.  */
+0022 odd= x // 2;    beg= x % 2                       /*use BEG as the first divisor.*/
+0023 if odd  then if beg//2==0  then beg= beg -  1    /*Is X odd?  Then make BEG odd.*/
+0024 do k=beg  by -1-odd           /*begin at halfway point and decrease. */
+0025 if x//k==0  then return k     /*Remainder=0?  Got largest proper div.*/
+0026 end   /*k*/
+0027 return 1     /*If we get here,  then  X  is a prime.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                21
+002 odd              22
+003 beg              22 23
+004 k                24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @LPD             -> newV1            6
+002 $                -> newV2            10 11 13

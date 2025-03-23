@@ -1,0 +1,15 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*output from parse version (almost all REXX versions)  */
+0002 /*      theREXXinterpreterName level mm Mon yyyy        */
+0003 parse version . level .
+0004 if level<4  then exit
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 version          3
+002 level            3
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

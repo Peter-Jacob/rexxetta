@@ -1,0 +1,75 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates how to  set and display  values  for an  associative array. */
+0002 /*╔════════════════════════════════════════════════════════════════════════════════════╗
+0003 ║ The (below) two REXX statements aren't really necessary,  but it shows how to      ║
+0004 ║ define any and all entries in a associative array so that if a "key" is used that  ║
+0005 ║ isn't defined, it can be displayed to indicate such,  or its value can be checked  ║
+0006 ║ to determine if a particular associative array element has been set (defined).     ║
+0007 ╚════════════════════════════════════════════════════════════════════════════════════╝*/
+0008 stateF.= ' [not defined yet] '                   /*sets any/all state  former  capitals.*/
+0009 stateN.= ' [not defined yet] '                   /*sets any/all state names.            */
+0010 w      = 0                                       /*the maximum  length  of a state name.*/
+0011 stateL =
+0012 /*╔════════════════════════════════════════════════════════════════════════════════════╗
+0013 ║ The list of states (empty as of now).  It's convenient to have them in alphabetic  ║
+0014 ║ order;  they'll be listed in the order as they are in the REXX program below).     ║
+0015 ║ In REXX,  when a key is used  (for a stemmed array,  as they are called in REXX),  ║
+0016 ║ and the key isn't assigned a value,  the key's  name  is stored (internally)  as   ║
+0017 ║ uppercase  (Latin)  characters  (as in the examples below.   If the  key  has a    ║
+0018 ║ a value, the key's value is used as is  (i.e.:  no upper translation is performed).║
+0019 ║ Actually,  any characters can be used,  including blank(s)  and  non─displayable   ║
+0020 ║ characters  (including   '00'x,   'ff'x,   commas,   periods,   quotes,   ···).    ║
+0021 ╚════════════════════════════════════════════════════════════════════════════════════╝*/
+0022 call setSC 'al',  "Alabama"            ,  'Tuscaloosa'
+0023 call setSC 'ca',  "California"         ,  'Benicia'
+0024 call setSC 'co',  "Colorado"           ,  'Denver City'
+0025 call setSC 'ct',  "Connecticut"        ,  'Hartford and New Haven  (jointly)'
+0026 call setSC 'de',  "Delaware"           ,  'New-Castle'
+0027 call setSC 'ga',  "Georgia"            ,  'Milledgeville'
+0028 call setSC 'il',  "Illinois"           ,  'Vandalia'
+0029 call setSC 'in',  "Indiana"            ,  'Corydon'
+0030 call setSC 'ia',  "Iowa"               ,  'Iowa City'
+0031 call setSC 'la',  "Louisiana"          ,  'New Orleans'
+0032 call setSC 'me',  "Maine"              ,  'Portland'
+0033 call setSC 'mi',  "Michigan"           ,  'Detroit'
+0034 call setSC 'ms',  "Mississippi"        ,  'Natchez'
+0035 call setSC 'mo',  "Missouri"           ,  'Saint Charles'
+0036 call setSC 'mt',  "Montana"            ,  'Virginia City'
+0037 call setSC 'ne',  "Nebraska"           ,  'Lancaster'
+0038 call setSC 'nh',  "New Hampshire"      ,  'Exeter'
+0039 call setSC 'ny',  "New York"           ,  'New York'
+0040 call setSC 'nc',  "North Carolina"     ,  'Fayetteville'
+0041 call setSC 'oh',  "Ohio"               ,  'Chillicothe'
+0042 call setSC 'ok',  "Oklahoma"           ,  'Guthrie'
+0043 call setSC 'pa',  "Pennsylvania"       ,  'Lancaster'
+0044 call setSC 'sc',  "South Carolina"     ,  'Charlestown'
+0045 call setSC 'tn',  "Tennessee"          ,  'Murfreesboro'
+0046 call setSC 'vt',  "Vermont"            ,  'Windsor'
+0047 
+0048 do j=1  for words(stateL)                 /*show all capitals that were defined. */
+0049 $= word(stateL, j)                        /*get the next (USA) state in the list.*/
+0050 say 'the former capital of  ('$") "    left(stateN.$, w)      " was "      stateC.$
+0051 end    /*j*/                              /* [↑]   show states that were defined.*/
+0052 exit                                             /*stick a fork in it,  we're all done. */
+0053 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0054 setSC: parse arg code,name,cap;   upper code     /*get code, name & cap.; uppercase code*/
+0055 stateL= stateL code                       /*keep a list of all the US state codes*/
+0056 stateN.code= name; w= max(w,length(name)) /*define the state's name;  max width. */
+0057 stateC.code= cap                          /*   "    "     "   code to the capital*/
+0058 return                                    /*return to invoker, SETSC is finished.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 code             54
+002 name             54
+003 cap              54
+004 stateL           55
+005 stateN.          56
+006 w                56
+007 stateC.          57
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            49

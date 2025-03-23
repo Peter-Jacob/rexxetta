@@ -1,0 +1,23 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program  executes a  system command  and displays the results  (from an array).  */
+0002 parse arg xxxCmd                                 /*obtain the (system) command from  CL.*/
+0003 trace off                                        /*suppress REXX error msgs for fails.  */
+0004 @.= 0                                            /*assign default in case ADDRESS fails.*/
+0005 address  system  xxxCmd  with  output  stem  @.  /*issue/execute the command and parms. */
+0006 if rc\==0  then  say  copies('─', 40)      ' return code '     rc     " from: "     xxxCmd
+0007 /* [↑]  display if an  error  occurred.*/
+0008 do #=1  for @.0                       /*display the output from the command. */
+0009 say strip(@.#, 'T')                   /*display one line at a time──►terminal*/
+0010 end   /*#*/                           /* [↑]  displays all the output.       */
+0011 exit 0                                           /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 xxxCmd           2
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           4
+002 #                -> newV2            8

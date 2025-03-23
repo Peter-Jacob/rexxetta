@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 30.08.2013 Walter Pachl derived from Java
+0003 **********************************************************************/
+0004 Call time 'R'
+0005 switchWins = 0;
+0006 stayWins = 0
+0007 Do plays = 1 To 1000000
+0008 doors.=0
+0009 r=r3()
+0010 doors.r=1
+0011 choice = r3()
+0012 Do Until shown<>choice  & doors.shown=0
+0013 shown  = r3()
+0014 End
+0015 If doors.choice=1 Then
+0016 stayWins=stayWins+1
+0017 Else
+0018 switchWins=switchWins+1
+0019 End
+0020 Say "Switching wins " switchWins " times."
+0021 Say "Staying wins   " stayWins   " times."
+0022 Say 'REXX:' time('E') 'seconds'
+0023 Call time 'R'
+0024 'ziegen'
+0025 Say 'PL/I:' time('E') 'seconds'
+0026 Say ' '
+0027 Call time 'R'
+0028 'java ziegen'
+0029 Say 'NetRexx:' time('E') 'seconds'
+0030 Exit
+0031 r3: Return random(2)+1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 switchWins       5 18
+002 stayWins         6 16
+003 plays            7
+004 doors.           8 10
+005 r                9
+006 choice           11
+007 Until            12
+008 shown            13
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

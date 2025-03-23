@@ -1,0 +1,186 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Create a BMP file showing a pentagram
+0003 **********************************************************************/
+0004 Parse Version v
+0005 If pos('Regina',v)>0 Then
+0006 pentagram='pentagrama.bmp'
+0007 Else
+0008 pentagram='pentagramx.bmp'
+0009 'erase' pentagram
+0010 s='424d4600000000000000360000002800000038000000280000000100180000000000'X||,
+0011 '1000000000000000000000000000000000000000'x
+0012 Say 'sl='length(s)
+0013 z.0=0
+0014 white='ffffff'x
+0015 red  ='00ff00'x
+0016 green='ff0000'x
+0017 blue ='0000ff'x
+0018 rd6=copies(rd,6)
+0019 m=133
+0020 m=80
+0021 n=80
+0022 hor=m*8      /* 56 */
+0023 ver=n*8      /* 40 */
+0024 Say 'hor='hor
+0025 Say 'ver='ver
+0026 Say 'sl='length(s)
+0027 s=overlay(lend(hor),s,19,4)
+0028 s=overlay(lend(ver),s,23,4)
+0029 Say 'sl='length(s)
+0030 z.=copies('ffffff'x,3192%3)
+0031 z.=copies('ffffff'x,8*m)
+0032 z.0=648
+0033 pi_5=2*3.14159/5
+0034 s72 =sin(pi_5  )
+0035 c72 =cos(pi_5  )
+0036 s144=sin(pi_5*2)
+0037 c144=cos(pi_5*2)
+0038 xm=300
+0039 ym=300
+0040 r=200
+0041 p.0x.1=xm
+0042 p.0y.1=ym+r
+0043 
+0044 p.0x.2=format(xm+r*s72,3,0)
+0045 p.0y.2=format(ym+r*c72,3,0)
+0046 p.0x.3=format(xm+r*s144,3,0)
+0047 p.0y.3=format(ym+r*c144,3,0)
+0048 p.0x.4=format(xm-r*s144,3,0)
+0049 p.0y.4=p.0y.3
+0050 p.0x.5=format(xm-r*s72,3,0)
+0051 p.0y.5=p.0y.2
+0052 Do i=1 To 5
+0053 Say p.0x.i p.0y.i
+0054 End
+0055 Call line p.0x.1,p.0y.1,p.0x.3,p.0y.3
+0056 Call line p.0x.1,p.0y.1,p.0x.4,p.0y.4
+0057 Call line p.0x.2,p.0y.2,p.0x.4,p.0y.4
+0058 Call line p.0x.2,p.0y.2,p.0x.5,p.0y.5
+0059 Call line p.0x.3,p.0y.3,p.0x.5,p.0y.5
+0060 
+0061 Do i=1 To z.0
+0062 s=s||z.i
+0063 End
+0064 
+0065 Call lineout pentagram,s
+0066 Call lineout pentagram
+0067 Exit
+0068 
+0069 lend:
+0070 Return reverse(d2c(arg(1),4))
+0071 
+0072 line: Procedure Expose z. red green blue
+0073 Parse Arg x0, y0, x1, y1
+0074 Say 'line'  x0  y0  x1  y1
+0075 dx = abs(x1-x0)
+0076 dy = abs(y1-y0)
+0077 if x0 < x1 then sx = 1
+0078 else sx = -1
+0079 if y0 < y1 then sy = 1
+0080 else sy = -1
+0081 err = dx-dy
+0082 
+0083 Do Forever
+0084 xxx=x0*3+2
+0085 Do yy=y0-1 To y0+1
+0086 z.yy=overlay(copies(blue,5),z.yy,xxx)
+0087 End
+0088 if x0 = x1 & y0 = y1 Then Leave
+0089 e2 = 2*err
+0090 if e2 > -dy then do
+0091 err = err - dy
+0092 x0 = x0 + sx
+0093 end
+0094 if e2 < dx then do
+0095 err = err + dx
+0096 y0 = y0 + sy
+0097 end
+0098 end
+0099 Return
+0100 
+0101 sin: Procedure
+0102 /* REXX ****************************************************************
+0103 * Return sin(x<,p>) -- with the specified precision
+0104 ***********************************************************************/
+0105 Parse Arg x,prec
+0106 If prec='' Then prec=9
+0107 Numeric Digits (2*prec)
+0108 Numeric Fuzz   3
+0109 pi=3.14159
+0110 Do While x>pi
+0111 x=x-pi
+0112 End
+0113 Do While x<-pi
+0114 x=x+pi
+0115 End
+0116 o=x
+0117 u=1
+0118 r=x
+0119 Do i=3 By 2
+0120 ra=r
+0121 o=-o*x*x
+0122 u=u*i*(i-1)
+0123 r=r+(o/u)
+0124 If r=ra Then Leave
+0125 End
+0126 Numeric Digits prec
+0127 Return r+0
+0128 
+0129 cos: Procedure
+0130 /* REXX ****************************************************************
+0131 * Return cos(x) -- with specified precision
+0132 ***********************************************************************/
+0133 Parse Arg x,prec
+0134 If prec='' Then prec=9
+0135 Numeric Digits (2*prec)
+0136 Numeric Fuzz 3
+0137 o=1
+0138 u=1
+0139 r=1
+0140 Do i=1 By 2
+0141 ra=r
+0142 o=-o*x*x
+0143 u=u*i*(i+1)
+0144 r=r+(o/u)
+0145 If r=ra Then Leave
+0146 End
+0147 Numeric Digits prec
+0148 Return r+0
+0149 
+0150 sqrt: Procedure
+0151 /* REXX ***************************************************************
+0152 * EXEC to calculate the square root of a = 2 with high precision
+0153 **********************************************************************/
+0154 Parse Arg x,prec
+0155 If prec<9 Then prec=9
+0156 prec1=2*prec
+0157 eps=10**(-prec1)
+0158 k = 1
+0159 Numeric Digits 3
+0160 r0= x
+0161 r = 1
+0162 Do i=1 By 1 Until r=r0 | (abs(r*r-x)<eps)
+0163 r0 = r
+0164 r  = (r + x/r) / 2
+0165 k  = min(prec1,2*k)
+0166 Numeric Digits (k + 5)
+0167 End
+0168 Numeric Digits prec
+0169 Return r+0
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                154
+002 prec             154 155
+003 prec1            156
+004 eps              157
+005 k                158 165
+006 r0               160 163
+007 r                161 164
+008 i                162
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

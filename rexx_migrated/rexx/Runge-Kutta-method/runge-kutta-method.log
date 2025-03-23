@@ -1,0 +1,64 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program uses the  Runge─Kutta  method to solve the equation:  y'(t) = t² √[y(t)] */
+0002 numeric digits 40;       f= digits() % 4         /*use 40 decimal digs, but only show 10*/
+0003 x0= 0;     x1= 10;       dx= .1                  /*define variables:    X0   X1   DX    */
+0004 n=1 + (x1-x0) / dx
+0005 y.=1;                    do m=1  for n-1;    p= m - 1;      y.m= RK4(dx,  x0 + dx*p,  y.p)
+0006 end   /*m*/             /*   [↑]  use 4th order Runge─Kutta.   */
+0007 w= digits() % 2                                  /*W: width used for displaying numbers.*/
+0008 say center('X', f, "═")  center('Y', w+2, "═")  center("relative error", w+8, '═') /*hdr*/
+0009 
+0010 do i=0  to n-1  by 10;   x= (x0 + dx*i) / 1;     $= y.i / (x*x/4+1)**2 - 1
+0011 say  center(x, f)     fmt(y.i)     left('', 2 + ($>=0) )        fmt($)
+0012 end   /*i*/                      /*└┴┴┴───◄─────── aligns positive #'s. */
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 fmt:  parse arg z; z= right( format(z, w, f), w);  hasE= pos('E', z)>0;  has.= pos(., z)>0
+0016 jus= has. & \hasE;  T= 'T';  if jus  then z= left( strip( strip(z, T, 0),  T, .), w)
+0017 return translate( right(z, (z>=0) +  w  +  5*hasE  +  2*(jus & (z<0) ) ), 'e',  "E")
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 RK4:  procedure; parse arg dx,x,y;   dxH= dx/2;    k1= dx  *  (x      )  *  sqrt(y       )
+0020 k2= dx  *  (x + dxH)  *  sqrt(y + k1/2)
+0021 k3= dx  *  (x + dxH)  *  sqrt(y + k2/2)
+0022 k4= dx  *  (x + dx )  *  sqrt(y + k3  )
+0023 return y + (k1 + k2*2 + k3*2 + k4) / 6
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 sqrt: procedure; parse arg x; if x=0  then return 0; d=digits(); m.=9; numeric form; h=d+6
+0026 numeric digits;  parse value format(x,2,1,,0) 'E0' with g 'E' _ .;  g=g * .5'e'_ % 2
+0027 do j=0  while h>9;      m.j=h;               h=h%2+1;       end /*j*/
+0028 do k=j+5  to 0  by -1;  numeric digits m.k;  g=(g+x/g)*.5;  end /*k*/;    return g
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                25
+002 d                25
+003 m.               25 27
+004 h                25 27
+005 k1               19
+006 k2               20
+007 k3               21
+008 k4               22
+009 w                7
+010 i                10
+011 x                10
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                26 26 28
+024 j                27
+025 k                28
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            10
+002 _                -> newV2            26

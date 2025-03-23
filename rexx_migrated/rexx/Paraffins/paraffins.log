@@ -1,0 +1,53 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX pgm enumerates (without repetition) the number of paraffins with N carbon atoms. */
+0002 parse arg nodes .                                /*obtain optional argument from the CL.*/
+0003 if nodes=='' | nodes==","  then nodes= 100       /*Not specified?  Then use the default.*/
+0004 rooted. =  0;     rooted.0= 1;     rooted.1= 1 /*define the  base     rooted  numbers.*/
+0005 unrooted. =  0;   unrooted.0= 1;   unrooted.1= 1 /*  "     "     "    unrooted     "    */
+0006 numeric digits max(9, nodes % 2)                 /*this program may use gihugeic numbers*/
+0007 w= length(nodes)                                 /*W:  used for aligning formatted nodes*/
+0008 say  right(0, w)  unrooted.0                     /*show enumerations of  0  carbon atoms*/
+0009 /* [↓]  process all nodes (up to NODES)*/
+0010 do C=1  for nodes;           h= C % 2  /*C:   is the number of carbon atoms.  */
+0011 call  tree  0, C, C, 1, 1              /* [↓]  if # of carbon atoms is even···*/
+0012 if \(C//2)  then unrooted.C= unrooted.C    +    rooted.h * (rooted.h + 1)  %  2
+0013 say right(C, w)  unrooted.C            /*display an aligned formatted number. */
+0014 end   /*C*/
+0015 exit                                             /*stick a fork in it,  we're all done. */
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 tree: procedure expose rooted. unrooted. nodes #.          /*this function is recursive.*/
+0018 parse arg br,n,L,sum,cnt;             nm= n - 1;            LL= L + L
+0019 brp= br + 1
+0020 do b=brp  to 4;     sum= sum + n
+0021 if sum>nodes  then leave
+0022 if b==4       then if LL>=sum  then leave
+0023 if b==brp     then #.br= rooted.n * cnt
+0024 else #.br= #.br  *  (rooted.n + b - brp) % (b - br)
+0025 if LL<sum     then unrooted.sum= unrooted.sum  +  #.br
+0026 if b==4       then leave
+0027 rooted.sum= rooted.sum + #.br
+0028 do m=nm  by -1  for nm;            call tree b, m, L, sum, #.br
+0029 end   /*m*/
+0030 end      /*b*/                     /* ↑↑↑↑↑↑↑↑↑   recursive.    */
+0031 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 br               18
+002 n                18
+003 L                18
+004 sum              18 20
+005 cnt              18
+006 nm               18
+007 LL               18
+008 brp              19
+009 b                20
+010 unrooted.        25
+011 rooted.          27
+012 m                28
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #.               -> newV1.           23

@@ -1,0 +1,26 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program displays the lengths  (in bytes/characters)  for various strings.        */
+0002 /*            1         */                         /*a handy-dandy over/under scale.*/
+0003 /*   123456789012345    */
+0004 hello = 'Hello, world!'      ;        say  'the length of HELLO is '   length(hello)
+0005 happy = 'Hello, world! ☺'    ;        say  'the length of HAPPY is '   length(happy)
+0006 jose  = 'José'               ;        say  'the length of  JOSE is '   length(jose)
+0007 nill  = ''                   ;        say  'the length of  NILL is '   length(nill)
+0008 null  =                      ;        say  'the length of  NULL is '   length(null)
+0009 sum   = 5+1                  ;        say  'the length of   SUM is '   length(sum)
+0010 /*   [↑]  is, of course,  6.     */
+0011 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 hello            4
+002 happy            5
+003 jose             6
+004 nill             7
+005 null             8
+006 sum              9
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

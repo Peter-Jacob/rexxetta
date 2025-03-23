@@ -1,0 +1,73 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates a method to use  "here"  documents in REXX. */
+0002 parse arg doc .                        /*"here" name is case sensitive. */
+0003 
+0004 do j=1  for sourceline()
+0005 if sourceline(j)\=='◄◄'doc  then iterate
+0006 do !=j+1  to sourceline()  while sourceline(!)\=='◄◄.'
+0007 say sourceline(!)
+0008 end   /*!*/
+0009 exit                              /*stick a fork in it, we're done.*/
+0010 end         /*j*/
+0011 
+0012 say doc '"here" document not found.'
+0013 exit                                   /*stick a fork in it, we're done.*/
+0014 /*──────────────────────────────────start of "here" docs──────────────────
+0015 ◄◄rs-232
+0016 RS─232 Signals and Pinouts  ┌─────────────────────────────────────────────────┐
+0017 │13  12  11  10  9   8   7   6   5   4   3   2   1│
+0018 ──►  Interface between data └┐ 25  24  23  22  21  20  19  18  17  16  15  14┌┘
+0019 terminal equipment (DTE/male)└───────────────────────────────────────────────┘
+0020 and data communication equipment
+0021 [DCE/female]  employing  serial   ┌───────────────────────────────────────────┐
+0022 binary  data  interchange.        │ 12◄─secondary carrier detect   [SCD]  DCE │
+0023 ┌─────────────────────────────────┤ 13◄─secondary clear to send    [SCS]  DCE │
+0024 │ 1◄─protective ground  [PG, GND] │ 14◄─secondary transmitted data [STD]  DTE │
+0025 │ 2◄─transmitted data   [TD]  DTE │ 15◄─transmit clock             [TC]   DCE │
+0026 │ 3◄─received data      [RD]  DCE │ 16◄─secondary received data    [SRD]  DCE │
+0027 │ 4◄─request to send    [RTS] DTE │ 17◄─receiver clock             [RC]   DCE │
+0028 │ 5◄─clear to send      [CTS] DCE │ 18◄─unassigned                            │
+0029 │ 6◄─data set ready     [DSR] DCE │ 19◄─secondary request to send  [SRS]  DTE │
+0030 │ 7◄─signal ground      [SG]      │ 20◄─data terminal ready        [DTR]  DTE │
+0031 │      (common return)            │ 21◄─signal quality detector    [SQD]  DCE │
+0032 │ 8◄─carrier detect     [CD]  DCE │ 22◄─ring indicator             [RI]   DCE │
+0033 │ 9◄─positive voltage   [-]       │ 23◄─data rate select       [DRS]  DCE/DTE │
+0034 │10◄─negative voltage   [-]       │ 24◄─external clock             [XTC]  DTE │
+0035 │11◄─unassigned                   │ 25◄─unassigned                            │
+0036 └─────────────────────────────────┴───────────────────────────────────────────┘
+0037 ◄◄.
+0038 ◄◄can
+0039 ┌──────┐
+0040 │      │
+0041 │      ├┐
+0042 │      ├┘
+0043 │      │
+0044 │      │
+0045 │      │
+0046 │      │
+0047 │      │                                         ┌─────┐
+0048 └──┬┬──┘                                         │┌───┐│
+0049 ││                                            ├┤   ├┤
+0050 ││    ┌───────────────┐                       ││   ││
+0051 ││   ┌┴──────────────┬┘                       └┤   ├┘
+0052 │└───┤               │                         └───┘
+0053 └────┤            ┌──┘
+0054 │            │
+0055 └──┐         │
+0056 │         │
+0057 │         │
+0058 │         │
+0059 └─────────┘
+0060 ◄◄.
+0061 ────────────────────────────────────end of "here" docs──────────────────*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 doc              2
+002 j                4
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !                -> newV1            6

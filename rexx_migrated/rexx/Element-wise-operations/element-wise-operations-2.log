@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program  multiplies two matrices together, displays the matrices and the result. */
+0002 m= (1 2 3)  (4 5 6)  (7 8 9)
+0003 w= words(m);                    do rows=1;     if rows*rows>=w  then leave
+0004 end  /*k*/;            cols= rows
+0005 call showMat  M, 'M matrix'
+0006 ans= matOp(m, '+2'   );   call showMat  ans,  "M matrix, added 2"
+0007 ans= matOp(m, '-7'   );   call showMat  ans,  "M matrix, subtracted 7"
+0008 ans= matOp(m, '*2.5' );   call showMat  ans,  "M matrix, multiplied by 2½"
+0009 ans= matOp(m, '**3'  );   call showMat  ans,  "M matrix, cubed"
+0010 ans= matOp(m, '/4'   );   call showMat  ans,  "M matrix, divided by 4"
+0011 ans= matOp(m, '%2'   );   call showMat  ans,  "M matrix, integer halved"
+0012 ans= matOp(m, '//3'  );   call showMat  ans,  "M matrix, modulus 3"
+0013 ans= matOp(m, '*3-1' );   call showMat  ans,  "M matrix, tripled, less one"
+0014 exit 0                                           /*stick a fork in it,  we"re all done. */
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 matOp: parse arg @,#; call mat#; do j=1 for w; interpret '!.'j"=!."j #; end; return mat@()
+0017 mat#:  w= words(@);              do j=1 for w; !.j= word(@,j);          end; return
+0018 mat@:  @= !.1;                   do j=2  to w; @= @ !.j;                end; return @
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 showMat:  parse arg @, hdr;                      L= 0;                               say
+0021 do j=1  for w;      L= max(L, length( word(@, j) ) );     end
+0022 say;         say center(hdr,max(length(hdr)+4,cols*(L+1)+4),"─")
+0023 n= 0
+0024 do r    =1  for rows;           _=
+0025 do c=1  for cols;  n= n+1;  _= _ right( word(@, n), L);  end;   say _
+0026 end
+0027 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 hdr              20
+002 L                20 21
+003 j                21
+004 n                23 25
+005 r                24
+006 c                25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           17
+002 @                -> newV2            16 18 20
+003 #                -> newV3            16
+004 _                -> newV4            24 25

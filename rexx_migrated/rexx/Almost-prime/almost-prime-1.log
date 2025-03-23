@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program  computes and displays  the  first  N  K─almost  primes  from   1 ──► K. */
+0002 parse arg N K .                                  /*get optional arguments from the C.L. */
+0003 if N=='' | N==","  then N=10                     /*N  not specified?   Then use default.*/
+0004 if K=='' | K==","  then K= 5                     /*K   "      "          "   "     "    */
+0005 /*W: is the width of K, used for output*/
+0006 do m=1  for  K;     $=2**m;  fir=$           /*generate & assign 1st K─almost prime.*/
+0007 #=1;                if #==N  then leave      /*#: K─almost primes; Enough are found?*/
+0008 #=2;                $=$  3*(2**(m-1))        /*generate & append 2nd K─almost prime.*/
+0009 if #==N  then leave                          /*#: K─almost primes; Enough are found?*/
+0010 if m==1  then _=fir + fir                    /* [↓]  gen & append 3rd K─almost prime*/
+0011 else do;  _=9 * (2**(m-2));    #=3;    $=$  _;    end
+0012 do j=_ + m - 1   until #==N              /*process an  K─almost prime  N  times.*/
+0013 if factr()\==m  then iterate             /*not the correct  K─almost  prime?    */
+0014 #=# + 1;         $=$ j                   /*bump K─almost counter; append it to $*/
+0015 end   /*j*/                              /* [↑]   generate  N  K─almost  primes.*/
+0016 say right(m, length(K))"─almost ("N') primes:'     $
+0017 end       /*m*/                              /* [↑]  display a line for each K─prime*/
+0018 exit                                             /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 factr: z=j;                    do f=0  while z// 2==0;  z=z% 2;  end  /*divisible by  2.*/
+0021 do f=f  while z// 3==0;  z=z% 3;  end  /*divisible  "  3.*/
+0022 do f=f  while z// 5==0;  z=z% 5;  end  /*divisible  "  5.*/
+0023 do f=f  while z// 7==0;  z=z% 7;  end  /*divisible  "  7.*/
+0024 do f=f  while z//11==0;  z=z%11;  end  /*divisible  " 11.*/
+0025 do f=f  while z//13==0;  z=z%13;  end  /*divisible  " 13.*/
+0026 do p=17  by 6  while  p<=z              /*insure  P  isn't divisible by three. */
+0027 parse var  p   ''  -1  _                /*obtain the right─most decimal digit. */
+0028 /* [↓]  fast check for divisible by 5. */
+0029 if _\==5  then do; do f=f+1  while z//p==0; z=z%p; end;  f=f-1; end  /*÷ by P? */
+0030 if _ ==3  then iterate                  /*fast check for  X  divisible by five.*/
+0031 x=p+2;             do f=f+1  while z//x==0; z=z%x; end;  f=f-1       /*÷ by X? */
+0032 end   /*i*/                             /* [↑]  find all the factors in  Z.    */
+0033 
+0034 if f==0  then return 1                    /*if  prime (f==0),  then return unity.*/
+0035 return f                    /*return to invoker the number of divs.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 p                27
+002 f                29 29 31 31
+003 z                29 31
+004 x                31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            6 8 11 14
+002 #                -> newV2            7 8 11 14
+003 _                -> newV3            10 11 27

@@ -1,0 +1,18 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX program renames a file & a directory  (in current dir & in root).*/
+0002 trace off                              /*suppress error messages, bad RC*/
+0003 
+0004 do 2                               /* [↓]  perform this code twice. */
+0005 'RENAME' "input.txt  output.txt"   /*rename a particular DOS file.  */
+0006 'MOVE'   "\docs  \mydocs"          /*use (DOS) MOVE to rename a dir.*/
+0007 'CD'     "\"                       /*for 2nd pass, change──►root dir*/
+0008 end   /*2*/
+0009 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

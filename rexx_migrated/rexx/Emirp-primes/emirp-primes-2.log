@@ -1,0 +1,139 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*********************************************************************
+0002 * 27.03.2014 Walter Pachl
+0003 *********************************************************************/
+0004 Parse Arg run
+0005 first.=1
+0006 nn=0
+0007 ol=''
+0008 lb='00'x
+0009 If run='' Then run=1
+0010 call cprimes 20,20,'A'
+0011 main_loop:
+0012 Do ip=1 To 1000000                    /* loop over all primes       */
+0013 p=primes.ip                         /* candidate                  */
+0014 If p=0 Then
+0015 call cprimes 20,hp+1,'B'
+0016 p=primes.ip                        /* candidate                  */
+0017 r=reverse(p)                       /* reversed candidate         */
+0018 If p<>r Then Do                    /* not a palindromic prime    */
+0019 If is_prime(r) Then Do           /* reversed p is a prime      */
+0020 nn=nn+1                        /* increment number of hits   */
+0021 Select
+0022 When run<='1' Then Do
+0023 If nn<21 Then Call show 1,'the first 20 emirps:',4
+0024 If nn=20 Then
+0025 Leave
+0026 End
+0027 When(run='2') Then Do
+0028 If hp<8000 Then
+0029 Call cprimes 1,8000,'C'
+0030 If 7700<p & p<8000 Then Call show 2,'emirps between 7700 and 8000:',5
+0031 If p>8000 Then
+0032 Leave
+0033 End
+0034 When(run='3') Then Do
+0035 If nn=10000 Then Do
+0036 Call show 3,'the 10.000th emirp:',6
+0037 Leave
+0038 End
+0039 End
+0040 When(run='4') Then Do
+0041 Call cprimes 1,999999    /* dirty trick to speed thins up */
+0042 If nn=10000 Then Do
+0043 Call show 4,'the 10.000th emirp (alternate version):',6
+0044 Leave
+0045 End
+0046 End
+0047 Otherwise Do
+0048 Say 'Invoke as ptx 1/2/3'
+0049 Exit
+0050 End
+0051 End
+0052 End
+0053 End
+0054 End
+0055 Call oo
+0056 Say 'largest prime:' hp
+0057 Exit
+0058 
+0059 show:
+0060 Parse Arg task,header,nl
+0061 If first.task Then Do
+0062 Call o header||lb
+0063 first.task=0
+0064 End
+0065 Call o right(p,nl)
+0066 If nn=10 Then
+0067 Call o lb
+0068 Return
+0069 
+0070 cprimes: Procedure Expose primes. psquare. is_prime. nprimes hp
+0071 /*********************************************************************
+0072 * adapted for my needs from REXX's Extensible prime generation
+0073 * Fill the array primes with prime numbers
+0074 * so that it contains at least num primes and all primes<=mp
+0075 *********************************************************************/
+0076 Parse Arg num,mp
+0077 If symbol('primes.0')=='LIT' Then Do  /* 1st time here? Initialize */
+0078 primes.=0                           /* prime numbers             */
+0079 is_prime.=0                         /* is_prime.x -> x is prime  */
+0080 psquare.=0                          /* psquare.x = square of     */
+0081 plist='2 3 5 7 11 13 17 19 23'      /* knows low primes.         */
+0082 Do i=1 For words(plist)
+0083 p=word(plist,i)
+0084 primes.i=p
+0085 is_prime.p=1
+0086 End
+0087 nprimes=i-1
+0088 primes.0=nprimes+1
+0089 psquare.nprimes=primes.nprimes**2   /* square of this prime      */
+0090 End                             /* [?]  done with building low Ps */
+0091 Do j=primes.nprimes+2 By 2 While nprimes<num | primes.nprimes<mp
+0092 If j//3==0 Then       Iterate
+0093 If right(j,1)==5 Then Iterate
+0094 If j//7==0 Then       Iterate
+0095 If j//11==0 Then      Iterate
+0096 If j//13==0 Then      Iterate
+0097 If j//17==0 Then      Iterate
+0098 If j//19==0 Then      Iterate
+0099 If j//23==0 Then      Iterate
+0100 Do k=primes.0-1 While psquare.k<=j  /* check for other known primes */
+0101 If j//primes.k==0 Then      /* J is divisible by k-th prime    */
+0102 Iterate j                 /* j is not prime                  */
+0103 End
+0104 nprimes=nprimes+1             /* bump number of primes found.    */
+0105 primes.nprimes=j
+0106 psquare.nprimes=j*j
+0107 is_prime.j=1
+0108 hp=j
+0109 End
+0110 Return
+0111 
+0112 is_prime: Procedure Expose primes. psquare. is_prime. nprimes hp
+0113 /*********************************************************************
+0114 * check if x is a prime number
+0115 *********************************************************************/
+0116 Parse Arg x
+0117 If x>hp Then
+0118 Call cprimes 1,x
+0119 Return is_prime.x
+0120 
+0121 o: ol=ol||arg(1)
+0122 Return
+0123 oo: Do While ol<>''
+0124 Parse Var ol l (lb) ol
+0125 Say l
+0126 End
+0127 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 ol               124 124
+002 l                124
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 (lb)             -> newV1            124

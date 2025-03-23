@@ -1,0 +1,72 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX pgm plays rock─paper─scissors─lizard─Spock with human; tracks human usage trend. */
+0002 != '────────';   err=! "***error***";    @.=0    /*some constants for this REXX program.*/
+0003 prompt=! 'Please enter one of:   Rock  Paper  SCissors  Lizard  SPock  (Vulcan)     (or Quit)'
+0004 $.p='paper'           ; $.s="scissors"        ; $.r='rock'          ; $.L="lizard"      ; $.v='Spock'              /*names of the thingys*/
+0005 t.p= $.r $.v          ; t.s= $.p $.L          ; t.r= $.s $.L        ; t.L= $.p $.v      ; t.v= $.r $.s             /*thingys beats stuff.*/
+0006 w.p= $.L $.s          ; w.s= $.v $.r          ; w.r= $.v $.p        ; w.L= $.r $.s      ; w.v= $.L $.p             /*stuff beats thingys.*/
+0007 b.p='covers disproves'; b.s="cuts decapitates"; b.r='breaks crushes'; b.L="eats poisons"; b.v='vaporizes smashes'  /*how the choice wins.*/
+0008 whom.1= ! 'the computer wins. ' !;     whom.2= ! "you win! " !;       win= words(t. p)
+0009 
+0010 do forever;   say;   say prompt;     say       /*prompt CBLF; then get a response.    */
+0011 c= word($.p $.s $.r $.L $.v, random(1, 5) )    /*the computer's first choice/pick.    */
+0012 m= max(@.r, @.p, @.s, @.L, @.v)                /*used in examining CBLF's history.    */
+0013 if @.p==m  then c= word(w.p, random(1, 2) )    /*emulate JC's  The Amazing Karnac.    */
+0014 if @.s==m  then c= word(w.s, random(1, 2) )    /*   "     "     "     "       "       */
+0015 if @.r==m  then c= word(w.r, random(1, 2) )    /*   "     "     "     "       "       */
+0016 if @.L==m  then c= word(w.L, random(1, 2) )    /*   "     "     "     "       "       */
+0017 if @.v==m  then c= word(w.v, random(1, 2) )    /*   "     "     "     "       "       */
+0018 c1= left(c, 1)                                 /*C1  is used for faster comparing.    */
+0019 parse pull u;            a= strip(u)           /*obtain the CBLF's choice/pick.       */
+0020 upper a c1  ;           a1= left(a, 1)         /*uppercase the choices, get 1st char. */
+0021 ok=0                                           /*indicate answer isn't  OK  (so far). */
+0022 select                                    /* [↓]  process the CBLF's choice/pick.*/
+0023 when words(u)==0               then say err    'nothing entered.'
+0024 when words(u)>1                then say err    'too many choices: '    u
+0025 when abbrev('QUIT',    a)      then do; say !  'quitting.';   exit;   end
+0026 when abbrev('LIZARD',  a)   |,
+0027 abbrev('ROCK',    a)   |,
+0028 abbrev('PAPER',   a)   |,
+0029 abbrev('VULCAN',  a)   |,
+0030 abbrev('SPOCK',   a,2) |,
+0031 abbrev('SCISSORS',a,2)    then ok=1  /*it's a valid choice for the human.   */
+0032 otherwise                  say err   'you entered a bad choice: '   u
+0033 end   /*select*/
+0034 
+0035 if \ok          then iterate                   /*answer ¬OK?  Then get another choice.*/
+0036 @.a1= @.a1 + 1                                 /*keep a history of the CBLF's choices.*/
+0037 say ! 'computer chose: '  c
+0038 if a1==c1  then say !  'draw.'                 /*Oh rats!  The contest ended up a draw*/
+0039 else do who=1  for 2                /*either the computer or the CBLF won. */
+0040 if who==2  then parse value  a1 c1   with   c1 a1
+0041 do j=1  for win                                  /*see who won.  */
+0042 if $.a1 \== word(t.c1, j)  then iterate          /*not this 'un. */
+0043 say whom.who  $.c1  word(b.c1, j)  $.a1          /*notify winner.*/
+0044 leave                                            /*leave  J loop.*/
+0045 end   /*j*/
+0046 end        /*who*/
+0047 end   /*forever*/                              /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             19
+002 u                19
+003 a                19
+004 a1               20 40
+005 ok               21
+006 whom.            8 8
+007 win              8
+008 c                11 13 14 15 16 17
+009 m                12
+010 c1               18 40
+011 NORMAL.11        
+012 NORMAL.12        
+013 j                41
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 36
+002 $.               -> newV2.           4 4 4 4 4
+003 !                -> newV3            2

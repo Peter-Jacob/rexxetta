@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program determines if a number (in base 10)  is a  self─describing,              */
+0002 /*──────────────────────────────────────────────────────  self─descriptive,             */
+0003 /*──────────────────────────────────────────────────────  autobiographical,   or a      */
+0004 /*──────────────────────────────────────────────────────  curious  number.              */
+0005 parse arg x y .                                  /*obtain optional arguments from the CL*/
+0006 if x=='' | x==","  then exit                     /*Not specified?  Then get out of Dodge*/
+0007 if y=='' | y==","  then y=x                      /* "      "       Then use the X value.*/
+0008 w=length(y)                                      /*use  Y's  width for aligned output.  */
+0009 numeric digits max(9, w)                         /*ensure we can handle larger numbers. */
+0010 if x==y  then do                                 /*handle the case of a single number.  */
+0011 noYes=test_SDN(y)                  /*is it  or  ain't it?                 */
+0012 say y  word("is isn't", noYes+1)  'a self-describing number.'
+0013 exit
+0014 end
+0015 
+0016 do n=x  to  y
+0017 if test_SDN(n)  then iterate            /*if not self─describing,  try again.  */
+0018 say  right(n,w)  'is a self-describing number.'                       /*is it? */
+0019 end   /*n*/
+0020 exit                                             /*stick a fork in it,  we're all done. */
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 test_SDN: procedure; parse arg ?;    L=length(?) /*obtain the argument  and  its length.*/
+0023 do j=L  to 1  by -1          /*parsing backwards is slightly faster.*/
+0024 if substr(?,j,1)\==L-length(space(translate(?,,j-1),0))  then return 1
+0025 end   /*j*/
+0026 return 0                               /*faster if used inverted truth table. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 L                22
+002 j                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 ?                -> newV1            22

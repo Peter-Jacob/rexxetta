@@ -1,0 +1,329 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX*/
+0002 Parse Arg fn
+0003 Parse Var fn ou'.'
+0004 maxpn = 10000               /* maximum possibilities to check through */
+0005 output = ou'.out.txt'
+0006 /* read row/col values into rowpp. and colpp. arrays */
+0007 cc = linein(fn)
+0008 rows = words(cc)
+0009 dd = linein(fn)
+0010 cols = words(dd)
+0011 char = '0ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijk'
+0012 cntr = 0
+0013 Do i = 1 To rows
+0014 rowpp.i = CV(cc,i)
+0015 cntr = cntr + sum
+0016 End
+0017 cntc = 0
+0018 Do i = 1 To cols
+0019 colpp.i = CV(dd,i)
+0020 cntc = cntc + sum
+0021 End
+0022 If (cntr <> cntc)|(cntr = 0) Then Do
+0023 Say 'error Sum of rows <> sum of cols'
+0024 Exit 999
+0025 End
+0026 Say cntr 'colored cells'
+0027 ar = copies('-',rows*cols)
+0028 /* values are -=unknown .=blank @=Color */
+0029 /* PREFILL  array */
+0030 'erase' output
+0031 /**********COL PREFILL ************/
+0032 Do col = 1 To cols
+0033 r = colpp.col
+0034 Parse Var r z r
+0035 Do While r <> ''
+0036 Parse Var r q r
+0037 z = z + q + 1
+0038 End
+0039 result = copies('-',rows)
+0040 If z = rows Then result = FILL_LINE(colpp.col)
+0041 Else If z = 0 Then result = copies('.',rows)
+0042 Do row = 1 To rows
+0043 ar = overlay(substr(result,row,1),ar,(row-1)*cols+col)
+0044 End
+0045 End
+0046 /**********ROW PREFILL ************/
+0047 Do row = 1 To rows
+0048 c = rowpp.row
+0049 Parse Var c t c
+0050 Do While c <> ''
+0051 Parse Var c q c
+0052 t = t + q + 1
+0053 End
+0054 result = substr(ar,(row-1)*cols+1,cols)
+0055 If t = cols Then result = left(FILL_LINE(rowpp.row),cols)
+0056 Else If t = 0 Then result = copies('.',cols)
+0057 ar = overlay(result,ar,(row-1)*cols+1)
+0058 End
+0059 /********** ok here we loop ************/
+0060 cnttry = 1
+0061 nexttry = 2
+0062 next.cnttry = ar
+0063 sol = 0
+0064 Do label nextpos While cnttry < nexttry
+0065 Say 'trying' cnttry 'of' nexttry-1
+0066 ar = next.cnttry
+0067 cnttry = cnttry + 1
+0068 Do Until sar = ar
+0069 sar = ar
+0070 Do row = 1 To rows
+0071 /**********process rows ************/
+0072 rowcol = substr(ar,(row-1)*cols+1,cols)
+0073 pp = rowpp.row
+0074 If PROCESSROW() Then Iterate nextpos
+0075 Else ar = overlay(left(rowcol,cols),ar,(row-1)*cols+1)
+0076 End
+0077 Do col = 1 To cols
+0078 rowcol = ''
+0079 Do row = 1 To rows
+0080 rowcol = rowcol || substr(ar,(row-1)*cols+ col,1)
+0081 End
+0082 pp = colpp.col
+0083 If PROCESSROW() Then Iterate nextpos
+0084 Do row = 1 To rows
+0085 ar = overlay(substr(rowcol,row,1),ar,(row-1)*cols + col)
+0086 End
+0087 End
+0088 If pos('-',ar) = 0 Then Do       /* hurray we have a solution */
+0089 /* at this point we need to verify solution */
+0090 If CHECKBOARD() Then Iterate nextpos   /* too bad didn't match */
+0091 sol = sol + 1
+0092 Call LINEOUT output,'This is solution no:' sol
+0093 Call DUMPBOARD
+0094 Iterate nextpos
+0095 End
+0096 If sar = ar Then Do
+0097 fnd = pos('-',ar)
+0098 next.nexttry = overlay('.',ar,fnd)
+0099 nexttry = nexttry + 1
+0100 ar = overlay('@',ar,fnd)
+0101 End
+0102 End
+0103 End nextpos
+0104 If sol = 0 Then sol = 'No'
+0105 Say sol 'solutions found'
+0106 Exit
+0107 
+0108 CHECKBOARD:
+0109 Do row = 1 To rows
+0110 /**********process rows ************/
+0111 rowcol = substr(ar,(row-1)*cols+1,cols)
+0112 pp = rowpp.row
+0113 If CHECKROW() Then Return 1
+0114 End
+0115 Do col = 1 To cols
+0116 rowcol = ''
+0117 Do row = 1 To rows
+0118 rowcol = rowcol || substr(ar,(row-1)*cols+ col,1)
+0119 End
+0120 pp = colpp.col
+0121 If CHECKROW() Then Return 1
+0122 End
+0123 Return 0                                               /* we did it */
+0124 
+0125 CHECKROW:
+0126 len_item = length(rowcol)
+0127 st = 1
+0128 If pp = 0 Then Return rowcol <> copies('.',len_item)
+0129 Else If pp = len_item Then Return rowcol <> copies('@',len_item)
+0130 Do While (pp <> '') & (st <= len_item)
+0131 Parse Var pp p1 pp
+0132 of = pos('@',rowcol'@',st)
+0133 If of > len_item Then Return 1
+0134 If substr(rowcol,of,p1) <> copies('@',p1) Then Return 1
+0135 st = of + p1
+0136 If substr(rowcol'.',st,1) <> '.' Then Return 1
+0137 End
+0138 Return 0
+0139 
+0140 
+0141 DUMPBOARD:
+0142 Parse Arg qr
+0143 p = '..'
+0144 q = '..'
+0145 Do i = 1 To cols
+0146 n = right(i,2)
+0147 p = p left(n,1)
+0148 q = q right(n,1)
+0149 End
+0150 Call LINEOUT output, p
+0151 Call LINEOUT output, q
+0152 Do i = 1 To rows
+0153 o = right(i,2)
+0154 p = substr(ar,(i-1)*cols+1,cols)
+0155 Do j = 1 To cols
+0156 Parse Var p z +1 p
+0157 o = o z
+0158 End
+0159 Call LINEOUT output, o
+0160 End
+0161 Return
+0162 
+0163 FILL_LINE:
+0164 Parse Arg items
+0165 oo = ''
+0166 Do While items <> ''
+0167 Parse Var items a items
+0168 oo = oo||copies('@',a)'.'
+0169 End
+0170 Return oo
+0171 
+0172 CV:
+0173 Parse Arg cnts, rwcl
+0174 str = word(cnts,rwcl)
+0175 ret = ''
+0176 sum = 0
+0177 Do k = 1 To length(str)
+0178 this = pos(substr(str,k,1),char)-1
+0179 ret = ret this
+0180 sum = sum + this
+0181 End
+0182 Return space(ret)
+0183 
+0184 PROCESSROW:                           /* rowcol pp in, rowcol pp of ol */
+0185 prerow = rowcol
+0186 len_item = length(rowcol)
+0187 If pos('-',rowcol) = 0 Then Do
+0188 pp = ''
+0189 Return 0
+0190 End
+0191 of = 1
+0192 kcnt = 0
+0193 /* reduce the left side with already populated values */
+0194 Do While (of < len_item) & (pp <> '')
+0195 kcnt = kcnt + 1
+0196 If kcnt > len_item Then Return 1
+0197 If substr(rowcol,of,1) = '.' Then Do
+0198 k = verify(substr(rowcol,of)'%','.')
+0199 of = of + k - 1
+0200 Iterate
+0201 End
+0202 nl = word(pp,1)
+0203 len = verify(substr(rowcol,of)'%','-@') - 1
+0204 If len < nl Then Do
+0205 rowcol = overlay(copies('.',len),rowcol,of)
+0206 of = of + len
+0207 Iterate
+0208 End
+0209 If (len = nl) & (pos('@',substr(rowcol,of,nl))>0) Then Do
+0210 rowcol = overlay(copies('@',nl),rowcol,of)
+0211 of = of + nl
+0212 pp = subword(pp,2)
+0213 Iterate
+0214 End
+0215 If substr(rowcol,of,1) = '@' Then Do
+0216 rowcol = overlay(copies('@',nl)'.',rowcol,of)
+0217 of = of + nl
+0218 pp = subword(pp,2)
+0219 Iterate
+0220 End
+0221 Leave
+0222 End
+0223 /* reduce the right side with already populated values */
+0224 ofm = len_item + 1 - of
+0225 ol = 1
+0226 kcnt = 0
+0227 Do While (ol < ofm) & (pp <> '')
+0228 kcnt = kcnt + 1
+0229 If kcnt > len_item Then Return 1
+0230 revrow = reverse(rowcol)
+0231 If substr(revrow,ol,1) = '.' Then Do
+0232 k = verify(substr(revrow,ol)'%','.')
+0233 ol = ol + k - 1
+0234 Iterate
+0235 End
+0236 nl = word(pp,words(pp))
+0237 len = verify(substr(revrow,ol)'%','-@') - 1
+0238 If len < nl Then Do
+0239 rowcol = overlay(copies('.',len),rowcol,len_item-ol-len+2)
+0240 ol = ol + len
+0241 Iterate
+0242 End
+0243 If (len = nl) & (pos('@',substr(revrow,ol,nl))>0) Then Do
+0244 rowcol = overlay(copies('@',nl),rowcol,len_item-ol-nl+2)
+0245 ol = ol + nl
+0246 pp = subword(pp,1,words(pp)-1)
+0247 Iterate
+0248 End
+0249 If substr(revrow,ol,1) = '@' Then Do
+0250 rowcol = overlay('.'copies('@',nl),rowcol,len_item-ol-nl+1)
+0251 ol = ol + nl
+0252 pp = subword(pp,1,words(pp)-1)
+0253 Iterate
+0254 End
+0255 Leave
+0256 End
+0257 If pp = 0 Then pp = ''
+0258 If pp = '' Then rowcol = changestr('-',rowcol,'.')
+0259 If pp <> '' Then Do
+0260 lv = len_item-of-ol+2
+0261 pos. = ''
+0262 pn = 0
+0263 pi = substr(rowcol,of,lv)
+0264 If (copies('-',length(pi)) = pi) Then Do
+0265 len = CNT(pp)
+0266 If (len + mx) <= lv Then Do
+0267 Return 0
+0268 End
+0269 End
+0270 /* oh oh need to check for posibilities */
+0271 Call TRY '',pp
+0272 If pn > maxpn Then Do
+0273 over = over + 1
+0274 Return 0
+0275 End
+0276 fnd = 0
+0277 fu = pos.1
+0278 Do z = 2 To pn
+0279 Do j = 1 To lv
+0280 If substr(fu,j,1) <> substr(pos.z,j,1) Then fu = overlay('-',fu,j)
+0281 End
+0282 End
+0283 Do z = 1 To lv
+0284 If substr(fu,z,1) <> '-' Then rowcol = overlay(substr(fu,z,1),rowcol,of+z-1)
+0285 End
+0286 End
+0287 Return 0
+0288 TRY: Procedure Expose pn pos. maxpn lv pi
+0289 Parse Arg prev,pp
+0290 If pp = '' Then Do
+0291 rem = substr(pi,length(prev)+1)
+0292 If translate(rem,'..','.-') <> copies('.',length(rem)) Then Return
+0293 prev = left(prev||copies('.',lv),lv)
+0294 pn = pn + 1
+0295 If pn > maxpn Then Return
+0296 pos.pn = prev
+0297 Return
+0298 End
+0299 Parse Var pp p1 pp
+0300 If length(prev)+p1 > lv Then Return
+0301 Do i = 0 To lv - length(prev)-p1
+0302 If translate(substr(pi,length(prev)+1,i),'..','.-') = copies('.',i) Then
+0303 If translate(substr(pi,length(prev)+i+1,p1),'@@','@-') = copies('@',p1) Then
+0304 If substr(pi,length(prev)+i+p1+1,1) <> '@' Then
+0305 Call TRY prev||copies('.',i)||copies('@',p1)'.',pp
+0306 End
+0307 Return
+0308 CNT: Procedure Expose mx
+0309 Parse Arg len items
+0310 mx = len
+0311 Do While items <> ''
+0312 Parse Var items ii items
+0313 len = len + ii + 1
+0314 If ii > mx Then mx = ii
+0315 End
+0316 Return len
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 items            312 312
+002 ii               312
+003 len              313
+004 mx               314
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX program displays a  sparkline  (spark graph)  for a group of values.             */
+0002 if arg()==0  then do                             /*Optional arguments? Then use defaults*/
+0003 call sparkGraph  1  2  3  4  5  6  7  8  7  6  5  4  3  2  1
+0004 call sparkGraph '1.5,  0.5  3.5,  2.5  5.5,  4.5  7.5,  6.5'
+0005 end
+0006 else call sparkGraph arg(1)
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 ceil:       procedure;  parse arg ?;         _=trunc(?);          return _+(?>0)*(?\=_)
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 sparkGraph: procedure;  parse arg x;   say ' input: '  x              /*echo the values.*/
+0012 x= translate(x, ' ', ",")                  /*remove any superfluous commas. */
+0013 $= '▁▂▃▄▅▆▇█';         L= length($)    /*chars to be used for the graph.*/
+0014 xmin= word(x, 1);          xmax= xmin      /*assume a minimum and a maximum.*/
+0015 
+0016 do n=2  to words(x);   _= word(x, n)   /*examine successive words in  X.*/
+0017 xmin= min(_, xmin)                     /*find the minimum value in  X.  */
+0018 xmax= max(_, xmax)                     /*  "   "  maximum   "    "  "   */
+0019 end   /*n*/
+0020 z=
+0021 do j=1  for words(x)                /*build the output spark graph.  */
+0022 z= z || substr($, ceil( ( word(x, j) -xmin+1) / (xmax -xmin+1) * L), 1)
+0023 end   /*j*/
+0024 
+0025 say 'output: '  z;   say;  return          /*show the output, + a blank line*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                11 12
+002 L                13
+003 xmin             14 17
+004 xmax             14 18
+005 n                16
+006 z                20 22
+007 j                21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 ?                -> newV1            9
+002 _                -> newV2            9 16
+003 $                -> newV3            13

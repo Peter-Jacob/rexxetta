@@ -1,0 +1,29 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program maps and displays a  range of numbers from  one range  to  another range.*/
+0002 rangeA =   0   10
+0003 rangeB =  -1    0
+0004 inc = 1
+0005 call mapR rangeA, rangeB, inc
+0006 exit                                             /*stick a fork in it,  we're all done. */
+0007 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0008 mapR: procedure;  parse arg a1 a2, b1 b2, inc    /* [↓]  BY  is  either   +inc  or -inc.*/
+0009 do s=a1   to a2   by  inc  *  (1  -  2  *  sign(a2 < a1) )
+0010 t= b1 + (s-a1) * (b2-b1) / (a2-a1)
+0011 say right(s, 9)        ' maps to'          left('', t>=0)      t
+0012 end   /*s*/
+0013 return                                     /* [↑]  LEFT··· aligns non─negative #'s*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a1               8
+002 a2               8
+003 b1               8
+004 b2               8
+005 inc              8
+006 s                9
+007 t                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

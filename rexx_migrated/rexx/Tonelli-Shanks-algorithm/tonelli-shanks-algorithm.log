@@ -1,0 +1,71 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /* REXX (required by some interpreters) */
+0002 Numeric Digits 1000000
+0003 ttest ='[(10, 13), (56, 101), (1030, 10009), (44402, 100049)]'
+0004 Do While pos('(',ttest)>0
+0005 Parse Var ttest '(' n ',' p ')' ttest
+0006 r = tonelli(n, p)
+0007 Say "n =" n "p =" p
+0008 Say "          roots :" r (p - r)
+0009 End
+0010 Exit
+0011 
+0012 legendre: Procedure
+0013 Parse Arg a, p
+0014 return pow(a, (p - 1) % 2, p)
+0015 
+0016 tonelli: Procedure
+0017 Parse Arg n, p
+0018 q = p - 1
+0019 s = 0
+0020 Do while q // 2 == 0
+0021 q = q % 2
+0022 s = s+1
+0023 End
+0024 if s == 1 Then
+0025 return pow(n, (p + 1) % 4, p)
+0026 Do z=2 To p
+0027 if p - 1 == legendre(z, p) Then
+0028 Leave
+0029 End
+0030 c = pow(z, q, p)
+0031 r = pow(n, (q + 1) / 2, p)
+0032 t = pow(n, q, p)
+0033 m = s
+0034 t2 = 0
+0035 Do while (t - 1) // p <> 0
+0036 t2 = (t * t) // p
+0037 Do i=1 To m
+0038 if (t2 - 1) // p == 0 Then
+0039 Leave
+0040 t2 = (t2 * t2) // p
+0041 End
+0042 y=2**(m - i - 1)
+0043 b = pow(c, y, p)
+0044 If b=10008 Then Trace ?R
+0045 r = (r * b) // p
+0046 c = (b * b) // p
+0047 t = (t * c) // p
+0048 m = i
+0049 End
+0050 return r
+0051 pow: Procedure
+0052 Parse Arg x,y,z
+0053 If y>0 Then
+0054 p=x**y
+0055 Else p=x
+0056 If z>'' Then
+0057 p=p//z
+0058 Return p
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                52
+002 y                52
+003 z                52
+004 p                54 57
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

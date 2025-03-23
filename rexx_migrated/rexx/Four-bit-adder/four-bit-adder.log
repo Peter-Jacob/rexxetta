@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX program displays (all) the  sums  of a  full  4─bit adder  (with carry).         */
+0002 call hdr1;    call hdr2                          /*note the order of headers & trailers.*/
+0003 /* [↓]  traipse thru all possibilities.*/
+0004 do    j=0  for 16
+0005 do m=0  for 4;   a.m= bit(j, m)
+0006 end   /*m*/
+0007 do k=0  for 16
+0008 do m=0  for 4;   b.m= bit(k, m)
+0009 end   /*m*/
+0010 sc= 4bitAdder(a., b.)
+0011 z= a.3 a.2 a.1 a.0    '~+~'   b.3 b.2 b.1 b.0   "~=~"    sc   ','    s.3 s.2 s.1 s.0
+0012 say translate( space(z, 0), , '~')         /*translate tildes (~) to blanks in Z. */
+0013 end   /*k*/
+0014 end      /*j*/
+0015 
+0016 call hdr2;    call hdr1                          /*display two trailers (note the order)*/
+0017 exit 0                                           /*stick a fork in it,  we're all done. */
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 bit:       procedure;  parse arg x,y;    return  substr( reverse( x2b( d2x(x) ) ), y+1, 1)
+0020 halfAdder: procedure expose c;   parse arg x,y;          c= x & y;           return x && y
+0021 hdr1:      say 'aaaa + bbbb = c, sum     [c=carry]';                         return
+0022 hdr2:      say '════   ════   ══════'              ;                         return
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 fullAdder: procedure expose c;   parse arg x,y,fc
+0025 #1= halfAdder(fc, x);        c1= c
+0026 #2= halfAdder(#1, y);        c= c | c1;                           return #2
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 4bitAdder: procedure expose s. a. b.;  carry.= 0
+0029 do j=0  for 4;                 n= j - 1
+0030 s.j= fullAdder(a.j, b.j, carry.n);        carry.j= c
+0031 end   /*j*/;                                                  return c
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                24
+002 y                24
+003 fc               24
+004 c1               25
+005 c                26
+006 carry.           28 30
+007 j                29
+008 n                29
+009 s.               30
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #1               -> newV1            25
+002 #2               -> newV2            26

@@ -1,0 +1,39 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program shows how to set/display values for an associative array.*/
+0002 /*┌────────────────────────────────────────────────────────────────────┐
+0003 │ The (below) two REXX statements aren't really necessary, but it    │
+0004 │ shows how to define any and all entries in a associative array so  │
+0005 │ that if a "key" is used that isn't defined, it can be displayed to │
+0006 │ indicate such, or its value can be checked to determine if a       │
+0007 │ particular associative array element has been set (defined).       │
+0008 └────────────────────────────────────────────────────────────────────┘*/
+0009 stateC.=' [not defined yet] '          /*sets any/all state capitols.   */
+0010 stateN.=' [not defined yet] '          /*sets any/all state names.      */
+0011 /*┌────────────────────────────────────────────────────────────────────┐
+0012 │ In REXX, when a "key" is used, it's normally stored (internally)   │
+0013 │ as uppercase characters (as in the examples below).  Actually, any │
+0014 │ characters can be used,  including blank(s) and non-displayable    │
+0015 │ characters  (including '00'x, 'ff'x, commas, periods, quotes, ...).│
+0016 └────────────────────────────────────────────────────────────────────┘*/
+0017 stateC.ca='Sacramento'; stateN.ca='California'
+0018 stateC.nd='Bismarck'  ; stateN.nd='North Dakota'
+0019 stateC.mn='St. Paul'  ; stateN.mn='Minnesota'
+0020 stateC.dc='Washington'; stateN.dc='District of Columbia'
+0021 stateC.ri='Providence'; stateN.ri='Rhode Island and Providence Plantations'
+0022 
+0023 say 'capital of California is' stateC.ca
+0024 say 'capital of Oklahoma is' stateC.ok
+0025 yyy='RI'
+0026 say 'capital of' stateN.yyy "is" stateC.yyy
+0027 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 stateC.          9 17 18 19 20 21
+002 stateN.          10 17 18 19 20 21
+003 yyy              25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

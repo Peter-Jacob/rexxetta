@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program shuffles a deck of playing cards (with jokers)  using the  Knuth shuffle.*/
+0002 rank = 'ace deuce trey 4 5 6 7 8 9 10 jack queen king'         /*use pip names for cards*/
+0003 suit = 'club spade diamond heart'                              /* "  suit  "    "    "  */
+0004 say '══════════════════ getting a new deck out of the box ···'
+0005 @.1= '  color joker'                             /*good decks have a color joker, and a */
+0006 @.2= '    b&w joker'                             /*            ··· black & white joker. */
+0007 cards=2                                          /*now, there're 2 cards are in the deck*/
+0008 do j     =1  for words(suit)
+0009 do k=1  for words(rank);       cards=cards+1    /*bump the card counter. */
+0010 @.cards=right(word(suit,j),7)  word(rank,k)     /*assign a card name.    */
+0011 end  /*k*/
+0012 end       /*j*/
+0013 
+0014 call show 'ace'                                  /*inserts blank when an  ACE  is found.*/
+0015 say;  say '══════════════════ shuffling' cards "cards ···"
+0016 
+0017 do s=cards  by -1  to 2;   ?=random(1,s);   _=@.?;   @.?=@.s;    @.s=_
+0018 end   /*s*/                            /* [↑]  swap two cards in the deck.    */
+0019 call show
+0020 exit                                             /*stick a fork in it,  we're all done. */
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 show: parse arg break;    say                    /*get separator card, show blank line. */
+0023 do m=1  for cards                        /* [↓]  traipse through the card deck. */
+0024 if pos(break,@.m)\==0  then say          /*show a blank to read cards easier.   */
+0025 say 'card'  right(m, 2)    '───►'   @.m  /*display a particular card from deck. */
+0026 end   /*m*/
+0027 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 break            22
+002 m                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           5 6 10 17 17
+002 ?                -> newV2            17
+003 _                -> newV3            17

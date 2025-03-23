@@ -1,0 +1,60 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX pgm computes the 1st N elements of the Lucas sequence for Metallic ratios 0──►9. */
+0002 parse arg n bLO bHI digs .                       /*obtain optional arguments from the CL*/
+0003 if    n=='' |    n==","  then    n= 15           /*Not specified?  Then use the default.*/
+0004 if  bLO=='' |  bLO==","  then  bLO=  0           /* "      "         "   "   "     "    */
+0005 if  bHI=='' |  bHI==","  then  bHI=  9           /* "      "         "   "   "     "    */
+0006 if digs=='' | digs==","  then digs= 32           /* "      "         "   "   "     "    */
+0007 numeric digits digs + length(.)                  /*specify number of decimal digs to use*/
+0008 metals= 'platinum  golden  silver  bronze  copper  nickel  aluminum  iron  tin  lead'
+0009 @decDigs= ' decimal digits past the decimal point:'             /*a literal used in SAY.*/
+0010 !.=                                              /*the default name for a metallic ratio*/
+0011 do k=0  to 9;  !.k= word(metals, k+1)   /*assign the (ten) metallic ratio names*/
+0012 end   /*k*/
+0013 
+0014 do m=bLO   to bHI;  @.= 1;  $=  1  1       /*compute the sequence numbers & ratios*/
+0015 r=.                                        /*the ratio  (so far).                 */
+0016 do #=2  until r=old;     old= r         /*compute sequence numbers & the ratio.*/
+0017 #_1= #-1;       #_2= #-2     /*use variables for previous numbers.  */
+0018 @.#= m * @.#_1     +     @.#_2          /*calculate a number i the sequence.   */
+0019 if #<n  then $= $  @.#                  /*build a sequence list of  N  numbers.*/
+0020 r= @.#  /  @.#_1                        /*calculate ratio of the last 2 numbers*/
+0021 end   /*#*/
+0022 
+0023 if words($)<n  then $= subword($ copies('1 ', n), 1, n) /*extend list if too short*/
+0024 L= max(108, length($) )                                 /*ensure width of title.  */
+0025 say center(' Lucas sequence for the'  !.m  "ratio,  where  B  is " m' ',  L,  "═")
+0026 if n>0  then do;   say 'the first '    n    " elements are:";       say $
+0027 end                           /*if  N  is positive, then show N nums.*/
+0028 @approx= 'approximate'                     /*literal (1 word) that is used for SAY*/
+0029 r= format(r,,digs)                         /*limit decimal digits for  R  to digs.*/
+0030 if datatype(r, 'W')  then do;      r= r/1;      @approx=     "exact";       end
+0031 say 'the'  @approx  "value reached after"   #-1   " iterations with "  digs @DecDigs
+0032 say r;                    say              /*display the ration plus a blank line.*/
+0033 end      /*m*/                             /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                2 3
+002 bLO              2 4
+003 bHI              2 5
+004 digs             2 6
+005 metals           8
+006 k                11
+007 m                14
+008 r                15 20 29 30
+009 old              16
+010 L                24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @decDigs         -> newV1            9
+002 @approx          -> newV2            28 30
+003 #_1              -> newV3            17
+004 #_2              -> newV4            17
+005 !.               -> newV5.           10 11
+006 @.               -> newV6.           14 18
+007 $                -> newV7            14 19 23
+008 #                -> newV8            16

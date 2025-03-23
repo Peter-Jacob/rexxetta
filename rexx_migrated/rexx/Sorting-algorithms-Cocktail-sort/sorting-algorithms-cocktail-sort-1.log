@@ -1,0 +1,90 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program sorts an array using the cocktail─sort method,  A.K.A.:  happy hour sort,*/
+0002 /*   bidirectional bubble sort,        */
+0003 /*   cocktail shaker sort, ripple sort,*/
+0004 /*   a selection sort variation,       */
+0005 /*   shuffle sort,  shuttle sort,   or */
+0006 /*   a bubble sort variation.          */
+0007 call genItems                                    /*generate some array elements.        */
+0008 call showItems 'before sort'                     /*show  unsorted  array elements.      */
+0009 say copies('█', 101)                             /*show a separator line  (a fence).    */
+0010 call cocktailSort                                /*invoke the cocktail sort subroutine. */
+0011 call showItems ' after sort'                     /*show    sorted  array elements.      */
+0012 exit                                             /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 cocktailSort: procedure expose items.
+0015 nn = items.0 - 1                                    /*items.0:  is number of items. */
+0016 do until done
+0017 done = 1
+0018 do j = 1 for nn
+0019 jp = j + 1        /* Rexx doesn't allow "items.(j+1)", so use this instead. */
+0020 if items.j > items.jp then do
+0021 done = 0
+0022 temp = items.j
+0023 items.j = items.jp
+0024 items.jp = temp
+0025 end
+0026 end /*j*/
+0027 if done then leave                                    /*No swaps done?  Finished*/
+0028 do k = nn for nn by -1
+0029 kp = k + 1        /* Rexx doesn't allow "items.(k+1)", so use this instead. */
+0030 if items.k > items.kp  then do
+0031 done = 0
+0032 temp = items.k
+0033 items.k = items.kp
+0034 items.kp = temp
+0035 end
+0036 end /*k*/
+0037 end /*until*/
+0038 	
+0039 return
+0040 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0041 genitems: procedure expose items.
+0042 items.=                                      /*assign a default value for the stem. */
+0043 items.1 ='---the 22 card tarot deck (larger deck has 56 additional cards in 4 suits)---'
+0044 items.2 ='==========symbol====================pip======================================'
+0045 items.3 ='the juggler                  ◄───     I'
+0046 items.4 ='the high priestess  [Popess] ◄───    II'
+0047 items.5 ='the empress                  ◄───   III'
+0048 items.6 ='the emperor                  ◄───    IV'
+0049 items.7 ='the hierophant  [Pope]       ◄───     V'
+0050 items.8 ='the lovers                   ◄───    VI'
+0051 items.9 ='the chariot                  ◄───   VII'
+0052 items.10='justice                      ◄───  VIII'
+0053 items.11='the hermit                   ◄───    IX'
+0054 items.12='fortune  [the wheel of]      ◄───     X'
+0055 items.13='strength                     ◄───    XI'
+0056 items.14='the hanging man              ◄───   XII'
+0057 items.15='death  [often unlabeled]     ◄───  XIII'
+0058 items.16='temperance                   ◄───   XIV'
+0059 items.17='the devil                    ◄───    XV'
+0060 items.18='lightning  [the tower]       ◄───   XVI'
+0061 items.19='the stars                    ◄───  XVII'
+0062 items.20='the moon                     ◄─── XVIII'
+0063 items.21='the sun                      ◄───   XIX'
+0064 items.22='judgment                     ◄───    XX'
+0065 items.23='the world                    ◄───   XXI'
+0066 items.24='the fool  [often unnumbered] ◄───  XXII'
+0067 items.0 =24                                      /* number of entries in the array. */
+0068 
+0069 return
+0070 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0071 showitems: procedure expose items.
+0072 parse arg phase
+0073 width = length(items.0)
+0074 do j=1 to items.0                       /* items.0 is the number of items in items. */
+0075 say 'element' right(j, width) phase || ":" items.j
+0076 end /*j*/           /*     ↑                                   */
+0077 /*     └─────max width of any line number. */
+0078 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 phase            72
+002 width            73
+003 j                74
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

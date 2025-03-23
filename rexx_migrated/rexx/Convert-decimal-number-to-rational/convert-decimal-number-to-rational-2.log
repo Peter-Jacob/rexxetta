@@ -1,0 +1,88 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*REXX program to convert decimal numbers to fractions ****************
+0002 * 15.08.2012 Walter Pachl derived from above for readability
+0003 * It took me time to understand :-) I need descriptive variable names
+0004 * Output shows where the fraction only approximates the number
+0005 * due to the limit (high) imposed on nominator and denominator
+0006 **********************************************************************/
+0007 Numeric Digits 10               /* use "only" 10 digs of precision */
+0008 Call test '0.9054054054','67/74'
+0009 Call test '0.5185185185','14/27'
+0010 Call test '0.75'        ,'3/4'
+0011 Call test '0.905405400',' 693627417/766095958'
+0012 Call test '0.9054054054','67/74'
+0013 Call test '0.1428571428','1/7'
+0014 Call test '35.000','35'
+0015 Call test '35.001','35001/1000'
+0016 Call test '0.00000000001','?'
+0017 Call test '0.000001000001','1/999999'
+0018 Exit
+0019 
+0020 test:
+0021 /**********************************************************************
+0022 * Test driver for rat
+0023 **********************************************************************/
+0024 Parse Arg d,fs                     /* number and expected fraction */
+0025 fh=rat(d)                          /* convert number to fracrion   */
+0026 Call o '  'd fh
+0027 If fh<>fs Then Call o '                   not='fs
+0028 interpret 'x='fh                   /* compute value of fraction    */
+0029 If x<>d Then                       /* not exactly equal to number  */
+0030 Call o '> '||x 'is different'
+0031 Call o ' '
+0032 Return
+0033 
+0034 o: Say arg(1); Return
+0035 
+0036 rat: procedure
+0037 /**********************************************************************
+0038 * rat(number<,high) returns a fraction or an integer that is equal to
+0039 * or approximately equal to number.
+0040 * Nominator and denominator must not have more than high digits
+0041 * 15.08.2012 Walter Pachl derived from Version 1
+0042 **********************************************************************/
+0043 parse arg in,high
+0044 x=in                                 /* working copy               */
+0045 if high=='' then
+0046 high=10**(digits()-1)           /* maximum nominator/denominator */
+0047 nom=0                                /* start values nominator     */
+0048 den=1                                /*              denominator   */
+0049 tnom=1                               /*         temp nominator     */
+0050 tden=0                               /*         temp denominator   */
+0051 do While tnom<=high & tden<=high     /* nominator... not too large */
+0052 n=trunc(x)                         /* take integer part of x     */
+0053 z=tnom;                            /* save temp nominator        */
+0054 tnom=n*tnom+nom;                   /* compute new temp nominator */
+0055 nom=z                              /* assign nominator           */
+0056 z=tden;                            /* save temp denominator      */
+0057 tden=n*tden+den                    /* compute new temp denominato*/
+0058 den=z                              /* assign denominator         */
+0059 if n=x | tnom/tden=in then do
+0060 if tnom>high | tden>high then    /* temp value(s) too large    */
+0061 Leave                          /* don't use them             */
+0062 nom=tnom                         /* otherwise take them as     */
+0063 den=tden                         /* final values               */
+0064 leave                            /* and end the loop           */
+0065 end
+0066 x=1/(x-n)                          /* compute x for next round   */
+0067 end
+0068 if den=1 then return nom             /* denominator 1: integer     */
+0069 return nom'/'den       /* otherwise a fraction       */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 in               43
+002 high             43 46
+003 x                44 66
+004 nom              47 55 62
+005 den              48 58 63
+006 tnom             49 54
+007 tden             50 57
+008 While            51
+009 n                52
+010 z                53 56
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

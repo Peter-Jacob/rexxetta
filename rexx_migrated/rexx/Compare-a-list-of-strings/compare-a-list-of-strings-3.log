@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX program compares a list of strings for:  equality, all ascending.                */
+0002 @.1= 'ayu dab dog gar panda tui yak'             /*seven strings: they're all ascending.*/
+0003 @.2= 'oy oy oy oy oy oy oy oy oy oy'             /*  ten strings:         all equal.    */
+0004 @.3= 'somehow   somewhere  sometime'             /*three strings:   ¬equal,  ¬ascending.*/
+0005 @.4= 'Hoosiers'                                  /*only a single string is defined.     */
+0006 @.5=                                             /*Null.   That is,  no strings here.   */
+0007 #= 5;         do j=1  for #;    say;   say       /* [↓]  traipse through all the lists. */
+0008 say center(' '@.j, 50, "═")        /*display a centered title/header.     */
+0009 if cStr(@.j, 'Equal'    )  then  say  "  The strings are all equal."
+0010 if cStr(@.j, 'Ascending')  then  say  "  The strings are ascending."
+0011 end   /*j*/
+0012 exit                                             /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 cStr: procedure; parse arg x;  arg , how 2       /*set X to list; get 1st char of arg #2*/
+0015 do k=2  to words(x)                /*scan the strings in the list.        */
+0016 if how=='E'  then if word(x,k) \== word(x,k-1)  then return 0   /*¬=prev.?*/
+0017 if how=='A'  then if word(x,k) <<= word(x,k-1)  then return 0   /*≤ prev.?*/
+0018 end   /*k*/                        /* [↓]   1=true.        [↑]   0=false. */
+0019 return 1                                   /*indicate strings have true comparison*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                14
+002 k                15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 3 4 5 6
+002 #                -> newV2            7

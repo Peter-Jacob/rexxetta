@@ -1,0 +1,123 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*---------------------------------------------------------------------
+0002 * X and Y are two different whole numbers greater than 1.
+0003 * Their sum is no greater than 100, and Y is greater than X.
+0004 * S and P are two mathematicians (and consequently perfect logicians);
+0005 * S knows the sum X+Y and P knows the product X*Y.
+0006 * Both S and P know all the information in this paragraph.
+0007 *
+0008 * The following conversation occurs:
+0009 *
+0010 * * S says "P does not know X and Y."
+0011 * * P says "Now I know X and Y."
+0012 * * S says "Now I also know X and Y!"
+0013 *
+0014 * What are X and Y?
+0015 *--------------------------------------------------------------------*/
+0016 Call time 'R'
+0017 max=100
+0018 Products.=0
+0019 all=''
+0020 Do x=2 To max
+0021 Do y=x+1 To max-2
+0022 If x+y<=100 Then Do
+0023 all=all x'/'y
+0024 prod=x*y; Products.prod=Products.prod+1
+0025 End
+0026 End
+0027 End
+0028 Say "There are" words(all) "pairs where X+Y <=" max "(and X<Y)"
+0029 /*---------------------------------------------------------------------
+0030 * First eliminate all pairs where the product is unique:
+0031 * For each pair we look at the decompositions of the sum (x+y).
+0032 * If for any of these decompositions (xa/ya) the product is unique
+0033 * then x/y cannot be the solution of the puzzle and we eliminate it
+0034 * from the list of possible pairs
+0035 *--------------------------------------------------------------------*/
+0036 sPairs=''
+0037 Do i=1 To words(all)
+0038 xy=word(all,i)
+0039 Parse Var xy x '/' Y
+0040 Parse Var xy xx '/' Yy
+0041 s=x+y
+0042 take=1
+0043 Do xa=2 To s/2
+0044 ya=s-xa
+0045 prod=xa*ya
+0046 If products.prod=1 Then Do
+0047 take=0
+0048 Iterate i
+0049 End
+0050 End
+0051 If take Then
+0052 sPairs=sPairs xy
+0053 End
+0054 Say "S starts with" words(sPairs) "possible pairs."
+0055 
+0056 /*---------------------------------------------------------------------
+0057 * From the REMAINING pairs take only these where the product is unique:
+0058 * For each pair we look at the decompositions of the known product.
+0059 * If for any of these decompositions (xb/yb) the product is unique
+0060 * then xb/yb can be the solution of the puzzle and we add it
+0061 * to the list of possible pairs.
+0062 *--------------------------------------------------------------------*/
+0063 sProducts.=0
+0064 Do i=1 To words(sPairs)
+0065 xy=word(sPairs,i)
+0066 Parse Var xy x '/' y
+0067 prod=x*y
+0068 sProducts.prod=sProducts.prod+1
+0069 End
+0070 pPairs=''
+0071 Do i=1 To words(sPairs)
+0072 xy=word(sPairs,i)
+0073 Parse Var xy x '/' y
+0074 prod=x*y
+0075 If sProducts.prod=1 Then
+0076 pPairs=pPairs xy
+0077 End
+0078 Say "P then has" words(pPairs) "possible pairs."
+0079 
+0080 /*---------------------------------------------------------------------
+0081 * From the now REMAINING pairs take only these where the sum is unique
+0082 * Now we look at all possible pairs and find the one (xc/yc)
+0083 * with a unique sum which must be the sum we knew from the beginning.
+0084 * The pair xc/yc is then the solution
+0085 *--------------------------------------------------------------------*/
+0086 Sums.=0
+0087 Do i=1 To words(pPairs)
+0088 xy=word(pPairs,i)
+0089 Parse Var xy x '/' y
+0090 sum=x+y
+0091 Sums.sum=Sums.sum+1
+0092 End
+0093 final=''
+0094 Do i=1 To words(pPairs)
+0095 xy=word(pPairs,i)
+0096 Parse Var xy x '/' y
+0097 sum=x+y
+0098 If Sums.sum=1 Then
+0099 final = final xy
+0100 End
+0101 Select
+0102 When words(final)=1 Then Say "Answer:" strip(final)
+0103 When words(final)=0 Then Say "No possible answer."
+0104 Otherwise Do;            Say words(final) "possible answers:"
+0105 Say strip(final)
+0106 End
+0107 End
+0108 Say "Elapsed time:" time('E') "seconds"
+0109 Exit
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 xy               96
+002 x                96
+003 y                96
+004 sum              97
+005 final            99
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

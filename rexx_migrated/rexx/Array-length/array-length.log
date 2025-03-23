@@ -1,0 +1,29 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /* REXX ----------------------------------------------
+0002 * The compond variable a. implements an array
+0003 * By convention, a.0 contains the number of elements
+0004 *---------------------------------------------------*/
+0005 a.=0                   /* initialize the "array" */
+0006 call store 'apple'
+0007 Call store 'orange'
+0008 Say 'There are' a.0 'elements in the array:'
+0009 Do i=1 To a.0
+0010 Say 'Element' i':' a.i
+0011 End
+0012 Exit
+0013 store: Procedure Expose a.
+0014 z=a.0+1
+0015 a.z=arg(1)
+0016 a.0=z
+0017 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a.               5 15 16
+002 i                9
+003 z                14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX program finds/displays all possible variants of (3) department numbering  puzzle.*/
+0002 say 'police sanitation fire'                     /*display simple title   for the output*/
+0003 say '══════ ══════════ ════'                     /*   "     head separator "   "    "   */
+0004 #=0                                              /*number of solutions found  (so far). */
+0005 do     p=1  for 7;     if p//2  then iterate /*try numbers for the police department*/
+0006 do   s=1  for 7;     if s==p  then iterate /* "     "     "   "  fire        "    */
+0007 do f=1  for 7;     if f==s  then iterate /* "     "     "   "  sanitation  "    */
+0008 if p + s + f \== 12         then iterate /*check if sum of department nums ¬= 12*/
+0009 #= # + 1                                 /*bump count of the number of solutions*/
+0010 say center(p,6) center(s,10) center(f,4) /*display one possible solution.       */
+0011 end   /*s*/
+0012 end     /*f*/
+0013 end       /*p*/
+0014 
+0015 say '══════ ══════════ ════'                     /*   "     head separator "   "    "   */
+0016 say                                              /*stick a fork in it,  we're all done. */
+0017 say #  ' solutions found.'                       /*also, show the # of solutions found. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 p                5
+002 s                6
+003 f                7
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            4 9

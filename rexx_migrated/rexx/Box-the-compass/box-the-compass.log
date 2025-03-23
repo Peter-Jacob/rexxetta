@@ -1,0 +1,59 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX program  "boxes the compass"                                    */
+0002 /*                   [from degree (º) headings  --->  a 32 point set]. */
+0003 Parse Arg degrees
+0004 If degrees='' Then
+0005 degrees=0 16.87 16.88 33.75 50.62 50.63 67.5 84.37 84.38 101.25,
+0006 118.12 118.13 135 151.87 151.88 168.75 185.62 185.63 202.5,
+0007 219.37 219.38 236.25 253.12 253.13 270 286.87 286.88 303.75,
+0008 320.62 320.63 337.5 354.37 354.38
+0009 names='n nbe n-ne nebn ne nebe e-ne ebn e ebs e-se sebe se sebs s-se sbe',
+0010 's sbw s-sw swbs sw swbw w-sw wbs w wbn w-nw nwbw nw nwbn n-nw nbw'
+0011 
+0012 nn=words(names)+1                 /* nn:  used for integer ÷ remainder */
+0013 dirs='north south east west'      /* define cardinal compass directions*/
+0014 /* choose a glyph for degree  (°).*/
+0015 If 4=='f4'x Then                     /* is this system an EBCDIC system*/
+0016 degsym='a1'x
+0017 Else
+0018 degsym='f8'x                       /* or degsym='a7'x                */
+0019 Say right(degsym'heading',30) center('compass heading',20)
+0020 Say right('--------',30) copies('-',20)
+0021 pad=' '                           /* used to interject a blank for o   */
+0022 Do i=1 To words(degrees)
+0023 x=word(degrees,i)               /* obtain one of the degree headings */
+0024 Say right(format(x,,2)degsym,30-1) pad boxheading(x)
+0025 End
+0026 Exit                              /* stick a fork in it, we're all done*/
+0027 /*---------------------------------------------------------------------*/
+0028 boxheading:
+0029 y=arg(1)//360
+0030 If y<0 Then
+0031 y=360-y                    /* normalize heading within unit circle */
+0032 z=word(names,trunc(max(1,(y/11.25+1.5)//nn))) /* degrees->heading    */
+0033 /* n e s w are now replaced by north east south west, respectively   */
+0034 Do k=1 To words(dirs)
+0035 d=word(dirs,k)
+0036 z=changestr(left(d,1),z,d)
+0037 End
+0038 Return changestr('b',z,' by ')     /* expand  'b' ---? ' by '.       */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 degrees          3 5
+002 names            9
+003 nn               12
+004 dirs             13
+005 degsym           16 18
+006 pad              21
+007 i                22
+008 x                23
+009 y                29 31
+010 z                32 36
+011 k                34
+012 d                35
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

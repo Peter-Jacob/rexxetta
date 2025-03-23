@@ -1,0 +1,118 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program finds and displays various kinds of  sexy and unsexy  primes less than N.*/
+0002 parse arg N endU end2 end3 end4 end5 .           /*obtain optional argument from the CL.*/
+0003 if    N==''  |    N==","  then    N= 1000035 - 1 /*Not specified?  Then use the default.*/
+0004 if endU==''  | endU==","  then endU=      10     /* "      "         "   "   "     "    */
+0005 if end2==''  | end2==","  then end2=       5     /* "      "         "   "   "     "    */
+0006 if end3==''  | end3==","  then end3=       5     /* "      "         "   "   "     "    */
+0007 if end4==''  | end4==","  then end4=       5     /* "      "         "   "   "     "    */
+0008 if end5==''  | end5==","  then end4=       5     /* "      "         "   "   "     "    */
+0009 call genSq                                       /*gen some squares for the DO k=7 UNTIL*/
+0010 call genPx                                       /* " prime (@.) & sexy prime (X.) array*/
+0011 call genXU                                       /*gen lists, types of sexy Ps, unsexy P*/
+0012 call getXs                                       /*gen lists, last # of types of sexy Ps*/
+0013 @sexy= ' sexy prime'                            /*a handy literal for some of the SAYs.*/
+0014 w2= words( translate(x2,, '~') ); y2= words(x2) /*count #primes in the sexy pairs.     */
+0015 w3= words( translate(x3,, '~') ); y3= words(x3) /*  "   "   "    "  "    "  triplets.  */
+0016 w4= words( translate(x4,, '~') ); y4= words(x4) /*  "   "   "    "  "    "  quadruplets*/
+0017 w5= words( translate(x5,, '~') ); y5= words(x5) /*  "   "   "    "  "    "  quintuplets*/
+0018 say 'There are ' commas(w2%2) @sexy "pairs less than "             Nc
+0019 say 'The last '  commas(end2) @sexy "pairs are:";        say subword(x2, max(1,y2-end2+1))
+0020 say
+0021 say 'There are ' commas(w3%3) @sexy "triplets less than "          Nc
+0022 say 'The last '  commas(end3) @sexy "triplets are:";     say subword(x3, max(1,y3-end3+1))
+0023 say
+0024 say 'There are ' commas(w4%4) @sexy "quadruplets less than "       Nc
+0025 say 'The last '  commas(end4) @sexy "quadruplets are:";  say subword(x4, max(1,y4-end4+1))
+0026 say
+0027 say 'There is  ' commas(w5%5) @sexy "quintuplet less than "        Nc
+0028 say 'The last '  commas(end4) @sexy "quintuplet are:";   say subword(x5, max(1,y5-end4+1))
+0029 say
+0030 say 'There are ' commas(s1)         "   sexy primes less than "    Nc
+0031 say 'There are ' commas(u1)         " unsexy primes less than "    Nc
+0032 say 'The last '  commas(endU)       " unsexy primes are: "   subword(u,  max(1,u1-endU+1))
+0033 exit                                             /*stick a fork in it,  we're all done. */
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 commas: procedure;  parse arg _;    n= _'.9';     #= 123456789;       b= verify(n, #, "M")
+0036 e= verify(n, #'0', , verify(n, #"0.", 'M') ) - 4
+0037 do j=e  to b  by -3;    _= insert(',', _, j);     end  /*j*/;          return _
+0038 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0039 genSQ: do i=17  by 2  until i**2 > N+7; s.i= i**2; end; return /*S used for square roots*/
+0040 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0041 genPx: @.=;              #= 0;          !.= 0.          /*P array; P count; sexy P array*/
+0042 if N>1  then do;  #= 1;   @.1= 2;  !.2= 1;   end /*count of primes found (so far)*/
+0043 x.=!.;                        LPs=3 5 7 11 13 17 /*sexy prime array;  low P list.*/
+0044 do j=3  by 2  to  N+6                          /*start in the cellar & work up.*/
+0045 if j<19  then if wordpos(j, LPs)==0  then iterate
+0046 else do; #= #+1;  @.#= j;  !.j= 1;  b= j - 6
+0047 if !.b  then x.b= 1;        iterate
+0048 end
+0049 if j// 3 ==0  then iterate                /* ··· and eliminate multiples of  3.*/
+0050 parse var  j  ''  -1  _                   /* get the rightmost digit of  J.    */
+0051 if     _ ==5  then iterate                /* ··· and eliminate multiples of  5.*/
+0052 if j// 7 ==0  then iterate                /* ···  "      "         "      "  7.*/
+0053 if j//11 ==0  then iterate                /* ···  "      "         "      " 11.*/
+0054 if j//13 ==0  then iterate                /* ···  "      "         "      " 13.*/
+0055 do k=7  until s._ > j;  _= @.k /*÷ by primes starting at 7th prime. */
+0056 if j // _ == 0  then iterate j /*get the remainder of  j÷@.k    ___ */
+0057 end   /*k*/                    /*divide up through & including √ J  */
+0058 if j<=N  then do;  #= #+1;  @.#= j;  end  /*bump P counter;  assign prime to @.*/
+0059 !.j= 1                                    /*define  Jth  number as being prime.*/
+0060 b= j - 6                             /*B: lower part of a sexy prime pair?*/
+0061 if !.b then do; x.b=1; if j<=N then x.j=1; end /*assign (both parts ?) sexy Ps.*/
+0062 end   /*j*/;       return
+0063 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0064 genXU: u= 2;         Nc=commas(N+1);  s=           /*1st unsexy prime; add commas to N+1*/
+0065 say 'There are ' commas(#)    " primes less than "          Nc;           say
+0066 do k=2  for #-1; p= @.k; if x.p  then s=s p   /*if  sexy prime, add it to list*/
+0067 else u= u p  /* " unsexy  "     "   "  "   " */
+0068 end   /*k*/                                   /* [↑]  traispe through odd Ps. */
+0069 s1= words(s);  u1= words(u);   return       /*# of sexy primes;  # unsexy primes.*/
+0070 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0071 getXs: x2=;  do k=2  for #-1;  p=@.k;   if \x.p  then iterate  /*build sexy prime list. */
+0072 b=p- 6;  if \x.b  then iterate; x2=x2 b'~'p
+0073 end   /*k*/
+0074 x3=;  do k=2  for #-1;  p=@.k;   if \x.p  then iterate  /*build sexy P triplets. */
+0075 b=p- 6;  if \x.b  then iterate
+0076 t=p-12;  if \x.t  then iterate; x3=x3 t'~' || b"~"p
+0077 end   /*k*/
+0078 x4=;  do k=2  for #-1;  p=@.k;   if \x.p  then iterate  /*build sexy P quads.    */
+0079 b=p- 6;  if \x.b  then iterate
+0080 t=p-12;  if \x.t  then iterate
+0081 q=p-18;  if \x.q  then iterate; x4=x4 q'~'t"~" || b'~'p
+0082 end   /*k*/
+0083 x5=;  do k=2  for #-1;  p=@.k;   if \x.p  then iterate  /*build sexy P quints.   */
+0084 b=p- 6;  if \x.b  then iterate
+0085 t=p-12;  if \x.t  then iterate
+0086 q=p-18;  if \x.q  then iterate
+0087 v=p-24;  if \x.v  then iterate; x5=x5 v'~'q"~"t'~' || b"~"p
+0088 end   /*k*/;    return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                50
+002 k                55 66 71 74 78 83
+003 b                60 72 75 79 84
+004 x.               61 61
+005 Nc               64
+006 s                64 66
+007 p                66 71 74 78 83
+008 s1               69
+009 u1               69
+010 x2               72
+011 x3               74 76
+012 t                76 80 85
+013 x4               78 81
+014 q                81 86
+015 x5               83 87
+016 v                87
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @sexy            -> newV1            13
+002 !.               -> newV2.           41 42 46 59
+003 @.               -> newV3.           42 46 58
+004 _                -> newV4            35 37 50 55
+005 #                -> newV5            35 41 42 46 58

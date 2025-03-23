@@ -1,0 +1,22 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates  substitution  (modeled after Perl example).*/
+0002 $string = "I am a string"
+0003 old = " a "
+0004 new = " another "
+0005 say 'The original string is:'   $string
+0006 say 'old  word  is:'            old
+0007 say 'new  word  is:'            new
+0008 $string = changestr(old,$string,new)
+0009 say 'The  changed string is:'   $string
+0010 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 old              3
+002 new              4
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $string          -> newV1            2 8

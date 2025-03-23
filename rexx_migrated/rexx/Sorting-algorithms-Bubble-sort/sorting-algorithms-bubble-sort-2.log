@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program sorts an array (of any kind of numbers)  using the bubble─sort algorithm.*/
+0002 parse arg N .;   if N=='' | N==","  then N=30    /*obtain optional size of array from CL*/
+0003 call gen  N                                      /*generate the array elements (items). */
+0004 call show        'before sort:'                  /*show the   before   array elements.  */
+0005 call bSort  N                                    /*invoke the bubble sort  with N items.*/
+0006 call show        ' after sort:'                  /*show the   after    array elements.  */
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 bSort: procedure expose @.;  parse arg n         /*N: is the number of @ array elements.*/
+0010 do m=n-1  by -1  until ok;     ok=1       /*keep sorting the  @ array until done.*/
+0011 do j=1  for m;   k=j+1;  if @.j>@.k  then parse value @.j @.k 0 with @.k @.j ok
+0012 end   /*j*/                           /* [↑]  swap 2 elements, flag as ¬done.*/
+0013 end       /*m*/;      return
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 gen:   h=min(N+N,1e5);  w=length(h);      do j=1  for N;  @.j=random(h);  end;      return
+0016 show:  parse arg $;  do k=1  for N;  $=$  right(@.k, w);         end;     say $;    return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 k                16
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           11 11 15
+002 $                -> newV2            16 16

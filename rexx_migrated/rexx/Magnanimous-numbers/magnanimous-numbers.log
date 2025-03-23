@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX pgm finds/displays magnanimous #s  (#s with a inserted + sign to sum to a prime).*/
+0002 parse arg bet.1 bet.2 bet.3 highP .              /*obtain optional arguments from the CL*/
+0003 if bet.1=='' | bet.1==","  then bet.1=   1..45   /* "      "         "   "   "     "    */
+0004 if bet.2=='' | bet.2==","  then bet.2= 241..250  /* "      "         "   "   "     "    */
+0005 if bet.3=='' | bet.3==","  then bet.3= 391..400  /* "      "         "   "   "     "    */
+0006 if highP=='' | highP==","  then highP=  1000000  /* "      "         "   "   "     "    */
+0007 call genP                                        /*gen primes up to  highP  (1 million).*/
+0008 
+0009 do j=1  for 3                               /*process three magnanimous "ranges".  */
+0010 parse var   bet.j   LO  '..'  HI            /*obtain the first range (if any).     */
+0011 if HI==''  then HI= LO                      /*Just a single number?   Then use LO. */
+0012 if HI==0   then iterate                     /*Is HI a zero?   Then skip this range.*/
+0013 finds= 0;                             $=    /*#:  magnanimous # cnt;  $:  is a list*/
+0014 do k=0  until finds==HI          /* [↓]  traipse through the number(s). */
+0015 if \magna(k)  then iterate       /*Not magnanimous?  Then skip this num.*/
+0016 finds= finds + 1                 /*bump the magnanimous number count.   */
+0017 if finds>=LO  then $= $ k        /*In range►  Then add number ──► $ list*/
+0018 end   /*k*/
+0019 say
+0020 say center(' 'LO       "──►"       HI       'magnanimous numbers ',  126, "─")
+0021 say strip($)
+0022 end        /*j*/
+0023 exit 0                                           /*stick a fork in it,  we're all done. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 magna: procedure expose @. !.; parse arg x 1 L 2 '' -1 R  /*obtain #,  1st & last digit.*/
+0026 len= length(x);       if len==1  then return 1     /*one digit #s are magnanimous*/
+0027 if x>1001  then if L//2 == R//2  then return 0     /*Has parity?  Not magnanimous*/
+0028 do  s= 1  for  len-1                      /*traipse thru #, inserting + */
+0029 parse var  x   y  +(s)  z;   sum= y + z   /*parse 2 parts of #, sum 'em.*/
+0030 if !.sum  then iterate                    /*Is sum prime? So far so good*/
+0031 else return 0                   /*Nope?  Then not magnanimous.*/
+0032 end   /*s*/
+0033 return 1                                  /*Pass all the tests, it's magnanimous.*/
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 genP: @.1=2; @.2=3; @.3=5; @.4=7; @.5=11; @.6=13   /*assign low primes; # primes.*/
+0036 !.= 0; !.2=1; !.3=1; !.5=1; !.7=1; !.11=1; !.13=1   /*   "   semaphores to   "    */
+0037 #= 6;  sq.#= @.# ** 2          /*# primes so far;  P squared.*/
+0038 do j=@.#+4  by 2  to highP; parse var j '' -1 _; if _==5  then iterate /*÷ by 5?*/
+0039 if j// 3==0  then iterate;   if j// 7==0  then iterate    /*÷ by 3?;     ÷ by 7?*/
+0040 if j//11==0  then iterate                                 /*"  " 11?     " " 13?*/
+0041 do k=6  while sq.k<=j            /*divide by some generated odd primes. */
+0042 if j//@.k==0  then iterate j     /*Is J divisible by  P?  Then not prime*/
+0043 end   /*k*/                      /* [↓]  a prime  (J)  has been found.  */
+0044 #= #+1;   @.#= j;   sq.#= j*j;   !.j= 1  /*bump #Ps; P──►@.assign P; P^2; P flag*/
+0045 end     /*j*/;                 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                38
+002 k                41
+003 sq.              44
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 +(s)             -> newV1            29
+002 @.               -> newV2.           35 35 35 35 35 44
+003 !.               -> newV3.           36 36 36 36 36 36 36 44
+004 $                -> newV4            13 17
+005 #                -> newV5            37 44
+006 _                -> newV6            38

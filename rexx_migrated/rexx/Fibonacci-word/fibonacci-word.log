@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program displays the number of chars in a fibonacci word, and the word's entropy.*/
+0002 d= 21;      de= d + 6;      numeric digits de    /*use more precision (the default is 9)*/
+0003 parse arg N .                                    /*get optional argument from the C.L.  */
+0004 if N==''  | N==","  then N= 42                   /*Not specified?  Then use the default.*/
+0005 say center('N', 3)   center("length", de)   center('entropy', de)   center("Fib word", 56)
+0006 say copies('─', 3)   copies("─"     , de)   copies('─'      , de)   copies("─"       , 56)
+0007 c= 1                                             /*initialize the 1st value for entropy.*/
+0008 do j=1  for N                              /* [↓]  display   N   fibonacci words. */
+0009 if j==2  then c= 0                         /*test for the case of  J  equals  2.  */
+0010 if j==3  then parse value  1 0  with  a b  /*  "   "   "    "   "  "    "     3.  */
+0011 if j>2   then c= b || a                    /*calculate the FIBword  if we need to.*/
+0012 L= length(c)                               /*find the length of the fib─word  C.  */
+0013 if L<56  then Fw= c
+0014 else Fw= '{the word is too wide to display}'
+0015 say right(j, 2)     right( commas(L), de)       '  '       entropy()     "  "     Fw
+0016 a= b;    b= c                              /*define the new values for  A  and  B.*/
+0017 end   /*j*/                                /*display text msg;                    */
+0018 exit                                             /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 entropy: if L==1  then return left(0, d + 2)     /*handle special case of one character.*/
+0023 !.0= length(space(translate(c,, 1), 0)) /*efficient way to count the  "zeroes".*/
+0024 !.1= L - !.0;                  $= 0     /*define 1st fib─word; initial entropy.*/
+0025 do i=1  for 2;          _= i - 1 /*construct character from the ether.  */
+0026 $= $ - !._ / L * log2(!._ / L)   /*add  (negatively)  the entropies.    */
+0027 end   /*i*/
+0028 if $=1  then return   left(1, d+2)      /*return a left─justified  "1"  (one). */
+0029 return format($, , d)      /*normalize the sum  (S)  number.      */
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 log2: procedure; parse arg x 1 xx;  ig=x>1.5;  is=1-2*(ig\==1);  numeric digits 5+digits()
+0032 e=2.71828182845904523536028747135266249775724709369995957496696762772407663035354759
+0033 m=0;  do  while  ig & xx>1.5 | \ig&xx<.5;   _=e;         do j=-1;   iz=xx* _ ** - is
+0034 if j>=0  then if ig & iz<1 | \ig&iz>.5  then leave;  _=_*_; izz=iz;  end /*j*/
+0035 xx=izz;  m=m+is*2**j;  end /*while*/;     x=x* e** -m -1;   z=0;   _=-1;   p=z
+0036 do k=1;   _=-_*x;   z=z+_/k;   if z=p  then leave;   p=z;    end  /*k*/
+0037 r=z+m;            if arg()==2  then return r;             return r / log2(2,.)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                31 35
+002 xx               31 35
+003 ig               31
+004 is               31
+005 e                32
+006 m                33 35
+007 j                33
+008 iz               33
+009 izz              34
+010 z                35 36
+011 p                35 36
+012 k                36
+013 r                37
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           23 24
+002 ?                -> newV2            20 20
+003 $                -> newV3            24 26
+004 _                -> newV4            25 33 34 35 36

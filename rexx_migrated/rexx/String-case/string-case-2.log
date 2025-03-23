@@ -1,0 +1,17 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 x = "alphaBETA"                                  /*define a string to a REXX variable.  */
+0002 parse upper var x y                              /*uppercase  X  and  store it ───►  Y  */
+0003 parse lower var x z                              /*lowercase  X   "     "    " ───►  Z  */
+0004 
+0005 /*Some REXXes don't support the  LOWER  option for the  PARSE  command.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 lower            3
+002 x                3
+003 z                3
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

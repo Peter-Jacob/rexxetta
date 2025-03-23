@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates a method of a  partial function application.      */
+0002 s=;      do a=0  to 3                  /*build 1st series of some low integers*/
+0003 s=strip(s a)                  /*append to the integer to the  S  list*/
+0004 end   /*a*/
+0005 
+0006 call fs 'f1',s;         say 'for f1:  series=' s",   result="  result
+0007 call fs 'f2',s;         say 'for f2:  series=' s",   result="  result
+0008 
+0009 s=;      do b=2  to  8  by 2           /*build 2nd series, low even integers. */
+0010 s=strip(s b)                  /*append to the integer to the  S  list*/
+0011 end   /*b*/
+0012 
+0013 call fs 'f1',s;         say 'for f1:  series=' s",   result="  result
+0014 call fs 'f2',s;         say 'for f2:  series=' s",   result="  result
+0015 exit                                   /*stick a fork in it,  we're all done. */
+0016 /*────────────────────────────────────────────────────────────────────────────*/
+0017 f1:  return arg(1)* 2
+0018 f2:  return arg(1)**2
+0019 /*────────────────────────────────────────────────────────────────────────────*/
+0020 fs:  procedure;   arg f,s;   $=;       do j=1  for words(s);   z=word(s,j)
+0021 interpret '$=$'     f"("z')'
+0022 end  /*j*/
+0023 return strip($)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                2 3 9 10
+002 a                2
+003 b                9
+004 j                20
+005 z                20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            20

@@ -1,0 +1,73 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX pgm solves the  McNuggets problem:  the largest McNugget number for given meals. */
+0002 parse arg y                                      /*obtain optional arguments from the CL*/
+0003 if y='' | y=","  then y= 6 9 20                  /*Not specified?  Then use the defaults*/
+0004 say 'The number of McNuggets in the serving sizes of: '    space(y)
+0005 $=
+0006 #= 0                                             /*the Y list must be in ascending order*/
+0007 z=.
+0008 do j=1  for words(y);      _= word(y, j)  /*examine  Y  list for dups, neg, zeros*/
+0009 if _==1               then signal done    /*Value ≡ 1?  Then all values possible.*/
+0010 if _<1                then iterate        /*ignore zero and negative # of nuggets*/
+0011 if wordpos(_, $)\==0  then iterate        /*search for duplicate values.         */
+0012 do k=1  for #                        /*   "    "  multiple     "            */
+0013 if _//word($,k)==0  then iterate j   /*a multiple of a previous value, skip.*/
+0014 end   /*k*/
+0015 $= $ _;      #= # + 1;     $.#= _         /*add─►list; bump counter; assign value*/
+0016 end        /*j*/
+0017 if #<2                     then signal done      /*not possible, go and tell bad news.  */
+0018 _= gcd($)        if _\==1  then signal done      /* "     "       "  "   "    "    "    */
+0019 if #==2   then z= $.1 * $.2  -  $.1  -  $.2      /*special case, construct the result.  */
+0020 if z\==.  then signal done
+0021 h= 0                                             /*construct a theoretical high limit H.*/
+0022 do j=2  for #-1;  _= j-1;       _= $._;       h= max(h, _ * $.j  -  _  -  $.j)
+0023 end   /*j*/
+0024 @.=0
+0025 do j=1  for #;    _= $.j                  /*populate the  Jth + Kth   summand.   */
+0026 do a=_  by _  to h;           @.a= 1    /*populate every multiple as possible. */
+0027 end   /*s*/
+0028 
+0029 do k=1  for h;  if \@.k  then iterate
+0030 s= k + _;       @.s= 1                  /*add two #s;   mark as being possible.*/
+0031 end   /*k*/
+0032 end     /*j*/
+0033 
+0034 do z=h  by -1  for h  until \@.z          /*find largest integer not summed.     */
+0035 end     /*z*/
+0036 say
+0037 done:  if z==.  then say 'The largest McNuggets number not possible.'
+0038 else say 'The largest McNuggets number is: '          z
+0039 exit                                             /*stick a fork in it,  we're all done. */
+0040 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0041 gcd: procedure; $=;    do j=1  for arg();  $=$ arg(j);  end;  $= space($)
+0042 parse var $ x $;     x= abs(x);
+0043 do  while $\=='';  parse var $ y $;  y= abs(y);  if y==0  then iterate
+0044 do  until y==0;  parse value  x//y  y   with   y  x;  end
+0045 end;              return x
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                43 43 44
+002 until            44
+003 j                8 22 25 41
+004 k                12 29
+005 h                21 22
+006 a                26
+007 s                30
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 x                44
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $.               -> newV1.           15
+002 @.               -> newV2.           24 26 30
+003 $                -> newV3            5 15 41 41 41 42 42 43 43
+004 #                -> newV4            6 15
+005 _                -> newV5            8 18 22 22 25

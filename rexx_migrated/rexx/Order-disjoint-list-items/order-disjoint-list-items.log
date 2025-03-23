@@ -1,0 +1,70 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX program orders a  disjoint list  of   M   items  with a list of   N   items.     */
+0002 used = '0'x                                      /*indicates that a word has been parsed*/
+0003 @.   =                                          /*placeholder indicates  end─of─array, */
+0004 @.1  =   " the cat sat on the mat        |      mat cat  "                  /*a string.*/
+0005 @.2  =   " the cat sat on the mat        |      cat mat  "                  /*"    "   */
+0006 @.3  =   " A B C A B C A B C             |      C A C A  "                  /*"    "   */
+0007 @.4  =   " A B C A B D A B E             |      E A D A  "                  /*"    "   */
+0008 @.5  =   " A B                           |      B        "                  /*"    "   */
+0009 @.6  =   " A B                           |      B A      "                  /*"    "   */
+0010 @.7  =   " A B B A                       |      B A      "                  /*"    "   */
+0011 @.8  =   "                               |               "                  /*"    "   */
+0012 @.9  =   " A                             |      A        "                  /*"    "   */
+0013 @.10 =   " A B                           |               "                  /*"    "   */
+0014 @.11 =   " A B B A                       |      A B      "                  /*"    "   */
+0015 @.12 =   " A B A B                       |      A B      "                  /*"    "   */
+0016 @.13 =   " A B A B                       |      B A B A  "                  /*"    "   */
+0017 @.14 =   " A B C C B A                   |      A C A C  "                  /*"    "   */
+0018 @.15 =   " A B C C B A                   |      C A C A  "                  /*"    "   */
+0019 /*  ════════════M═══════════             ════N════        */
+0020 
+0021 do j=1  while  @.j\==''                        /* [↓]  process each input string (@.).*/
+0022 parse var  @.j    m   '|'   n                  /*parse input string into   M  and  N. */
+0023 #= words(m)                                    /*#:   number of words in the  M  list.*/
+0024 do i=#  for #  by -1              /*process list items in reverse order. */
+0025 _= word(m, i);   !.i= _;   $._= i /*construct the   !.   and  $.  arrays.*/
+0026 end   /*i*/
+0027 r.=                                            /*nullify the replacement string  [R.] */
+0028 do k=1  by 2  for words(n)%2              /* [↓]  process the  N  array.         */
+0029 _= word(n, k);         v= word(n, k+1)    /*get an order word and the replacement*/
+0030 p1= wordpos(_, m);     p2= wordpos(v, m)  /*positions of   "   "   "       "     */
+0031 if p1==0 | p2==0  then iterate            /*if either not found, then skip them. */
+0032 if $._>>$.v  then do;   r.p2= !.p1;    r.p1= !.p2;    end     /*switch the words.*/
+0033 else do;   r.p1= !.p1;    r.p2= !.p2;    end     /*don't switch.    */
+0034 !.p1= used;    !.p2= used                                     /*mark 'em as used.*/
+0035 m=
+0036 do i=1  for #;   m= m !.i;    _= word(m, i);    !.i= _;    $._= i
+0037 end   /*i*/
+0038 end   /*k*/                               /* [↑]  rebuild the  !. and  $. arrays.*/
+0039 mp=                                            /*the  MP  (aka M')  string  (so far). */
+0040 do q=1  for #;    if !.q==used  then mp= mp  r.q              /*use the original.*/
+0041 else mp= mp  !.q              /*use substitute.  */
+0042 end   /*q*/                               /* [↑]  re─build the (output) string.  */
+0043 
+0044 say @.j   ' ────► '    space(mp)               /*display new re─ordered text ──► term.*/
+0045 end        /*j*/                               /* [↑]  end of processing for  N  words*/
+0046 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 m                22 35 36
+002 n                22
+003 i                24 36
+004 r.               27 32 32 33 33
+005 k                28
+006 v                29
+007 p1               30
+008 p2               30
+009 mp               39 40
+010 q                40
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 22
+002 !.               -> newV2.           25 34 34 36
+003 $.               -> newV3.           25 36
+004 #                -> newV4            23
+005 _                -> newV5            25 29 36

@@ -1,0 +1,93 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program finds the  longest path of word's   last─letter ───► first─letter.       */
+0002 @='audino bagon baltoy banette bidoof braviary bronzor carracosta charmeleon cresselia croagunk darmanitan',
+0003 'deino emboar emolga exeggcute gabite girafarig gulpin haxorus heatmor heatran ivysaur jellicent',
+0004 'jumpluff kangaskhan kricketune landorus ledyba loudred lumineon lunatone machamp magnezone mamoswine',
+0005 'nosepass petilil pidgeotto pikachu pinsir poliwrath poochyena porygon2 porygonz registeel relicanth',
+0006 'remoraid rufflet sableye scolipede scrafty seaking sealeo silcoon simisear snivy snorlax spoink',
+0007 'starly tirtouga trapinch treecko tyrogue vigoroth vulpix wailord wartortle whismur wingull yamask'
+0008 #= words(@);  @.=;  @s=@.;  ig=0;   og=0;   !.=0 /*nullify array and the longest path.  */
+0009 parse arg limit .;  if limit\==''  then #= limit /*allow user to specify a scan limit.  */
+0010 call build@                                      /*build a stemmed array from the @ list*/
+0011 do v=#  by -1  for #             /*scrub the @ list for unusable words. */
+0012 parse var @.v  F  2  ''  -1  L   /*obtain first and last letter of word.*/
+0013 if !.1.F>1  |  !.9.L>1  then iterate             /*is this a dead word? */
+0014 say 'ignoring dead word:'   @.v;      ig= ig + 1;      @= delword(@, v, 1)
+0015 end   /*v*/                      /*delete dead word from  @ ──┘         */
+0016 #= words(@)                                      /*recalculate the number of words in @.*/
+0017 do v=#  by -1  for #             /*scrub the @ list for stoppable words.*/
+0018 parse var @.v  F  2  ''  -1  L   /*obtain first and last letter of word.*/
+0019 if !.1.L>0   then iterate        /*is this a stop word?                 */
+0020 if @.v\==''  then  say 'removing stop word:'   @.v
+0021 og= og + 1;   @= delword(@, v, 1);      @s= @s @.v
+0022 end   /*v*/                      /*delete dead word from  @ ──┘         */
+0023 
+0024 if og\==0  then do;   call build@;   say;   say 'ignoring'   og   "stop word"s(og).
+0025 say 'stop words: '    @s;             say
+0026 end
+0027 $$$=                                             /*nullify the possible longest path.   */
+0028 MP= 0;  MPL= 0                                   /*the initial   Maximum Path Length.   */
+0029 do j=1  for #                    /*              ─       ─    ─         */
+0030 parse  value  @.1 @.j   with   @.j @.1;          call scan $$$, 2
+0031 parse  value  @.1 @.j   with   @.j @.1
+0032 end   /*j*/
+0033 g= words($$$)
+0034 say 'Of'    #    "words,"    MP    'path's(MP)    "have the maximum path length of"   g'.'
+0035 say;   say 'One example path of that length is: '      word($$$, 1)
+0036 do m=2  to g;      say left('', 36)    word($$$, m)
+0037 end   /*m*/
+0038 exit                                             /*stick a fork in it,  we're all done. */
+0039 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0040 s:    if arg(1)==1  then return arg(3);    return word( arg(2) 's', 1)   /*a pluralizer.*/
+0041 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0042 build@:    do i=1  for #;      @.i= word(@, i)   /*build a stemmed array from the list. */
+0043 F=  left(@.i, 1);   !.1.F= !.1.F + 1  /*F:  1st char; !.1.F=count of 1st char*/
+0044 L= right(@.i, 1);   !.9.L= !.9.L + 1  /*L: last   "   !.9.L=  "    " last  " */
+0045 end   /*i*/;        return
+0046 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0047 scan: procedure expose @. # !. $$$ MP MPL;   parse arg $$$,!;                    p= ! - 1
+0048 parse var  @.p  ''  -1  LC                 /*obtain last character of previous @. */
+0049 if !.1.LC==0  then return                  /*is this a  dead─end  word?           */
+0050 /* [↓]  PARSE obtains first char of @.i*/
+0051 do i=!  to #;  parse var  @.i  p  2     /*scan for the longest word path.      */
+0052 if p==LC  then do                       /*is the  first─character ≡ last─char? */
+0053 if !==MPL  then MP= MP+1 /*bump the  Maximum Paths  Counter.    */
+0054 else if !>MPL  then do; $$$= @.1          /*rebuild. */
+0055 do n=2  for !-2;  $$$=$$$ @.n
+0056 end   /*n*/
+0057 $$$= $$$  @.i     /*add last.*/
+0058 MP=1;   MPL=!     /*new path.*/
+0059 end
+0060 parse value  @.! @.i   with   @.i @.!;          call scan $$$, !+1
+0061 parse value  @.! @.i   with   @.i @.!
+0062 end
+0063 end    /*i*/;             return        /*exhausted this particular scan.      */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 p                51
+002 MP               53 58
+003 n                55
+004 MPL              58
+005 MPL              28
+006 j                29
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $$$              -> newV1            27 47 54 55 57
+002 @.               -> newV2.           8 12 18 30 30 31 31 42 48 51 60 60 61 61
+003 @s               -> newV3            8 21
+004 !.               -> newV4.           8 43 44
+005 @                -> newV5            2 14 21
+006 #                -> newV6            8 9 16
+007 !                -> newV7            47

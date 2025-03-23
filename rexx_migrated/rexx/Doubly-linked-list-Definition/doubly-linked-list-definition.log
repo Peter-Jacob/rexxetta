@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program implements various List Manager functions  (see the documentation above).*/
+0002 call sy 'initializing the list.'            ;  call @init
+0003 call sy 'building list: Was it a cat I saw' ;  call @put "Was it a cat I saw"
+0004 call sy 'displaying list size.'             ;  say  "list size="@size()
+0005 call sy 'forward list'                      ;  call @show
+0006 call sy 'backward list'                     ;  call @show ,,-1
+0007 call sy 'showing 4th item'                  ;  call @show 4,1
+0008 call sy 'showing 5th & 6th items'           ;  call @show 5,2
+0009 call sy 'adding item before item 4: black'  ;  call @put "black",4
+0010 call sy 'showing list'                      ;  call @show
+0011 call sy 'adding to tail: there, in the ...' ;  call @put "there, in the shadows, stalking its prey (and next meal)."
+0012 call sy 'showing list'                      ;  call @show
+0013 call sy 'adding to head: Oy!'               ;  call @put  "Oy!",0
+0014 call sy 'showing list'                      ;  call @show
+0015 exit                                             /*stick a fork in it,  we're all done. */
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 p:       return word(arg(1), 1)                  /*pick the first word out of many items*/
+0018 sy:      say;   say left('', 30) "───" arg(1) '───';              return
+0019 @init:   $.@=;    @adjust: $.@=space($.@);   $.#=words($.@);      return
+0020 @hasopt: arg o;                                                   return pos(o, opt)\==0
+0021 @size:   return $.#
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 @del:    procedure expose $.;     arg k,m;          call @parms 'km'
+0024 _=subword($.@, k, k-1)   subword($.@, k+m)
+0025 $.@=_;                   call @adjust;                                return
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 @get:    procedure expose $.;     arg k,m,dir,_
+0028 call @parms 'kmd'
+0029 do j=k  for m  by dir  while  j>0  &  j<=$.#
+0030 _=_ subword($.@, j, 1)
+0031 end   /*j*/
+0032 return strip(_)
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 @parms:  arg opt                                 /*define a variable based on an option.*/
+0035 if @hasopt('k')  then k=min($.#+1, max(1, p(k 1)))
+0036 if @hasopt('m')  then m=p(m 1)
+0037 if @hasopt('d')  then dir=p(dir 1);                                   return
+0038 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0039 @put:    procedure expose $.;     parse arg x,k;        k=p(k $.#+1);      call @parms 'k'
+0040 $.@=subword($.@, 1, max(0, k-1))   x   subword($.@, k);           call @adjust
+0041 return
+0042 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0043 @show:   procedure expose $.;     parse arg k,m,dir;    if dir==-1  &  k==''   then k=$.#
+0044 m=p(m $.#);              call @parms 'kmd';    say @get(k,m, dir);    return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 k                43 43
+002 m                43 44
+003 dir              43
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $.               -> newV1.           19 25 40
+002 _                -> newV2            24 30

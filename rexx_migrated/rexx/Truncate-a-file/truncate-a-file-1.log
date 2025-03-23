@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program  truncates  a file  to a  specified  (and smaller)  number of bytes.     */
+0002 parse arg siz FID                                /*obtain required arguments from the CL*/
+0003 FID=strip(FID)                                   /*elide  FID  leading/trailing blanks. */
+0004 if siz==''             then call ser "No truncation size was specified  (1st argument)."
+0005 if FID==''             then call ser "No fileID was specified  (2nd argument)."
+0006 if \datatype(siz,'W')  then call ser "trunc size isn't an integer: "          siz
+0007 if siz<1               then call ser "trunc size isn't a positive integer: "  siz
+0008 _=charin(FID,1,siz+1)                            /*position file and read a wee bit more*/
+0009 #=length(_)                                      /*get the length of the part just read.*/
+0010 if #==0                then call ser "the specified file doesn't exist: "     FID
+0011 if #<siz               then call ser "the file is smaller than trunc size: "   #
+0012 call lineout FID                                 /*close the file used, just to be safe.*/
+0013 'ERASE'      FID                                 /*invoke a command to delete the file  */
+0014 call lineout FID                                 /*close the file, maybe for REXX's use.*/
+0015 call charout FID, left(_,siz), 1                 /*write a truncated version of the file*/
+0016 call lineout FID                                 /*close the file used, just to be safe.*/
+0017 say 'file '  FID " truncated to "  siz  'bytes.' /*display some information to terminal.*/
+0018 exit                                             /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 ser:  say '***error***'  arg(1);      exit 13    /*display an error message  and  exit. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 siz              2
+002 FID              2 3
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            8
+002 #                -> newV2            9

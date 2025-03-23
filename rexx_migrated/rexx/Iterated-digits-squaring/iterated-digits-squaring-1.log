@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program performs the squaring of iterated digits  (until the sum equals 1 or 89).*/
+0002 parse arg n .                                    /*obtain optional arguments from the CL*/
+0003 if n=='' | n==","  then n=10 * 1000000           /*Not specified?  Then use the default.*/
+0004 !.=0;   do m=1  for 9;  !.m=m**2;  end  /*m*/    /*build a short-cut for the squares.   */
+0005 a.=.;                                #.=!.       /*intermediate counts of some numbers. */
+0006 do j=1  for n;                  x=j         /* [?] process the numbers in the range*/
+0007 do q=1  until s==89 | s==1;   s=0         /*add sum of the squared decimal digits*/
+0008 do  until x==''                     /*process each of the dec. digits in X.*/
+0009 parse var x _ +1 x;     s=s + !._   /*get a digit;  sum the fast square,   */
+0010 end   /*until x ··· */              /* [?]  S=is sum of the squared digits.*/
+0011 z.q=s                                     /*assign sum to a temporary auxiliary. */
+0012 if a.s\==.  then do;  s=a.s;  leave;  end /*Found a previous sum?  Then use that.*/
+0013 x=s                                       /*substitute the sum for the "new"  X. */
+0014 end   /*q*/                               /* [?]  keep looping 'til   S= 1 or 89.*/
+0015 do f=1  for q;  _=a.f;  a._=s /*use the auxiliary arrays (for lookup)*/
+0016 end   /*f*/
+0017 #.s=#.s + 1                                 /*bump the counter for the 1's or 89's.*/
+0018 end   /*j*/
+0019 
+0020 do k=1  by 88  for 2;   @k=right('"'k'"', 5)   /*display two results; define a literal*/
+0021 say 'count of'   @k   " chains for all natural numbers up to "     n     ' is:'      #.k
+0022 end   /*k*/                                    /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                9 9 13
+002 s                9 12
+003 z.               11
+004 f                15
+005 a.               15
+006 k                20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           4 4
+002 #.               -> newV2.           5 17
+003 @k               -> newV3            20
+004 _                -> newV4            9 15

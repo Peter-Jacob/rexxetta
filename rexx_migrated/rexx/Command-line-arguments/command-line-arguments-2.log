@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 parse arg aaa                          /*get the arguments.        */
+0002 /*another version:          */
+0003 /*  aaa=arg(1)              */
+0004 say 'command arguments:'
+0005 say aaa
+0006 
+0007 opts=''                                /*placeholder for options.  */
+0008 data=''                                /*placeholder for data.     */
+0009 
+0010 do j=1 to words(aaa)
+0011 x=word(aaa,j)
+0012 if left(x,1)=='-' then opts=opts x   /*Option?  Then add to opts.*/
+0013 else data=data x   /*Must be data. Add to data.*/
+0014 end
+0015 
+0016 /*the above process adds a leading blank to  OPTS and  DATA*/
+0017 
+0018 opts=strip(opts,'L')                   /*strip leading blanks.     */
+0019 data=strip(data,'l')                   /*strip leading blanks.     */
+0020 say
+0021 say 'options='opts
+0022 say '   data='data
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 aaa              1
+002 opts             7 12 18
+003 data             8 19
+004 j                10
+005 x                11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

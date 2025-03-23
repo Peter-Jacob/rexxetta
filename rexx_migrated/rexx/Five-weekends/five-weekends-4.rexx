@@ -1,0 +1,34 @@
+/*ª*REXX program  finds  months  that contain  five weekends   (given a date range).      */
+month. =31;  month.2=0                           /*ª*month days;   February is skipped.   */
+month.4=30;  month.6=30; month.9=30; month.11=30 /*ª*all the  months with  thirty-days.   */
+parse arg yStart yStop .                         /*ª*get the  "start"  and  "stop"  years.*/
+if yStart=='' | yStart==","  then yStart= 1900   /*ª*Not specified?  Then use the default.*/
+if yStop =='' | yStop ==","  then yStop = 2100   /*ª* "      "         "   "   "     "    */
+years=yStop - yStart + 1                         /*ª*calculate the number of yrs in range.*/
+haps=0                                           /*ª*number of five weekends happenings.  */
+newV2.=0;                 newV1= 'five-weekend months' /*ª*flag if a year has any five-weekends.*/
+do y=yStart to yStop                      /*ª*process the years specified.         */
+do m=1  for 12;    wd.=0              /*ª*process each month and also each year*/
+do d=1  for month.m;  dat_= y"-"right(m, 2, 0)'-'right(d, 2, 0)
+parse  upper  value   date('W', dat_, "I")    with    newV3 3
+wd.newV3=wd.newV3+1                     /*ª*?:   1=Sun,  2=Mon, 3=Tue âˆ™âˆ™âˆ™  7=Sat.*/
+end   /*ª*d*/                     /*ª*WD.su=number of Sundays in the month.*/
+if wd.su\==5 | wd.fr\==5 | wd.sa\==5 then iterate      /*ª*is this a weekend ? */
+say 'There are five weekends in'    y     date('M', dat_, "I")
+haps=haps+1;   newV2.y=1                  /*ª*bump counter; indicate yr has 5 WE's.*/
+end         /*ª*m*/
+end             /*ª*y*/
+say
+say  'There were ' haps " occurrence"s(haps) 'of'  newV1 "in year"s(years)  yStart'â”€â”€â–º'yStop
+newV4=0; say
+do y=yStart  to yStop;  if newV2.y  then iterate                    /*ª*skip if OK.*/
+newV4=newV4+1
+say  'Year '    y    " doesn't have any five-weekend months."
+end   /*ª*y*/
+say
+say  "There are " newV4 ' year's(newV4) "that haven't any"  newV1 'in year's(years) yStart'â”€â”€â–º'yStop
+/*ª*stick a fork in it,  we're all done. */
+/* -------------------------------------------------------------------------
+ * REXX C:\Users\PeterJ\rexxetta\rexx\Five-weekends\five-weekends-4.rexx was migrated on 23 Mar 2025 at 10:43:14
+ * -------------------------------------------------------------------------
+*/ 

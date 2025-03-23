@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX pgm shows a method to build/shuffle/deal 5 cards (using a 52─card deck)──►4 hands*/
+0002 box = build();   say ' box of cards:'   box      /*a brand new standard box of 52 cards.*/
+0003 deck= mix();     say 'shuffled deck:'   deck     /*obtain a randomly shuffled deck.     */
+0004 call deal  5, 4                                  /* ◄───────────────── 5 cards, 4 hands.*/
+0005 say;    say;     say right('[north]'   hand.1, 60)
+0006 say;     say '      [west]'    hand.4             right('[east]'   hand.2, 60)
+0007 say;     say right('[south]'   hand.3, 60)
+0008 say;    say;     say;    say 'remainder of deck: '        deck
+0009 exit 0                                           /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 build: _=;    ranks= "A 2 3 4 5 6 7 8 9 10 J Q K"                             /*ranks.  */
+0012 if 5=='f5'x  then suits= "h d c s"                                     /*EBCDIC? */
+0013 else suits= "♥ ♦ ♣ ♠"                                     /*ASCII.  */
+0014 do    s=1  for words(suits);    $=   word(suits, s)
+0015 do r=1  for words(ranks);    _= _ word(ranks, r)$   /*append a suit to rank*/
+0016 end   /*r*/
+0017 end      /*s*/;                 return _               /*jokers are not used. */
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 deal: parse arg #cards, hands;            hand.=      /*initially,  nullify all hands.  */
+0020 do   #cards                                 /*deal a hand to all the players. */
+0021 do player=1  for hands                   /*deal some cards to the players. */
+0022 hand.player= hand.player  word(deck, 1)  /*deal the top card to a player.  */
+0023 deck= subword(deck, 2)                   /*diminish deck, elide one card.  */
+0024 end   /*player*/
+0025 end      /*#cards*/;            return
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 mix: @=;      _=box;      #cards= words(_)            /*define three REXX variables.    */
+0028 do mixer=1  for #cards                      /*shuffle all the cards in deck.  */
+0029 ?= random(1, #cards + 1 - mixer)            /*each shuffle, random# decreases.*/
+0030 @= @  word(_, ?)                            /*shuffled deck, 1 card at a time.*/
+0031 _= delword(_, ?, 1)                         /*elide just─chosen card from deck*/
+0032 end   /*mixer*/;                return @
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 hands            19
+002 hand.            19 22
+003 player           21
+004 deck             23
+005 mixer            28
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #cards           -> newV1            19 27
+002 $                -> newV2            14
+003 _                -> newV3            15 27 31
+004 ?                -> newV4            29
+005 @                -> newV5            30

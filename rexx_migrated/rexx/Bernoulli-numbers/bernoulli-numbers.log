@@ -1,0 +1,74 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program calculates  N  number of Bernoulli numbers expressed as vulgar fractions.*/
+0002 parse arg N .;     if N=='' | N==","  then N= 60 /*Not specified?  Then use the default.*/
+0003 numeric digits max(9, n*2)                       /*increase the decimal digits if needed*/
+0004 w= max(length(N), 4);      Nw= N  + w  +  N % 4  /*used for aligning (output) fractions.*/
+0005 say 'B(n)'   center("Bernoulli numbers expressed as vulgar fractions",  max(78-w, Nw) )
+0006 say copies('─',w)  copies("─", max(78-w,Nw+2*w)) /*display 2nd line of title, separators*/
+0007 !.= .;    do #=0  to  N                          /*process the numbers from  0  ──►  N. */
+0008 b= bern(#);      if b==0  then iterate /*calculate Bernoulli number, skip if 0*/
+0009 indent= max(0, nW - pos('/', b) )      /*calculate the alignment (indentation)*/
+0010 say right(#, w)  left('', indent)  b   /*display the indented Bernoulli number*/
+0011 end   /*#*/                            /* [↑]  align the Bernoulli fractions. */
+0012 exit 0                                           /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 bern: parse arg x; if x==0  then return  '1/1'   /*handle the special case of  zero.    */
+0015 if x==1  then return '-1/2'   /*   "    "     "      "   "  one.     */
+0016 if x//2  then return   0      /*   "    "     "      "   "  odds > 1.*/
+0017 do j=2  to x  by 2;      jp= j+1         /*process the positive integers up to X*/
+0018 sn= 1 - j                                /*define the  numerator.               */
+0019 sd= 2                                    /*   "    "   denominator.             */
+0020 do k=2  to j-1  by 2          /*calculate a  SN/SD  sequence.        */
+0021 parse var  @.k    bn  '/'  ad /*get a previously calculated fraction.*/
+0022 an= comb(jp, k) * bn          /*use  COMBination  for the next term. */
+0023 $lcm= LCM(sd, ad)             /*use Least Common Denominator function*/
+0024 sn= $lcm % sd * sn;  sd= $lcm /*calculate the   current  numerator.  */
+0025 an= $lcm % ad * an            /*    "      "      next      "        */
+0026 sn= sn + an                   /*    "      "    current     "        */
+0027 end   /*k*/                   /* [↑]  calculate the  SN/SD  sequence.*/
+0028 sn= -sn                                  /*flip the sign for the numerator.     */
+0029 sd= sd * jp                              /*calculate         the denominator.   */
+0030 if sn\==1  then do;  _= GCD(sn, sd)      /*get the  Greatest Common Denominator.*/
+0031 sn= sn%_;   sd= sd%_ /*reduce the numerator and denominator.*/
+0032 end                      /* [↑]   done with the reduction(s).   */
+0033 @.j= sn'/'sd                             /*save the result for the next round.  */
+0034 end              /*j*/                   /* [↑]  done calculating Bernoulli #'s.*/
+0035 return sn'/'sd
+0036 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0037 comb: procedure expose !.; parse arg x,y;   if x==y  then return 1
+0038 if !.C.x.y\==.  then return !.C.x.y                 /*combination computed before?*/
+0039 if   x-y  <  y  then y= x-y                         /*x-y < y?   Then use a new Y.*/
+0040 z= perm(x, y);           do j=2  for y-1;  z= z % j
+0041 end   /*j*/
+0042 !.C.x.y= z;     return z                            /*assign memoization & return.*/
+0043 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0044 GCD:  procedure;               parse arg x,y;                     x= abs(x)
+0045 do  until y==0;     parse value  x//y  y    with    y  x;  end;        return x
+0046 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0047 LCM:  procedure; parse arg x,y      /*X=ABS(X);  Y=ABS(Y)   not needed for Bernoulli #s.*/
+0048 /*IF Y==0 THEN RETURN 0  "    "    "      "       " */
+0049 $= x * y                                        /*calculate part of the LCM here. */
+0050 do  until y==0;   parse  value   x//y  y     with     y  x
+0051 end   /*until*/                    /* [↑]  this is a short & fast GCD*/
+0052 return $ % x                                    /*divide the pre─calculated value.*/
+0053 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0054 perm: procedure expose !.;  parse arg x,y;          if !.P.x.y\==.  then return !.P.x.y
+0055 z= 1;       do j=x-y+1  to x;     z= z*j;     end;        !.P.x.y= z;       return z
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                54
+002 y                54
+003 z                55 55
+004 j                55
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $lcm             -> newV1            23
+002 !.               -> newV2.           7 42 55
+003 @.               -> newV3.           21 33
+004 #                -> newV4            7
+005 _                -> newV5            30
+006 $                -> newV6            49

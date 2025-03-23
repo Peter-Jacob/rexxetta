@@ -1,0 +1,94 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /**************************
+0002 44 Solomon  1 1 1 1 1
+0003 42 Jason    2 3 2 2 2.5
+0004 42 Errol    2 3 2 3 2.5
+0005 41 Garry    4 6 3 4 5
+0006 41 Bernard  4 6 3 5 5
+0007 41 Barry    4 6 3 6 5
+0008 39 Stephen  7 7 4 7 7
+0009 **************************/
+0010 Do i=1 To 7
+0011 Parse Value sourceline(i+1) With rank.i name.i .
+0012 /* say rank.i name.i */
+0013 End
+0014 pool=0
+0015 crank=0
+0016 Do i=1 To 7
+0017 If rank.i<>crank Then Do
+0018 pool=pool+1
+0019 lo.pool=i
+0020 hi.pool=i
+0021 n.pool=1
+0022 ii.pool=i
+0023 End
+0024 Else Do
+0025 n.pool=n.pool+1
+0026 hi.pool=i
+0027 ii.pool=ii.pool+i
+0028 End
+0029 crank=rank.i
+0030 pool.i=pool
+0031 End
+0032 /*
+0033 Do j=1 To pool
+0034 Say 'pool' j n.j lo.j hi.j
+0035 End
+0036 */
+0037 cp=0
+0038 r=0
+0039 cnt.=0
+0040 Do i=1 To 7
+0041 p=pool.i
+0042 If p<>cp Then
+0043 r=r+1
+0044 res=rank.i left(name.i,8) lo.p hi.p r i ii.p/n.p
+0045 If res=sourceline(i+1) Then cnt.ok=cnt.ok+1
+0046 Say res
+0047 cp=p
+0048 End
+0049 Say cnt.ok 'correct lines'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 i                10 16 40
+002 NORMAL.2         
+003 NORMAL.3         
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 rank.            11
+024 name.            11
+025 pool             14 18
+026 crank            15 29
+027 lo.              19
+028 hi.              20 26
+029 n.               21 25
+030 ii.              22 27
+031 pool.            30
+032 cp               37 47
+033 r                38 43
+034 cnt.             39 45
+035 p                41
+036 res              44
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

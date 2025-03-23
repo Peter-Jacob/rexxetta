@@ -1,0 +1,66 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*┌───────────────────────────────────────────────────────────────────┐
+0002 │ The REXX language doesn't allow for the changing or overriding of │
+0003 │ syntax per se,  but any of the built-in-functions (BIFs) can be   │
+0004 │ overridden by just specifying your own.                           │
+0005 │                                                                   │
+0006 │ To use the REXX's version of a built-in-function, you simply just │
+0007 │ enclose the BIF in quotation marks (and uppercase the name).      │
+0008 │                                                                   │
+0009 │ The intent is two-fold:  the REXX language doesn't have any       │
+0010 │ reserved words,  nor reserved  BIFs  (Built-In-Functions).        │
+0011 │                                                                   │
+0012 │ So, if you don't know that  VERIFY  is a BIF,  you can just code  │
+0013 │ a subroutine (or function)  with that name (or any name), and not │
+0014 │ worry about your subroutine being pre-empted.                     │
+0015 │                                                                   │
+0016 │ Second:  if you're not satisfied how a BIF works, you can code    │
+0017 │ your own.   This also allows you to front-end a BIF for debugging │
+0018 │ or modifying the BIF's behavior.                                  │
+0019 └───────────────────────────────────────────────────────────────────┘ */
+0020 yyy='123456789abcdefghi'
+0021 
+0022 rrr =  substr(yyy,5)                   /*returns  efghi                 */
+0023 mmm = 'SUBSTR'(yyy,5)                  /*returns  56789abcdefgji        */
+0024 sss = "SUBSTR"(yyy,5)                  /* (same as above)               */
+0025 exit                                   /*stick a fork in it, we're done.*/
+0026 
+0027 /*──────────────────────────────────SUBSTR subroutine───────────────────*/
+0028 substr: return right(arg(1),arg(2))
+0029 
+0030 /*┌───────────────────────────────────────────────────────────────────┐
+0031 │ Also, some REXX interpreters treat whitespace(s) as blanks   when │
+0032 │ performing comparisons.    Some of the whitespace characters are: │
+0033 │                                                                   │
+0034 │           NL  (newLine)                                           │
+0035 │           FF  (formFeed)                                          │
+0036 │           VT  (vertical tab)                                      │
+0037 │           HT  (horizontal tab or TAB)                             │
+0038 │           LF  (lineFeed)                                          │
+0039 │           CR  (carriage return)                                   │
+0040 │           EOF (end-of-file)                                       │
+0041 │         and/or others.                                            │
+0042 │                                                                   │
+0043 │ Note that some of the above are ASCII or EBCDIC specific.         │
+0044 │                                                                   │
+0045 │ Some REXX interpreters use the   OPTIONS   statement to force     │
+0046 │ REXX to only treat blanks as spaces.                              │
+0047 │                                                                   │
+0048 │ (Both the  verb  and  option  may be in lower/upper/mixed case.)  │
+0049 │                                                                   │
+0050 │ REXX interpreters which don't recognize any  option  won't treat  │
+0051 │ the (below) statement as an error.                                │
+0052 └───────────────────────────────────────────────────────────────────┘ */
+0053 options  strict_white_space_comparisons   /*can be in lower/upper/mixed.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 yyy              20
+002 rrr              22
+003 mmm              23
+004 sss              24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program lists a  sequence of primes  by testing  primality  by  trial division.  */
+0002 parse arg N .                                    /*get optional number of primes to find*/
+0003 if N=='' | N==","  then N= 26                    /*Not specified?   Then assume default.*/
+0004 tell= (N>0);            N= abs(N)                /*N is negative?   Then don't display. */
+0005 @.1=2;   @.2=3;   @.3=5;   @.4=7;   @.5=11;   @.6=13;        #= 5;         s= @.# + 2
+0006 /*    [↑]  is the number of low primes.*/
+0007 do p=1  for #   while  p<=N                /* [↓]  find primes, and maybe show 'em*/
+0008 if tell  then say right(@.p, 9)            /*display some pre─defined low primes. */
+0009 !.p= @.p**2                                /*also compute the squared value of P. */
+0010 end   /*p*/                                /* [↑]  allows faster loop (below).    */
+0011 /* [↓]  N:  default lists up to 101 #s.*/
+0012 do j=s  by 2  while  #<N                      /*continue on with the next odd prime. */
+0013 parse var  j    ''  -1  _                     /*obtain the last digit of the  J  var.*/
+0014 if _      ==5  then iterate                   /*is this integer a multiple of five?  */
+0015 if j // 3 ==0  then iterate                   /* "   "     "    "     "     " three? */
+0016 if j // 7 ==0  then iterate                   /* "   "     "    "     "     " seven? */
+0017 if j //11 ==0  then iterate                   /* "   "     "    "     "     " eleven?*/
+0018 /* [↓]  divide by the primes.   ___    */
+0019 do k=p  to #  while  !.k<=j            /*divide  J  by other primes ≤ √ J     */
+0020 if j//@.k ==0   then iterate j         /*÷ by prev. prime?  ¬prime     ___    */
+0021 end   /*k*/                            /* [↑]   only divide up to     √ J     */
+0022 #= #+1                                        /*bump the count of number of primes.  */
+0023 @.#= j;           !.#= j*j                    /*define this prime; define its square.*/
+0024 if tell  then say right(j, 9)                 /*maybe display this prime ──► terminal*/
+0025 end   /*j*/                                   /* [↑]  only display N number of primes*/
+0026 /* [↓]  display number of primes found.*/
+0027 say  #       ' primes found.'                    /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                13
+002 k                19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           5 5 5 5 5 5 23
+002 !.               -> newV2.           9 23
+003 #                -> newV3            5 22
+004 _                -> newV4            13

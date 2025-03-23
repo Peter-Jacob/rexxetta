@@ -1,0 +1,70 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program validates an  IBAN  (International Bank Account Number).                 */
+0002 @.=;             @.1  =  'GB82 WEST 1234 5698 7654 32        '
+0003 @.2  =  'Gb82 West 1234 5698 7654 32        '
+0004 @.3  =  'GB82 TEST 1234 5698 7654 32        '
+0005 @.4  =  'GR16 0110 1250 0000 0001 2300 695  '
+0006 @.5  =  'GB29 NWBK 6016 1331 9268 19        '
+0007 @.6  =  'SA03 8000 0000 6080 1016 7519      '
+0008 @.7  =  'CH93 0076 2011 6238 5295 7         '
+0009 @.8  =  'IL62 0108 0000 0009 9999 999       '
+0010 @.9  =  'IL62-0108-0000-0009-9999-999       '
+0011 @.10 =  'US12 3456 7890 0987 6543 210       '
+0012 @.11 =  'GR16 0110 1250 0000 0001 2300 695X '
+0013 parse arg @.0                                             /*get optional 1st arg from CL*/
+0014 do k=0 + (arg()==0)  while @.k\==''      /*either:   0  or  1  ──►  n  */
+0015 r = val_IBAN(@.k)
+0016 if r==0  then say '  valid IBAN:'    @.k
+0017 else say 'invalid IBAN:'    @.k      "  "      r
+0018 if k==0  then leave             /*User specified IBAN?  Then we're done*/
+0019 end   /*k*/
+0020 exit                                             /*stick a fork in it,  we're all done. */
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 val_IBAN:  procedure; arg x;  numeric digits 200 /*allow for big numbers in the IBAN's. */
+0023 x=space(x,0);                 L=length(x)        /*elide blanks;  determine the length. */
+0024 cc= 'AD 24 AE 23 AL 28 AT 20 AZ 28 BA 20 BE 16 BG 22 BH 22 BR 29 CH 21 CR 21 CY 28 CZ 24',
+0025 'DE 22 DK 18 DO 28 EE 20 ES 24 FI 18 FO 18 FR 27 GB 22 GE 22 GI 23 GL 18 GR 27 GT 28',
+0026 'HR 21 HU 28 IE 22 IL 23 IS 26 IT 27 KW 30 KZ 20 LB 28 LI 21 LT 20 LU 20 LV 21 MC 27',
+0027 'MD 24 ME 22 MK 19 MR 27 MT 31 MU 30 NL 18 NO 15 PK 24 PL 28 PS 29 PT 25 RO 24 RS 22',
+0028 'SA 24 SE 24 SI 19 SK 24 SM 27 TN 24 TR 26 VG 24'      /*a list of valid countries. */
+0029 @ABC# = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'   /*the Latin alphabet and decimal digits*/
+0030 cc_=left(x, 2);   kk=substr(x, 3, 2)             /*get IBAN country code and checkDigits*/
+0031 c#=wordpos(cc_, cc)                              /*find the country code index.         */
+0032 cL=word(cc, c# + 1)                              /*get the length of the country's IBAN.*/
+0033 e= '***error***  invalid IBAN'                   /*literal used when displaying an error*/
+0034 if c#==0               then return  e  'country code:'   cc_
+0035 if \datatype(x, 'A')   then return  e  'character:'      substr(x, verify(x, @ABC#), 1)
+0036 if cL\==L              then return  e  'length:'         L     ' (should be'   cL")"
+0037 y=substr(x, 5)left(x, 4)                         /*put four digs in front ───► the back.*/
+0038 z=                                               /* [↓]  translate characters ──► digits*/
+0039 do j=1  for L;      _=substr(y, j, 1)
+0040 if datatype(_, 'U')  then z=z || pos(_, @ABC#) + 9        /*if uppercase, then ··· */
+0041 else z=z || _
+0042 end   /*j*/
+0043 
+0044 if z//97==1  then return 0                       /*check if correct remainder (modulus).*/
+0045 return e   'check digits.'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 k                14
+002 r                15
+003 x                23
+004 L                23
+005 cc               24
+006 cc_              30
+007 kk               30
+008 c#               31
+009 cL               32
+010 e                33
+011 y                37
+012 z                38 40
+013 j                39
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @ABC#            -> newV1            29
+002 @.               -> newV2.           2 2 3 4 5 6 7 8 9 10 11 12 13
+003 _                -> newV3            39

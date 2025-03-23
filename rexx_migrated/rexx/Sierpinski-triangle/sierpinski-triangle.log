@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program constructs and displays a  Sierpinski triangle of up to around order 10k.*/
+0002 parse arg n mark .                               /*get the order of Sierpinski triangle.*/
+0003 if n==''   | n==","  then n=4                    /*Not specified?  Then use the default.*/
+0004 if mark==''          then mark=  "*"             /*MARK  was specified as  a character. */
+0005 if length(mark)==2   then mark=x2c(mark)         /*  "    "      "     in  hexadecimal. */
+0006 if length(mark)==3   then mark=d2c(mark)         /*  "    "      "      "      decimal. */
+0007 numeric digits 12000                             /*this should handle the biggy numbers.*/
+0008 /* [↓]  the blood-'n-guts of the pgm.  */
+0009 do j=0  for n*4;  !=1;  z=left('', n*4 -1-j)  /*indent the line to be displayed.     */
+0010 do k=0  for j+1                         /*construct the line with  J+1  parts. */
+0011 if !//2==0  then z=z'  '                /*it's either a    blank,   or    ···  */
+0012 else z=z mark               /* ··· it's one of 'em thar characters.*/
+0013 !=! * (j-k) % (k+1)                     /*calculate handy-dandy thing-a-ma-jig.*/
+0014 end   /*k*/                             /* [↑]  finished constructing a line.  */
+0015 say z                                         /*display a line of the triangle.      */
+0016 end         /*j*/                             /* [↑]  finished showing triangle.     */
+0017 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                2 3
+002 mark             2 4 5 6
+003 j                9
+004 z                9 11
+005 k                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !                -> newV1            9 13

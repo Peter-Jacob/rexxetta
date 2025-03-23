@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program selects all even numbers from an array and puts them   */
+0002 /* into a new array.                                                  */
+0003 Parse Arg n seed .                /* obtain optional arguments from CL*/
+0004 If n==''|n=="," Then n=50         /* Not specified?  use the default  */
+0005 If datatype(seed,'W') Then
+0006 Call random,,seed               /* use RANDOM seed for repeatability*/
+0007 Do i=1 For n                      /* generate  N  random numbers      */
+0008 old.i=random(1,99999)           /* generate random number           */
+0009 End
+0010 m=0                               /* number of elements in NEW        */
+0011 Do j=1 To n                       /* process the elements of the OLD  */
+0012 If old.j//2==0 Then Do          /* if element is even, then         */
+0013 m=m+1                         /* bump the number of NEW elemens   */
+0014 new.m=old.j                   /* assign the number to the NEW     */
+0015 End
+0016 End
+0017 Do k=1 For m                      /* display all the NEW numbers.     */
+0018 Say right('new.'k,20) '=' right(new.k,9)
+0019 End
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                3 4
+002 seed             3
+003 i                7
+004 old.             8
+005 m                10 13
+006 j                11
+007 new.             14
+008 k                17
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

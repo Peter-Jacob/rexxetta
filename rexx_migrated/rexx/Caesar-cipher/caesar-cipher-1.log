@@ -1,0 +1,49 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX program supports the Caesar cipher for the Latin alphabet only,  */
+0002 /* no punctuation or blanks allowed, lowercase is treated as uppercase. */
+0003 Parse Upper Arg key text     /* get key & uppercased text to be ciphered*/
+0004 text=space(text,0)           /* elide any and blanks                    */
+0005 Say 'Caesar cipher key:' key      /* echo the Caesar cipher key         */
+0006 Say '       plain text:' text     /*   "   "       plain text           */
+0007 code=caesar(text,key)
+0008 Say '         ciphered:' code     /*   "   "    ciphered text           */
+0009 back=caesar(code,-key)
+0010 Say '       unciphered:' back     /*   "   "  unciphered text           */
+0011 If back\==text Then
+0012 Say "unciphered text doesn't match plain text."
+0013 Exit                              /* stick a fork in it,  we're all done*/
+0014 /*----------------------------------------------------------------------*/
+0015 caesar: Procedure
+0016 Parse Arg text,key
+0017 abc='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+0018 If abs(key)>length(abc)-1|key==0 Then
+0019 Call err 'key ('key') is invalid.'
+0020 badpos=verify(text,abc)          /* any illegal character in the text */
+0021 If badpos\==0 Then
+0022 Call err 'unsupported character:' substr(text,badpos,1)
+0023 If key>0 Then                        /* cipher                        */
+0024 key2=key+1
+0025 Else                                 /* decipher                      */
+0026 key2=length(abc)+key+1
+0027 Return translate(text,substr(abc||abc,key2,length(abc)),abc)
+0028 /*----------------------------------------------------------------------*/
+0029 err:
+0030 Say
+0031 Say '***error***'
+0032 Say
+0033 Say arg(1)
+0034 Say
+0035 Exit 13
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 text             16
+002 key              16
+003 abc              17
+004 badpos           20
+005 key2             24 26
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

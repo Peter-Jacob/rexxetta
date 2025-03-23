@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*╔════════════════════════════════════════════════════════════════════╗
+0002 ║ Distinguishing subroutines and functions.                          ║
+0003 ║                                                                    ║
+0004 ║ There is no programmatic difference between subroutines and        ║
+0005 ║ functions if the subroutine returns a value  (which effectively    ║
+0006 ║ makes it a function).   REXX allows you to call a function as if   ║
+0007 ║ it were a subroutine.                                              ║
+0008 ╚════════════════════════════════════════════════════════════════════╝*/
+0009 
+0010 /*╔════════════════════════════════════════════════════════════════════╗
+0011 ║ In REXX, all arguments are passed by value, never by name,  but it ║
+0012 ║ is possible to accomplish this if the variable's name is passed    ║
+0013 ║ and the subroutine/function could use the built-in-function VALUE  ║
+0014 ║ to retrieve the variable's value.                                  ║
+0015 ╚════════════════════════════════════════════════════════════════════╝*/
+0016 
+0017 /*╔════════════════════════════════════════════════════════════════════╗
+0018 ║ In the REXX language,  partial application is possible,  depending ║
+0019 ║ how partial application is defined;  I prefer the 1st definition   ║
+0020 ║ (as per the "discussion" for "Partial Function Application" task:  ║
+0021 ║   1.  The "syntactic sugar" that allows one to write some examples ║
+0022 ║       are:      map (f 1 9)       [1..9]                           ║
+0023 ║        or:      map (f(1,_,9))    [1, ..., 9]                      ║
+0024 ╚════════════════════════════════════════════════════════════════════╝*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

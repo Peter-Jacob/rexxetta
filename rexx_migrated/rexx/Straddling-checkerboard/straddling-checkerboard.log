@@ -1,0 +1,54 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program uses the  straddling checkerboard  cipher to encrypt/decrypt a message.  */
+0002 parse arg msg                                    /*obtain optional message from the C.L.*/
+0003 if msg=''  then msg= 'One night-it was the twentieth of March, 1888-I was returning'
+0004 say 'plain text='  msg
+0005 call genCipher  'et aon ris',  'bcdfghjklm',  'pq/uvwxyz.'    /*build the cipher (board)*/
+0006 enc= encrypt(msg);     say ' encrypted='  enc    /*encrypt message and show encryption. */
+0007 dec= decrypt(enc);     say ' decrypted='  dec    /*decrypt    "     "    "  decryption. */
+0008 exit 0                                           /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 genCipher: @.=;   arg @..,two,three;    z= -1;  @.z= @..      /*build top row of cipher.*/
+0011 _= pos(' ', @..     )  - 1;  @._= two              /*  "   2nd  "   "    "   */
+0012 _= pos(' ', @.., _+2)  - 1;  @._= three            /*  "   3rd  "   "    "   */
+0013 do j=0  for 9;    @..= @.. || @.j   /*construct a table for fast searching.*/
+0014 if @.j\==''  then @.r= @.r || j
+0015 _= pos('/', @.j)                    /*is the escape character in this row? */
+0016 if _\==0  then @.dig= j || (_-1)    /*define    "       "     for numerals.*/
+0017 end   /*j*/
+0018 @..= space(@.., 0);       return      /*purify the table of encryptable chars*/
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 encrypt: procedure expose @.;  arg !,,$          /*$:  output  (encrypted text)  so far.*/
+0021 do j=1  for length(!)                 /*process each of the plain─text chars.*/
+0022 x= substr(!, j, 1)                    /*obtain a message char to be encrypted*/
+0023 if datatype(x, 'W')  then do;  $= $ || @.dig || x;  iterate;  end  /*numeral?*/
+0024 if pos(x, @..)==0    then iterate     /*Not one of the allowable chars?  Skip*/
+0025 do k=-1  for 10;  y= pos(x, @.k)   /*traipse thru rows, looking for match.*/
+0026 if y==0           then iterate     /*Not in this row?   Then keep looking.*/
+0027 z= k;   if z==-1  then z=          /*construct the index of the cypher row*/
+0028 $= $  ||  z  ||  (y-1);  leave     /*add an encrypted character to output.*/
+0029 end   /*k*/
+0030 end      /*j*/;      return $
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 decrypt: procedure expose @.;     parse arg !,,$ /*$:  output  (decrypted text)  so far.*/
+0033 do j=1  to length(!);    rw= -1       /*process each of the encypted numbers.*/
+0034 x= substr(!,j,1)                      /*obtain a message char to be decrypted*/
+0035 if substr(!,j,2)==@.dig  then do; j= j+2; $= $ || substr(!, j, 1); iterate; end
+0036 if pos(x, @.r)\==0       then do; j= j+1; rw=x; x=substr(!, j, 1);          end
+0037 $= $ || substr(@.rw, x+1, 1)          /*add a character to decrypted message.*/
+0038 end   /*j*/;             return $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                33 35 36
+002 rw               33 36
+003 x                34 36
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           10 11 12 13 14 16 18
+002 _                -> newV2            11 12 15
+003 $                -> newV3            23 28 32 35 37
+004 !                -> newV4            32

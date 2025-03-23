@@ -1,0 +1,94 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX pgm scores  mastermind  game with a human  or  CBLFs (Carbon Based Life Forms).  */
+0002 parse arg let wid mxG oRep seed _                /*obtain optional arguments from the CL*/
+0003 arg  .   .   .   rep .                     /*get uppercase 4th argument  "   "  " */
+0004 if let=='' | let==","  then let= 20              /*Not specified?  Then use the default.*/
+0005 if wid=='' | wid==","  then wid=  4              /* "      "         "   "   "     "    */
+0006 if mxG=='' | mxG==","  then mxG= 20              /* "      "         "   "   "     "    */
+0007 if rep=='' | rep==","  then rep=  0              /* "      "         "   "   "     "    */
+0008 if datatype(seed,'W')  then call random ,,seed   /*use a seed for random repeatability. */
+0009 if abbrev(  'REPEATSALLOWED',rep,3)  then rep=1  /*allow an abbreviated option for REP. */
+0010 if abbrev('NOREPEATSALLOWED',rep,3)  then rep=0  /*  "    "      "         "    "   "   */
+0011 call vet   arg(),     'args'                     /*Vet the number of arguments entered. */  /*◄■■■■■■ optional vetting.*/
+0012 call vet     let,  'letters', 2, 20              /* "   "     "    " letters in the code*/  /*◄■■■■■■ optional vetting.*/
+0013 call vet     wid,    'width', 4, 10              /* "   "     "    " the width of code. */  /*◄■■■■■■ optional vetting.*/
+0014 call vet     mxG, 'maxGuess', 7, 20              /* "   "     "    " maximum guesses.   */  /*◄■■■■■■ optional vetting.*/
+0015 call vet     rep,      'REP', 0, 1e8             /* "   "   value if repeats are allowed*/  /*◄■■■■■■ optional vetting.*/
+0016 call gen;                                        yourG= 'Your guess must be exactly '
+0017 youve= "You've already tried that guess "
+0018 do prompt=0  by 0  until xx==wid;   say  /*play until guessed or QUIT is entered*/
+0019 say id 'Please enter a guess with '   wid  ' letters                   [or Quit]:'
+0020 pull g;   g=space(g,0);  L=length(g);     if abbrev('QUIT',g,1)  then exit 0
+0021 if L\==wid  then do;  say id '***error***'  yourG wid  " letters.";  iterate;  end
+0022 call dups                                /*look through the history log for dups*/
+0023 q=?;      XX=0;      OO=0;     try=try+1 /*initialize some REXX vars;  bump TRY.*/
+0024 
+0025 do j=1  for L;  if substr(g,j,1) \== substr(q,j,1)  then iterate    /*hit? */
+0026 xx=xx+1;    q=overlay('▒', q, j)    /*bump the  XX  correct   count.       */
+0027 end   /*j*/                         /* [↑]  XX  correct count; scrub guess.*/
+0028 
+0029 do k=1  for L;   _=substr(g, k, 1)  /*process the count for  "spots".      */
+0030 if pos(_, q)==0  then iterate       /*is this  (spot)  letter in the code? */
+0031 oo=oo+1;       q=translate(q, , _)  /*bump the  OO  spot count.            */
+0032 end   /*k*/                         /* [↑]  OO  spot count;  & scrub guess.*/
+0033 say
+0034 @.try=id  right('guess'  try, 11)     '  ('mxG       "is the max):"    g   '──►' ,
+0035 copies('X', xx)copies("O", oo)copies('-', wid-xx-oo)
+0036 call hist
+0037 if try==mxG  then do;  say;      say id   "you've used the maximum guesses:"   mxG
+0038 say;      say id   "The code was: "   ?;    say;     exit 1
+0039 end
+0040 end   /*prompt*/
+0041 say;                           say "          ┌─────────────────────────────────────────┐"
+0042 say "          │                                         │"
+0043 say "          │  Congratulations, you've guessed it !!  │"
+0044 say "          │                                         │"
+0045 say "          └─────────────────────────────────────────┘"
+0046 exit 0                                           /*stick a fork in it,  we're all done. */
+0047 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0048 dups:    do h=1  for try;  if g\=word(@.h, 8)  then iterate   /*any duplicated guesses? */
+0049 say;  say id youve  " (guess number" h').'; iterate prompt; end  /*h*/;    return
+0050 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0051 gen:  if rep==0  then reps= 'no'                 /*create a literal for the prompt msg. */
+0052 else reps=
+0053 @abc= 'QWERTYUIOPASDFGHJKLZXCVBNM'         /*capital letters used for random code.*/
+0054 id='────────';  try=0;  L@abc=length(@abc) /*identifier in front of msg from here.*/
+0055 ?=
+0056 do  until  length(?)==wid              /*gen random codes 'til there's enough.*/
+0057 r=substr(@abc, random(1, L@abc), 1)    /*generate a random letter, 1 at a time*/
+0058 if \rep & pos(r, ?)\==0  then iterate  /*maybe  don't  allow a repeated digit.*/
+0059 ?=? || r; if ?=='QUIT'&let==4  then ?= /*append random letter; ··· except this*/
+0060 end   /*until*/                        /* [↑]  builds a unique  N-letter code.*/
+0061 say
+0062 say id 'A random code of '   wid   "letters  (out of a possible "  let  ' letters) '
+0063 say id 'has been generated   (with'    reps    "repeats)."
+0064 return
+0065 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0066 hist:    do hist=1  for try;  say @.hist;  end;   return         /*show "guess" history.*/
+0067 s:    if arg(1)==1  then return '';      return "s"              /*a simpler pluraizer. */
+0068 ser:  say;  say;    say '***error***'   arg(1);     say;   say;         exit 13
+0069 /*──────────────────────────────────────────────────────────────────────────────────────*/  /*◄■■■■■■ optional vetting.*/
+0070 vet:  parse arg val,?,mn,mx                      /*vet (validate) a specified argument. */  /*◄■■■■■■ optional vetting.*/
+0071 if ?=="args" & (val>1 | _\='')  then call ser "Too many arguments specified. "  _     /*◄■■■■■■ optional vetting.*/
+0072 if ?=="args"       then return                                                        /*◄■■■■■■ optional vetting.*/
+0073 if \datatype(val, 'N')          then call ser ? "isn't numeric: "               val   /*◄■■■■■■ optional vetting.*/
+0074 if \datatype(val, 'W')          then call ser ? "isn't an integer: "            val   /*◄■■■■■■ optional vetting.*/
+0075 if val < mn                     then call ser ? "has a value less than "        mn    /*◄■■■■■■ optional vetting.*/
+0076 if val > mx                     then call ser ? "has a value greater than "     mx    /*◄■■■■■■ optional vetting.*/
+0077 if ?=='REP' & \datatype(val,W)  then call ser "Value for REPEATS isn't valid: " oRep  /*◄■■■■■■ optional vetting.*/
+0078 return 1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 val              70
+002 mn               70
+003 mx               70
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @abc             -> newV1            53
+002 @.               -> newV2.           34
+003 _                -> newV3            2 29
+004 ?                -> newV4            55 59 59 70

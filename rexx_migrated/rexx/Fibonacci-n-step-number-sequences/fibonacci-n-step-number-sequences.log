@@ -1,0 +1,53 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program  calculates and displays a   N-step   Fibonacci   sequence(s). */
+0002 parse arg FibName values               /*allows a Fibonacci name, starter vals*/
+0003 if FibName\=''  then do;  call nStepFib  FibName,values;    signal done;    end
+0004 /* [↓]  no args specified, show a bunch*/
+0005 call  nStepFib  'Lucas'       ,   2 1
+0006 call  nStepFib  'fibonacci'   ,   1 1
+0007 call  nStepFib  'tribonacci'  ,   1 1 2
+0008 call  nStepFib  'tetranacci'  ,   1 1 2 4
+0009 call  nStepFib  'pentanacci'  ,   1 1 2 4 8
+0010 call  nStepFib  'hexanacci'   ,   1 1 2 4 8 16
+0011 call  nStepFib  'heptanacci'  ,   1 1 2 4 8 16 32
+0012 call  nStepFib  'octonacci'   ,   1 1 2 4 8 16 32 64
+0013 call  nStepFib  'nonanacci'   ,   1 1 2 4 8 16 32 64 128
+0014 call  nStepFib  'decanacci'   ,   1 1 2 4 8 16 32 64 128 256
+0015 call  nStepFib  'undecanacci' ,   1 1 2 4 8 16 32 64 128 256 512
+0016 call  nStepFib  'dodecanacci' ,   1 1 2 4 8 16 32 64 128 256 512 1024
+0017 call  nStepFib  '13th-order'  ,   1 1 2 4 8 16 32 64 128 256 512 1024 2048
+0018 done:  exit                            /*stick a fork in it,  we're all done. */
+0019 /*────────────────────────────────────────────────────────────────────────────*/
+0020 nStepFib:  procedure;  parse arg Fname,vals,m;    if m==''  then m=30;      L=
+0021 N=words(vals)
+0022 do pop=1  for N        /*use  N  initial values. */
+0023 @.pop=word(vals,pop)   /*populate initial numbers*/
+0024 end   /*pop*/
+0025 do j=1  for m                               /*calculate M Fib numbers.*/
+0026 if j>N  then do;  @.j=0                     /*initialize the sum to 0.*/
+0027 do k=j-N  for N    /*sum the last  N numbers.*/
+0028 @.j=@.j+@.k        /*add the  [N-j]th number.*/
+0029 end   /*k*/
+0030 end
+0031 L=L  @.j                                    /*append Fib number──►list*/
+0032 end   /*j*/
+0033 
+0034 say right(Fname,11)'[sum'right(N,3)    "terms]:"     strip(L)    '···'
+0035 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 Fname            20
+002 vals             20
+003 m                20 20
+004 L                20 31
+005 N                21
+006 pop              22
+007 j                25
+008 k                27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           23 26 28

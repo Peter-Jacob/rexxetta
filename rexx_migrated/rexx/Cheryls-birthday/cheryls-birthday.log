@@ -1,0 +1,66 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX pgm finds Cheryl's birth date based on a person knowing the birth month, another */
+0002 /*──────────────────────── person knowing the birth day, given a list of possible dates.*/
+0003 $= 'May-15 May-16 May-19 June-17 June-18 July-14 July-16 August-14 August-15 August-17'
+0004 call delDays unique('day')
+0005 $= unique('day')
+0006 $= unique('month')
+0007 if words($)==1  then say "Cheryl's birthday is"  translate($, , '-')
+0008 else say "error in the program's logic."
+0009 exit 0
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 unique:  arg u 2, dups;  #= words($);   $$= $
+0012 do    j=#  to 2  by -1
+0013 if u=='D'     then parse value word($, j)  with  '-'   x
+0014 else parse value word($, j)  with   x   '-'
+0015 do k=1  for j-1
+0016 if u=='D'  then parse value word($, k)  with  '-'   y
+0017 else parse value word($, k)  with   y   '-'
+0018 if x==y    then dups= dups k j
+0019 end   /*k*/
+0020 end      /*j*/
+0021 do    d=#  for #  by -1
+0022 do p=1  for words(dups)  until ?==d;  ?= word(dups,p)
+0023 if ?==d  then  $$= delword($$, ?, 1)
+0024 end   /*d*/
+0025 end      /*d*/
+0026 if words($$)==0  then return $
+0027 else return $$
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 delDays: parse arg days;  #= words(days)
+0030 do    j=#   for #   by -1;  parse value word(days, j) with x '-';  ##= words($)
+0031 do k=##  for ##  by -1;  parse value word($,    k) with y '-'
+0032 if x\==y  then iterate;  $= delword($, k, 1)
+0033 end   /*k*/
+0034 end      /*j*/
+0035 return $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 days             29
+002 j                30
+003 NORMAL.3         
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 y                31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $$               -> newV1            11 23
+002 ##               -> newV2            30
+003 $                -> newV3            3 5 6 32
+004 #                -> newV4            11 29
+005 ?                -> newV5            22

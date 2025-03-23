@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX pgm displays combination sets with repetitions for  X  things taken  Y  at a time*/
+0002 call RcombN    3,  2,  'iced jam plain'          /*The  1st  part of Rosetta Code task. */
+0003 call RcombN  -10,  3,  'Iced jam plain'          /* "   2nd    "   "    "      "    "   */
+0004 exit                                             /*stick a fork in it,  we're all done. */
+0005 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0006 RcombN: procedure; parse arg x,y,syms;  tell= x>0;  x=abs(x);   z=x+1  /*X>0? Show combo*/
+0007 say copies('─',15) x "doughnut selection taken" y 'at a time:' /*display title. */
+0008 do i=1  for words(syms);           $.i=word(syms, i)    /*assign symbols.*/
+0009 end   /*i*/
+0010 @.=1                                                           /*assign default.*/
+0011 do #=1;        if tell    then  call show               /*display combos?*/
+0012 @.y=@.y + 1;   if @.y==z  then  if .(y-1)  then leave   /* ◄─── recursive*/
+0013 end   /*#*/
+0014 say copies('═',15)  #  "combinations.";    say;   say          /*display answer.*/
+0015 return
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 .: procedure expose @. y z;   parse arg ?;     if ?==0  then return 1;            p=@.? +1
+0018 if p==z  then return .(? -1);      do j=?  to y;   @.j=p;   end  /*j*/;   return 0
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 show:   L=;      do c=1  for y;   _=@.c;   L=L $._;   end  /*c*/;       say L;    return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 p                17
+002 j                18
+003 c                20
+004 L                20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $.               -> newV1.           8
+002 @.               -> newV2.           10 12 18
+003 #                -> newV3            11
+004 ?                -> newV4            17
+005 _                -> newV5            20

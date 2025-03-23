@@ -1,0 +1,22 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates  array usage  with mimicry.                */
+0002 a. = 'not found'                       /*value for all a.xxx  (so far). */
+0003 do j=1  to 100       /*start at 1, define 100 elements*/
+0004 a.j = -j * 100       /*define element as  -J hundred. */
+0005 end   /*j*/          /*the above defines 100 elements.*/
+0006 
+0007 say 'element 50 is:'    a(50)
+0008 say 'element 3000 is:'  a(3000)
+0009 exit                                   /*stick a fork in it, we're done.*/
+0010 /*──────────────────────────────────A subroutine────────────────────────*/
+0011 a:   _a_ = arg(1);          return  a._a_
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a.               2 4
+002 j                3
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

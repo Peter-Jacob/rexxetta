@@ -1,0 +1,66 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX pgm calculates the  de Bruijn  sequence for all pin numbers  (4 digit decimals). */
+0002 $=                                               /*initialize the  de Bruijn  sequence. */
+0003 #=10;   lastNode= (#-2)(#-2)(#-1)(#-2)           /*this number is formed when this # ···*/
+0004 /*  ··· is skipped near the cycle end. */
+0005 do j=0  for 10;  $= $ || j;  jj= j || j        /*compose the left half of the numbers.*/
+0006 /* [↓]     "  right  "   "  "     "    */
+0007 do k=jj+1  to 99;      z= jj || right(k, 2, 0)
+0008 if z==lastNode  then iterate    /*the last node skipped.*/
+0009 if pos(z, $)\==0  then iterate  /*# in sequence? Skip it*/
+0010 $= $ || z        /* ◄─────────────────────────────────┐ */
+0011 end   /*k*/      /*append a number to the sequence──◄─┘ */
+0012 
+0013 do r= jj  to (j || 9);  b= right(r, 2, 0)   /*compose the left half of the numbers.*/
+0014 if b==jj  then iterate
+0015 $= $ || right(b, 2, 0)                      /* [↓]     "  right  "   "  "     "    */
+0016 do k= b+1  to 99;      z= right(b, 2, 0) || right(k, 2, 0)
+0017 if pos(z, $)\==0  then iterate  /*# in sequence? Skip it*/
+0018 $= $ || z        /* ◄─────────────────────────────────┐ */
+0019 end   /*k*/      /*append a number to the sequence──◄─┘ */
+0020 end   /*r*/
+0021 end      /*j*/
+0022 @deB= 'de Bruijn sequence' /*literal used in some SAY instructions*/
+0023 $= $ || left($, 3)        /*append 000*/         /*simulate "wrap-around" de Bruijn seq.*/
+0024 say 'length of the' @deB " is " length($) /*display the length of  de Bruijn seq.*/
+0025 say;   say 'first 130 digits of the' @deB":"     /*display the title for the next line. */
+0026 say left($, 130)                          /*display 130 left-most digits of seq. */
+0027 say;   say ' last 130 digits of the' @deB":"     /*display the title for the next line. */
+0028 say right($, 130)                         /*display 130 right-most digits of seq.*/
+0029 say                                              /*display a blank line.                */
+0030 call val $                                       /*call the  VAL  sub for verification. */
+0031 @deB= 'reversed'   @deB           /*next,  we'll check on a reversed seq.*/
+0032 $$= reverse($)                                   /*do what a mirror does,  reversify it.*/
+0033 call val $$                                      /*call the  VAL  sub for verification. */
+0034 $= overlay(., $, 4444)                           /*replace 4,444th digit with a period. */
+0035 @deB= 'overlaid' subword(@deB, 2) /* [↑] this'll cause a validation barf.*/
+0036 call val $                                       /*call the  VAL  sub for verification. */
+0037 exit                                             /*stick a fork in it,  we're all done. */
+0038 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0039 val: parse arg $$$;    e= 0;    _= copies('─',8) /*count of errors (missing PINs) so far*/
+0040 say;      say _ 'validating the'    @deB"." /*display what's happening in the pgm. */
+0041 do pin=0  for 1e4; pin4= right(pin,4,0) /* [↓]  maybe add leading zeros to pin.*/
+0042 if pos(pin4, $$$)\==0  then iterate     /*Was number found?  Just as expected. */
+0043 say 'PIN number '      pin       " wasn't found in"         @deb'.'
+0044 e= e + 1                                /*bump the counter for number of errors*/
+0045 end   /*pin*/                           /* [↑]  validate all 10,000 pin numbers*/
+0046 if e==0  then e= 'No'                       /*Gooder English (sic) the error count.*/
+0047 say _   e   'errors found.'                 /*display the number of errors found.  */
+0048 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 e                39 44 46
+002 pin              41
+003 pin4             41
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @deB             -> newV1            22 31 35
+002 $$$              -> newV2            39
+003 $$               -> newV3            32
+004 $                -> newV4            2 5 10 15 18 23 34
+005 #                -> newV5            3
+006 _                -> newV6            39

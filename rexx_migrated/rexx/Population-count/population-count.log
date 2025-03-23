@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX program counts the number of "one" bits in the binary version of a decimal number*/
+0002 /*─────────────────── and also generates a specific number of  EVIL and ODIOUS  numbers.*/
+0003 parse arg N B .                                  /*get optional arguments from the C.L. */
+0004 if N==''  |  N==","   then N= 30                 /*N not specified?   Then use default. */
+0005 if B==''  |  B==","   then B=  3                 /*B  "      "          "   "      "    */
+0006 numeric digits 2000                              /*be able to handle  gihugeic  numbers.*/
+0007 numeric digits max(20, length(B**N) )            /*whittle the  precision  down to size.*/
+0008 $=                                               /* [↑]  a little calculation for sizing*/
+0009 do j=0  for  N;   $= $ popCount(B**j)       /*generate N popCounts for some powers.*/
+0010 end   /*j*/                                 /* [↑]  append popCount to the $ list. */
+0011 /* [↓]  display popCounts of "3" powers*/
+0012 call showList  'popCounts of the powers of'  B   /*display the list with a header/title.*/
+0013 
+0014 do j=0  until  #>=N                         /*generate   N   evil  numbers.        */
+0015 if popCount(j) // 2  then iterate           /*if  odd population count, skip it.   */
+0016 #= # + 1;      $= $ j                       /*bump evil # count;  add it to $ list.*/
+0017 end   /*j*/                                 /* [↑]  build a list of evil numbers.  */
+0018 /* [↓]  display the evil number list.  */
+0019 call showList  'evil numbers'                    /*display the  $  list with a header.  */
+0020 
+0021 do j=0  until  #>=N                         /*generate   N   odious  numbers.      */
+0022 if popCount(j) // 2 ==0  then iterate       /*if even population count, then skip. */
+0023 #= # + 1;      $=$ j                        /*bump odious # count;  add to $ list. */
+0024 end   /*j*/                                 /* [↑]  build a list of odious numbers.*/
+0025 /* [↓]  display the odious number list.*/
+0026 call showList  'odious numbers'                  /*display the   $  list with a header. */
+0027 exit                                             /*stick a fork in it,  we're all done. */
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 d2b:      return word( strip( x2b( d2x( arg(1) ) ), 'L', 0)  0, 1)        /*dec ──► bin.*/
+0030 popCount: return length( space( translate( d2b(arg(1) ), , 0), 0) )       /*count ones. */
+0031 showList: say;   say 'The 1st'   N   arg(1)":";   say strip($);     #= 0;     $=;   return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                3 4
+002 B                3 5
+003 j                9 14 21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            8 9 16 23 31
+002 #                -> newV2            16 23 31

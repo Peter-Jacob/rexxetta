@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX pgm uses H. Michael Damm's algorithm to validate numbers with suffixed check sum. digit*/
+0002 a.0= 0317598642; a.1= 7092154863; a.2= 4206871359; a.3= 1750983426; a.4= 6123045978
+0003 a.5= 3674209581; a.6= 5869720134; a.7= 8945362017; a.8= 9438617205; a.9= 2581436790
+0004 Call Damm 5724, 5727, 112946, 112940         /*invoke Damm's algorithm To some #'s.*/
+0005 Exit                                         /*stick a Tok in it,  we're all Done. */
+0006 /*---------------------------------------------------------------------------------*/
+0007 Damm:
+0008 Do j=1 To arg()                            /* loop over numbers          */
+0009 x=arg(j)
+0010 d=0
+0011 Do p=1 To length(x)-1                  /* compute the checksum digit */
+0012 d=substr(a.d,substr(x,p,1)+1,1)
+0013 end   /*p*/
+0014 z=right(x,1)                             /* the given digit            */
+0015 If z=d Then Say '   valid checksum digit '  z  " for "  x
+0016 Else Say ' invalid checksum digit '  z  " for "  x    '   (should be'  d")"
+0017 End   /*j*/
+0018 Return  /syntaxhighlight>
+0019 {{out|output|text=&nbsp; when using the (internal) default inputs:}}
+0020 <pre>
+0021 valid checksum digit  4  for  5724
+0022 invalid checksum digit  7  for  5727    (should be 4)
+0023 valid checksum digit  6  for  112946
+0024 invalid checksum digit  0  for  112940    (should be 6)
+0025 </pre>
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a.               2 2 2 2 2 3 3 3 3 3
+002 j                8
+003 x                9
+004 d                10 12
+005 p                11
+006 z                14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 {{out|output|tex -> newV1            19

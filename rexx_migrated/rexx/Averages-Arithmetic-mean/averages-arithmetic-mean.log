@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program finds the averages/arithmetic mean of several lists (vectors) or CL input*/
+0002 parse arg @.1; if @.1=''  then do;   #=6                         /*vector from the C.L.?*/
+0003 @.1 =   10 9 8 7 6 5 4 3 2 1
+0004 @.2 =   10 9 8 7 6 5 4 3 2 1 0 0 0 0  .11
+0005 @.3 =  '10 20 30 40 50  -100  4.7  -11e2'
+0006 @.4 =  '1 2 3 4  five  6 7 8 9  10.1.  ±2'
+0007 @.5 =  'World War I  &  World War II'
+0008 @.6 =                             /*  ◄─── a null value. */
+0009 end
+0010 else #=1                               /*number of CL vectors.*/
+0011 do j=1  for #
+0012 say '       numbers = '   @.j
+0013 say '       average = '   avg(@.j)
+0014 say copies('═', 79)
+0015 end   /*t*/
+0016 exit                                             /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 avg: procedure;  parse arg x;     #=words(x)                      /*#:  number of items.*/
+0019 if #==0  then return  'N/A: ───[null vector.]'               /*No words? Return N/A*/
+0020 $=0
+0021 do k=1  for #;      _=word(x,k)                         /*obtain a number.    */
+0022 if datatype(_,'N')  then do;  $=$+_;  iterate;   end    /*if numeric, then add*/
+0023 say left('',40) "***error***  non-numeric: " _;  #=#-1  /*error; adjust number*/
+0024 end   /*k*/
+0025 
+0026 if #==0  then return  'N/A: ───[no numeric values.]'         /*No nums?  Return N/A*/
+0027 return $ / #                                                 /*return the average. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                18
+002 k                21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 3 4 5 6 7 8
+002 #                -> newV2            2 18 23
+003 $                -> newV3            20 22
+004 _                -> newV4            21

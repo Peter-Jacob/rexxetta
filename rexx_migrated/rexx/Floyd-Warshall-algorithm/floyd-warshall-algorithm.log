@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX program uses Floyd─Warshall algorithm to find shortest distance between vertices.*/
+0002 v= 4             /*███       {1}       ███*/     /*number of vertices in weighted graph.*/
+0003 @.= 99999999     /*███    4 /   \ -2   ███*/     /*the default distance  (edge weight). */
+0004 @.1.3= -2        /*███     /  3  \     ███*/     /*the distance (weight) for an edge.   */
+0005 @.2.1=  4        /*███  {2} ────► {3}  ███*/     /* "     "         "     "   "   "     */
+0006 @.2.3=  3        /*███     \     /     ███*/     /* "     "         "     "   "   "     */
+0007 @.3.4=  2        /*███   -1 \   / 2    ███*/     /* "     "         "     "   "   "     */
+0008 @.4.2= -1        /*███       {4}       ███*/     /* "     "         "     "   "   "     */
+0009 
+0010 do     k=1  for v
+0011 do   i=1  for v
+0012 do j=1  for v;  _= @.i.k + @.k.j /*add two nodes together.              */
+0013 if @.i.j>_  then @.i.j= _        /*use a new distance (weight) for edge.*/
+0014 end   /*j*/
+0015 end     /*i*/
+0016 end       /*k*/
+0017 w= 12;                     $= left('', 20)       /*width of the columns for the output. */
+0018 say $ center('vertices',w) center('distance', w) /*display the  1st  line of the title. */
+0019 say $ center('pair'    ,w) center('(weight)', w) /*   "     "   2nd    "   "  "    "    */
+0020 say $ copies('═'       ,w) copies('═'       , w) /*   "     "   3rd    "   "  "    "    */
+0021 /* [↓]  display edge distances (weight)*/
+0022 do   f=1  for v                               /*process each of the "from" vertices. */
+0023 do t=1  for v;    if f==t  then iterate     /*   "      "   "  "   "to"      "     */
+0024 say  $      center(f '───►' t, w)        right(@.f.t, w % 2)
+0025 end   /*t*/                                 /* [↑]  the distance between 2 vertices*/
+0026 end     /*f*/                                 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 v                2
+002 k                10
+003 i                11
+004 j                12
+005 w                17
+006 f                22
+007 t                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           3 4 5 6 7 8 13
+002 _                -> newV2            12
+003 $                -> newV3            17

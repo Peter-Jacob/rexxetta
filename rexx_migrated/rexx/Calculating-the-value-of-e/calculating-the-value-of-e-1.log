@@ -1,0 +1,31 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX pgm calculates  e  to a # of decimal digits. If digs<0, a running value is shown.*/
+0002 parse arg digs .                                 /*get optional number of decimal digits*/
+0003 if digs=='' | digs==","  then digs= 101          /*Not specified?  Then use the default.*/
+0004 numeric digits abs(digs);     w=length(digits()) /*use the absolute value of  digs.     */
+0005 e= 1;     q= 1               /*1st value of  e    and     q.        */
+0006 do #=1  until e==old;   old= e             /*start calculations at the second term*/
+0007 q= q / #                                   /*calculate the divisor for this term. */
+0008 e= e + q                                   /*add quotient to running   e   value. */
+0009 if digs>0  then iterate                    /*DIGS>0?  Then don't show running digs*/
+0010 $= compare(e, old)                         /*$  is first digit not compared equal.*/
+0011 if $>0  then say right('with', 10)    right(#+1, w)     "terms,"      right($-1, w),
+0012 "decimal digits were calculated for   e   (Napier's constant)"     /*   ↑   */
+0013 end   /*#*/                                /* -1  is for the decimal point────┘   */
+0014 say                                              /*stick a fork in it,  we're all done. */
+0015 say '(with'    abs(digs)      "decimal digits)   the value of   e   is:";         say e
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 digs             2 3
+002 w                4
+003 e                5 8
+004 q                5 7
+005 old              6
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            6
+002 $                -> newV2            10

@@ -1,0 +1,34 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program  reads  a file  and  displays  it to the screen  (with word wrap).       */
+0002 parse arg iFID width .                           /*obtain optional arguments from the CL*/
+0003 if  iFID=='' |  iFID==","  then  iFID='LAWS.TXT' /*Not specified?  Then use the default.*/
+0004 if width=='' | width==","  then width=linesize() /* "      "         "   "   "     "    */
+0005 @=                                               /*number of words in the file (so far).*/
+0006 do  while lines(iFID)\==0            /*read from the file until End-Of-File.*/
+0007 @=@ linein(iFID)                     /*get a record  (line of text).        */
+0008 end   /*while*/
+0009 $=word(@,1)                                      /*initialize  $  with the first word.  */
+0010 do k=2  for words(@)-1;  x=word(@,k) /*parse until text (@) exhausted.      */
+0011 _=$ x                                /*append it to the  $  list and test.  */
+0012 if length(_)>=width  then do;  say $ /*this word a bridge too far?    > w.  */
+0013 _=x   /*assign this word to the next line.   */
+0014 end
+0015 $=_                                  /*new words (on a line)  are OK so far.*/
+0016 end   /*m*/
+0017 if $\==''  then say $                            /*handle any residual words (overflow).*/
+0018 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 width            4
+002 while            6
+003 k                10
+004 x                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            5 7
+002 $                -> newV2            9 15
+003 _                -> newV3            11 13

@@ -1,0 +1,24 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX pgm reads fixed─length 80 byte records;  reverses each record, displays to term. */
+0002 iFID= 'FIXEDLEN.TXT'                             /*the file's filename (used for input).*/
+0003 call charin iFID, 1, 0                           /*open the file, point rec pointer to 1*/
+0004 /* [+]  just to be safe, position file.*/
+0005 do j=1  while chars(iFID) >= 80      /*read data records of LRECL ≡ eighty. */
+0006 @.j= charin(iFID, , 80)              /*read a data record of eighty bytes.  */
+0007 end   /*j*/
+0008 #= j - 1                                         /*adjust # of records (J is 1 too high)*/
+0009 do k=1  for #                        /* [↓]  process all the records read.  */
+0010 say reverse(@.k)                     /* reverse a record and write to term. */
+0011 end   /*k*/                          /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                5
+002 k                9
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           6
+002 #                -> newV2            8

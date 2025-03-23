@@ -1,0 +1,54 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program  generates and displays  a number of  narcissistic (Armstrong)  numbers. */
+0002 numeric digits 39                                /*be able to handle largest Armstrong #*/
+0003 parse arg N .                                    /*obtain optional argument from the CL.*/
+0004 if N=='' | N==","  then N=25                     /*Not specified?  Then use the default.*/
+0005 N=min(N, 89)                                     /*there are only  89  narcissistic #s. */
+0006 @.=0                                             /*set default for the @ stemmed array. */
+0007 #=0                                              /*number of narcissistic numbers so far*/
+0008 do p=0  for 39+1; if p<10  then call tell p /*display the 1st 1─digit dec. numbers.*/
+0009 do i=1  for 9;      @.p.i= i**p         /*build table of ten digits ^ P power. */
+0010 zzj= '00'j;       @.p.zzj= @.p.j        /*assign value for a 3-dig number (LZ),*/
+0011 end   /*i*/
+0012 
+0013 do j=10  to 99;   parse var j  t 2 u    /*obtain 2 decimal digits of J:    T U */
+0014 @.p.j = @.p.t + @.p.u                   /*assign value for a 2─dig number.     */
+0015 zj=  '0'j;        @.p.zj = @.p.j        /*   "     "    "  " 3─dig    "   (LZ),*/
+0016 end   /*j*/                             /* [↑]  T≡ tens digit;  U≡ units digit.*/
+0017 
+0018 do k=100  to 999; parse var k h 2 t 3 u /*obtain 3 decimal digits of J:  H T U */
+0019 @.p.k= @.p.h + @.p.t + @.p.u            /*assign value for a three-digit number*/
+0020 end   /*k*/                             /* [↑]  H≡ hundreds digit;  T≡ tens ···*/
+0021 end       /*p*/                             /* [↑]  table is a fixed (limited) size*/
+0022 /* [↓]  skip the 2─digit dec. numbers. */
+0023 do j=100;               L=length(j)         /*get length of the  J  decimal number.*/
+0024 parse var  j  _  +3  m                      /*get 1st three decimal digits of  J.  */
+0025 $=@.L._                                     /*sum of the J decimal digs^L (so far).*/
+0026 do  while m\==''                 /*do the rest of the dec. digs in  J.  */
+0027 parse var  m    _  +3  m         /*get the next 3 decimal digits in  M. */
+0028 $=$ + @.L._                      /*add dec. digit raised to pow to sum. */
+0029 end   /*while*/                  /* [↑]  calculate the rest of the sum. */
+0030 
+0031 if $==j  then do;  call tell j              /*does the sum equal to  J?  Show the #*/
+0032 if #==n  then leave      /*does the sum equal to  J?  Show the #*/
+0033 end
+0034 end   /*j*/                                 /* [↑]  the  J loop  list starts at 100*/
+0035 exit                                             /*stick a fork in it,  we're all done. */
+0036 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0037 tell: #=# + 1                                    /*bump the counter for narcissistic #s.*/
+0038 say right(#,9)   ' narcissistic:'   arg(1) /*display index and narcissistic number*/
+0039 if #==n  &  n<11  then exit                /*finished showing of narcissistic #'s?*/
+0040 return                                     /*return to invoker & keep on truckin'.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 m                27 27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           6 9 10 14 15 19
+002 #                -> newV2            7
+003 _                -> newV3            24 27
+004 $                -> newV4            25 28

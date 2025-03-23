@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program finds  emirp  primes (base 10):  when a prime reversed, is another prime.*/
+0002 parse arg x y .                                  /*obtain optional arguments from the CL*/
+0003 if x=='' | x==","  then do;  x=1;  y=20;  end    /*Not specified?  Then use the default.*/
+0004 if y==''  then y=x                               /* "      "         "   "   "     "    */
+0005 r=y<0;    y=abs(y)                               /*display a  range  of  emirp primes ? */
+0006 rly=length(y) + \r                               /*adjusted length of the  Y  value.    */
+0007 !.=0;  c=0;   _=2 3 5 7 11 13 17;   $=           /*isP; emirp count; low primes; emirps.*/
+0008 do #=1  for words(_);   p=word(_,#);   @.#=p;    !.p=1;    end  /*#*/
+0009 #=#-1;   ip=#;  s.#=@.#**2                       /*adjust # (for the DO loop);  last P².*/
+0010 /*▒▒▒▒▒▒▒▒▒▒▒▒▒▒ [↓]   generate more primes within range.   */
+0011 do j=@.#+2  by 2                             /*only find  odd  primes from here on. */
+0012 if length(#)>rly  then leave                 /*have we enough primes for emirps?    */
+0013 if j//3      ==0  then iterate               /*is  J  divisible by three?           */
+0014 if right(j,1)==5  then iterate               /*is the right-most digit a "5" ?      */
+0015 if j//7      ==0  then iterate               /*is  J  divisible by seven?           */
+0016 if j//11     ==0  then iterate               /*is  J  divisible by eleven?          */
+0017 if j//13     ==0  then iterate               /*is  J  divisible by thirteen?        */
+0018 /*[↑]  the above five lines saves time.*/
+0019 do k=ip  while  s.k<=j                 /*divide by the known  odd  primes.    */
+0020 if j//@.k==0  then iterate j           /*J divisible by X?  Then ¬prime.   ___*/
+0021 end   /*k*/                            /* [↑]  divide by odd primes up to √ j */
+0022 #=#+1                                        /*bump the number of primes found.     */
+0023 @.#=j;      s.#=j*j;     !.j=1               /*assign to sparse array; prime²; prime*/
+0024 end         /*j*/                            /* [↑]  keep generating until enough.  */
+0025 /*▒▒▒▒▒▒▒▒▒▒▒▒▒▒ [↓]    filter  emirps  for the display.    */
+0026 do j=6  to @.#;   _=@.j                      /*traipse through the regular primes.  */
+0027 if (r&_>y) | (\r&c==y)  then leave           /*is the prime not within the range?   */
+0028 __=reverse(_)                                /*reverse (digits) of the regular prime*/
+0029 if \!.__   | _==__    then iterate           /*is the  reverse  a different prime ? */
+0030 c=c+1                                        /*bump the emirp prime counter.        */
+0031 if (r&_<x) | (\r&c<x) then iterate           /*is  emirp  not within allowed range? */
+0032 $=$ _                                        /*append prime to the emirpPrime list. */
+0033 end   /*j*/                                  /* [↑]  list:  by value  or  by range. */
+0034 /* [↓]  display the emirp list.        */
+0035 say strip($);   say;   n=words($);   ?=(n\==1)   /*display the  emirp primes  wanted.   */
+0036 if ?  then say  n   'emirp primes shown.'        /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                2 3
+002 y                2 3 4 5
+003 r                5
+004 rly              6
+005 c                7 30
+006 p                8
+007 ip               9
+008 s.               9 23
+009 j                11 26
+010 k                19
+011 n                35
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           7 8 23
+002 @.               -> newV2.           8 23
+003 __               -> newV3            28
+004 _                -> newV4            7 26
+005 $                -> newV5            7 32
+006 #                -> newV6            8 9 22
+007 ?                -> newV7            35

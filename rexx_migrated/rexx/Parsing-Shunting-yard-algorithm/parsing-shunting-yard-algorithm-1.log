@@ -1,0 +1,73 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX pgm converts infix arith. expressions to Reverse Polish notation (shunting─yard).*/
+0002 parse arg x                                      /*obtain optional argument from the CL.*/
+0003 if x=''  then x= '3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3' /*Not specified?  Then use the default.*/
+0004 ox=x
+0005 x='(' space(x) ") "                              /*force stacking for the expression.   */
+0006 #=words(x)                                       /*get number of tokens in expression.  */
+0007 do i=1  for #;   @.i=word(x, i)    /*assign the input tokens to an array. */
+0008 end   /*i*/
+0009 tell=1                                           /*set to 0 if working steps not wanted.*/
+0010 L=max( 20, length(x) )                           /*use twenty for the minimum show width*/
+0011 
+0012 say  'token'  center("input" , L, '─')     center("stack" , L%2, '─'),
+0013 center("output", L, '─')     center("action", L,   '─')
+0014 op= ")(-+/*^";   Rop=substr(op,3);   p.=;  n=length(op);  RPN=  /*some handy-dandy vars.*/
+0015 s.=
+0016 do i=1  for n;  _=substr(op,i,1);  s._=(i+1)%2;   p._=s._+(i==n);  end  /*i*/
+0017 $=                                               /* [↑]  assign the operator priorities.*/
+0018 do k=1  for #;              ?=@.k             /*process each token from the  @. list.*/
+0019 select                                      /*@.k is:  (,  operator,   ),   operand*/
+0020 when ?=='('   then do; $="(" $;    call show 'moving'   ?   "──► stack";    end
+0021 when isOp(?)  then do;              !=word($, 1)             /*get token from stack*/
+0022 do  while ! \==')'  &  s.!>=p.?
+0023 RPN=RPN !                          /*add token  to   RPN.*/
+0024 $=subword($, 2)                    /*del token from stack*/
+0025 call show 'unstacking:'  !
+0026 !=word($, 1)                       /*get token from stack*/
+0027 end   /*while*/
+0028 $=? $                                     /*add token  to  stack*/
+0029 call show 'moving'   ?   "──► stack"
+0030 end
+0031 when ?==')'   then do;             !=word($, 1)              /*get token from stack*/
+0032 do  while  !\=='(';     RPN=RPN !    /*add token  to  RPN. */
+0033 $=subword($, 2)                      /*del token from stack*/
+0034 !=   word($, 1)                      /*get token from stack*/
+0035 call show 'moving stack' ! "──► RPN"
+0036 end   /*while*/
+0037 $=subword($, 2)                           /*del token from stack*/
+0038 call show 'deleting ( from the stack'
+0039 end
+0040 otherwise  RPN=RPN ?                                         /*add operand to RPN. */
+0041 call show 'moving'     ?     "──► RPN"
+0042 end   /*select*/
+0043 end    /*k*/
+0044 say
+0045 RPN=space(RPN $)                                 /*elide any superfluous blanks in RPN. */
+0046 say ' input:'  ox;     say " RPN──►"    RPN      /*display the input  and  the RPN.     */
+0047 parse source upper . y .                         /*invoked via the  C.L.  or  REXX pgm? */
+0048 if y=='COMMAND'  then  exit                      /*stick a fork in it,  we're all done. */
+0049 else  return RPN                /*return RPN to invoker  (the RESULT). */
+0050 /*──────────────────────────────────────────────────────────────────────────────────────────*/
+0051 isOp: return pos(arg(1),rOp) \== 0               /*is the first argument a "real" operator? */
+0052 show: if tell then say center(?,5) left(subword(x,k),L) left($,L%2) left(RPN,L) arg(1); return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                2 3 5
+002 ox               4
+003 i                7
+004 tell             9
+005 L                10
+006 op               14
+007 Rop              14
+008 p.               14
+009 n                14
+010 RPN              14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           7
+002 #                -> newV2            6

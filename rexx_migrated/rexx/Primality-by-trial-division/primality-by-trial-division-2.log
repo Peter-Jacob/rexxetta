@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX program tests for  primality by using  (kinda smartish)  trial division.         */
+0002 parse arg n .;  if n==''  then n=10000           /*let the user choose the upper limit. */
+0003 tell=(n>0);     n=abs(n)                         /*display the primes  only if   N > 0. */
+0004 p=0                                              /*a count of the primes found (so far).*/
+0005 do j=-57  to n                             /*start in the cellar and work up.     */
+0006 if \isPrime(j)  then iterate               /*if not prime,  then keep looking.    */
+0007 p=p+1                                      /*bump the jelly bean counter.         */
+0008 if tell  then say right(j,20) 'is prime.'  /*maybe display prime to the terminal. */
+0009 end   /*j*/
+0010 say
+0011 say  "There are "      p       " primes up to "        n        ' (inclusive).'
+0012 exit                                             /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 isPrime: procedure;  parse arg x                       /*get integer to be investigated.*/
+0015 if x<11     then return wordpos(x, '2 3 5 7')\==0         /*is it a wee prime? */
+0016 if x//2==0  then return 0                     /*eliminate all the even numbers.*/
+0017 if x//3==0  then return 0                     /* ··· and eliminate the triples.*/
+0018 do k=5  by 6  until k*k>x            /*this skips odd multiples of 3. */
+0019 if x//k    ==0  then return 0        /*perform a divide (modulus),    */
+0020 if x//(k+2)==0  then return 0        /* ··· and the next umpty one.   */
+0021 end   /*k*/                          /*Note: REXX  //  is ÷ remainder.*/
+0022 return 1                                      /*did all divisions, it's prime. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                14
+002 k                18
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

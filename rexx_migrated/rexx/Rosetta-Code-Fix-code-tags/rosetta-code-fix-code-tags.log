@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program  fixes (changes)  depreciated  HTML  code tags  with  newer tags.        */
+0002 @="<";  old.=;        old.1 = @'%s>'         ;     new.1 = @"lang %s>"
+0003 old.2 = @'/%s>'        ;     new.2 = @"/lang>"
+0004 old.3 = @'code %s>'    ;     new.3 = @"lang %s>"
+0005 old.4 = @'/code>'      ;     new.4 = @"/lang>"
+0006 
+0007 iFID = 'Wikisource.txt'                          /*the  Input File  IDentifier.         */
+0008 oFID = 'converted.txt'                           /*the Output   "      "                */
+0009 
+0010 do  while lines(iFID)\==0                      /*keep reading the file until finished.*/
+0011 $= linein(iFID)                                /*read a record from the input file.   */
+0012 do j=1  while old.j \== ''  /*change old ──► new  until  finished. */
+0013 $= changestr(old.j,$,new.j) /*let REXX do the heavy lifting.       */
+0014 end   /*j*/
+0015 call lineout oFID,$                            /*write re-formatted record to output. */
+0016 end   /*while*/                                /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 old.             2 2 3 4 5
+002 new.             2 3 4 5
+003 oFID             8
+004 while            10
+005 j                12
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            2
+002 $                -> newV2            11 13

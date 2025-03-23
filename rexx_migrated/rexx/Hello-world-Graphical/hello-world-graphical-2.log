@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /*REXX program shows a "hello world" window (and another to show how to close)*/
+0002 parse upper version !ver .;     !pcrexx= !ver=='REXX/PERSONAL' | !ver=='REXX/PC'
+0003 if ¬!pcrexx  then call ser  "This isn't PC/REXX"     /*this isn't  PC/REXX ?  */
+0004 rxWin=fcnPkg('rxwindow')                             /*is the function around?*/
+0005 
+0006 if rxWin¬==1  then do 1;     'RXWINDOW  /q'
+0007 if fcnPkg('rxwindow')==1 then leave   /*the function is OK.*/
+0008 say 'error loading RXWINDOW !';     exit 13
+0009 end
+0010 
+0011 top=1;         normal=31;       border=30;   curpos=cursor()
+0012 width=40;      height=11;       line.=;      line.1= 'Goodbye, World!'
+0013 w=w_open(2, 3, height+2, width, normal);     call w_border  w,,,,,border
+0014 helpLine= 'press the  ESC  key to quit.'
+0015 helpW=w_open(2, 50, 3, length(helpLine)+4, normal)
+0016 call w_border helpw,,,,,border;  call w_put helpW, 2, 3, helpLine
+0017 call w_hide w, 'n'
+0018 do k=0  to height-1
+0019 _=top+k;      call w_put w, k+2, 3, line._, width-4
+0020 end   /*k*/
+0021 call w_unhide w
+0022 do forever;   if inKey()=='1b'x  then leave;  end
+0023 /*   ↑                     */
+0024 call w_close  w                                    /*   └──◄ the  ESCape  key.*/
+0025 call w_close  helpw
+0026 if rxWin¬==1  then 'RXUNLOAD rxwindow'
+0027 parse var curPos row  col
+0028 call      cursor row, col
+0029 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 curPos           27
+002 row              27
+003 col              27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !pcrexx          -> newV1            2
+002 !ver             -> newV2            2
+003 _                -> newV3            19

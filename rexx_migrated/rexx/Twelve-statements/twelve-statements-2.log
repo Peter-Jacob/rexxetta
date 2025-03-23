@@ -1,0 +1,49 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program solves the  "Twelve Statement Puzzle".                                   */
+0002 q=12;      @stmt=right('statement',20)           /*number of statements in the puzzle.  */
+0003 m=0                                              /*[↓]  statement one is  TRUE  by fiat.*/
+0004 do pass=1  for 2                           /*find the maximum number of  "trues". */
+0005 do e=0   for 2**(q-1);    n = '1'right( x2b( d2x( e ) ),  q-1,  0)
+0006 do b=1  for q                      /*define various bits in the number  Q.*/
+0007 @.b=substr(n, b, 1)                /*define a particular  @  bit  (in  Q).*/
+0008 end   /*b*/
+0009 if @.1  then   if \ @.1                             then iterate
+0010 if @.2  then   if @.7+@.8+@.9+@.10+@.11+@.12  \==3  then iterate
+0011 if @.3  then   if @.2+@.4+@.6+@.8+@.10+@.12   \==2  then iterate
+0012 if @.4  then   if @.5  then if \(@.6 & @.7)         then iterate
+0013 if @.5  then   if @.2  |  @.3  |  @.4               then iterate
+0014 if @.6  then   if @.1+@.3+@.5+@.7+@.9+@.11    \==4  then iterate
+0015 if @.7  then   if \ (@.2  &&  @.3 )                 then iterate
+0016 if @.8  then   if @.7  then  if \(@.5 & @.6)        then iterate
+0017 if @.9  then   if @.1+@.2+@.3+@.4+@.5+@.6     \==3  then iterate
+0018 if @.10 then   if \ (@.11 & @.12)                   then iterate
+0019 if @.11 then   if @.7+@.8+@.9                 \==1  then iterate
+0020 g=@.1 +@.2 +@.3 +@.4 +@.5 +@.6 +@.7 +@.8+ @.9 +@.10 +@.11
+0021 if @.12 then   if g                           \==4  then iterate
+0022 g=g + @.12
+0023 if pass==1  then do;  m=max(m,g);  iterate;  end
+0024 else if g\==m     then iterate
+0025 do j=1  for q;  z=substr(n, j, 1)
+0026 if z  then  say @stmt right(j, 2)        " is "        word('false true', 1+z)
+0027 end   /*tell*/
+0028 end       /*e*/
+0029 end         /*pass*/                       /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 q                2
+002 m                3 23
+003 pass             4
+004 e                5
+005 n                5
+006 b                6
+007 g                20 22
+008 j                25
+009 z                25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @stmt            -> newV1            2
+002 @.               -> newV2.           7

@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*REXX program  generates  100  random points  in an  annulus:   10  ≤  √(x²≤y²)  ≤  15 */
+0002 parse arg pts LO HI .                            /*obtain optional args from the C.L.   */
+0003 if pts==''  then pts= 100                        /*Not specified?  Then use the default.*/
+0004 if  LO==''  then  LO= 10;            LO2= LO**2  /*define a shortcut for squaring   LO. */
+0005 if  HI==''  then  HI= 15;            HI2= HI**2  /*   "   "    "      "      "      HI. */
+0006 $=
+0007 do x=-HI;                      xx= x*x    /*generate all possible annulus points.*/
+0008 if x>0  &  xx>HI2  then leave             /*end of annulus points generation ?   */
+0009 do y=-HI;          s= xx + y*y
+0010 if (y<0 & s>HI2) | s<LO2  then iterate
+0011 if  y>0 & s>HI2           then leave
+0012 $= $  x','y                           /*add a point─set to the  $  list.     */
+0013 end   /*y*/
+0014 end       /*x*/
+0015 #= words($);   @.=  /*def: plotchr; #pts; lines*/
+0016 do pts;  parse value word($, random(1,#))  with  x ',' y  /*get rand point in annulus*/
+0017 @.y= overlay('☼',  @.y,  x+x + HI+HI + 1)                 /*put a plot char on a line*/
+0018 end   /*pts*/                                 /* [↑]  maintain aspect ratio on X axis*/
+0019 /*stick a fork in it,  we're all done. */
+0020 do y=-HI  to HI;      say @.y;   end          /*display the annulus to the terminal. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pts              2 3
+002 LO               2 4
+003 HI               2 5
+004 LO2              4
+005 HI2              5
+006 x                7 16
+007 xx               7
+008 y                9 16 20
+009 s                9
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 NORMAL.23        
+024 NORMAL.24        
+025 NORMAL.25        
+026 NORMAL.26        
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           15 17
+002 $                -> newV2            6 12
+003 #                -> newV3            15

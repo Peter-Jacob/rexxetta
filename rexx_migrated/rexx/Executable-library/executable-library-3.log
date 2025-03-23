@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX pgm finds the most common (popular) hailstone sequence length.   */
+0002 parse arg z .;  if z=='' then z=99999  /*get the optional first argument*/
+0003 !.=0
+0004 w=0;          do j=1  for z            /*═════════════task 4════════════*/
+0005 #=words(hailstone(j))    /*obtain hailstone sequence count*/
+0006 !.# = !.# + 1            /*add unity to popularity count. */
+0007 end   /*j*/
+0008 occ=0;  p=0
+0009 do k=1  for z
+0010 if !.k>occ  then do;  occ=!.k;  p=k;  end
+0011 end   /*p*/
+0012 
+0013 say '(between 1──►'z") "  p,
+0014 ' is the most common hailstone sequence length  (with' occ "occurrences)."
+0015 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                2 2
+002 w                4
+003 j                4
+004 occ              8 10
+005 p                8 10
+006 k                9
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           3 6
+002 #                -> newV2            5

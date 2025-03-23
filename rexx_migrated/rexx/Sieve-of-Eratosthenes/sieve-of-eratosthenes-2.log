@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program generates primes via a  wheeled  sieve of Eratosthenes  algorithm.       */
+0002 parse arg H .;   if H==''  then H=200            /*let the highest number be specified. */
+0003 tell=h>0;     H=abs(H);    w=length(H)           /*a negative H suppresses prime listing*/
+0004 if 2<=H & tell  then say right(1, w+20)'st prime   ───► '      right(2, w)
+0005 @.= '0'x                                         /*assume that  all  numbers are prime. */
+0006 cw= length(@.)                                   /*the cell width that holds numbers.   */
+0007 #= w<=H                                          /*the number of primes found  (so far).*/
+0008 !=0                                              /*skips the top part of sieve marking. */
+0009 do j=3  by 2  for (H-2)%2;  b= j%cw          /*odd integers up to   H   inclusive.  */
+0010 if substr(x2b(c2x(@.b)),j//cw+1,1)  then iterate              /*is  J  composite ?  */
+0011 #= # + 1                                     /*bump the prime number counter.       */
+0012 if tell  then say right(#, w+20)th(#)    'prime   ───► '      right(j, w)
+0013 if !     then iterate                        /*should the top part be skipped ?     */
+0014 jj=j * j                                     /*compute the square of  J.         ___*/
+0015 if jj>H  then !=1                            /*indicates skip top part  if  j > √ H */
+0016 do m=jj  to H  by j+j;   call . m;   end   /* [↑]  strike odd multiples  ¬ prime  */
+0017 end   /*j*/                                  /*             ───                     */
+0018 
+0019 say;             say  right(#, w+20)      'prime's(#)    "found up to and including "  H
+0020 exit                                             /*stick a fork in it,  we're all done. */
+0021 /*──────────────────────────────────────────────────────────────────────────────────────────────*/
+0022 .: parse arg n; b=n%cw; r=n//cw+1;_=x2b(c2x(@.b));@.b=x2c(b2x(left(_,r-1)'1'substr(_,r+1)));return
+0023 s: if arg(1)==1  then return arg(3);  return word(arg(2) 's',1)            /*pluralizer.*/
+0024 th: procedure; parse arg x; x=abs(x); return word('th st nd rd',1+x//10*(x//100%10\==1)*(x//10<4))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                24 24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           5 22
+002 #                -> newV2            7 11
+003 !                -> newV3            8 15
+004 _                -> newV4            22

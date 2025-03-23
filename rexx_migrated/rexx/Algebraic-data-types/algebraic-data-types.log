@@ -1,0 +1,65 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX pgm builds a red/black tree (with verification & validation), balanced as needed.*/
+0002 parse arg nodes '/' insert                       /*obtain optional arguments from the CL*/
+0003 if  nodes=''  then nodes =  13.8.17  8.1.11  17.15.25  1.6  25.22.27   /*default nodes. */
+0004 if insert=''  then insert=  22.44    44.66                             /*   "   inserts.*/
+0005 top= .                                           /*define the default for the  TOP  var.*/
+0006 call Dnodes nodes                                /*define nodes, balance them as added. */
+0007 call Dnodes insert                               /*insert   "       "      "   " needed.*/
+0008 call Lnodes                                      /*list the nodes  (with indentations). */
+0009 exit                                             /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 err:    say;              say '***error***: '   arg(1);         say;              exit 13
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 Dnodes: arg $d;   do j=1  for words($d);   t= word($d, j)     /*color: encoded into L.  */
+0014 parse var  t   p   '.'   a   "."   b   '.'   x   1  .  .  .  xx
+0015 call Vnodes p a b
+0016 if x\==''   then call err "too many nodes specified: "   xx
+0017 if p\==top  then if @.p==.  then call err "node isn't defined: "  p
+0018 if p ==top  then do;  !.p=1;  L.1=p;  end   /*assign the top node.    */
+0019 @.p= a b;   n= !.p + 1                      /*assign node; bump level.*/
+0020 if a\==''   then do;  !.a= n;    @.a=;    maxL= max(maxL, !.a);    end
+0021 if b\==''   then do;  !.b= n;    @.b=;    maxL= max(maxL, !.b);    end
+0022 L.n= space(L.n a b)                         /*append to the level list*/
+0023 end   /*j*/
+0024 return
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 Lnodes:           do L=1  for  maxL;  w= length(maxL);  rb= word('(red) (black)', 1+L//2)
+0027 say "level:"   right(L, w)   left('', L+L)   " ───► "   rb    ' '   L.L
+0028 end   /*lev*/
+0029 return
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 Vnodes: arg $v;   do v=1  for words($v);      y= word($v, v)
+0032 if \datatype(y, 'W')   then call err "node isn't a whole number: "   y
+0033 y= y / 1                                /*normalize Y int.: no LZ, dot*/
+0034 if top==.  then do;  LO=y;  top=y;    HI=y;   L.=;   @.=;  maxL=1;   end
+0035 LO= min(LO, y);  HI= max(HI, y)
+0036 if @.y\==.  &  @.y\==''  then call err "node is already defined: "   y
+0037 end   /*v*/
+0038 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 t                14
+002 p                14
+003 a                14
+004 b                14
+005 x                14
+006 xx               14
+007 L.               18 22 34
+008 n                19
+009 maxL             20 21 34
+010 w                26
+011 rb               26
+012 v                31
+013 y                31 33
+014 LO               34 35
+015 top              34
+016 HI               34 35
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           18 20 21
+002 @.               -> newV2.           19 20 21 34

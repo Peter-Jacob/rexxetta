@@ -1,0 +1,59 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX program determines if a string is numeric,  using REXX's rules for numbers.      */
+0002 yyy=' -123.78'                                   /*or some such.                        */
+0003 
+0004 /*strings below are all numeric (REXX).*/
+0005 zzz= ' -123.78 '
+0006 zzz= '-123.78'
+0007 zzz= '2'
+0008 zzz= "2"
+0009 zzz= 2
+0010 zzz= '000000000004'
+0011 zzz= '+5'
+0012 zzz=  +5
+0013 zzz= ' +6 '
+0014 zzz= ' + 7 '
+0015 zzz= ' - 8 '
+0016 zzz= ' - .9'
+0017 zzz= '- 19.'
+0018 zzz= '.7'
+0019 zzz=  .7
+0020 zzz= '2e3'
+0021 zzz= 47e567
+0022 zzz= '2e-3'
+0023 zzz= '1.2e1'
+0024 zzz= ' .2E6'
+0025 zzz= ' 2.e5 '
+0026 zzz= '       +1.2E0002 '
+0027 zzz= '       +1.2e+002 '
+0028 zzz= ' +0000001.200e+002 '
+0029 zzz= ' - 000001.200e+002 '
+0030 zzz= ' - 000008.201e-00000000000000002 '
+0031 
+0032 /*Note:  some REXX interpreters allow use of tab chars as blanks.  */
+0033 
+0034 /*all statements below are equivalent.*/
+0035 
+0036 if \datatype(yyy, 'n')        then say 'oops, not numeric:'  yyy
+0037 if \datatype(yyy, 'N')        then say 'oops, not numeric:'  yyy
+0038 if ¬datatype(yyy, 'N')        then say 'oops, not numeric:'  yyy
+0039 if ¬datatype(yyy, 'numeric')  then say 'oops, not numeric:'  yyy
+0040 if ¬datatype(yyy, 'nimrod.')  then say 'oops, not numeric:'  yyy
+0041 if  datatype(yyy) \== 'NUM'   then say 'oops, not numeric:'  yyy
+0042 if  datatype(yyy) /== 'NUM'   then say 'oops, not numeric:'  yyy
+0043 if  datatype(yyy) ¬== 'NUM'   then say 'oops, not numeric:'  yyy
+0044 if  datatype(yyy) ¬=  'NUM'   then say 'oops, not numeric:'  yyy
+0045 
+0046 /*note:  REXX only looks at the first char for DATATYPE's  2nd argument.*/
+0047 
+0048 /*note:  some REXX interpreters don't support the  ¬  (not)  character. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 yyy              2
+002 zzz              5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program shows  mutual recursion  (via the Hofstadter Male and Female sequences). */
+0002 parse arg lim .;      if lim=''  then lim= 40;     w= length(lim);      pad= left('', 20)
+0003 
+0004 do j=0  for lim+1;   jj= right(j, w);   ff= right(F(j), w);        mm= right(M(j), w)
+0005 say    pad       'F('jj") ="            ff   pad   'M('jj") ="     mm
+0006 end   /*j*/
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 F: procedure;  parse arg n;   if n==0  then return 1;           return  n - M( F(n-1) )
+0010 M: procedure;  parse arg n;   if n==0  then return 0;           return  n - F( M(n-1) )
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

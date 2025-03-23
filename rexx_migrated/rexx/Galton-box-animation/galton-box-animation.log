@@ -1,0 +1,109 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX pgm simulates Sir Francis Galton's box, aka: Galton Board, quincunx, bean machine*/
+0002 trace off                                        /*suppress any messages for negative RC*/
+0003 if !all(arg())  then exit                        /*Any documentation was wanted?   Done.*/
+0004 signal on halt                                   /*allow the user to  halt  the program.*/
+0005 parse arg rows balls freeze seed .               /*obtain optional arguments from the CL*/
+0006 if rows ==''  |  rows==","   then   rows=   0    /*Not specified?  Then use the default.*/
+0007 if balls==''  | balls==","   then  balls= 100    /* "      "         "   "   "     "    */
+0008 if freeze=='' | freeze==","  then freeze=   0    /* "      "         "   "   "     "    */
+0009 if datatype(seed, 'W')   then call random ,,seed /*Was a seed specified?  Then use seed.*/
+0010 pin  = '·';              ball = '☼'              /*define chars for a  pin  and a  ball.*/
+0011 parse value  scrsize()   with   sd  sw  .        /*obtain the terminal depth and width. */
+0012 if sd==0  then sd= 40                            /*Not defined by the OS?  Use a default*/
+0013 if sw==0  then sw= 80                            /* "     "     "  "   "    "  "    "   */
+0014 sd= sd - 3                                       /*define the usable       screen depth.*/
+0015 sw= sw - 1;  if sw//2  then sw= sw - 1           /*   "    "    "     odd     "   width.*/
+0016 if rows==0  then rows= (sw - 2 ) % 3             /*pins are on the first third of screen*/
+0017 call gen                                         /*gen a triangle of pins with some rows*/
+0018 do step=1;  call drop;  call show     /*show animation 'til run out of balls.*/
+0019 end   /*step*/                        /* [↑]  the dropping/showing   "   "   */
+0020 exit 0                                           /*stick a fork in it,  we're all done. */
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 gen: @.=;  do r=0  by 2  to rows;     $=         /*build a triangle of pins for the box.*/
+0023 do pins=1  for r%2;   $= $  pin  /*build a row of pins to be displayed. */
+0024 end   /*pins*/
+0025 @.r= center( strip($, 'T'), sw)       /*an easy method to build a triangle.  */
+0026 end     /*r*/;     #= 0;       return /*#:   is the number of balls dropped. */
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 drop: static= 1                                  /*used to indicate all balls are static*/
+0029 do c=sd-1  by -1  for sd-1;    n= c + 1  /*D:  current row;   N:  the next row. */
+0030 x= pos(ball, @.c);             y= x - 1  /*X:  position of a ball on the C line.*/
+0031 if x==0  then iterate                    /*No balls here?  Then nothing to drop.*/
+0032 do forever;   y= pos(ball, @.c, y+1)   /*drop most balls down to the next row.*/
+0033 if y==0  then iterate c                /*down with this row, go look at next. */
+0034 z= substr(@.n, y, 1)                   /*another ball is blocking this fall.  */
+0035 if z==' '  then do;  @.n= overlay(ball, @.n, y)   /*drop a ball straight down.*/
+0036 @.c= overlay(' ' , @.c, y)   /*make current ball a ghost.*/
+0037 static= 0                    /*indicate balls are moving.*/
+0038 iterate                      /*go keep looking for balls.*/
+0039 end
+0040 if z==pin  then do;  ?= random(,999);   d= -1     /*assume falling to the left*/
+0041 if ?//2  then d=  1     /*if odd random#, fall right*/
+0042 if substr(@.n, y+d, 1)\==' '  then iterate /*blocked fall*/
+0043 @.n= overlay(ball, @.n, y+d)
+0044 @.c= overlay(' ' , @.c, y  )
+0045 static= 0                    /*indicate balls are moving.*/
+0046 iterate                      /*go keep looking for balls.*/
+0047 end
+0048 end   /*forever*/
+0049 end     /*c*/                  /* [↓]   step//2    is used to avoid collisions. */
+0050 /* [↓]  drop a new ball ?   */
+0051 if #<balls & step//2  then do;    @.1= center(ball, sw+1);      # = # + 1;        end
+0052 else if static  then exit 2      /*insure balls are static.  */
+0053 return
+0054 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0055 show: !cls;    do LR=sd  by -1  until @.LR\==''                 /*LR:  last row of data.*/
+0056 end   /*LR*/;                 ss= 'step' step    /* [↓]   display a row. */
+0057 do r=1  for LR; _= strip(@.r, 'T');  if r==2  then _= overlay(ss, _, sw-12); say _
+0058 end   /*r*/;   if step==freeze  then do;   say 'press ENTER ···';    pull;   end
+0059 return
+0060 /*══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════*/
+0061 halt:  say '***warning***  REXX program'   !fn    "execution halted by user.";      exit 1
+0062 !all:  !!=!;!=space(!);upper !;call !fid;!nt=right(!var('OS'),2)=='NT';!cls=word('CLS VMFCLEAR CLRSCREEN',1+!cms+!tso*2);if arg(1)\==1 then return 0;if wordpos(!,'? ?SAMPLES ?AUTHOR ?FLOW')==0 then return 0;!call=']$H';call '$H' !fn !;!call=;return 1
+0063 !cal:  if symbol('!CALL')\=="VAR"  then !call=;                                  return !call
+0064 !env:  !env='ENVIRONMENT';    if !sys=='MSDOS' | !brexx | !r4 | !roo  then !env= 'SYSTEM';    if !os2  then !env= 'OS2'!env;    !ebcdic=  2=='f2'x;    if !crx  then !env= 'DOS';                     return
+0065 !fid:  parse upper source !sys !fun !fid . 1 . . !fn !ft !fm .;  call !sys;   if !dos  then do;  _= lastpos('\', !fn);  !fm= left(!fn, _);  !fn= substr(!fn, _+1);  parse var !fn !fn '.' !ft;  end;  return word(0 !fn !ft !fm, 1 + ('0'arg(1) ) )
+0066 !rex:  parse upper version !ver !vernum !verdate .; !brexx= 'BY'==!vernum; !kexx= 'KEXX'==!ver; !pcrexx= 'REXX/PERSONAL'==!ver | 'REXX/PC'==!ver; !r4= 'REXX-R4'==!ver; !regina= 'REXX-REGINA'==left(!ver, 11); !roo= 'REXX-ROO'==!ver; call !env;  return
+0067 !sys:  !cms= !sys=='CMS';  !os2= !sys=='OS2';  !tso= !sys=='TSO' | !sys=='MVS';  !vse= !sys=='VSE';  !dos= pos('DOS', !sys)\==0 | pos('WIN', !sys)\==0 | !sys=='CMD';  !crx= left(!sys, 6)=='DOSCRX';  call !rex;  return
+0068 !var:  call !fid;  if !kexx  then return space( dosenv( arg(1) ) );              return space( value( arg(1), , !env) )
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 version          66
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !verdate         -> newV1            66
+002 !ebcdic          -> newV2            64
+003 !vernum          -> newV3            66
+004 !pcrexx          -> newV4            66
+005 !regina          -> newV5            66
+006 !brexx           -> newV6            66
+007 !call            -> newV7            62 62
+008 !kexx            -> newV8            66
+009 !cls             -> newV9            62
+010 !env             -> newV10           64 64 64
+011 !sys             -> newV11           65
+012 !fun             -> newV12           65
+013 !fid             -> newV13           65
+014 !ver             -> newV14           66
+015 !roo             -> newV15           66
+016 !os2             -> newV16           67
+017 !tso             -> newV17           67
+018 !vse             -> newV18           67
+019 !dos             -> newV19           67
+020 !crx             -> newV20           67
+021 !nt              -> newV21           62
+022 !fn              -> newV22           65 65 65 65
+023 !ft              -> newV23           65 65
+024 !fm              -> newV24           65 65
+025 !r4              -> newV25           66
+026 @.               -> newV26.          25 35 36 43 44 51
+027 $                -> newV27           22 23
+028 #                -> newV28           26 51
+029 ?                -> newV29           40
+030 _                -> newV30           57 57 65
+031 !                -> newV31           62

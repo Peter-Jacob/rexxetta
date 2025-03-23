@@ -1,0 +1,64 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX program  sorts  a  stemmed array  using the  shell sort  (shellsort) algorithm.  */
+0002 call gen                                         /*generate the array elements.         */
+0003 call show           'before sort'                /*display the  before  array elements. */
+0004 say copies('▒', 75)             /*displat a separator line  (a fence). */
+0005 call shellSort       #                           /*invoke the  shell  sort.             */
+0006 call show           ' after sort'                /*display the   after  array elements. */
+0007 exit 0                                           /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 gen: @.=                                         /*assign a default value to stem array.*/
+0010 @.1= '3 character abbreviations for states of the USA'         /*predates ZIP code.*/
+0011 @.2= '==============================================='
+0012 @.3= 'RHO  Rhode Island and Providence Plantations'     ;  @.36= 'NMX  New Mexico'
+0013 @.4= 'CAL  California'    ;   @.20= "NEV  Nevada"       ;  @.37= 'IND  Indiana'
+0014 @.5= 'KAN  Kansas'        ;   @.21= "TEX  Texas"        ;  @.38= 'MOE  Missouri'
+0015 @.6= 'MAS  Massachusetts' ;   @.22= "VGI  Virginia"     ;  @.39= 'COL  Colorado'
+0016 @.7= 'WAS  Washington'    ;   @.23= "OHI  Ohio"         ;  @.40= 'CON  Connecticut'
+0017 @.8= 'HAW  Hawaii'        ;   @.24= "NHM  New Hampshire";  @.41= 'MON  Montana'
+0018 @.9= 'NCR  North Carolina';   @.25= "MAE  Maine"        ;  @.42= 'LOU  Louisiana'
+0019 @.10= 'SCR  South Carolina';   @.26= "MIC  Michigan"     ;  @.43= 'IOW  Iowa'
+0020 @.11= 'IDA  Idaho'         ;   @.27= "MIN  Minnesota"    ;  @.44= 'ORE  Oregon'
+0021 @.12= 'NDK  North Dakota'  ;   @.28= "MIS  Mississippi"  ;  @.45= 'ARK  Arkansas'
+0022 @.13= 'SDK  South Dakota'  ;   @.29= "WIS  Wisconsin"    ;  @.46= 'ARZ  Arizona'
+0023 @.14= 'NEB  Nebraska'      ;   @.30= "OKA  Oklahoma"     ;  @.47= 'UTH  Utah'
+0024 @.15= 'DEL  Delaware'      ;   @.31= "ALA  Alabama"      ;  @.48= 'KTY  Kentucky'
+0025 @.16= 'PEN  Pennsylvania'  ;   @.32= "FLA  Florida"      ;  @.49= 'WVG  West Virginia'
+0026 @.17= 'TEN  Tennessee'     ;   @.33= "MLD  Maryland"     ;  @.50= 'NWJ  New Jersey'
+0027 @.18= 'GEO  Georgia'       ;   @.34= "ALK  Alaska"       ;  @.51= 'NYK  New York'
+0028 @.19= 'VER  Vermont'       ;   @.35= "ILL  Illinois"     ;  @.52= 'WYO  Wyoming'
+0029 do #=1  until @.#=='';  end;  #= #-1    /*determine number of entries in array.*/
+0030 return
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 shellSort: procedure expose @.;   parse arg n    /*obtain the  n  from the argument list*/
+0033 i= n % 2                              /*%   is integer division in REXX.     */
+0034 do  while i\==0
+0035 do j=i+1  to n;    k= j;      p= k - i      /*P: previous item*/
+0036 _= @.j
+0037 do  while k>=i+1 & @.p>_;    @.k= @.p;   k= k-i;   p= k-i
+0038 end   /*while*/
+0039 @.k= _
+0040 end          /*j*/
+0041 if i==2  then i= 1
+0042 else i= i * 5 % 11
+0043 end                 /*while*/
+0044 return
+0045 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0046 show:   do j=1  for #;  say 'element'  right(j, length(#) ) arg(1)": "  @.j;  end;  return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                32
+002 i                33 41
+003 while            34 37
+004 j                35
+005 k                35 37
+006 p                35 37
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           10 11 12 12 13 13 13 14 14 14 15 15 15 16 16 16 17 17 17 18 18 18 19 19 19 20 20 20 21 21 21 22 22 22 23 23 23 24 24 24 25 25 25 26 26 26 27 27 27 28 28 28 37 39
+002 #                -> newV2            29 29
+003 _                -> newV3            36

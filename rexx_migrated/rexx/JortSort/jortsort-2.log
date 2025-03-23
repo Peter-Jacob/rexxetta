@@ -1,0 +1,29 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program  verifies  that  an array  is sorted  using  a   jortSort   algorithm.   */
+0002 parse arg $                                      /*obtain the list of numbers from C.L. */
+0003 if $=''  then $=1 2 4 3                          /*Not specified?  Then use the default.*/
+0004 say 'array items='  space($)                     /*display the list to the terminal.    */
+0005 if jortSort($)  then say  'The array is sorted.'
+0006 else say  "The array isn't sorted."
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 jortSort: parse arg x
+0010 p=word(x,1)
+0011 do j=2  to words(x);  _=word(x,j)
+0012 if _<p  then return 0                      /*array  isn't sorted.*/
+0013 p=_
+0014 end   /*j*/
+0015 return 1                                                /*array  is    sorted.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                9
+002 p                10 13
+003 j                11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            2 3
+002 _                -> newV2            11

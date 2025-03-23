@@ -1,0 +1,71 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program   reads  and  displays  a  count  of words a file.  Word case is ignored.*/
+0002 Call time 'R'
+0003 abc='abcdefghijklmnopqrstuvwxyz'
+0004 abcABC=abc||translate(abc)
+0005 parse arg fID_top                                /*obtain optional arguments from the CL*/
+0006 Parse Var fid_top fid ',' top
+0007 if fID=='' then fID= 'mis.TXT'                   /* Use default if not specified        */
+0008 if top=='' then top= 10                          /* Use default if not specified        */
+0009 occ.=0                                           /* occurrences of word (stem) in file  */
+0010 wn=0
+0011 Do While lines(fid)>0                            /*loop whilst there are lines in file. */
+0012 line=linein(fID)
+0013 line=translate(line,abc||abc,abcABC||xrange('00'x,'ff'x)) /*use only lowercase letters*/
+0014 Do While line<>''
+0015 Parse Var line word line                       /* take a word                         */
+0016 If occ.word=0 Then Do                          /* not yet in word list                */
+0017 wn=wn+1
+0018 word.wn=word
+0019 End
+0020 occ.word=occ.word+1
+0021 End
+0022 End
+0023 Say 'We found' wn 'different words'
+0024 say right('word',40) ' rank   count '            /* header                              */
+0025 say right('----',40) '------ -------'            /* separator.                          */
+0026 tops=0
+0027 Do Until tops>=top | tops>=wn                    /*process enough words to satisfy  TOP.*/
+0028 max_occ=0
+0029 tl=''                                          /*initialize (possibly) a list of words*/
+0030 Do wi=1 To wn                                  /*process the list of words in the file*/
+0031 word=word.wi                                 /* take a word from the list           */
+0032 Select
+0033 When occ.word>max_occ Then Do              /* most occurrences so far             */
+0034 tl=word                                  /* candidate for output                */
+0035 max_occ=occ.word                         /* current maximum occurrences         */
+0036 End
+0037 When occ.word=max_occ Then Do              /* tied                                */
+0038 tl=tl word                               /* add to output candidate             */
+0039 End
+0040 Otherwise                                  /* no candidate (yet)                  */
+0041 Nop
+0042 End
+0043 End
+0044 do d=1 for words(tl)
+0045 word=word(tl,d)
+0046 say right(word,40) right(tops+1,4) right(occ.word,8)
+0047 occ.word=0                                /*nullify this word count for next time*/
+0048 End
+0049 tops=tops+words(tl)                         /*correctly handle the tied rankings.  */
+0050 end
+0051 Say time('E') 'seconds elapsed'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 line             15 15
+002 word             15 31 45
+003 wn               17
+004 word.            18
+005 occ.             20 47
+006 tops             26 49
+007 Until            27
+008 max_occ          28 35
+009 tl               29 34 38
+010 wi               30
+011 d                44
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

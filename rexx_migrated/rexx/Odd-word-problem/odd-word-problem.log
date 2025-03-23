@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX program solves the  odd word problem  by only using  (single) byte  input/output.*/
+0002 iFID_ = 'ODDWORD.IN'  /*Note:  numeric suffix is added later.*/
+0003 oFID_ = 'ODDWORD.'    /*  "       "       "    "   "     "   */
+0004 do case=1  for 2;                #= 0       /*#:  is the number of characters read.*/
+0005 iFID= iFID_  ||  case                       /*read   ODDWORD.IN1  or  ODDWORD.IN2  */
+0006 oFID= oFID_  ||  case                       /*write  ODDWORD.1    or  ODDWORD.2    */
+0007 say;   say;    say '════════ reading file: '        iFID        "════════"                /* ◄■■■■■■■■■ optional. */
+0008 
+0009 do  until x==.                          /* [↓]  perform until reaching a period*/
+0010 do  until \datatype(x, 'M')      /* [↓]     "      "   punctuation found*/
+0011 call rChar                       /*read  a single character.            */
+0012 call wChar                       /*write "    "       "                 */
+0013 end   /*until \data···*/         /* [↑]  read/write until punctuation.  */
+0014 if x==.  then leave                     /*is this the end─of─sentence (period)?*/
+0015 call readLetters;            punct= #   /*save the location of the punctuation.*/
+0016 do j=#-1  by -1                  /*read some characters backwards.      */
+0017 call rChar j                     /*read previous word (backwards).      */
+0018 if \datatype(x, 'M')  then leave /*Found punctuation?   Then leave  J.  */
+0019 call wChar                       /*write a character (which is a letter)*/
+0020 end   /*j*/                      /* [↑]  perform for  "even"  words.    */
+0021 call rLett                              /*read letters until punctuation found.*/
+0022 call wChar;                  #= punct   /*write a char;  punctuation location. */
+0023 end      /*until x==.*/
+0024 end          /*case*/                       /* [↑]  process both of the input files*/
+0025 exit                                             /*stick a fork in it,  we're all done. */
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 rLett: do  until  \datatype(x, 'M');         call rChar;             end;         return
+0028 wChar: call charout , x  /*console*/;        call charout oFID, x  /*file*/;      return
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 rChar: if arg()==0  then do; x= charin(iFID); #= #+1; end  /*read  next  char*/
+0031 else     x= charin(iFID, arg(1) );     /*  " specific  " */   return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 oFID_            3
+002 case             4
+003 oFID             6
+004 until            9
+005 punct            15
+006 j                16
+007 x                30
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            4 22 30

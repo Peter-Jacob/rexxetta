@@ -1,0 +1,50 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /* Rexx ***************************************************
+0002 * 09.04.2013 Walter Pachl
+0003 * Implements the task's description in a rather concise way
+0004 * Instead of reverting the ccn work it backwards
+0005 **********************************************************/
+0006 numeric digits 20
+0007 
+0008 push 49927398716
+0009 push 49927398717
+0010 push 1234567812345678
+0011 push 1234567812345670
+0012 
+0013 do while queued() > 0
+0014 parse pull ccnum
+0015 if luhn(ccnum) then ln = 'passed'
+0016 else                ln = 'failed'
+0017 say right(ccnum, 20) ln
+0018 end
+0019 return
+0020 exit
+0021 
+0022 luhn:
+0023 Parse Arg ccn                /* credit card number       */
+0024 sum=0                        /* initialize test sum      */
+0025 even=0                       /* even indicator           */
+0026 Do i=length(ccn) To 1 By -1  /* process all digits       */
+0027 c=substr(ccn,i,1)          /* pick one digit at a time */
+0028 If even Then Do            /* even numbered digit      */
+0029 c=c*2                    /* double it                */
+0030 If c>=10 Then            /* 10, 12, 14, 16, 18       */
+0031 c=c-9                  /* Sum of the two digits    */
+0032 End                      /* end of even numbered     */
+0033 even=\even                 /* flip even indicator      */
+0034 sum=sum+c                  /* add into test sum        */
+0035 End
+0036 Return right(sum,1)=0        /* ok if last digit is 0    */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 ccn              23
+002 sum              24 34
+003 even             25 33
+004 i                26
+005 c                27 29 31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

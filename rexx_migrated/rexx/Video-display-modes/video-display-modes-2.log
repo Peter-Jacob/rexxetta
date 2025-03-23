@@ -1,0 +1,55 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program to switch video display modes based on columns and lines.*/
+0002 parse arg !;  if !all()  then exit     /*exit if documentation specified*/
+0003 if \!dos  &  \!os2       then exit     /*if this isn't DOS,  then exit. */
+0004 
+0005 parse arg cols lines .
+0006 'MODE'   "CON:       COLS="cols     'LINES='lines
+0007 
+0008 exit                                   /*stick a fork in it, we're done.*/
+0009 /*══════════════════════════════════general 1-line subs═════════════════*/
+0010 !all:!!=!;!=space(!);upper !;call !fid;!nt=right(!var('OS'),2)=='NT';!cls=word('CLS VMFCLEAR CLRSCREEN',1+!cms+!tso*2);if arg(1)\==1 then return 0;if wordpos(!,'? ?SAMPLES ?AUTHOR ?FLOW')==0 then return 0;!call=']$H';call '$H' !fn !;!call=;return 1
+0011 !cal:if symbol('!CALL')\=="VAR" then !call=;return !call
+0012 !env:!env='ENVIRONMENT';if !sys=='MSDOS'|!brexx|!r4|!roo then !env='SYSTEM';if !os2 then !env='OS2'!env;!ebcdic=1=='f0'x;return
+0013 !fid:parse upper source !sys !fun !fid . 1 . . !fn !ft !fm .;call !sys;if !dos then do;_=lastpos('\',!fn);!fm=left(!fn,_);!fn=substr(!fn,_+1);parse var !fn !fn '.' !ft;end;return word(0 !fn !ft !fm,1+('0'arg(1)))
+0014 !rex:parse upper version !ver !vernum !verdate .;!brexx='BY'==!vernum;!kexx='KEXX'==!ver;!pcrexx='REXX/PERSONAL'==!ver|'REXX/PC'==!ver;!r4='REXX-R4'==!ver;!regina='REXX-REGINA'==left(!ver,11);!roo='REXX-ROO'==!ver;call !env;return
+0015 !sys:!cms=!sys=='CMS';!os2=!sys=='OS2';!tso=!sys=='TSO'|!sys=='MVS';!vse=!sys=='VSE';!dos=pos('DOS',!sys)\==0|pos('WIN',!sys)\==0|!sys=='CMD';call !rex;return
+0016 !var:call !fid;if !kexx then return space(dosenv(arg(1)));return space(value(arg(1),,!env))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 version          14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !env:!env        -> newV1            12
+002 !sys:!cms        -> newV2            15
+003 !verdate         -> newV3            14
+004 !all:!!          -> newV4            10
+005 !ebcdic          -> newV5            12
+006 !vernum          -> newV6            14
+007 !pcrexx          -> newV7            14
+008 !regina          -> newV8            14
+009 !brexx           -> newV9            14
+010 !call            -> newV10           10 10
+011 !kexx            -> newV11           14
+012 !cls             -> newV12           10
+013 !env             -> newV13           12 12
+014 !sys             -> newV14           13
+015 !fun             -> newV15           13
+016 !fid             -> newV16           13
+017 !ver             -> newV17           14
+018 !roo             -> newV18           14
+019 !os2             -> newV19           15
+020 !tso             -> newV20           15
+021 !vse             -> newV21           15
+022 !dos             -> newV22           15
+023 !nt              -> newV23           10
+024 !fn              -> newV24           13 13 13 13
+025 !ft              -> newV25           13 13
+026 !fm              -> newV26           13 13
+027 !r4              -> newV27           14
+028 !                -> newV28           2 10
+029 _                -> newV29           13

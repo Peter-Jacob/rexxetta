@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 say quibbling('')
+0002 say quibbling('ABC')
+0003 say quibbling('ABC DEF')
+0004 say quibbling('ABC DEF G H')
+0005 exit
+0006 quibbling:
+0007 parse arg list
+0008 If list='' Then result=''
+0009 Else Do
+0010 Do wi=1 By 1 while list<>''
+0011 Parse Var list word.wi ' ' list
+0012 End
+0013 wn=wi-1
+0014 result=word.1
+0015 Do wi=2 To wn-1
+0016 result=result', 'word.wi
+0017 End
+0018 If wn>1 Then
+0019 result=result 'and' word.wn
+0020 End
+0021 Return '{'result'}'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 list             11 11
+002 word.            11
+003 wn               13
+004 result           14 16 19
+005 wi               15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

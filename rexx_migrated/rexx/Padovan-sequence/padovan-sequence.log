@@ -1,0 +1,72 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX pgm computes the Padovan seq. (using 2 methods), and also computes the L─strings.*/
+0002 numeric digits 40                                /*better precision for Plastic ratio.  */
+0003 parse arg n nF Ln cL .                           /*obtain optional arguments from the CL*/
+0004 if  n=='' |  n==","  then  n= 20                 /*Not specified?  Then use the default.*/
+0005 if nF=='' | nF==","  then nF= 64                 /* "      "         "   "   "     "    */
+0006 if Ln=='' | Ln==","  then Ln= 10                 /* "      "         "   "   "     "    */
+0007 if cL=='' | cL==","  then cL= 32                 /* "      "         "   "   "     "    */
+0008 PR= 1.324717957244746025960908854                /*the plastic ratio  (constant).       */
+0009 s= 1.0453567932525329623                        /*tge  "s"  constant.                  */
+0010 @.= .;      @.0= 1;      @.1= 1;      @.2= 1 /*initialize 3 terms of the Padovan seq*/
+0011 !.= .;      !.0= 1;      !.1= 1;      !.2= 1 /*     "     "   "    "  "     "     " */
+0012 call req1;   call req2;   call req3;   call req4 /*invoke the four task's requirements. */
+0013 exit 0                                           /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 floor: procedure; parse arg x;      t= trunc(x);               return t  -  (x<0) * (x\=t)
+0016 pF:    procedure expose !. PR s; parse arg x;  !.x= floor(PR**(x-1)/s + .5);    return !.x
+0017 th:    parse arg th; return th||word('th st nd rd',1+(th//10)*(th//100%10\==1)*(th//10<4))
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 L_sys: procedure: arg x; q=; a.A= 'B'; a.B= 'C'; a.C= 'AB';      if x==''  then return 'A'
+0020 do k=1  for length(x);  _= substr(x, k, 1);  q= q  ||  a._
+0021 end   /*k*/;                           return q
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 p:     procedure expose @.; parse arg x;  if @.x\==.  then return @.x     /*@.X defined?*/
+0024 xm2= x - 2;    xm3= x - 3;    @.x= @.xm2 + @.xm3;   return @.x
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 req1:                   say 'The first '    n    " terms of the Pandovan sequence:";
+0027 $= @.0;  do j=1  for n-1;   $= $  p(j)
+0028 end   /*j*/
+0029 say $;                                                          return
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 req2:  ok= 1;           what= ' terms match for  recurrence  and  floor─based  functions.'
+0032 do j=0  for nF;  if p(j)==pF(j)  then iterate
+0033 say 'the '   th(j)   " terms don't match:"   p(j)  pF(j);   ok= 0
+0034 end   /*j*/
+0035 say
+0036 if ok  then say 'all '    nF    what;                           return
+0037 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0038 req3:                               y=;             $= 'A'
+0039 do j=1  for Ln-1;   y= L_sys(y);    $= $  L_sys(y)
+0040 end   /*j*/
+0041 say
+0042 say 'L_sys:'  $;                                                return
+0043 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0044 req4:  y=;              what=' terms match for Padovan terms and lengths of L_sys terms.'
+0045 ok= 1;   do j=1  for cL;  y= L_sys(y);   L= length(y)
+0046 if       L==p(j-1)  then iterate
+0047 say 'the '    th(j)    " Padovan term doesn't match the length of the",
+0048 'L_sys term:'   p(j-1)  L;           ok= 0
+0049 end   /*j*/
+0050 say
+0051 if ok  then say 'all '    cL    what;                           return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                23
+002 xm2              24
+003 xm3              24
+004 j                27 32 39 45
+005 what             31 44
+006 ok               33 45 48
+007 y                39 45
+008 L                45
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           10 10 10 10 24
+002 !.               -> newV2.           11 11 11 11 16
+003 _                -> newV3            20
+004 $                -> newV4            27 27 38 39

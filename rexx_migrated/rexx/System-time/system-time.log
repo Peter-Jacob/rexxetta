@@ -1,0 +1,55 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program shows various ways to display the system time, including other options.  */
+0002 
+0003 say '════════════ Normal format of time'
+0004 say 'hh:mm:ss        ◄─────────────── hh= is  00 ──► 23'
+0005 say 'hh:mm:ss        ◄─────────────── hh= hour   mm= minute   ss= second'
+0006 say time()
+0007 say time('n')                                    /*    (same as the previous example.)  */
+0008 say time('N')                                    /*       "   "  "      "       "       */
+0009 say time('Normal')                               /*       "   "  "      "       "       */
+0010 say time('nitPick')                              /*       "   "  "      "       "       */
+0011 
+0012 say
+0013 say '════════════ Civil format of time'
+0014 say 'hh:mmcc         ◄─────────────── hh= is   1 ──► 12'
+0015 say 'hh:mmam         ◄─────────────── hh= hour   mm= minute   am= ante meridiem'
+0016 say 'hh:mmpm         ◄───────────────                         pm= post meridiem'
+0017 say time('C')
+0018 say time('civil')                                /*    (same as the previous example.)  */
+0019 /*ante meridiem≡Latin for before midday*/
+0020 /*post    "       "    "   after   "   */
+0021 say
+0022 say '════════════ long format of time'
+0023 say 'hh:mm:ss        ◄─────────────── hh= is   0 ──► 23'
+0024 say 'hh:mm:ss.ffffff ◄─────────────── hh= hour   mm= minute   fffff= fractional seconds'
+0025 say time('L')
+0026 say time('long')                                 /*    (same as the previous example.)  */
+0027 say time('long time no see')                     /*       "   "  "      "       "       */
+0028 
+0029 say
+0030 say '════════════ complete hours since midnight'
+0031 say 'hh              ◄─────────────── hh =  0 ───► 23'
+0032 say time('H')
+0033 say time('hours')                                /*    (same as the previous example.)  */
+0034 
+0035 say
+0036 say '════════════ complete minutes since midnight'
+0037 say 'mmmm            ◄─────────────── mmmm =  0 ───► 1439'
+0038 say time('M')
+0039 say time('minutes')                              /*    (same as the previous example.)  */
+0040 
+0041 say
+0042 say '════════════  complete seconds since midnight'
+0043 say 'sssss           ◄─────────────── sssss =  0 ───► 86399'
+0044 say time('S')
+0045 say time('seconds')                              /*    (same as the previous example.)  */
+0046 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

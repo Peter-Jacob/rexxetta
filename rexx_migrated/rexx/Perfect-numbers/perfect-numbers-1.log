@@ -1,0 +1,24 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX version of the  ooRexx  program (the code was modified to run with Classic REXX).*/
+0002 do i=1  to 10000                                 /*statement changed:  LOOP ──► DO*/
+0003 if perfectNumber(i)  then say  i   "is a perfect number"
+0004 end
+0005 exit
+0006 
+0007 perfectNumber: procedure; parse arg n                  /*statements changed: ROUTINE,USE*/
+0008 sum=0
+0009 do i=1  to n%2                            /*statement changed:  LOOP ──► DO*/
+0010 if n//i==0 then sum=sum+i                 /*statement changed:  sum += i   */
+0011 end
+0012 return sum=n
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                7
+002 sum              8 10
+003 i                9
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

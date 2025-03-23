@@ -1,0 +1,62 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX program  sorts and displays  an array  using the  permutation-sort  method.      */
+0002 call gen                                         /*generate the array elements.         */
+0003 call show     'before sort'                      /*show the  before  array elements.    */
+0004 say  copies('░', 75)  /*show separator line between displays.*/
+0005 call pSort  L                                    /*invoke the permutation sort.         */
+0006 call show     ' after sort'                      /*show the   after  array elements.    */
+0007 say; say 'Permutation sort took '      ?      " permutations to find the sorted list."
+0008 exit                                             /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 .pAdd: #=#+1; do j=1 for N;  #.#=#.#  !.j;  end;   return           /*add a permutation.*/
+0011 show:    do j=1  for L;  say @e right(j, wL) arg(1)":" translate(@.j, , '_'); end;  return
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 gen:   @.=;                            @.1 = '---Four_horsemen_of_the_Apocalypse---'
+0014 @.2 = '====================================='
+0015 @.3 = 'Famine───black_horse'
+0016 @.4 = 'Death───pale_horse'
+0017 @.5 = 'Pestilence_[Slaughter]───red_horse'
+0018 @.6 = 'Conquest_[War]───white_horse'
+0019 @e= right('element', 15)                          /*literal used for the display.*/
+0020 do L=1  while @.L\=='';  @@.L=@.L;   end;    L= L-1;      wL=length(L);    return
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 isOrd: parse arg q                                       /*see if  Q  list is in order. */
+0023 _= word(q, 1);  do j=2  to words(q);  x= word(q, j);  if x<_  then return 0;   _= x
+0024 end   /*j*/                       /* [↑]  Out of order?   ¬sorted*/
+0025 do k=1  for #;  _= word(#.?, k);  @.k= @@._;  end  /*k*/;  return 1  /*in order*/
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 .pNxt: procedure expose !.;    parse arg n,i;         nm= n - 1
+0028 do k=nm  by -1  for nm;   kp= k + 1
+0029 if !.k<!.kp   then  do;    i= k;         leave;    end
+0030 end   /*k*/                  /* [↓]  swap two array elements*/
+0031 do j=i+1  while j<n;  parse value  !.j !.n  with  !.n !.j;   n= n-1;  end  /*j*/
+0032 if i==0  then return 0                            /*0:  indicates no more perms. */
+0033 do j=i+1  while !.j<!.i;   end  /*j*/          /*search perm for a lower value*/
+0034 parse value !.j !.i  with  !.i !.j;  return 1     /*swap two values in !.  array.*/
+0035 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0036 pSort: parse arg n,#.;  #= 0                     /*generate  L  items (!)  permutations.*/
+0037 do f=1  for n;                !.f= f;        end  /*f*/;            call .pAdd
+0038 do while .pNxt(n, 0);         call .pAdd;    end  /*while*/
+0039 do ?=1  until isOrd($);       $=                            /*find permutation.*/
+0040 do m=1  for #; _= word(#.?, m); $= $ @._;  end  /*m*/     /*build the $ list.*/
+0041 end   /*?*/;                  return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                36
+002 f                37
+003 m                40
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @@.              -> newV1.           20
+002 #.               -> newV2.           10 36
+003 @.               -> newV3.           13 14 15 16 17 18 25
+004 @e               -> newV4            19
+005 !.               -> newV5.           31 31 34 34 37
+006 _                -> newV6            23 23 25 40
+007 #                -> newV7            36
+008 ?                -> newV8            39
+009 $                -> newV9            39 40

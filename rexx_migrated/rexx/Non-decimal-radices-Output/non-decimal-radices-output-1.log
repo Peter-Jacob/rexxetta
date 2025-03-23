@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX pgm shows REXX's ability to show decimal numbers in binary & hex.*/
+0002 
+0003 do j=0  to 50                /*show some low-value num conversions*/
+0004 say right(j,3)         ' in decimal is',
+0005 right(d2b(j),12)   " in binary",
+0006 right(d2x(j),12)   ' in hexadecimal.'
+0007 end   /*j*/
+0008 exit                                   /*stick a fork in it, we're done.*/
+0009 /*────────────────────────────D2B subroutine────────────────────────────*/
+0010 d2b: return word(strip(x2b(d2x(arg(1))),'L',0) 0,1)  /*convert dec──►bin*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                3
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

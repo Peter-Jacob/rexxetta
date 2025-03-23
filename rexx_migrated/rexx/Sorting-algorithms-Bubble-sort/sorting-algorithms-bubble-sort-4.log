@@ -1,0 +1,49 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program sorts an array (of any kind of numbers)  using the bubble─sort algorithm.*/
+0002 parse arg N seed .                               /*obtain optional size of array from CL*/
+0003 if N=='' | N==","       then N=30                /*Not specified?  Then use the default.*/
+0004 if datatype(seed, 'W')  then call random ,,seed  /*An integer?  Use the seed for RANDOM.*/
+0005 call gen    N                                    /*generate the array elements (items). */
+0006 call show        'before sort:'                  /*show the   before   array elements.  */
+0007 $$= $                              /*keep "before" copy for after the sort*/
+0008 call bSort  N                                    /*invoke the bubble sort  with N items.*/
+0009 say $$
+0010 call show        ' after sort:'                  /*show the   after    array elements.  */
+0011 exit                                             /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 bSort: procedure expose @.;  parse arg #         /*N: is the number of @ array elements.*/
+0014 call disp                                 /*show a snapshot of the unsorted array*/
+0015 do m=#-1  by -1  until ok;    ok=1        /*keep sorting the  @ array until done.*/
+0016 do j=1  for m;   k=j+1
+0017 if @.j>@.k  then do;     parse value    @.j  @.k  0      with      @.k  @.j  ok
+0018 end
+0019 end   /*j*/                           /* [↑]  swap 2 elements, flag as ¬done.*/
+0020 call disp                                 /*show snapshot of partially sorted @. */
+0021 end       /*m*/;      return
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 gen:   do j=1  for N;  @.j= j;  end
+0024 do k=1  for N;  g= random(1,N);  parse value @.k @.g  with  @.g @.k;  end;   return
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 show:  parse arg $;  do k=1  for N;  $=$  right(@.k, length(N));  end;     say $;   return
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 disp:  'CLS';    $.=                             /*"CLS" is the command to clear screen.*/
+0029 do e=1  for #;         $.e= '│'overlay("☼", $.e, @.e);     end  /*e*/
+0030 do s=#  for #  by -1;  say $.s;                            end  /*s*/
+0031 say "└"copies('─', #)                     /*display the horizontal axis at bottom*/
+0032 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 k                26
+002 e                29
+003 s                30
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $$               -> newV1            7
+002 @.               -> newV2.           17 17 23 24 24
+003 $.               -> newV3.           28 29
+004 #                -> newV4            13
+005 $                -> newV5            26 26

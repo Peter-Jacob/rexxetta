@@ -1,0 +1,100 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program calculates the Kronecker product   of   two arbitrary size   matrices. */
+0002 Signal On syntax
+0003 x.=0
+0004 amat=4X2 1 2 3 4 5 6 7 8         /* define A matrix size and elements */
+0005 bmat=2X3 1 2 3 4 5 6             /* "      B    "     "   "     "     */
+0006 Call makeMat 'A',amat            /* construct A matrix from elements  */
+0007 Call makeMat 'B',bmat            /* "         B    "     "     "      */
+0008 If cols.A<>rows.B Then
+0009 Call exit 'Matrices are incompatible for matrix multiplication',
+0010 'cols.A='cols.A'<>rows.B='rows.B
+0011 Call multMat                     /* multiply A x B                    */
+0012 Call showMat 'A',amat            /* display matrix A                  */
+0013 Call showMat 'B',bmat            /* "          "   B                  */
+0014 Call showMat 'C',mm              /* "          "   C                  */
+0015 Exit
+0016 /*--------------------------------------------------------------------*/
+0017 makeMat:
+0018 Parse Arg what,size elements   /*elements: e.1.1 e.1.2 - e.rows cols*/
+0019 Parse Var size rows 'X' cols
+0020 x.what.shape=rows cols
+0021 Parse Value rows cols With rows.what cols.what
+0022 n=0
+0023 Do r=1 To rows
+0024 Do c=1 To cols
+0025 n=n+1
+0026 element=word(elements,n)
+0027 x.what.r.c=element
+0028 End
+0029 End
+0030 Return
+0031 /*--------------------------------------------------------------------*/
+0032 multMat:
+0033 /* x.C.*.* = x.A.*.* x x.B.*.*                                        */
+0034 Do i=1 To rows.A
+0035 Do j=1 To cols.B
+0036 Do k=1 To cols.A
+0037 x.C.i.j=x.C.i.j+x.A.i.k*x.B.k.j
+0038 End /*k*/
+0039 End /*j*/
+0040 End /*i*/
+0041 mm=rows.A||'X'||cols.B
+0042 Do i=1 To rows.A
+0043 Do j=1 To cols.B
+0044 mm=mm x.C.i.j
+0045 End /*j*/
+0046 End /*i*/
+0047 Call makeMat 'C',mm
+0048 Return
+0049 /*--------------------------------------------------------------------*/
+0050 showMat:
+0051 Parse Arg what,size .
+0052 Parse Var size rows 'X' cols
+0053 z='+'
+0054 b6=left('',6)
+0055 Say ''
+0056 Say b6 copies('-',7) 'matrix' what copies('-',7)
+0057 w=0
+0058 Do r=1 To rows
+0059 Do c=1 To cols
+0060 w=max(w,length(x.what.r.c))
+0061 End
+0062 End
+0063 Say b6 b6 '+'copies('-',cols*(w+1)+1)'+' /* top border              */
+0064 Do r=1 To rows
+0065 line='|' right(x.what.r.1,w)    /* element of first colsumn       */                       /* start with long vertical bar   */
+0066 Do c=2 To cols                  /* loop for other columns         */
+0067 line=line right(x.what.r.c,w) /* append the elements            */
+0068 End /* c */
+0069 Say b6 b6 line '|'              /* append a long vertical bar.    */
+0070 End /* r */
+0071 Say b6 b6 '+'copies('-',cols*(w+1)+1)'+' /* bottom border           */
+0072 Return
+0073 exit:
+0074 Say arg(1)
+0075 Exit
+0076 
+0077 Syntax:
+0078 Say 'Syntax raised in line' sigl
+0079 Say sourceline(sigl)
+0080 Say 'rc='rc '('errortext(rc)')'
+0081 Say '***** There was a problem!'
+0082 Exit
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 size             52
+002 rows             52
+003 cols             52
+004 z                53
+005 b6               54
+006 w                57 60
+007 r                58 64
+008 c                59 66
+009 line             65 67
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

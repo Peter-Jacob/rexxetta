@@ -1,0 +1,60 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX program  evaluates  a   ═════ Reverse Polish notation  (RPN) ═════   expression. */
+0002 parse arg x                                      /*obtain optional arguments from the CL*/
+0003 if x=''  then x= "3 4 2 * 1 5 - 2 3 ^ ^ / +"     /*Not specified?  Then use the default.*/
+0004 tokens=words(x)                                  /*save the  number  of  tokens   "  ". */
+0005 showSteps=1                                      /*set to 0 if working steps not wanted.*/
+0006 ox=x                                             /*save the  original  value of  X.     */
+0007 do i=1  for tokens;   @.i=word(x,i)  /*assign the input tokens to an array. */
+0008 end   /*i*/
+0009 x=space(x)                                       /*remove any superfluous blanks in  X. */
+0010 L=max(20, length(x))                             /*use 20 for the minimum display width.*/
+0011 numeric digits L                                 /*ensure enough decimal digits for ans.*/
+0012 say center('operand', L, "─")        center('stack', L+L, "─")           /*display title*/
+0013 Dop= '/ // % ÷';             Bop='& | &&'        /*division operators;  binary operands.*/
+0014 Aop= '- + * ^ **'  Dop Bop;  Lop=Aop "||"        /*arithmetic operators; legal operands.*/
+0015 $=                                               /*nullify the stack (completely empty).*/
+0016 do k=1  for tokens;   ?=@.k;   ??=?       /*process each token from the  @. list.*/
+0017 #=words($);  b=word($, max(1, #) )        /*the stack count;  the last entry.    */
+0018 a=word($, max(1, #-1) )      /*stack's  "first"  operand.           */
+0019 division  =wordpos(?, Dop)\==0            /*flag:  doing a some kind of division.*/
+0020 arith     =wordpos(?, Aop)\==0            /*flag:  doing arithmetic.             */
+0021 bitOp     =wordpos(?, Bop)\==0            /*flag:  doing some kind of binary oper*/
+0022 if datatype(?, 'N')   then do; $=$ ?;  call show  "add to───►stack";  iterate;  end
+0023 if wordpos(?, Lop)==0 then do; $=e 'illegal operator:' ?;      leave; end
+0024 if w<2                then do; $=e 'illegal RPN expression.';  leave; end
+0025 if ?=='^'             then ??= "**"       /*REXXify  ^ ──► **   (make it legal). */
+0026 if ?=='÷'             then ??= "/"        /*REXXify  ÷ ──► /    (make it legal). */
+0027 if division  &  b=0   then do; $=e 'division by zero.'      ;  leave; end
+0028 if bitOp & \isBit(a)  then do; $=e "token isn't logical: " a;  leave; end
+0029 if bitOp & \isBit(b)  then do; $=e "token isn't logical: " b;  leave; end
+0030 interpret 'y='   a   ??   b               /*compute with two stack operands*/
+0031 if datatype(y, 'W')   then y=y/1          /*normalize the number with ÷ by unity.*/
+0032 _=subword($, 1, #-2);      $=_ y          /*rebuild the stack with the answer.   */
+0033 call show ?                               /*display (possibly)  a working step.  */
+0034 end   /*k*/
+0035 say                                              /*display a blank line, better perusing*/
+0036 if word($,1)==e  then $=                         /*handle the special case of errors.   */
+0037 say ' RPN input:'  ox;   say " answer───►"$      /*display original input;  display ans.*/
+0038 parse source upper . y .                         /*invoked via  C.L.  or via a REXX pgm?*/
+0039 if y=='COMMAND' | \datatype($,"W")  then exit    /*stick a fork in it,  we're all done. */
+0040 else exit $  /*return the answer  ───►  the invoker.*/
+0041 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0042 isBit: return arg(1)==0 | arg(1)==1              /*returns   1   if arg1 is a binary bit*/
+0043 show:  if showSteps  then say center(arg(1), L)           left(space($), L);        return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 source           38
+002 y                38
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           7
+002 ??               -> newV2            16 25 26
+003 $                -> newV3            15 22 23 24 27 28 29 32 36
+004 ?                -> newV4            16
+005 #                -> newV5            17
+006 _                -> newV6            32

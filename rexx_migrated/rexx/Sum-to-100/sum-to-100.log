@@ -1,0 +1,84 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX pgm solves a puzzle:  using the string 123456789, insert  -  or  +  to sum to 100*/
+0002 parse arg LO HI .                                /*obtain optional arguments from the CL*/
+0003 if LO=='' | LO==","  then LO=       100          /*Not specified?  Then use the default.*/
+0004 if HI=='' | HI==","  then HI=        LO          /* "      "         "   "   "     "    */
+0005 if LO==00            then HI= 123456789          /*LOW specified as zero with leading 0.*/
+0006 ops= '+-';             L= length(ops) + 1        /*define operators (and their length). */
+0007 @.=;      do i=1  for L-1;  @.i= substr(ops,i,1) /*   "   some handy-dandy REXX literals*/
+0008 end   /*i*/                            /*   "   individual operators for speed*/
+0009 mx= 0;  mn= 999999                               /*initialize the minimums and maximums.*/
+0010 mxL=;   mnL=;         do j=LO  to HI  until LO==00  &  mn==0  /*solve with range of sums*/
+0011 z= ???(j)                               /*find # solutions for J. */
+0012 if z> mx  then     mxL=                 /*is this a new maximum ? */
+0013 if z>=mx  then do; mxL=mxL j; mx=z; end /*remember this new max.  */
+0014 if z< mn  then     mnL=                 /*is this a new minimum ? */
+0015 if z<=mn  then do; mnL=mnL j; mn=z; end /*remember this new min.  */
+0016 end   /*j*/
+0017 if LO==HI  then exit 0                                        /*don't display max&min ? */
+0018 @@= 'number of solutions: ';   say
+0019 _= words(mxL);  say 'sum's(_)   "of"   mxL  ' 's(_,"have",'has')   'the maximum'   @@   mx
+0020 _= words(mnL);  say 'sum's(_)   "of"   mnL  ' 's(_,"have",'has')   'the minimum'   @@   mn
+0021 exit 0                                           /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 s:   if arg(1)==1  then return arg(3);   return word( arg(2) "s",1)  /*simple pluralizer*/
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 ???: parse arg answer;          #= 0             /*obtain the answer (sum) to the puzzle*/
+0026 do         a=L-1  for 2; aa=       @.a'1' /*choose one  of  -       or  nothing. */
+0027 do        b=1  for L;   bb= aa || @.b'2' /*   "    "    "  -   +,  or  abutment.*/
+0028 do       c=1  for L;   cc= bb || @.c'3' /*   "    "    "  "   "    "      "    */
+0029 do      d=1  for L;   dd= cc || @.d'4' /*   "    "    "  "   "    "      "    */
+0030 do     e=1  for L;   ee= dd || @.e'5' /*   "    "    "  "   "    "      "    */
+0031 do    f=1  for L;   ff= ee || @.f'6' /*   "    "    "  "   "    "      "    */
+0032 do   g=1  for L;   gg= ff || @.g'7' /*   "    "    "  "   "    "      "    */
+0033 do  h=1  for L;   hh= gg || @.h'8' /*   "    "    "  "   "    "      "    */
+0034 do i=1  for L;   ii= hh || @.i'9' /*   "    "    "  "   "    "      "    */
+0035 interpret '$='   ii               /*calculate the sum of modified string.*/
+0036 if $\==answer  then iterate       /*Is sum not equal to answer? Then skip*/
+0037 #= # + 1;        if LO==HI  then say 'solution: '    $    " ◄───► "    ii
+0038 end   /*i*/                       /*                                     */
+0039 end    /*h*/                       /*                          d          */
+0040 end     /*g*/                       /*                          d          */
+0041 end      /*f*/                       /*   eeeee   n nnnn    dddddd   sssss  */
+0042 end       /*e*/                       /*  e     e  nn    n  d     d  s       */
+0043 end        /*d*/                       /*  eeeeeee  n     n  d     d   sssss  */
+0044 end         /*c*/                       /*  e        n     n  d     d        s */
+0045 end          /*b*/                       /*   eeeee   n     n   ddddd    sssss  */
+0046 end           /*a*/                       /*                                     */
+0047 y= #                                        /* [↓]  adjust the number of solutions?*/
+0048 if y==0  then y= 'no'                       /* [↓]  left justify plural of solution*/
+0049 if LO\==00  then say right(y, 9)          'solution's(#, , " ")     'found for'  ,
+0050 right(j, length(HI) )                           left('', #, "─")
+0051 return #                                    /*return the number of solutions found.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 answer           25
+002 a                26
+003 aa               26
+004 b                27
+005 bb               27
+006 c                28
+007 cc               28
+008 d                29
+009 dd               29
+010 e                30
+011 ee               30
+012 f                31
+013 ff               31
+014 g                32
+015 gg               32
+016 h                33
+017 hh               33
+018 i                34
+019 ii               34
+020 y                47 48
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           7 7
+002 @@               -> newV2            18
+003 _                -> newV3            19 20
+004 #                -> newV4            25 37

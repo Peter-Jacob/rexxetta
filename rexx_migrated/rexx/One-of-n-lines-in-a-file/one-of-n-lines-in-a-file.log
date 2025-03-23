@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX program simulates reading a  ten─line  file,  count the selection randomness.    */
+0002 N= 10                                            /*the number of lines in pseudo-file.  */
+0003 @.= 0                                            /*zero  all  the (ten)  "buckets".     */
+0004 do 1000000                                 /*perform main loop  one million times.*/
+0005 ?= 1
+0006 do k=1  for N                /*N  is the number of lines in the file*/
+0007 if random(0, 99999) / 100000  <  1/k  then ?= k      /*the criteria.*/
+0008 end   /*k*/
+0009 @.?= @.? + 1                               /*bump the count in a particular bucket*/
+0010 end                 /*1000000*/
+0011 
+0012 do j=1  for N                                 /*display randomness counts (buckets). */
+0013 say "number of times line"       right(j, 2)       "was selected:"       right(@.j, 9)
+0014 end   /*j*/                                   /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                2
+002 k                6
+003 j                12
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           3 9
+002 ?                -> newV2            5 7

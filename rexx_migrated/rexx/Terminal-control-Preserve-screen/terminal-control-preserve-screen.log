@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program saves the screen contents and also the cursor location,  then clears the */
+0002 /*──── screen, writes a half screen of ~~~ lines, and then restores the original screen.*/
+0003 
+0004 parse value  scrsize()   with  sd  sw  .         /*determine the size of terminal screen*/
+0005 parse value cursor(1,1)  with  curRow  curCol .  /*also, find the location of the cursor*/
+0006 
+0007 do original=1  for sd                  /*obtain the original screen contents. */
+0008 @line.original=scrRead(original,1, sw) /*obtain a line of the terminal screen.*/
+0009 end   /*original*/                     /* [↑]  obtains  SD  number of lines.  */
+0010 'CLS'                                            /*start with a clean slate on terminal.*/
+0011 do sd % 2                              /*write a line of ~~~ for half of scr. */
+0012 say '~~~'                              /*writes ~~~ starting at top of screen.*/
+0013 end   /*sd % 2*/                       /* [↑]  this shows ~~~ will be overlaid*/
+0014 /*no need to clear the screen here.    */
+0015 do restore=1  for sd                   /*restore original screen from  @line. */
+0016 call scrWrite restore,1, @line.restore /*write to terminal the original lines.*/
+0017 end   /*restore*/                      /* [↑]  writes (restores)  SD  lines.  */
+0018 /*stick a fork in it,  we're all done. */
+0019 call cursor  curRow, curCol                      /*restore the original cursor position.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 NORMAL.1         
+002 NORMAL.2         
+003 NORMAL.3         
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 sd               4
+018 sw               4
+019 curRow           5
+020 curCol           5
+021 original         7
+022 restore          15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @line.           -> newV1.           8

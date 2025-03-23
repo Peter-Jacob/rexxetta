@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX pgm sorts an array (names of epichoric Greek letters) using a heapsort algorithm.*/
+0002 parse arg x;                 call init           /*use args or default,  define @ array.*/
+0003 call show     "before sort:"                     /*#:    the number of elements in array*/
+0004 call heapSort       #;       say copies('▒', 40) /*sort; then after sort, show separator*/
+0005 call show     " after sort:"
+0006 exit                                             /*stick a fork in it,  we're all done. */
+0007 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0008 init: _= 'alpha beta gamma delta digamma epsilon zeta eta theta iota kappa lambda mu nu' ,
+0009 "xi omicron pi san qoppa rho sigma tau upsilon phi chi psi omega"
+0010 if x=''  then x= _;                 #= words(x)          /*#: number of words in X*/
+0011 do j=1  for #;  @.j= word(x, j);  end;     return  /*assign letters to array*/
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 heapSort: procedure expose @.; arg n;  do j=n%2  by -1 to 1;  call shuffle  j,n; end /*j*/
+0014 do n=n  by -1  to 2;    _= @.1;    @.1= @.n;    @.n= _;   call heapSuff 1,n-1
+0015 end   /*n*/;           return        /* [↑]  swap two elements; and shuffle.*/
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 heapSuff: procedure expose @.;  parse arg i,n;        $= @.i            /*obtain parent.*/
+0018 do  while i+i<=n;   j= i+i;   k= j+1;     if k<=n  then  if @.k>@.j  then j= k
+0019 if $>=@.j  then leave;      @.i= @.j;     i= j
+0020 end   /*while*/;            @.i= $;       return            /*define lowest.*/
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 show:     do s=1  for #;  say '    element' right(s, length(#)) arg(1) @.s;  end;   return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 i                17 19
+002 n                17
+003 while            18
+004 j                18 18
+005 k                18
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           11 14 14 19 20
+002 #                -> newV2            10
+003 _                -> newV3            14
+004 $                -> newV4            17

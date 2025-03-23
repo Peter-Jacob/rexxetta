@@ -1,0 +1,29 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program calculates the  average error,  crowd error,  and  prediction diversity. */
+0002 numeric digits 50 /*use precision of fifty decimal digits*/
+0003 call diversity 49,   48  47  51                  /*true value and the crowd predictions.*/
+0004 call diversity 49,   48  47  51  42              /*  "    "    "   "    "        "      */
+0005 exit 0                                           /*stick a fork in it,  we're all done. */
+0006 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0007 avg:   $= 0;           do j=1  for #;  $= $ +  word(x, j)        ;   end;     return $ / #
+0008 avgSD: $= 0;  arg y;   do j=1  for #;  $= $ + (word(x, j) - y)**2;   end;     return $ / #
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 diversity: parse arg true, x;    #= words(x);     a= avg()   /*get args; count #est; avg*/
+0011 say '   the  true   value: '   true  copies("═", 20)  "crowd estimates: "   x
+0012 say '   the average error: '   format( avgSD(true) , , 6) / 1
+0013 say '   the  crowd  error: '   format( (true-a) **2, , 6) / 1
+0014 say 'prediction diversity: '   format( avgSD(a)    , , 6) / 1;        say;  say
+0015 return                                            /*   └─── show 6 dec. digs.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 true             10
+002 x                10
+003 a                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            7 8
+002 #                -> newV2            10

@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program reverses the order of tokens in a string (but not the letters).*/
+0002 @.=;                    @.1  =  "---------- Ice and Fire ------------"
+0003 @.2  =  ' '
+0004 @.3  =  "fire, in end will world the say Some"
+0005 @.4  =  "ice. in say Some"
+0006 @.5  =  "desire of tasted I've what From"
+0007 @.6  =  "fire. favor who those with hold I"
+0008 @.7  =  ' '
+0009 @.8  =  "... elided paragraph last ..."
+0010 @.9  =  ' '
+0011 @.10 =  "Frost Robert -----------------------"
+0012 
+0013 do j=1  while  @.j\==''              /*process each of the 10 lines of poem.*/
+0014 $=                                   /*nullify the  $  string (the new line)*/
+0015 do k=1  for  words(@.j)           /*process each word in a   @.j  string.*/
+0016 $=word(@.j,k) $                   /*prepend a word to the new line  ($). */
+0017 end   /*k*/                       /* [↑]  we could do this another way.  */
+0018 
+0019 say $                                /*display the newly constructed line.  */
+0020 end      /*j*/                       /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                13
+002 k                15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 2 3 4 5 6 7 8 9 10 11
+002 $                -> newV2            14 16

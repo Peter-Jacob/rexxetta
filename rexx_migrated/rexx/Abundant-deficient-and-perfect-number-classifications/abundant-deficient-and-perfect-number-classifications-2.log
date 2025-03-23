@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program counts the number of  abundant/deficient/perfect  numbers within a range.*/
+0002 parse arg low high .                             /*obtain optional arguments from the CL*/
+0003 high=word(high low 20000,1);  low=word(low 1, 1) /*obtain the   LOW  and  HIGH   values.*/
+0004 say center('integers from '   low    " to "    high,  45,  "═")      /*display a header.*/
+0005 !.= 0                                            /*define all types of  sums  to zero.  */
+0006 do j=low  to high;           $= sigma(j)   /*get sigma for an integer in a range. */
+0007 if $<j  then               !.d= !.d + 1    /*Less?      It's a  deficient  number.*/
+0008 else if $>j  then  !.a= !.a + 1    /*Greater?     "  "  abundant      "   */
+0009 else  !.p= !.p + 1    /*Equal?       "  "  perfect       "   */
+0010 end  /*j*/                                 /* [↑]  IFs are coded as per likelihood*/
+0011 
+0012 say '   the number of perfect   numbers: '       right(!.p, length(high) )
+0013 say '   the number of abundant  numbers: '       right(!.a, length(high) )
+0014 say '   the number of deficient numbers: '       right(!.d, length(high) )
+0015 exit                                             /*stick a fork in it,  we're all done. */
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 sigma: procedure; parse arg x 1 z;  if x<5  then return max(0, x-1)  /*sets X&Z to arg1.*/
+0018 q=1;  do  while q<=z;  q= q * 4;     end  /* ◄──↓  compute integer sqrt of Z (=R)*/
+0019 r=0;  do  while q>1; q=q%4; _=z-r-q; r=r%2; if _>=0  then do; z=_; r=r+q; end;  end
+0020 odd= x//2                                 /* [↓]  only use EVEN | ODD ints.   ___*/
+0021 s= 1;     do k=2+odd  by 1+odd  to r      /*divide by  all  integers up to   √ x */
+0022 if x//k==0  then  s=s + k + x%k /*add the two divisors to (sigma) sum. */
+0023 end   /*k*/                     /* [↑]  %  is the REXX integer division*/
+0024 if r*r==x  then  return s - k             /*Was X a square?  If so, subtract √ x */
+0025 return s                 /*return (sigma) sum of the divisors.  */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                17
+002 z                17 19
+003 q                18 18 19
+004 while            18
+005 r                19 19 19
+006 odd              20
+007 s                21 22
+008 k                21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           5 7
+002 $                -> newV2            6
+003 _                -> newV3            19

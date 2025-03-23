@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program executes a  Turing machine  based on   initial state,  tape, and rules.  */
+0002 state = 'a'                                      /*the initial  Turing machine  state.  */
+0003 term  = 'halt'                                   /*a state that is used for a  halt.    */
+0004 blank =  0                                       /*this character is a  "true"  blank.  */
+0005 call Turing_rule  'a 0 1 right b'                /*define a rule for the Turing machine.*/
+0006 call Turing_rule  'a 1 1 left  c'                /*   "   "   "   "   "     "      "    */
+0007 call Turing_rule  'b 0 1 left  a'                /*   "   "   "   "   "     "      "    */
+0008 call Turing_rule  'b 1 1 right b'                /*   "   "   "   "   "     "      "    */
+0009 call Turing_rule  'c 0 1 left  b'                /*   "   "   "   "   "     "      "    */
+0010 call Turing_rule  'c 1 1 stay  halt'             /*   "   "   "   "   "     "      "    */
+0011 call Turing_init                                 /*initialize the tape to some string(s)*/
+0012 call TM                                          /*go and invoke the  Turning machine.  */
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 TM: ∙∙∙
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 state            2
+002 term             3
+003 blank            4
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

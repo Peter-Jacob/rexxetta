@@ -1,0 +1,88 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX pgm solves the 4-rings puzzle,  where letters represent unique (or not) digits). */
+0002 arg LO HI unique show .                          /*the  ARG  statement capitalizes args.*/
+0003 if LO=='' | LO==","  then LO=1                   /*Not specified?  Then use the default.*/
+0004 if HI=='' | HI==","  then HI=7                   /* "      "         "   "   "     "    */
+0005 if unique=='' | unique==',' | unique=='UNIQUE'  then unique=1  /*unique letter solutions*/
+0006 else unique=0  /*non-unique        "    */
+0007 if   show=='' |   show==',' |   show=='SHOW'    then show=1    /*noshow letter solutions*/
+0008 else show=0    /*  show    "       "    */
+0009 w=max(3, length(LO), length(HI) )                /*maximum width of any number found.   */
+0010 bar=copies('═', w)                               /*define a horizontal bar (for title). */
+0011 times=HI - LO + 1                                /*calculate number of times to loop.   */
+0012 #=0                                              /*number of solutions found (so far).  */
+0013 do a=LO     for times
+0014 do b=LO  for times
+0015 if unique  then  if b==a  then  iterate
+0016 do c=LO  for times
+0017 if unique  then  do;  if c==a  then  iterate
+0018 if c==b  then  iterate
+0019 end
+0020 do d=LO  for times
+0021 if unique  then  do;  if d==a  then  iterate
+0022 if d==b  then  iterate
+0023 if d==c  then  iterate
+0024 end
+0025 do e=LO  for times
+0026 if unique  then  do;  if e==a  then  iterate
+0027 if e==b  then  iterate
+0028 if e==c  then  iterate
+0029 if e==d  then  iterate
+0030 end
+0031 do f=LO  for times
+0032 if unique  then  do;  if f==a  then  iterate
+0033 if f==b  then  iterate
+0034 if f==c  then  iterate
+0035 if f==d  then  iterate
+0036 if f==e  then  iterate
+0037 end
+0038 do g=LO  for times
+0039 if unique  then  do;  if g==a  then  iterate
+0040 if g==b  then  iterate
+0041 if g==c  then  iterate
+0042 if g==d  then  iterate
+0043 if g==e  then  iterate
+0044 if g==f  then  iterate
+0045 end
+0046 sum=a+b
+0047 if   f+g\==sum  then  iterate
+0048 if b+c+d\==sum  then  iterate
+0049 if d+e+f\==sum  then  iterate
+0050 #=# + 1                          /*bump the count of solutions.*/
+0051 if #==1  then call align  'a',  'b',  'c',  'd',  'e',  'f',  'g'
+0052 if #==1  then call align  bar,  bar,  bar,  bar,  bar,  bar,  bar
+0053 call align   a,    b,    c,    d,    e,    f,    g
+0054 end   /*g*/
+0055 end      /*f*/
+0056 end         /*e*/
+0057 end            /*d*/
+0058 end               /*c*/
+0059 end                  /*b*/
+0060 end                     /*a*/
+0061 say
+0062 _= ' non-unique'
+0063 if  unique  then _= ' unique '
+0064 say #  _  'solutions found.'
+0065 exit                                             /*stick a fork in it,  we're all done. */
+0066 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0067 align: parse arg a1,a2,a3,a4,a5,a6,a7
+0068 if show  then say left('',9)  center(a1,w) center(a2,w) center(a3,w) center(a4,w),
+0069 center(a5,w) center(a6,w) center(a7,w)
+0070 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a1               67
+002 a2               67
+003 a3               67
+004 a4               67
+005 a5               67
+006 a6               67
+007 a7               67
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            12 50
+002 _                -> newV2            62 63

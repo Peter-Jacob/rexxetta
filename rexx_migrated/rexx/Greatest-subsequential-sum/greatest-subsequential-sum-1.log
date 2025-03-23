@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program  finds and displays  the  longest  greatest continuous subsequence  sum. */
+0002 parse arg @;         w= words(@);      p= w + 1  /*get arg list;  number words in list. */
+0003 say 'words='w    "   list="@                     /*show number words & LIST to terminal,*/
+0004 do #=1  for w;  @.#= word(@, #);  end       /*build an array for faster processing.*/
+0005 L=0;                    sum= 0                   /* [↓]  process the list of numbers.   */
+0006 do j=1  for w                               /*select one number at a time from list*/
+0007 do k=j  to w;  _= k-j+1;    s= @.j      /* [↓]  process a sub─list of numbers. */
+0008 do m=j+1  to k;     s= s + @.m;        end  /*m*/
+0009 if (s==sum & _>L) | s>sum  then do;       sum= s;   p= j;      L= _;   end
+0010 end   /*k*/                             /* [↑]  chose the longest greatest sum.*/
+0011 end       /*j*/
+0012 say
+0013 $= subword(@,p,L);   if $==''  then $= "[NULL]"  /*Englishize the  null   (value).      */
+0014 say 'sum='sum/1            "   sequence="$       /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 w                2
+002 p                2 9
+003 L                5 9
+004 sum              5 9
+005 j                6
+006 k                7
+007 s                7 8
+008 m                8
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           4
+002 @                -> newV2            2
+003 #                -> newV3            4
+004 _                -> newV4            7
+005 $                -> newV5            13 13

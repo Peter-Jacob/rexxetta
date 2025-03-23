@@ -1,0 +1,261 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program displays a truth table of  variables and an expression.   Infix notation */
+0002 /*─────────────── is supported with one character propositional constants;  variables   */
+0003 /*─────────────── (propositional constants) that are allowed:  A──►Z,  a──►z   except u.*/
+0004 /*─────────────── All propositional constants are case insensitive (except lowercase u).*/
+0005 
+0006 parse arg userText                               /*get optional expression from the CL. */
+0007 if userText\=''  then do                         /*Got one?   Then show user's stuff.   */
+0008 call truthTable userText   /*display truth table for the userText.*/
+0009 exit                       /*we're finished with the user's text. */
+0010 end
+0011 
+0012 call truthTable  "G ^ H ; XOR"                   /*text after ; is echoed to the output.*/
+0013 call truthTable  "i | j ; OR"
+0014 call truthTable  "G nxor H ; NXOR"
+0015 call truthTable  "k ! t ; NOR"
+0016 call truthTable  "p & q ; AND"
+0017 call truthTable  "e ¡ f ; NAND"
+0018 call truthTable  "S | (T ^ U)"
+0019 call truthTable  "(p=>q) v (q=>r)"
+0020 call truthTable  "A ^ (B ^ (C ^ D))"
+0021 exit                                             /*quit while we're ahead,  by golly.   */
+0022 
+0023 /* ↓↓↓ no way, Jose. ↓↓↓ */                  /* [↓]  shows a 32,768 line truth table*/
+0024 call truthTable  "A^ (B^ (C^ (D^ (E^ (F^ (G^ (H^ (I^ (J^ (L^ (L^ (M^ (N^O)  ))))))))))))"
+0025 exit                                             /*stick a fork in it,  we're all done. */
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 truthTable: procedure; parse arg $ ';' comm 1 $o;        $o=  strip($o);      hdrPCs=
+0028 $= translate(strip($), '|', "v");         $u=  $;              upper $u
+0029 $u= translate($u, '()()()', "[]{}«»");     $$.= 0;              PCs=
+0030 @abc= 'abcdefghijklmnopqrstuvwxyz';          @abcU= @abc;         upper @abcU
+0031 
+0032 /* ╔═════════════════════╦════════════════════════════════════════════════════════════╗
+0033 ║                     ║                  bool(bitsA, bitsB, BF)                    ║
+0034 ║                     ╟────────────────────────────────────────────────────────────╢
+0035 ║                     ║ performs the boolean function  BF    ┌──────┬─────────┐    ║
+0036 ║                     ║      on the   A   bitstring          │  BF  │ common  │    ║
+0037 ║                     ║    with the   B   bitstring.         │ value│  name   │    ║
+0038 ║                     ║                                      ├──────┼─────────┤    ║
+0039 ║                     ║ BF   must be a  one to four bit      │ 0000 │boolfalse│    ║
+0040 ║                     ║ value  (from  0000 ──► 1111),        │ 0001 │ and     │    ║
+0041 ║  This boxed table   ║ leading zeroes can be omitted.       │ 0010 │ NaIMPb  │    ║
+0042 ║ was re─constructed  ║                                      │ 0011 │ boolB   │    ║
+0043 ║   from an old IBM   ║ BF   may have multiple values (one   │ 0100 │ NbIMPa  │    ║
+0044 ║    publicastion:    ║ for each pair of bitstrings):        │ 0101 │ boolA   │    ║
+0045 ║                     ║                                      │ 0110 │ xor     │    ║
+0046 ║   "PL/I Language    ║  ┌──────┬──────┬───────────────┐     │ 0111 │ or      │    ║
+0047 ║   Specifications"   ║  │ Abit │ Bbit │   returns     │     │ 1000 │ nor     │    ║
+0048 ║                     ║  ├──────┼──────┼───────────────┤     │ 1001 │ nxor    │    ║
+0049 ║                     ║  │   0  │   0  │ 1st bit in BF │     │ 1010 │ notB    │    ║
+0050 ║                     ║  │   0  │   1  │ 2nd bit in BF │     │ 1011 │ bIMPa   │    ║
+0051 ║   ─── March 1969.   ║  │   1  │   0  │ 3rd bit in BF │     │ 1100 │ notA    │    ║
+0052 ║                     ║  │   1  │   1  │ 4th bit in BF │     │ 1101 │ aIMPb   │    ║
+0053 ║                     ║  └──────┴──────┴───────────────┘     │ 1110 │ nand    │    ║
+0054 ║                     ║                                      │ 1111 │booltrue │    ║
+0055 ║                     ║                                   ┌──┴──────┴─────────┤    ║
+0056 ║                     ║                                   │ A  0101           │    ║
+0057 ║                     ║                                   │ B  0011           │    ║
+0058 ║                     ║                                   └───────────────────┘    ║
+0059 ╚═════════════════════╩════════════════════════════════════════════════════════════╝ */
+0060 
+0061 @= 'ff'x                                       /* [↓]  ───── infix operators (0──►15) */
+0062 op.=                                           /*Note:   a  single quote  (')  wasn't */
+0063 /*            implemented for negation.*/
+0064 op.0 = 'false  boolFALSE'                      /*unconditionally  FALSE               */
+0065 op.1 = '&      and *'                          /* AND,  conjunction                   */
+0066 op.2 = 'naimpb NaIMPb'                         /*not A implies B                      */
+0067 op.3 = 'boolb  boolB'                          /*B  (value of)                        */
+0068 op.4 = 'nbimpa NbIMPa'                         /*not B implies A                      */
+0069 op.5 = 'boola  boolA'                          /*A  (value of)                        */
+0070 op.6 = '&&     xor % ^'                        /* XOR,  exclusive OR                  */
+0071 op.7 = '|      or + v'                         /*  OR,  disjunction                   */
+0072 op.8 = 'nor    nor ! ↓'                        /* NOR,  not OR,  Pierce operator      */
+0073 op.9 = 'xnor   xnor nxor'                      /*NXOR,  not exclusive OR,  not XOR    */
+0074 op.10= 'notb   notB'                           /*not B  (value of)                    */
+0075 op.11= 'bimpa  bIMPa'                          /*    B  implies A                     */
+0076 op.12= 'nota   notA'                           /*not A  (value of)                    */
+0077 op.13= 'aimpb  aIMPb'                          /*    A  implies B                     */
+0078 op.14= 'nand   nand ¡ ↑'                       /*NAND,  not AND,  Sheffer operator    */
+0079 op.15= 'true   boolTRUE'                       /*unconditionally   TRUE               */
+0080 /*alphabetic names that need changing. */
+0081 op.16= '\   NOT ~ ─ . ¬'                       /* NOT,  negation                      */
+0082 op.17= '>   GT'                                /*conditional                          */
+0083 op.18= '>=  GE ─> => ──> ==>'   "1a"x          /*conditional;     (see note below.)──┐*/
+0084 op.19= '<   LT'                                /*conditional                         │*/
+0085 op.20= '<=  LE <─ <= <── <=='                  /*conditional                         │*/
+0086 op.21= '\=  NE ~= ─= .= ¬='                    /*conditional                         │*/
+0087 op.22= '=   EQ EQUAL EQUALS ='  "1b"x          /*bi─conditional;  (see note below.)┐ │*/
+0088 op.23= '0   boolTRUE'                          /*TRUEness                          │ │*/
+0089 op.24= '1   boolFALSE'                         /*FALSEness                         ↓ ↓*/
+0090 /* [↑] glphys  '1a'x  and  "1b"x  can't*/
+0091 /*     displayed under most DOS' & such*/
+0092 do jj=0  while  op.jj\=='' | jj<16           /*change opers ──► into what REXX likes*/
+0093 new= word(op.jj, 1)                          /*obtain the 1st token of  infex table.*/
+0094 /* [↓]  process the rest of the tokens.*/
+0095 do kk=2  to words(op.jj)                   /*handle each of the tokens separately.*/
+0096 _=word(op.jj, kk);          upper _        /*obtain another token from infix table*/
+0097 if wordpos(_, $u)==0   then iterate        /*no such animal in this string.       */
+0098 if datatype(new, 'm')  then new!= @        /*it            needs to be transcribed*/
+0099 else new!= new      /*it  doesn't   need   "  "     "      */
+0100 $u= changestr(_, $u, new!)                 /*transcribe the function (maybe).     */
+0101 if new!==@  then $u= changeFunc($u,@,new)  /*use the internal boolean name.       */
+0102 end   /*kk*/
+0103 end     /*jj*/
+0104 
+0105 $u=translate($u, '()', "{}")                   /*finish cleaning up the transcribing. */
+0106 
+0107 do jj=1  for length(@abcU)               /*see what variables are being used.   */
+0108 _= substr(@abcU, jj, 1)                  /*use the available upercase aLphabet. */
+0109 if pos(_,$u) == 0  then iterate          /*Found one?    No, then keep looking. */
+0110 $$.jj= 1                                 /*found:  set upper bound for it.      */
+0111 PCs= PCs _                             /*also, add to propositional constants.*/
+0112 hdrPCs=hdrPCS center(_,length('false'))  /*build a PC header for transcribing.  */
+0113 end   /*jj*/
+0114 
+0115 ptr= '_────►_'                                 /*a (text) pointer for the truth table.*/
+0116 $u= PCs '('$u")"                              /*separate the  PCs  from expression.  */
+0117 hdrPCs= substr(hdrPCs, 2)                      /*create a header for the  PCs.        */
+0118 say hdrPCs left('', length(ptr) - 1)   $o      /*display  PC  header and expression.  */
+0119 say copies('───── ', words(PCs))    left('', length(ptr) -2)  copies('─', length($o))
+0120 /*Note:  "true"s:  are right─justified.*/
+0121 do a=0  to $$.1
+0122 do b=0  to $$.2
+0123 do c=0  to $$.3
+0124 do d=0  to $$.4
+0125 do e=0  to $$.5
+0126 do f=0  to $$.6
+0127 do g=0  to $$.7
+0128 do h=0  to $$.8
+0129 do i=0  to $$.9
+0130 do j=0  to $$.10
+0131 do k=0  to $$.11
+0132 do l=0  to $$.12
+0133 do m=0  to $$.13
+0134 do n=0  to $$.14
+0135 do o=0  to $$.15
+0136 do p=0  to $$.16
+0137 do q=0  to $$.17
+0138 do r=0  to $$.18
+0139 do s=0  to $$.19
+0140 do t=0  to $$.20
+0141 do u=0  to $$.21
+0142 do !=0  to $$.22
+0143 do w=0  to $$.23
+0144 do x=0  to $$.24
+0145 do y=0  to $$.25
+0146 do z=0  to $$.26;         interpret   '_='   $u
+0147 /*evaluate truth T.*/
+0148 _= changestr(1, _, '_true') /*convert 1──►_true*/
+0149 _= changestr(0, _, 'false') /*convert 0──►false*/
+0150 _= insert(ptr,  _, wordindex(_, words(_) )  - 1)
+0151 say translate(_, , '_')     /*display truth tab*/
+0152 end   /*z*/
+0153 end    /*y*/
+0154 end     /*x*/
+0155 end      /*w*/
+0156 end       /*v*/
+0157 end        /*u*/
+0158 end         /*t*/
+0159 end          /*s*/
+0160 end           /*r*/
+0161 end            /*q*/
+0162 end             /*p*/
+0163 end              /*o*/
+0164 end               /*n*/
+0165 end                /*m*/
+0166 end                 /*l*/
+0167 end                  /*k*/
+0168 end                   /*j*/
+0169 end                    /*i*/
+0170 end                     /*h*/
+0171 end                      /*g*/
+0172 end                       /*f*/
+0173 end                        /*e*/
+0174 end                         /*d*/
+0175 end                          /*c*/
+0176 end                           /*b*/
+0177 end                            /*a*/
+0178 say;  say
+0179 return
+0180 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0181 scan: procedure; parse arg x,at;      L= length(x);   t=L;    Lp=0;    apost=0;    quote=0
+0182 if at<0  then      do;   t=1;   x= translate(x, '()', ")(")
+0183 end                      /* [↓]  get 1 or 2 chars at location J*/
+0184 
+0185 do j=abs(at)  to t  by sign(at);      _=substr(x, j ,1);   __=substr(x, j, 2)
+0186 if quote             then do;  if _\=='"'    then iterate
+0187 if __=='""'   then do;  j= j+1;  iterate;  end
+0188 quote=0;  iterate
+0189 end
+0190 if apost             then do;  if _\=="'"    then iterate
+0191 if __=="''"   then do;  j= j+1;  iterate;  end
+0192 apost=0;   iterate
+0193 end
+0194 if _== '"'           then do;  quote=1;   iterate;  end
+0195 if _== "'"           then do;  apost=1;   iterate;  end
+0196 if _== ' '           then iterate
+0197 if _== '('           then do;  Lp= Lp+1;  iterate;  end
+0198 if Lp\==0            then do;  if _==')'     then Lp= Lp-1;     iterate;  end
+0199 if datatype(_, 'U')  then return j - (at<0)
+0200 if at<0              then return j + 1              /*is   _    uppercase ? */
+0201 end   /*j*/
+0202 
+0203 return min(j, L)
+0204 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0205 changeFunc: procedure;  parse arg z, fC, newF ;           funcPos= 0
+0206 
+0207 do forever
+0208 funcPos= pos(fC, z, funcPos + 1);           if funcPos==0  then return z
+0209 origPos= funcPos
+0210 z= changestr(fC, z, ",'"newF"',") /*arg 3 ≡  ",'" || newF || "-',"  */
+0211 funcPos= funcPos + length(newF) + 4
+0212 where= scan(z, funcPos)       ;           z= insert(    '}',  z,  where)
+0213 where= scan(z, 1 - origPos)   ;           z= insert('bool{',  z,  where)
+0214 end   /*forever*/
+0215 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0216 bool: procedure; arg a,?,b                              /* ◄─── ARG uppercases all args.*/
+0217 
+0218 select                        /*SELECT chooses which function.*/
+0219 /*0*/    when ? == 'FALSE'   then  return 0
+0220 /*1*/    when ? == 'AND'     then  return a & b
+0221 /*2*/    when ? == 'NAIMPB'  then  return \ (\a & \b)
+0222 /*3*/    when ? == 'BOOLB'   then  return b
+0223 /*4*/    when ? == 'NBIMPA'  then  return \ (\b & \a)
+0224 /*5*/    when ? == 'BOOLA'   then  return a
+0225 /*6*/    when ? == 'XOR'     then  return a && b
+0226 /*7*/    when ? == 'OR'      then  return a |  b
+0227 /*8*/    when ? == 'NOR'     then  return \ (a |  b)
+0228 /*9*/    when ? == 'XNOR'    then  return \ (a && b)
+0229 /*a*/    when ? == 'NOTB'    then  return \ b
+0230 /*b*/    when ? == 'BIMPA'   then  return \ (b & \a)
+0231 /*c*/    when ? == 'NOTA'    then  return \ a
+0232 /*d*/    when ? == 'AIMPB'   then  return \ (a & \b)
+0233 /*e*/    when ? == 'NAND'    then  return \ (a &  b)
+0234 /*f*/    when ? == 'TRUE'    then  return 1
+0235 otherwise                 return -13
+0236 end   /*select*/              /* [↑]  error, unknown function.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                205 210 212 213
+002 fC               205
+003 newF             205
+004 funcPos          205 208 211
+005 origPos          209
+006 where            212 213
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @abcU            -> newV1            30
+002 @abc             -> newV2            30
+003 $$.              -> newV3.           29 110
+004 $o               -> newV4            27 27
+005 $u               -> newV5            28 29 100 101 105 116
+006 __               -> newV6            185
+007 $                -> newV7            27 28
+008 @                -> newV8            61
+009 _                -> newV9            96 108 148 149 150 185
+010 !                -> newV10           142

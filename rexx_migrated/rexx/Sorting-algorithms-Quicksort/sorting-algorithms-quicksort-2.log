@@ -1,0 +1,99 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX*/
+0002 a = '4 65 2 -31 0 99 83 782 1'
+0003 do i = 1 to words(a)
+0004 queue word(a, i)
+0005 end
+0006 call quickSort
+0007 parse pull item
+0008 do queued()
+0009 call charout ,item', '
+0010 parse pull item
+0011 end
+0012 say item
+0013 exit
+0014 
+0015 quickSort: procedure
+0016 /* In classic Rexx, arguments are passed by value, not by reference so stems
+0017 cannot be passed as arguments nor used as return values.  Putting their
+0018 contents on the external data queue is a way to bypass this issue. */
+0019 
+0020 /* construct the input stem */
+0021 arr.0 = queued()
+0022 do i = 1 to arr.0
+0023 parse pull arr.i
+0024 end
+0025 less.0 = 0
+0026 pivotList.0 = 0
+0027 more.0 = 0
+0028 if arr.0 <= 1 then do
+0029 if arr.0 = 1 then
+0030 queue arr.1
+0031 return
+0032 end
+0033 else do
+0034 pivot = arr.1
+0035 do i = 1 to arr.0
+0036 item = arr.i
+0037 select
+0038 when item < pivot then do
+0039 j = less.0 + 1
+0040 less.j = item
+0041 less.0 = j
+0042 end
+0043 when item > pivot then do
+0044 j = more.0 + 1
+0045 more.j = item
+0046 more.0 = j
+0047 end
+0048 otherwise
+0049 j = pivotList.0 + 1
+0050 pivotList.j = item
+0051 pivotList.0 = j
+0052 end
+0053 end
+0054 end
+0055 /* recursive call to sort the less. stem */
+0056 do i = 1 to less.0
+0057 queue less.i
+0058 end
+0059 if queued() > 0 then do
+0060 call quickSort
+0061 less.0 = queued()
+0062 do i = 1 to less.0
+0063 parse pull less.i
+0064 end
+0065 end
+0066 /* recursive call to sort the more. stem */
+0067 do i = 1 to more.0
+0068 queue more.i
+0069 end
+0070 if queued() > 0 then do
+0071 call quickSort
+0072 more.0 = queued()
+0073 do i = 1 to more.0
+0074 parse pull more.i
+0075 end
+0076 end
+0077 /* put the contents of all 3 stems on the queue in order */
+0078 do i = 1 to less.0
+0079 queue less.i
+0080 end
+0081 do i = 1 to pivotList.0
+0082 queue pivotList.i
+0083 end
+0084 do i = 1 to more.0
+0085 queue more.i
+0086 end
+0087 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             74
+002 more.            74
+003 i                78 81 84
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

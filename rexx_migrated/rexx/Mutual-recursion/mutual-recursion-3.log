@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program shows  mutual recursion  (via the Hofstadter Male and Female sequences). */
+0002 /*───────────────── If LIM is negative, a single result is shown for the abs(lim) entry.*/
+0003 
+0004 parse arg lim .;       if lim==''  then lim= 99;           aLim= abs(lim)
+0005 w= length(aLim);       $m.=.;      $m.0= 0;     $f.=.;     $f.0= 1;    Js=;    Fs=;    Ms=
+0006 
+0007 do j=0  for aLim+1;     call F(J);          call M(j)
+0008 if lim<0  then iterate
+0009 Js= Js right(j, w);     Fs= Fs right($f.j, w);      Ms= Ms right($m.j, w)
+0010 end   /*j*/
+0011 
+0012 if lim>0  then  say 'Js='   Js;        else  say  'J('aLim")="     right(   aLim, w)
+0013 if lim>0  then  say 'Fs='   Fs;        else  say  'F('aLim")="     right($f.aLim, w)
+0014 if lim>0  then  say 'Ms='   Ms;        else  say  'M('aLim")="     right($m.aLIM, w)
+0015 exit                                             /*stick a fork in it,  we're all done. */
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 F: procedure expose $m. $f.; parse arg n; if $f.n==.  then $f.n= n-M(F(n-1));  return $f.n
+0018 M: procedure expose $m. $f.; parse arg n; if $m.n==.  then $m.n= n-F(M(n-1));  return $m.n
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                18
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $m.              -> newV1.           5 5 18
+002 $f.              -> newV2.           5 5 17

@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates various ways to extract substrings from a  string  of characters.*/
+0002 $='abcdefghijk';  n=4;  m=3        /*define some constants: string, index, length of string. */
+0003 say 'original string='$            /* [↑]   M   can be zero  (which indicates a null string).*/
+0004 L=length($)                        /*the length of the  $  string   (in bytes or characters).*/
+0005 say center(1,30,'═') /*show a centered title for the  1st  task requirement.   */
+0006 u=substr($, n, m)                  /*start from  N  characters in  and of  M  length.        */
+0007 say u
+0008 parse var $ =(n) a +(m)            /*an alternate method by using the  PARSE  instruction.   */
+0009 say a
+0010 say center(2,30,'═') /*show a centered title for the  2nd  task requirement.   */
+0011 u=substr($,n)                      /*start from  N  characters in,  up to the end-of-string. */
+0012 say u
+0013 parse var $ =(n) a                 /*an alternate method by using the  PARSE  instruction.   */
+0014 say a
+0015 say center(3,30,'═') /*show a centered title for the  3rd  task requirement.   */
+0016 u=substr($, 1, L-1)                /*OK:     the entire string  except  the last character.  */
+0017 say u
+0018 v=substr($, 1, max(0, L-1) )       /*better: this version handles the case of a null string. */
+0019 say v
+0020 lm=L-1
+0021 parse var $ a +(lm)                /*an alternate method by using the  PARSE  instruction.   */
+0022 say a
+0023 say center(4,30,'═') /*show a centered title for the  4th  task requirement.   */
+0024 u=substr($,pos('g',$), m)          /*start from a known char within the string of length  M. */
+0025 say u
+0026 parse var $ 'g' a +(m)             /*an alternate method by using the  PARSE  instruction.   */
+0027 say a
+0028 say center(5,30,'═') /*show a centered title for the  5th  task requirement.   */
+0029 u=substr($,pos('def',$),m)         /*start from a known substr within the string of length M.*/
+0030 say u
+0031 parse var $ 'def' a +(m)           /*an alternate method by using the  PARSE  instruction.   */
+0032 say a                              /*stick a fork in it, we're all done and Bob's your uncle.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 +(lm)            -> newV1            21
+002 =(n)             -> newV2            8 13
+003 +(m)             -> newV3            8 26 31
+004 $                -> newV4            2 8 13 21 26 31

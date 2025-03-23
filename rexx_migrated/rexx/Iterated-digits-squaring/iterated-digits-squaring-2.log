@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program performs the squaring of iterated digits  (until the sum equals 1 or 89).*/
+0002 parse arg n .                                    /*obtain optional arguments from the CL*/
+0003 if n=='' | n==","  then n=10 * 1000000           /*Not specified?  Then use the default.*/
+0004 !.=0;      do m=1  for 9;  !.m=m**2;  end /*m*/  /*build a short-cut for the squares.   */
+0005 $.=.; $.0=0;  $.00=0;  $.000=0;  $.0000=0; @.=$. /*short-cuts for sub-group summations. */
+0006 #.=0                                             /*count of  1  and  89  results so far.*/
+0007 do j=1  for n;       s=sumDs(j)             /* [?]  process each number in a range.*/
+0008 #.s=#.s + 1                                 /*bump the counter for  1's  or  89's. */
+0009 end   /*j*/
+0010 
+0011 do k=1  by 88  for 2;   @=right('"'k'"', 5)    /*display two results; define a literal*/
+0012 say 'count of'   @    " chains for all natural numbers up to "     n     ' is:'      #.k
+0013 end   /*k*/                                    /*stick a fork in it,  we're all done. */
+0014 exit                                             /*stick a fork in it,  we're all done. */
+0015 /*--------------------------------------------------------------------------------------*/
+0016 sumDs: parse arg z;  chunk=3                     /*obtain the number (for adding digits)*/
+0017 p=0                                       /*set partial sum of the decimal digits*/
+0018 do m=1  by chunk  to length(z)         /*process the number, in chunks of four*/
+0019 y=substr(z, m, chunk)                  /*extract a 4-byte chunk of the number.*/
+0020 if @.y==.  then do;   oy=y;      a=0   /*Not done before?  Then sum the number*/
+0021 do  until y==''      /*process each of the dec. digits in Y.*/
+0022 parse var y  _ +1 y  /*obtain a decimal digit; add it to  A.*/
+0023 a=a + !._            /*obtain a decimal digit; add it to  A.*/
+0024 end  /*until y ···*/ /* [?]   A = is the sum of squared digs*/
+0025 @.oy=a                 /*mark original  Y  as being summed.   */
+0026 end
+0027 else a=@.y                  /*use the  pre-summed  digits of  Y.   */
+0028 p=p + a                                /*add all the parts of number together.*/
+0029 end   /*m*/
+0030 
+0031 if $.p\==.  then return $.p               /*Computed before?  Then use the value.*/
+0032 y=p                                       /*use a new copy of  P.                */
+0033 do  until s==1 | s==89;  s=0       /*add the squared decimal digits of  P.*/
+0034 do  until y==''                 /*process each  decimal digits in    X.*/
+0035 parse var y  _ +1 y;  s=s + !._ /*get a dec. digit; sum the fast square*/
+0036 end   /*until y ···*/           /* [?]  S = is sum of the squared digs.*/
+0037 y=s                                /*substitute the sum for a  "new"  X.  */
+0038 end      /*until s ···*/           /* [?]  keep looping 'til  S=1  or  89.*/
+0039 $.p=s                                     /*use this for memoization for the sum.*/
+0040 return s
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                35 35 37
+002 s                35
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           4 4
+002 $.               -> newV2.           5 5 5 5 5 39
+003 @.               -> newV3.           5 25
+004 #.               -> newV4.           6 8
+005 @                -> newV5            11
+006 _                -> newV6            22 35

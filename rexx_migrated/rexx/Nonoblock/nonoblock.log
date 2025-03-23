@@ -1,0 +1,78 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program enumerates all possible configurations (or an error) for nonogram puzzles*/
+0002 $.=;    $.1=  5   2 1
+0003 $.2=  5
+0004 $.3= 10   8
+0005 $.4= 15   2 3 2 3
+0006 $.5=  5   2 3
+0007 do  i=1  while $.i\==''
+0008 parse var  $.i   N  blocks                 /*obtain  N  and  blocks   from array. */
+0009 N= strip(N);     blocks= space(blocks)     /*assign stripped   N   and   blocks.  */
+0010 call nono                                  /*incoke NONO subroutine for heavy work*/
+0011 end   /*i*/
+0012 exit                                             /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 nono: say copies('=', 70)                                 /*display seperator for title.*/
+0015 say 'For '   N   " cells  and blocks of: "   blocks /*display the title for output*/
+0016 z=                                                  /*assign starter value for Z. */
+0017 do w=1  for words(blocks)                       /*process each of the blocks. */
+0018 z= z copies('#', word(blocks,w) )               /*build a string for 1st value*/
+0019 end   /*w*/                                     /*Z  now has a leading blank. */
+0020 #= 1                                                /*number of positions (so far)*/
+0021 z= translate( strip(z), ., ' ');   L= length(z)     /*change blanks to periods.   */
+0022 if L>N  then do;   say '***error***  invalid blocks for number of cells.';   return
+0023 end
+0024 @.0=;           @.1= z;         !.=0       /*assign default and the first position*/
+0025 z= pad(z)                                  /*fill─out (pad) the value with periods*/
+0026 
+0027 do prepend=1  while words(blocks)\==0   /*process all the positions (leading .)*/
+0028 new= . || @.prepend                     /*create positions with leading dots.  */
+0029 if length(new)>N  then leave            /*Length is too long?  Then stop adding*/
+0030 call add                                /*add position that has a leading dot. */
+0031 end   /*prepend*/                       /* [↑]  prepend positions with dots.   */
+0032 
+0033 do   k=1  for N                         /*process each of the positions so far.*/
+0034 do c=1  for N                         /*   "      "   "  "  position blocks. */
+0035 if @.c==''  then iterate              /*if string is null,  skip the string. */
+0036 p= loc(@.c, k)                        /*find location of block in position.  */
+0037 if p==0 | p>=N  then iterate          /*Location zero or out─of─range?  Skip.*/
+0038 new= strip( insert(., @.c, p),'T',.)  /*insert a dot and strip trailing dots.*/
+0039 if strip(new,'T',.)=@.c  then iterate /*Is it the same value?  Then skip it. */
+0040 if length(new)<=N  then call add      /*Is length OK?   Then add position.   */
+0041 end   /*k*/
+0042 end     /*c*/
+0043 say
+0044 say '─position─'  center("value", max(7, length(z) ), '─')  /*show hdr for output.*/
+0045 
+0046 do m=1  for #
+0047 say center(m, 10)   pad(@.m)      /*display the index count and position.*/
+0048 end   /*m*/
+0049 return
+0050 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0051 loc:  _=0; do arg(2); _=pos('#.',pad(arg(1)),_+1); if _==0  then return 0; end; return _+1
+0052 add:  if !.new==1  then return;  #= # + 1;     @.#= new;    !.new=1;    return
+0053 pad:  return  left( arg(1), N, .)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                8 9
+002 blocks           8 9
+003 z                16 18 21 25
+004 w                17
+005 L                21
+006 prepend          27
+007 new              28 38
+008 k                33
+009 c                34
+010 p                36
+011 m                46
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $.               -> newV1.           2 2 3 4 5 6 8
+002 @.               -> newV2.           24 24 52
+003 !.               -> newV3.           24 52
+004 #                -> newV4            20 52
+005 _                -> newV5            51

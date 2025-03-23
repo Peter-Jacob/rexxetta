@@ -1,0 +1,589 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 Signal On Halt
+0003 Signal On Novalue
+0004 Signal On Syntax
+0005 
+0006 fid='trio.in'
+0007 oid='trio.txt'; 'erase' oid
+0008 
+0009 
+0010 Call trio_test '0 0   5 0   0 5   0 0   5  0   0 6'
+0011 Call trio_test '0 0   0 5   5 0   0 0   0  5   5 0'
+0012 Call trio_test '0 0   5 0   0 5 -10 0  -5  0  -1 6'
+0013 Call trio_test '0 0   5 0 2.5 5   0 4 2.5 -1   5 4'
+0014 Call trio_test '0 0   1 1   0 2   2 1   3  0   3 2'
+0015 Call trio_test '0 0   1 1   0 2   2 1   3 -2   3 4'
+0016 Call trio_test '0 0   1 0   0 1   1 0   2  0   1 1'
+0017 
+0018 Call trio_test '1 0   3 0   2 2   1 3   3  3   2 5'
+0019 Call trio_test '1 0   3 0   2 2   1 3   3  3   2 2'
+0020 Call trio_test '0 0   2 0   2 2   3 3   5  3   5 5'
+0021 Call trio_test '2 0   2 6   1 8   0 1   0  5   8 3'
+0022 Call trio_test '0 0   4 0   0 4   0 2   2  0   2 2'
+0023 Call trio_test '0 0   4 0   0 4   1 1   2  1   1 2'
+0024 Exit
+0025 
+0026 trio_test:
+0027 parse Arg tlist
+0028 tlist=space(tlist)
+0029 Parse Arg ax ay bx by cx cy dx dy ex ey fx fy
+0030 
+0031 Say 'ABC:' show_p(ax ay) show_p(bx by) show_p(cx cy)
+0032 Say 'DEF:' show_p(dx dy) show_p(ex ey) show_p(fx fy)
+0033 
+0034 bordl=bord(tlist)  /* corners that are on the other triangle's edges */
+0035 If bordl<>'' Then
+0036 Say 'Corners on the other triangle''s edges:' bordl
+0037 wb=words(bordl)                     /* how many of them?             */
+0038 Select
+0039 When wb=3 Then Do                 /* all three match               */
+0040 If ident(ax ay,bx by,cx cy,dx dy,ex ey,fx fy) Then
+0041 Say 'Triangles are identical'
+0042 Else
+0043 Say 'Triangles overlap'
+0044 Say ''
+0045 Return
+0046 End
+0047 When wb=2 Then Do                 /* two of them match             */
+0048 Say 'Triangles overlap'
+0049 Say '  they have a common edge 'bordl
+0050 Say ''
+0051 Return
+0052 End
+0053 When wb=1 Then Do                 /* one of them match             */
+0054 Say 'Triangles touch on' bordl  /* other parts may overlap       */
+0055 Say '  we analyze further'
+0056 End
+0057 Otherwise                         /* we know nothing yet           */
+0058 Nop
+0059 End
+0060 
+0061 trio_result=trio(tlist)             /* any other overlap?            */
+0062 
+0063 Select
+0064 When trio_result=0 Then Do        /* none whatsoever               */
+0065 If wb=1 Then
+0066 Say 'Triangles touch (border case) at' show_p(bordl)
+0067 Else
+0068 Say 'Triangles don''t overlap'
+0069 End
+0070 When trio_result>0 Then           /* plain overlapping case        */
+0071 Say 'Triangles overlap'
+0072 End
+0073 Say ''
+0074 Return
+0075 
+0076 trio:
+0077 /*---------------------------------------------------------------------
+0078 * Determine if two triangles overlap
+0079 *--------------------------------------------------------------------*/
+0080 parse Arg tlist
+0081 Parse Arg pax pay pbx pby pcx pcy pdx pdy pex pey pfx pfy
+0082 
+0083 abc=subword(tlist,1,6)
+0084 def=subword(tlist,7,6)
+0085 
+0086 Do i=1 To 3
+0087 s.i=subword(abc abc,i*2-1,4)
+0088 t.i=subword(def def,i*2-1,4)
+0089 End
+0090 
+0091 abc_=''
+0092 def_=''
+0093 
+0094 Do i=1 To 3
+0095 abc.i=subword(abc,i*2-1,2)   /* corners of ABC */
+0096 def.i=subword(def,i*2-1,2)   /* corners of DEF */
+0097 Parse Var abc.i x y; abc_=abc_ '('||x','y')'
+0098 Parse Var def.i x y; def_=def_ '('||x','y')'
+0099 End
+0100 Call o 'abc_='abc_
+0101 Call o 'def_='def_
+0102 
+0103 over=0
+0104 Do i=1 To 3 Until over
+0105 Do j=1 To 3 Until over
+0106 If ssx(s.i t.j) Then Do       /* intersection of two edges     */
+0107 over=1
+0108 Leave
+0109 End
+0110 End
+0111 End
+0112 
+0113 If over=0 Then Do                   /* no edge intersection found    */
+0114 Do ii=1 To 3 Until over           /* look for first possibility    */
+0115 Call o '    '  'abc.'ii'='abc.ii 'def='def
+0116 Call o 'ii='ii 'def.'ii'='def.ii 'abc='abc
+0117 If in_tri(abc.ii,def) Then Do   /* a corner of ABC is in DEF     */
+0118 Say abc.ii 'is within' def
+0119 over=1
+0120 End
+0121 Else If in_tri(def.ii,abc) Then Do  /* a corner of DEF is in ABC */
+0122 Say def.ii 'is within' abc
+0123 over=1
+0124 End
+0125 End
+0126 End
+0127 
+0128 If over=0 Then rw='don''t '
+0129 Else rw=''
+0130 
+0131 Call o 'Triangles' show_p(pax pay) show_p(pbx pby) show_p(pcx pcy),
+0132 'and' show_p(pdx pdy) show_p(pex pey) show_p(pfx pfy),
+0133 rw'overlap'
+0134 Call o ''
+0135 Return over
+0136 
+0137 ssx: Procedure Expose oid bordl
+0138 /*---------------------------------------------------------------------
+0139 * Intersection of 2 line segments A-B and C-D
+0140 *--------------------------------------------------------------------*/
+0141 Parse Arg xa ya xb yb xc yc xd yd
+0142 
+0143 d=ggx(xa ya xb yb xc yc xd yd)
+0144 
+0145 Call o 'ssx:' arg(1) d
+0146 res=0
+0147 Select
+0148 When d='-' Then res=0
+0149 When d='I' Then Do
+0150 If xa<>xb Then Do
+0151 xab_min=min(xa,xb)
+0152 xcd_min=min(xc,xd)
+0153 xab_max=max(xa,xb)
+0154 xcd_max=max(xc,xd)
+0155 If xab_min>xcd_max |,
+0156 xcd_min>xab_max Then
+0157 res=0
+0158 Else Do
+0159 res=1
+0160 Select
+0161 When xa=xc & isb(xc,xb,xd)=0 Then Do; x=xa; y=ya; End
+0162 When xb=xc & isb(xc,xa,xd)=0 Then Do; x=xb; y=yb; End
+0163 When xa=xd & isb(xc,xb,xd)=0 Then Do; x=xa; y=ya; End
+0164 When xb=xd & isb(xc,xa,xd)=0 Then Do; x=xb; y=yb; End
+0165 Otherwise Do
+0166 x='*'
+0167 y=ya
+0168 End
+0169 End
+0170 Call o  'ssx:' x y
+0171 End
+0172 End
+0173 Else Do
+0174 yab_min=min(ya,yb)
+0175 ycd_min=min(yc,yd)
+0176 yab_max=max(ya,yb)
+0177 ycd_max=max(yc,yd)
+0178 If yab_min>ycd_max |,
+0179 ycd_min>yab_max Then
+0180 res=0
+0181 Else Do
+0182 res=1
+0183 x=xa
+0184 y='*'
+0185 Parse Var bordl x_bord '/' y_bord
+0186 If x=x_bord Then Do
+0187 Call o  xa'/* IGNORED'
+0188 res=0
+0189 End
+0190 End
+0191 End
+0192 End
+0193 Otherwise Do
+0194 Parse Var d x y
+0195 If is_between(xa,x,xb) &,
+0196 is_between(xc,x,xd) &,
+0197 is_between(ya,y,yb) &,
+0198 is_between(yc,y,yd) Then Do
+0199 If x'/'y<>bordl Then
+0200 res=1
+0201 End
+0202 End
+0203 End
+0204 If res=1 Then Do
+0205 Say 'Intersection of line segments: ('||x'/'y')'
+0206 Parse Var bordl x_bord '/' y_bord
+0207 If x=x_bord Then Do
+0208 res=0
+0209 Call o x'/'y 'IGNORED'
+0210 End
+0211 End
+0212 Else Call o  'ssx: -'
+0213 Return res
+0214 
+0215 ggx: Procedure Expose oid bordl
+0216 /*---------------------------------------------------------------------
+0217 * Intersection of 2 (straight) lines
+0218 *--------------------------------------------------------------------*/
+0219 Parse Arg xa ya xb yb xc yc xd yd
+0220 res=''
+0221 If xa=xb Then Do
+0222 k1='*'
+0223 x1=xa
+0224 If ya=yb Then Do
+0225 res='Points A and B are identical'
+0226 rs='*'
+0227 End
+0228 End
+0229 Else Do
+0230 k1=(yb-ya)/(xb-xa)
+0231 d1=ya-k1*xa
+0232 End
+0233 If xc=xd Then Do
+0234 k2='*'
+0235 x2=xc
+0236 If yc=yd Then Do
+0237 res='Points C and D are identical'
+0238 rs='*'
+0239 End
+0240 End
+0241 Else Do
+0242 k2=(yd-yc)/(xd-xc)
+0243 d2=yc-k2*xc
+0244 End
+0245 
+0246 If res='' Then Do
+0247 If k1='*' Then Do
+0248 If k2='*' Then Do
+0249 If x1=x2 Then Do
+0250 res='Lines AB and CD are identical'
+0251 rs='I'
+0252 End
+0253 Else Do
+0254 res='Lines AB and CD are parallel'
+0255 rs='-'
+0256 End
+0257 End
+0258 Else Do
+0259 x=x1
+0260 y=k2*x+d2
+0261 End
+0262 End
+0263 Else Do
+0264 If k2='*' Then Do
+0265 x=x2
+0266 y=k1*x+d1
+0267 End
+0268 Else Do
+0269 If k1=k2 Then Do
+0270 If d1=d2 Then Do
+0271 res='Lines AB and CD are identical'
+0272 rs='I'
+0273 End
+0274 Else Do
+0275 res='Lines AB and CD are parallel'
+0276 rs='-'
+0277 End
+0278 End
+0279 Else Do
+0280 x=(d2-d1)/(k1-k2)
+0281 y=k1*x+d1
+0282 End
+0283 End
+0284 End
+0285 End
+0286 If res='' Then Do
+0287 res='Intersection is ('||x'/'y')'
+0288 rs=x y
+0289 Call o 'line intersection' x y
+0290 End
+0291 Call o 'A=('xa'/'ya') B=('||xb'/'yb') C=('||xc'/'yc') D=('||xd'/'yd')' '-->' res
+0292 Return rs
+0293 
+0294 isb: Procedure
+0295 Parse Arg a,b,c
+0296 Return sign(b-a)<>sign(b-c)
+0297 
+0298 is_between: Procedure Expose oid
+0299 Parse Arg a,b,c
+0300 Return diff_sign(b-a,b-c)
+0301 
+0302 diff_sign: Procedure
+0303 Parse Arg diff1,diff2
+0304 Return (sign(diff1)<>sign(diff2))|(sign(diff1)=0)
+0305 
+0306 o:
+0307 /*y 'sigl='sigl */
+0308 Return lineout(oid,arg(1))
+0309 
+0310 in_tri: Procedure Expose oid bordl
+0311 /*---------------------------------------------------------------------
+0312 * Determine if the point (px/py) is within the given triangle
+0313 *--------------------------------------------------------------------*/
+0314 Parse Arg px py,ax ay bx by cx cy
+0315 abc=ax ay bx by cx cy
+0316 res=0
+0317 maxx=max(ax,bx,cx)
+0318 minx=min(ax,bx,cx)
+0319 maxy=max(ay,by,cy)
+0320 miny=min(ay,by,cy)
+0321 
+0322 If px>maxx|px<minx|py>maxy|py<miny Then
+0323 Return 0
+0324 
+0325 Parse Value mk_g(ax ay,bx by) With k.1 d.1 x.1
+0326 Parse Value mk_g(bx by,cx cy) With k.2 d.2 x.2
+0327 Parse Value mk_g(cx cy,ax ay) With k.3 d.3 x.3
+0328 /*
+0329 say 'g1:' show_g(k.1,d.1,x.1)
+0330 say 'g2:' show_g(k.2,d.2,x.2)
+0331 say 'g3:' show_g(k.3,d.3,x.3)
+0332 Say px py '-' ax ay bx by cx cy
+0333 */
+0334 Do i=1 To 3
+0335 Select
+0336 When k.i='*' Then
+0337 Call o 'g.'i':' 'x='||x.i
+0338 When k.i=0 Then
+0339 Call o 'g.'i':' 'y='d.i
+0340 Otherwise
+0341 Call o 'g.'i':' 'y=' k.i'*x'dd(d.i)
+0342 End
+0343 End
+0344 
+0345 If k.1='*' Then Do
+0346 y2=k.2*px+d.2
+0347 y3=k.3*px+d.3
+0348 If is_between(y2,py,y3) Then
+0349 res=1
+0350 End
+0351 Else Do
+0352 kp1=k.1
+0353 dp1=py-kp1*px
+0354 If k.2='*' Then
+0355 x12=x.2
+0356 Else
+0357 x12=(d.2-dp1)/(kp1-k.2)
+0358 If k.3='*' Then
+0359 x13=x.3
+0360 Else
+0361 x13=(d.3-dp1)/(kp1-k.3)
+0362 If is_between(x12,px,x13) Then
+0363 res=1
+0364 End
+0365 
+0366 If res=1 Then rr=' '
+0367 Else rr=' not '
+0368 If pos(px'/'py,bordl)>0 Then Do
+0369 ignored=' but is IGNORED'
+0370 res=0
+0371 End
+0372 Else
+0373 ignored=''
+0374 Say 'P ('px','py') is'rr'in' abc  ignored
+0375 Return res
+0376 
+0377 bord:
+0378 /*---------------------------------------------------------------------
+0379 * Look for corners of triangles that are situated
+0380 * on the edges of the other triangle
+0381 *--------------------------------------------------------------------*/
+0382 parse Arg tlist
+0383 Parse Arg pax pay pbx pby pcx pcy pdx pdy pex pey pfx pfy
+0384 bordl=''
+0385 abc=subword(tlist,1,6)
+0386 def=subword(tlist,7,6)
+0387 
+0388 Do i=1 To 3
+0389 s.i=subword(abc abc,i*2-1,4)
+0390 t.i=subword(def def,i*2-1,4)
+0391 End
+0392 
+0393 abc_=''
+0394 def_=''
+0395 Do i=1 To 3
+0396 abc.i=subword(abc,i*2-1,2)
+0397 def.i=subword(def,i*2-1,2)
+0398 Parse Var abc.i x y; abc_=abc_ '('||x','y')'
+0399 Parse Var def.i x y; def_=def_ '('||x','y')'
+0400 End
+0401 
+0402 Do i=1 To 3
+0403 i1=i+1
+0404 If i1=4 Then i1=1
+0405 Parse Value mk_g(abc.i,abc.i1) With k.1.i d.1.i x.1.i
+0406 Parse Value mk_g(def.i,def.i1) With k.2.i d.2.i x.2.i
+0407 End
+0408 Do i=1 To 3
+0409 Call o  show_g(k.1.i,d.1.i,x.1.i)
+0410 End
+0411 Do i=1 To 3
+0412 Call o  show_g(k.2.i,d.2.i,x.2.i)
+0413 End
+0414 
+0415 pl=''
+0416 Do i=1 To 3
+0417 p=def.i
+0418 Do j=1 To 3
+0419 j1=j+1
+0420 If j1=4 Then j1=1
+0421 g='1.'j
+0422 If in_segment(p,abc.j,abc.j1) Then Do
+0423 pp=Translate(p,'/',' ')
+0424 If wordpos(pp,bordl)=0 Then
+0425 bordl=bordl pp
+0426 End
+0427 Call o  show_p(p) show_g(k.g,d.g,x.g) '->' bordl
+0428 End
+0429 End
+0430 Call o  'Points on abc:' pl
+0431 
+0432 pl=''
+0433 Do i=1 To 3
+0434 p=abc.i
+0435 Do j=1 To 3
+0436 j1=j+1
+0437 If j1=4 Then j1=1
+0438 g='2.'j
+0439 If in_segment(p,def.j,def.j1)Then Do
+0440 pp=Translate(p,'/',' ')
+0441 If wordpos(pp,bordl)=0 Then
+0442 bordl=bordl pp
+0443 End
+0444 Call o  show_p(p) show_g(k.g,d.g,x.g) '->' bordl
+0445 End
+0446 End
+0447 Call o  'Points on def:' pl
+0448 
+0449 Return bordl
+0450 
+0451 in_segment: Procedure Expose g. sigl
+0452 /*---------------------------------------------------------------------
+0453 * Determine if point x/y is on the line segment ax/ay bx/by
+0454 *--------------------------------------------------------------------*/
+0455 Parse Arg x y,ax ay,bx by
+0456 Call show_p(x y) show_p(ax ay) show_p(bx by)
+0457 Parse Value mk_g(ax ay,bx by) With gk gd gx
+0458 Select
+0459 When gx<>'' Then
+0460 res=(x=gx & is_between(ay,y,by))
+0461 When gk='*' Then
+0462 res=(y=gd & is_between(ax,x,bx))
+0463 Otherwise Do
+0464 yy=gk*x+gd
+0465 res=(y=yy & is_between(ax,x,bx))
+0466 End
+0467 End
+0468 Return res
+0469 
+0470 mk_g: Procedure Expose g.
+0471 /*---------------------------------------------------------------------
+0472 * given two points (a and b)
+0473 * compute y=k*x+d or, if a vertical line, k='*'; x=c
+0474 *--------------------------------------------------------------------*/
+0475 Parse Arg a,b                       /* 2 points                      */
+0476 Parse Var a ax ay
+0477 Parse Var b bx by
+0478 If ax=bx Then Do                    /* vertical line                 */
+0479 gk='*'                            /* special slope                 */
+0480 gx=ax                             /* x=ax is  the equation         */
+0481 gd='*'                            /* not required                  */
+0482 End
+0483 Else Do
+0484 gk=(by-ay)/(bx-ax)                /* compute slope                 */
+0485 gd=ay-gk*ax                       /* compute y-distance            */
+0486 gx=''                             /* not required                  */
+0487 End
+0488 Return gk gd gx
+0489 
+0490 is_between: Procedure
+0491 Parse Arg a,b,c
+0492 Return diff_sign(b-a,b-c)
+0493 
+0494 diff_sign: Procedure
+0495 Parse Arg diff1,diff2
+0496 Return (sign(diff1)<>sign(diff2))|(sign(diff1)=0)
+0497 
+0498 show_p: Procedure
+0499 Call trace 'O'
+0500 Parse Arg x y
+0501 If pos('/',x)>0 Then
+0502 Parse Var x x '/' y
+0503 Return space('('||x'/'y')',0)
+0504 
+0505 isb: Procedure Expose oid
+0506 Parse Arg a,b,c
+0507 Return sign(b-a)<>sign(b-c)
+0508 
+0509 o: Call o  arg(1)
+0510 Return
+0511 
+0512 show_g: Procedure
+0513 /*---------------------------------------------------------------------
+0514 * given slope, y-distance, and (special) x-value
+0515 * compute y=k*x+d or, if a vertical line, k='*'; x=c
+0516 *--------------------------------------------------------------------*/
+0517 Parse Arg k,d,x
+0518 Select
+0519 When k='*' Then res='x='||x       /* vertical line                 */
+0520 When k=0   Then res='y='d         /* horizontal line               */
+0521 Otherwise Do                      /* ordinary line                 */
+0522 Select
+0523 When k=1  Then res='y=x'dd(d)
+0524 When k=-1 Then res='y=-x'dd(d)
+0525 Otherwise      res='y='k'*x'dd(d)
+0526 End
+0527 End
+0528 End
+0529 Return res
+0530 
+0531 dd: Procedure
+0532 /*---------------------------------------------------------------------
+0533 * prepare y-distance for display
+0534 *--------------------------------------------------------------------*/
+0535 Parse Arg dd
+0536 Select
+0537 When dd=0 Then dd=''            /* omit dd if it's zero          */
+0538 When dd<0 Then dd=dd            /* use dd as is (-value)         */
+0539 Otherwise      dd='+'dd         /* prepend '+' to positive dd    */
+0540 End
+0541 Return dd
+0542 
+0543 ident: Procedure
+0544 /*---------------------------------------------------------------------
+0545 * Determine if the corners ABC match those of DEF (in any order)
+0546 *--------------------------------------------------------------------*/
+0547 cnt.=0
+0548 Do i=1 To 6
+0549 Parse Value Arg(i) With x y
+0550 cnt.x.y=cnt.x.y+1
+0551 End
+0552 Do i=1 To 3
+0553 Parse Value Arg(i) With x y
+0554 If cnt.x.y<>2 Then
+0555 Return 0
+0556 End
+0557 Return 1
+0558 
+0559 Novalue:
+0560 Say  'Novalue raised in line' sigl
+0561 Say  sourceline(sigl)
+0562 Say  'Variable' condition('D')
+0563 Signal lookaround
+0564 
+0565 Syntax:
+0566 Say  'Syntax raised in line' sigl
+0567 Say  sourceline(sigl)
+0568 Say  'rc='rc '('errortext(rc)')'
+0569 
+0570 halt:
+0571 lookaround:
+0572 If fore() Then Do
+0573 Say  'You can look around now.'
+0574 Trace ?R
+0575 Nop
+0576 End
+0577 Exit 12
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 bordl            185
+002 x_bord           185
+003 y_bord           185
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

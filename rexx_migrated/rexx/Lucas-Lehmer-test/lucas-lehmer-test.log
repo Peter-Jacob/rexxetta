@@ -1,0 +1,76 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX pgm uses the Lucas─Lehmer primality test for prime powers of 2  (Mersenne primes)*/
+0002 @.=0; @.2=1; @.3=1; @.5=1; @.7=1; @.11=1; @.13=1 /*a partial list of some low primes.   */
+0003 !.=@.;  !.0=1; !.2=1; !.4=1; !.5=1; !.6=1; !.8=1 /*#'s with these last digs aren't prime*/
+0004 parse arg limit .                                /*obtain optional arguments from the CL*/
+0005 if limit==''  then limit= 200                    /*Not specified?  Then use the default.*/
+0006 say center('Mersenne prime index list',70-3,"═") /*show a fancy─dancy header (or title).*/
+0007 say  right('M'2, 25)      " [1 decimal digit]"   /*left─justify them to align&look nice.*/
+0008 /* [►] note that J==1 is a special case*/
+0009 do j=1  by 2  to limit                  /*there're only so many hours in a day.*/
+0010 power= j + (j==1)                       /*POWER ≡ J    except   for when  J=1. */
+0011 if \isPrime(power)  then iterate        /*if POWER isn't prime, then ignore it.*/
+0012 $= LL2(power)                           /*perform the Lucas─Lehmer 2 (LL2) test*/
+0013 if $==''            then iterate        /*Did it flunk LL2?   Then skip this #.*/
+0014 say  right($, 25)   MPsize              /*left─justify them to align&look nice.*/
+0015 end   /*j*/
+0016 exit                                             /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 isPrime: procedure expose !. @.                  /*allow 2 stemmed arrays to be accessed*/
+0019 parse arg  x    ''  -1  z               /*obtain variable   X   and last digit.*/
+0020 if @.x      then return 1               /*is  X  already found to be a prime?  */
+0021 if !.z      then return 0               /*is last decimal digit even or a five?*/
+0022 if x//3==0  then return 0               /*divisible by three?  Then not a prime*/
+0023 if x//7==0  then return 0               /*divisible by seven?    "   "  "   "  */
+0024 do j=11  by 6   until j*j > x    /*ensures that J isn't divisible by 3. */
+0025 if x //  j   ==0  then return 0  /*Is X divisible by  J   ?             */
+0026 if x // (j+2)==0  then return 0  /* " "     "      "  J+2 ?         ___ */
+0027 end   /*j*/                      /* [↑]  perform  DO  loop through √ x  */
+0028 @.x=1;                         return 1 /*indicate number  X  is a prime.      */
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 LL2: procedure expose MPsize;    parse arg ?     /*Lucas─Lehmer test on    2**?  -  1   */
+0031 if ?==2  then s=0                           /*handle special case for an even prime*/
+0032 else s=4                           /* [↓]  same as NUMERIC FORM SCIENTIFIC*/
+0033 numeric form;               q= 2**?         /*ensure correct form for REXX numbers.*/
+0034 /*╔═══════════════════════════════════════════════════════════════════════════╗
+0035 ╔═╝ Compute a power of 2 using only 9 decimal digits.  One million digits     ║
+0036 ║ could be used, but that really slows up computations.  So, we start with the║
+0037 ║ default of 9 digits, and then find the ten's exponent in the product (2**?),║
+0038 ║ double it,  and then add 6.    {2  is all that's needed,  but  6  is a lot  ║
+0039 ║ safer.}   The doubling is for the squaring of   S    (below, for  s*s).   ╔═╝
+0040 ╚═══════════════════════════════════════════════════════════════════════════╝*/
+0041 if pos('E', q)\==0  then do                 /*is number in exponential notation ?  */
+0042 parse var q 'E' tenPow            /*get the exponent. */
+0043 numeric digits  tenPow * 2 + 6    /*expand precision. */
+0044 end                                   /*REXX used dec FP. */
+0045 else numeric digits    digits() * 2 + 6    /*use 9*2 + 6 digits*/
+0046 q=2**? - 1                                  /*compute a power of two,  minus one.  */
+0047 r= q // 8                                /*obtain   Q   modulus  eight.         */
+0048 if r==1 | r==7  then nop                    /*before crunching, do a simple test.  */
+0049 else return ''              /*modulus   Q   isn't one  or  seven.  */
+0050 do ?-2;       s= (s*s -2) // q  /*lather,  rinse,  repeat   ···        */
+0051 end                             /* [↑]   compute and test for a  MP.   */
+0052 if s\==0  then return ''                    /*Not a Mersenne prime?  Return a null.*/
+0053 sz= length(q)                               /*obtain number of decimal digs in MP. */
+0054 MPsize=' ['sz      "decimal digit"s(sz)']'  /*define a literal to display after MP.*/
+0055 return 'M'?                  /*return "modified" # (Mersenne index).*/
+0056 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0057 s:   if arg(1)==1  then return arg(3);  return word(arg(2) 's', 1)   /*simple pluralizer*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 q                42 46
+002 tenPow           42
+003 r                47
+004 s                50
+005 sz               53
+006 MPsize           54
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 2 2 2 2 2 2 28
+002 !.               -> newV2.           3 3 3 3 3 3 3
+003 $                -> newV3            12
+004 ?                -> newV4            30

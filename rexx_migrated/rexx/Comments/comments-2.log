@@ -1,0 +1,56 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX program to demonstrate various uses and types of comments. */
+0002 
+0003 /* everything between a "climbstar" and a "starclimb" (exclusive of literals) is
+0004 a comment.
+0005 climbstar =  /*   [slash-asterisk]
+0006 starclimb =  */   [asterisk-slash]
+0007 
+0008 /* this is a nested comment, by gum! */
+0009 /*so is this*/
+0010 
+0011 Also, REXX comments can span multiple records.
+0012 
+0013 There can be no intervening character between the slash and asterisk  (or
+0014 the asterisk and slash).  These two joined characters cannot be separated
+0015 via a continued line, as in the manner of:
+0016 
+0017 say 'If I were two─faced,' ,
+0018 'would I be wearing this one?' ,
+0019 '      --- Abraham Lincoln'
+0020 
+0021 Here comes the thingy that ends this REXX comment. ───┐
+0022 │
+0023 │
+0024 ↓
+0025 
+0026 */
+0027 
+0028 hour = 12       /*high noon                   */
+0029 midnight = 00       /*first hour of the day       */
+0030 suits = 1234     /*card suits:   ♥  ♦  ♣  ♠    */
+0031 
+0032 hutchHdr = '/*'
+0033 hutchEnd = "*/"
+0034 
+0035 /* the previous two "hutch" assignments aren't
+0036 the start  nor  the end of a REXX comment. */
+0037 
+0038 x=1000000 **   /*¡big power!*/   1000
+0039 
+0040 /*not a real good place for a comment (above),
+0041 but essentially, a REXX comment can be
+0042 anywhere whitespace is allowed.            */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 hour             28
+002 midnight         29
+003 suits            30
+004 hutchHdr         32
+005 x                38
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

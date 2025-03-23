@@ -1,0 +1,66 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program constructs a  magic square  of doubly even sides (a size divisible by 4).*/
+0002 n= 8;   s= n%4;   L= n%2-s+1;    w= length(n**2) /*size; small sq;  low middle;  # width*/
+0003 @.= 0;            H= n%2+s                       /*array default;  high middle.         */
+0004 call gen                                         /*generate a grid in numerical order.  */
+0005 call diag                                        /*mark numbers on both diagonals.      */
+0006 call corn                                        /*  "     "    in small corner boxen.  */
+0007 call midd                                        /*  "     "    in  the middle    "     */
+0008 call swap                                        /*swap positive numbers with highest #.*/
+0009 call show                                        /*display the doubly even magic square.*/
+0010 call sum                                         /*   "     "  magic number for square. */
+0011 exit                                             /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 o:    parse arg ?;             return n-?+1      /*calculate the "other" (right) column.*/
+0014 @:    parse arg x,y;           return abs(@.x.y)
+0015 diag:      do r=1 for n;  @.r.r=-@(r,r); o=o(r);  @.r.o=-@(r,o);  end;              return
+0016 midd:      do r=L  to H;  do c=L  to H;  @.r.c=-@(r,c);           end;  end;        return
+0017 gen:  #=0; do r=1 for n;  do c=1  for n; #=#+1;   @.r.c=#;        end;  end;        return
+0018 show: #=0; do r=1 for n;  $=; do c=1  for n; $=$ right(@(r,c),w); end;  say $; end; return
+0019 sum:  #=0; do r=1 for n;  #=#+@(r,1);  end;  say;  say 'The magic number is: '   #; return
+0020 max#:      do a=n for n  by -1;  do b=n  for n  by -1;  if @.a.b>0  then return; end;  end
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 swap:         do   r=1  for n
+0023 do c=1  for n;  if @.r.c<0  then iterate;  call max#  /*find max number.*/
+0024 parse value  -@.a.b  (-@.r.c)    with    @.r.c  @.a.b /*swap two values.*/
+0025 end   /*c*/
+0026 end     /*r*/;                       return
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 corn:         do   r=1  for n;  if r>s & r<=n-s  then iterate   /*"corner boxen", size≡S*/
+0029 do c=1  for n;  if c>s & c<=n-s  then iterate;  @.r.c= -@(r,c)  /*negate*/
+0030 end   /*c*/
+0031 end     /*r*/;                       return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                14
+002 y                14
+003 o                15
+004 c                16 17 18 23 29
+005 r                17 18 19
+006 b                20
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           3 15 15 16 17 24 24 29
+002 ?                -> newV2            13
+003 #                -> newV3            17 19
+004 $                -> newV4            18 18

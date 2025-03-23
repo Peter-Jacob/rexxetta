@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program calculates and displays the amount of rainwater collected between towers.*/
+0002 call tower  1  5  3  7  2
+0003 call tower  5  3  7  2  6  4  5  9  1  2
+0004 call tower  2  6  3  5  2  8  1  4  2  2  5  3  5  7  4  1
+0005 call tower  5  5  5  5
+0006 call tower  5  6  7  8
+0007 call tower  8  7  7  6
+0008 call tower  6  7 10  7  6
+0009 exit                                             /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 tower: procedure; arg y;  #=words(y); t.=0; L.=0 /*the T. array holds the tower heights.*/
+0012 do j=1  for #;    t.j= word(y, j)    /*construct the towers,                */
+0013 _= j-1;           L.j= max(t._, L._) /*    "      "  left─most tallest tower*/
+0014 end   /*j*/
+0015 R.=0
+0016 do b=#  by -1  for #;  _= b+1; R.b= max(t._, R._) /*right─most tallest tower*/
+0017 end   /*b*/
+0018 w.=0                                                       /*rainwater collected.*/
+0019 do f=1  for #;  if t.f>=L.f | t.f>=R.f  then iterate  /*rain between towers?*/
+0020 w.f= min(L.f, R.f) - t.f;     w.00= w.00 + w.f        /*rainwater collected.*/
+0021 end   /*f*/
+0022 say right(w.00, 9) 'units of rainwater collected for: '  y /*display water units.*/
+0023 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 t.               11 12
+002 L.               11 13
+003 j                12
+004 R.               15 16
+005 b                16
+006 w.               18 20 20
+007 f                19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            11
+002 _                -> newV2            13 16

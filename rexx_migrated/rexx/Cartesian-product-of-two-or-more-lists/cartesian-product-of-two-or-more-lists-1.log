@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX program  calculates  the   Cartesian product   of two  arbitrary-sized  lists.   */
+0002 @.=                                              /*assign the default value to  @. array*/
+0003 parse arg @.1                                    /*obtain the optional value of  @.1    */
+0004 if @.1=''  then do;  @.1= "{1,2} {3,4}"          /*Not specified?  Then use the defaults*/
+0005 @.2= "{3,4} {1,2}"          /* "      "         "   "   "      "   */
+0006 @.3= "{1,2} {}"             /* "      "         "   "   "      "   */
+0007 @.4= "{}    {3,4}"          /* "      "         "   "   "      "   */
+0008 @.5= "{1,2} {3,4,5}"        /* "      "         "   "   "      "   */
+0009 end
+0010 /* [↓]  process each of the  @.n values*/
+0011 do n=1  while @.n \= ''                        /*keep processing while there's a value*/
+0012 z= translate( space( @.n, 0),  ,  ',')         /*translate the  commas  to blanks.    */
+0013 do #=1  until z==''                         /*process each elements in first list. */
+0014 parse var  z   '{'  x.#  '}'   z            /*parse the list  (contains elements). */
+0015 end   /*#*/
+0016 $=
+0017 do       i=1   for #-1                      /*process the subsequent lists.        */
+0018 do     a=1   for words(x.i)               /*obtain the elements of the first list*/
+0019 do   j=i+1 for #-1                      /*   "    "  subsequent lists.         */
+0020 do b=1   for words(x.j)               /*   "    " elements of subsequent list*/
+0021 $=$',('word(x.i, a)","word(x.j, b)')' /*append partial Cartesian product ──►$*/
+0022 end   /*b*/
+0023 end     /*j*/
+0024 end       /*a*/
+0025 end         /*i*/
+0026 say 'Cartesian product of '       space(@.n)       " is ───► {"substr($, 2)'}'
+0027 end            /*n*/                           /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                14 14
+002 x.               14
+003 i                17
+004 a                18
+005 j                19
+006 b                20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 3 4 5 6 7 8
+002 #                -> newV2            13
+003 $                -> newV3            16 21

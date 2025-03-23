@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates a run─time evaluation of an expression (entered at run─time)*/
+0002 say '──────── enter the 1st expression to be evaluated:'
+0003 
+0004 parse pull x                                     /*obtain an expression from the console*/
+0005 y.1= x                                           /*save the provided expression for  X. */
+0006 say
+0007 
+0008 say '──────── enter the 2nd expression to be evaluated:'
+0009 
+0010 parse pull x                                     /*obtain an expression from the console*/
+0011 y.2= x                                           /*save the provided expression for  X. */
+0012 
+0013 say
+0014 say '────────  1st expression entered is: '  y.1
+0015 say '────────  2nd expression entered is: '  y.2
+0016 say
+0017 
+0018 interpret 'say "──────── value of the difference is: "' y.2  "-"  '('y.1")"  /* ◄─────┐ */
+0019 /*       │ */
+0020 /*       │ */
+0021 /*subtract 1st exp. from the 2nd──►──┘ */
+0022 
+0023 drop x                                           /*X var. is no longer a global variable*/
+0024 exit 0                                           /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             10
+002 x                10
+003 y.               11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

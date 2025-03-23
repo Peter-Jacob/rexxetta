@@ -1,0 +1,59 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * Format seconds into a time string
+0003 *--------------------------------------------------------------------*/
+0004 Call test 7259    ,'2 hr, 59 sec'
+0005 Call test 86400   ,'1 d'
+0006 Call test 6000000 ,'9 wk, 6 d, 10 hr, 40 min'
+0007 Call test 123.50  ,'2 min, 3.5 sec'
+0008 Call test 123.00  ,'2 min, 3 sec'
+0009 Call test 0.00    ,'0 sec'
+0010 Exit
+0011 
+0012 test:
+0013 Parse arg secs,xres
+0014 res=sec2ct(secs)
+0015 Say res
+0016 If res<>xres Then Say '**ERROR**'
+0017 Return
+0018 
+0019 sec2ct:
+0020 Parse Arg s
+0021 /*
+0022 m=s%60; s=s//60
+0023 h=m%60; m=m//60
+0024 d=h%24; h=h//24
+0025 w=d%7;  d=d//7
+0026 */
+0027 If s=0 Then Return '0 sec'
+0028 Parse Value split(s,60) with m s
+0029 Parse Value split(m,60) with h m
+0030 Parse Value split(h,24) with d h
+0031 Parse Value split(d, 7) with w d
+0032 ol=''
+0033 If w>0 Then ol=ol w 'wk,'
+0034 If d>0 Then ol=ol d 'd,'
+0035 If h>0 Then ol=ol h 'hr,'
+0036 If m>0 Then ol=ol m 'min,'
+0037 If s>0 Then ol=ol (s/1) 'sec'
+0038 ol=strip(ol)
+0039 ol=strip(ol,,',')
+0040 Return ol
+0041 
+0042 split: Procedure
+0043 Parse Arg what,how
+0044 a=what%how
+0045 b=what//how
+0046 Return a b
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 what             43
+002 how              43
+003 a                44
+004 b                45
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

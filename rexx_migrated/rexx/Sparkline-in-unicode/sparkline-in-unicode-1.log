@@ -1,0 +1,98 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /* Rexx */
+0002 
+0003 parse arg aaa
+0004 call runSample aaa
+0005 return
+0006 
+0007 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+0008 sparkline:
+0009 procedure
+0010 parse arg spark
+0011 spark = changestr(',', spark, ' ')
+0012 bars = '▁ ▂ ▃ ▄ ▅ ▆ ▇ █'
+0013 barK = words(bars)
+0014 nmin = word(spark, 1)
+0015 nmax = nmin
+0016 -- get min & max values
+0017 do iw = 1 to words(spark)
+0018 nval = word(spark, iw)
+0019 nmin = min(nval, nmin)
+0020 nmax = max(nval, nmax)
+0021 end iw
+0022 range = nmax - nmin + 1
+0023 slope = ''
+0024 do iw = 1 to words(spark)
+0025 point = ceiling((word(spark, iw) - nmin + 1) / range * barK)
+0026 slope = slope || word(bars, point)
+0027 end iw
+0028 return slope nmin nmax range
+0029 
+0030 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+0031 ceiling:
+0032 procedure
+0033 parse arg ceil
+0034 return trunc(ceil) + (ceil > 0) * (ceil \= trunc(ceil))
+0035 floor:
+0036 procedure
+0037 parse arg flor
+0038 return trunc(flor) - (flor < 0) * (flor \= trunc(flor))
+0039 
+0040 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+0041 runSample:
+0042 procedure
+0043 -- sample data setup
+0044 parse arg vals
+0045 sparks = 0
+0046 sparks.0 = 0
+0047 if vals = '' then do
+0048 si = sparks.0 + 1; sparks.0 = si; sparks.si = 1 2 3 4 5 6 7 8 7 6 5 4 3 2 1
+0049 si = sparks.0 + 1; sparks.0 = si; sparks.si = '1.5, 0.5 3.5, 2.5 5.5, 4.5 7.5, 6.5'
+0050 end
+0051 else do
+0052 do until vals = ''
+0053 -- split input on a ! character
+0054 parse var vals lst '!' vals
+0055 si = sparks.0 + 1; sparks.0 = si; sparks.si = lst
+0056 end
+0057 end
+0058 -- run the samples
+0059 do si = 1 to sparks.0
+0060 vals = sparks.si
+0061 parse value sparkline(vals) with slope .
+0062 say 'Input:        ' vals
+0063 say 'Sparkline:    ' slope
+0064 say
+0065 end si
+0066 
+0067 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 vals             54 54 60
+002 lst              54
+003 si               55 59
+004 sparks.          55 55
+005 until            52
+006 iw               17 24
+007 nval             18
+008 range            22
+009 slope            23 26 61
+010 point            25
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

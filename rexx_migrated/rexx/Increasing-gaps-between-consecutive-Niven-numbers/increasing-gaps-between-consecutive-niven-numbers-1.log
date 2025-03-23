@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program finds and displays the largest gap between  Niven  numbers (up to LIMIT).*/
+0002 parse arg lim .                                  /*obtain optional arguments from the CL*/
+0003 if lim=='' | lim==','  then lim= 10000000        /*Not specified?  Then use the default.*/
+0004 numeric digits 2 + max(8, length(lim) )          /*enable the use of any sized numbers. */
+0005 gap= 0;                     old= 0               /*initialize (largest) gap; old Niven #*/
+0006 @gsa= 'gap starts at Niven #'
+0007 call tell center('gap size', 12)       center(@gsa "index", 29)          center(@gsa, 29)
+0008 call tell copies('═'       , 12)       copies('═'         , 29)          copies('═' , 29)
+0009 #= 0                                             /*#:  is the index of a Niven number.  */
+0010 do n=1                                       /*◄───── let's go Niven number hunting.*/
+0011 parse var  n  1  sum  2  q                   /*use the first decimal digit for  SUM.*/
+0012 do  while  q\=='';    parse var q x 2 q;          sum= sum + x
+0013 end   /*while*/                 /*    ↑                                */
+0014 if n//sum >0  then iterate                   /*    └──────◄ is destructively parsed.*/
+0015 #= # + 1                                     /*bump the  index  of the Niven number.*/
+0016 if n-old<=gap  then do; old= n; iterate; end /*Is gap not bigger?  Then keep looking*/
+0017 gap= n - old;           old= n               /*We found a bigger gap; define new gap*/
+0018 idx= max(1, #-1);       san= max(1, n-gap)   /*handle special case of the first gap.*/
+0019 call tell right(commas(gap),  7)left('', 5), /*center right─justified Niven gap size*/
+0020 right(commas(idx), 25)left('', 4), /*   "     "       "     Niven num idx.*/
+0021 right(commas(san), 25)             /*   "     "       "       "   number. */
+0022 if n >= lim  then leave                      /*have we exceeded the (huge)  LIMit ? */
+0023 end   /*n*/
+0024 exit                                             /*stick a fork in it,  we're all done. */
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 commas:  parse arg _;  do c=length(_)-3  to 1  by -3; _=insert(',', _, c); end;   return _
+0027 tell:    say arg(1);   return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 c                26
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @gsa             -> newV1            6
+002 #                -> newV2            9 15
+003 _                -> newV3            26 26

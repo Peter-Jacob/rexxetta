@@ -1,0 +1,76 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program illustrates building a simple inverted index  and  a method of word find.*/
+0002 @.=                                              /*a dictionary of words   (so far).    */
+0003 !=                                               /*a list of found words   (so far).    */
+0004 call invertI 0, 'BURMA0.TXT'                     /*read the file:  BURMA0.TXT  ···      */
+0005 call invertI 1, 'BURMA1.TXT'                     /*  "   "    "    BURMA1.TXT  ···      */
+0006 call invertI 2, 'BURMA2.TXT'                     /*  "   "    "    BURMA2.TXT  ···      */
+0007 call invertI 3, 'BURMA3.TXT'                     /*  "   "    "    BURMA3.TXT  ···      */
+0008 call invertI 4, 'BURMA4.TXT'                     /*  "   "    "    BURMA4.TXT  ···      */
+0009 call invertI 5, 'BURMA5.TXT'                     /*  "   "    "    BURMA5.TXT  ···      */
+0010 call invertI 6, 'BURMA6.TXT'                     /*  "   "    "    BURMA6.TXT  ···      */
+0011 call invertI 7, 'BURMA7.TXT'                     /*  "   "    "    BURMA7.TXT  ···      */
+0012 call invertI 8, 'BURMA8.TXT'                     /*  "   "    "    BURMA8.TXT  ···      */
+0013 call invertI 9, 'BURMA9.TXT'                     /*  "   "    "    BURMA9.TXT  ···      */
+0014 call findAword  "huz"                            /*find a word.                         */
+0015 call findAword  "60"                             /*find another word.                   */
+0016 call findAword  "don't"                          /*and find another word.               */
+0017 call findAword  "burma-shave"                    /*and find yet another word.           */
+0018 exit                                             /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 findAword: procedure expose @.;  arg x           /*get an uppercase version of the X arg*/
+0021 parse arg ox                          /*get original (as-is)  value of X arg.*/
+0022 _=@.x;    oxo='───'ox"───"
+0023 if _==''  then do
+0024 say 'word'   oxo   "not found."
+0025 return 0
+0026 end
+0027 _@=_                                  /*save _ text, pass it back to invoker.*/
+0028 say 'word'  oxo  "found in:"
+0029 do  until _=='';    parse var   _   f  w  _
+0030 say '       file='f   "  word="w
+0031 end   /*until ··· */
+0032 return _@
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 invertI:   procedure expose @. !; parse arg #,fn /*the file number and the filename.    */
+0035 call lineout fn                       /*close the file, ··· just in case.    */
+0036 w=0                                   /*the number of words found  (so far). */
+0037 do  while lines(fn)\==0           /* [↓]   process the entire file.      */
+0038 _=space( linein(fn) )             /*read a line, elide superfluous blanks*/
+0039 if _==''  then iterate            /*if a blank record,  then ignore it.  */
+0040 say 'file' #", record:" _         /*display the record ──► terminal.     */
+0041 
+0042 do  until _==''                /*pick off words from record until done*/
+0043 parse upper var   _   ?  _     /*pick off a word  (it's in uppercase).*/
+0044 ?=stripper(?)                  /*strip any trailing punctuation.      */
+0045 if ?=''  then iterate          /*is the word now all blank (or null)? */
+0046 w=w+1                          /*bump the word counter (index).       */
+0047 @.?=@.?  #  w                  /*append the new word to a list.       */
+0048 if wordpos(?,!)==0  then !=! ? /*add it to the list of words found.   */
+0049 end   /*until ··· */
+0050 end      /*while ··· */
+0051 say;     call lineout fn              /*close the file, just to be neat&safe.*/
+0052 return w                              /*return the index of word in record.  */
+0053 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0054 stripper:  procedure;  parse arg q               /*remove punctuation at the end of word*/
+0055 @punctuation= '.,:;?¿!¡∙·';        do j=1  for length(@punctuation)
+0056 q=strip(q, 'T', substr(@punctuation, j, 1) )
+0057 end   /*j*/
+0058 return q
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 q                54 56
+002 j                55
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @punctuation     -> newV1            55
+002 @.               -> newV2.           2 47
+003 _@               -> newV3            27
+004 !                -> newV4            3 48
+005 _                -> newV5            22 29 29 38 43 43
+006 #                -> newV6            34
+007 ?                -> newV7            43 44

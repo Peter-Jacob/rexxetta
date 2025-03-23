@@ -1,0 +1,86 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /* REXX **************************************************************
+0002 * 19.11.2012 Walter Pachl transcribed from PL/I
+0003 *                         and dual-coded (for PC (Windows) and TSO)
+0004 **********************************************************************/
+0005 Parse Source source
+0006 call time 'R'
+0007 Say source
+0008 Parse Upper source system .
+0009 If left(system,3)='WIN' |,  /* changed from 'Windows' (I see WIN64 in source) */
+0010 wordpos(system,'MSDOS PCDOS')>0 Then Do
+0011 fid='mlijobs.txt'
+0012 Do i=1 By 1 While lines(fid)>0
+0013 l.i=linein(fid)
+0014 End
+0015 l.0=i-1
+0016 End
+0017 Else Do
+0018 "ALLOC FI(IN) DA(MLIJOBS.TEXT) SHR REUSE"
+0019 'EXECIO * DISKR IN (STEM L. FINIS'
+0020 'FREE FI(IN)'
+0021 End
+0022 store.0=0
+0023 max_nout=0
+0024 nout    =0
+0025 cnt=0
+0026 cnt.=0
+0027 do i=1 To l.0
+0028 line=l.i
+0029 Parse Var line 9 inout +3
+0030 Select
+0031 When inout='OUT' then nout = nout+1;
+0032 When inout='IN'  then nout = nout-1;
+0033 Otherwise Iterate
+0034 End
+0035 cnt.nout=cnt.nout+1
+0036 cnt=cnt+1
+0037 if nout = max_nout then
+0038 Call store line
+0039 if nout > max_nout then Do
+0040 max_nout=nout
+0041 drop store.
+0042 store.0=0
+0043 Call store
+0044 end;
+0045 end;
+0046 
+0047 Say 'The maximum number of licences taken out = ' max_nout
+0048 Do i=1 to store.0
+0049 k=pos('@',store.i)
+0050 Say 'It occurred at 'substr(store.i,k+1)
+0051 End
+0052 limit=5
+0053 Do nout=0 To max_nout
+0054 If nout=limit+1 Then Say '.........'
+0055 If nout<=limit | nout>=max_nout-limit Then
+0056 Say right(cnt.nout,5) right(nout,3)
+0057 End
+0058 Say right(cnt,5) 'Jobs'
+0059 Say time('E') 'seconds (elapsed)'
+0060 Exit
+0061 
+0062 store:
+0063 z=store.0+1
+0064 store.z=line
+0065 store.0=z
+0066 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 line             29
+002 inout            29
+003 cnt.             35
+004 cnt              36
+005 max_nout         40
+006 store.           42 64 65
+007 i                48
+008 k                49
+009 limit            52
+010 nout             53
+011 z                63
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

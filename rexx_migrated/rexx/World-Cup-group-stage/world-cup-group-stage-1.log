@@ -1,0 +1,108 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /* REXX -------------------------------------------------------------------*/
+0002 results = '000000'                      /*start with left teams all losing */
+0003 games = '12 13 14 23 24 34'
+0004 points.=0
+0005 records.=0
+0006 Do Until nextResult(results)=0
+0007 records.=0
+0008 Do i=1 To 6
+0009 r=substr(results,i,1)
+0010 g=word(games,i); Parse Var g g1 +1 g2
+0011 Select
+0012 When r='2' Then                   /* win for left team               */
+0013 records.g1=records.g1+3
+0014 When r='1' Then Do                /* draw                            */
+0015 records.g1=records.g1+1
+0016 records.g2=records.g2+1
+0017 End
+0018 When r='0' Then                   /* win for right team              */
+0019 records.g2=records.g2+3
+0020 End
+0021 End
+0022 Call sort_records                     /* sort ascending,                 */
+0023 /* first place team on the right   */
+0024 r1=records.1
+0025 r2=records.2
+0026 r3=records.3
+0027 r4=records.4
+0028 points.0.r1=points.0.r1+1
+0029 points.1.r2=points.1.r2+1
+0030 points.2.r3=points.2.r3+1
+0031 points.3.r4=points.3.r4+1
+0032 End
+0033 ol.='['
+0034 sep=', '
+0035 Do i=0 To 9
+0036 If i=9 Then sep=']'
+0037 ol.0=ol.0||points.0.i||sep
+0038 ol.1=ol.1||points.1.i||sep
+0039 ol.2=ol.2||points.2.i||sep
+0040 ol.3=ol.3||points.3.i||sep
+0041 End
+0042 Say ol.3
+0043 Say ol.2
+0044 Say ol.1
+0045 Say ol.0
+0046 Exit
+0047 
+0048 nextResult: Procedure Expose results
+0049 /* results is a string of 6 base 3 digits to which we add 1                */
+0050 /* e.g., '000212 +1 -> 000220                                              */
+0051 If results="222222" Then Return 0
+0052 res=0
+0053 do i=1 To 6
+0054 res=res*3+substr(results,i,1)
+0055 End
+0056 res=res+1
+0057 s=''
+0058 Do i=1 To 6
+0059 b=res//3
+0060 res=res%3
+0061 s=b||s
+0062 End
+0063 results=s
+0064 Return 1
+0065 
+0066 sort_records: Procedure Expose records.
+0067 Do i=1 To 3
+0068 Do j=i+1 To 4
+0069 If records.j<records.i Then
+0070 Parse Value records.i records.j With records.j records.i
+0071 End
+0072 End
+0073 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 g                10
+002 g1               10
+003 g2               10
+004 records.         13 15 16 19 70 70
+005 r1               24
+006 r2               25
+007 r3               26
+008 r4               27
+009 points.          28 29 30 31
+010 ol.              33 37 38 39 40
+011 sep              34 36
+012 i                35 53 58 67
+013 res              52 54 56 60
+014 s                57 61
+015 b                59
+016 results          63
+017 j                68
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 NORMAL.23        
+024 NORMAL.24        
+025 NORMAL.25        
+026 NORMAL.26        
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

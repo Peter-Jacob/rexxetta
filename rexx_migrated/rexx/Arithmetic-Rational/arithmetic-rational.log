@@ -1,0 +1,100 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program implements a reasonably complete  rational arithmetic  (using fractions).*/
+0002 L=length(2**19 - 1)                              /*saves time by checking even numbers. */
+0003 do j=2  by 2  to 2**19 - 1;       s=0       /*ignore unity (which can't be perfect)*/
+0004 mostDivs=eDivs(j);                @=        /*obtain divisors>1; zero sum; null @. */
+0005 do k=1  for  words(mostDivs)              /*unity isn't return from  eDivs  here.*/
+0006 r='1/'word(mostDivs, k);        @=@ r;         s=$fun(r, , s)
+0007 end   /*k*/
+0008 if s\==1  then iterate                      /*Is sum not equal to unity?   Skip it.*/
+0009 say 'perfect number:'       right(j, L)       "   fractions:"            @
+0010 end   /*j*/
+0011 exit                                             /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 $div: procedure;  parse arg x;   x=space(x,0);   f= 'fractional division'
+0014 parse var x n '/' d;       d=p(d 1)
+0015 if d=0               then call err  'division by zero:'            x
+0016 if \datatype(n,'N')  then call err  'a non─numeric numerator:'     x
+0017 if \datatype(d,'N')  then call err  'a non─numeric denominator:'   x
+0018 return n/d
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 $fun: procedure;  parse arg z.1,,z.2 1 zz.2;    arg ,op;  op=p(op '+')
+0021 F= 'fractionalFunction';        do j=1  for 2;  z.j=translate(z.j, '/', "_");   end  /*j*/
+0022 if abbrev('ADD'      , op)                               then op= "+"
+0023 if abbrev('DIVIDE'   , op)                               then op= "/"
+0024 if abbrev('INTDIVIDE', op, 4)                            then op= "÷"
+0025 if abbrev('MODULUS'  , op, 3) | abbrev('MODULO', op, 3)  then op= "//"
+0026 if abbrev('MULTIPLY' , op)                               then op= "*"
+0027 if abbrev('POWER'    , op)                               then op= "^"
+0028 if abbrev('SUBTRACT' , op)                               then op= "-"
+0029 if z.1==''                                               then z.1= (op\=="+" & op\=='-')
+0030 if z.2==''                                               then z.2= (op\=="+" & op\=='-')
+0031 z_=z.2
+0032 /* [↑]  verification of both fractions.*/
+0033 do j=1  for 2
+0034 if pos('/', z.j)==0    then z.j=z.j"/1";         parse var  z.j  n.j  '/'  d.j
+0035 if \datatype(n.j,'N')  then call err  'a non─numeric numerator:'     n.j
+0036 if \datatype(d.j,'N')  then call err  'a non─numeric denominator:'   d.j
+0037 if d.j=0               then call err  'a denominator of zero:'       d.j
+0038 n.j=n.j/1;          d.j=d.j/1
+0039 do  while \datatype(n.j,'W');     n.j=(n.j*10)/1;     d.j=(d.j*10)/1
+0040 end  /*while*/                      /* [↑]   {xxx/1}  normalizes a number. */
+0041 g=gcd(n.j, d.j);    if g=0  then iterate;  n.j=n.j/g;          d.j=d.j/g
+0042 end    /*j*/
+0043 
+0044 select
+0045 when op=='+' | op=='-' then do;  l=lcm(d.1,d.2);    do j=1  for 2;  n.j=l*n.j/d.j;  d.j=l
+0046 end   /*j*/
+0047 if op=='-'  then n.2= -n.2;        t=n.1 + n.2;    u=l
+0048 end
+0049 when op=='**' | op=='↑'  |,
+0050 op=='^'  then do;  if \datatype(z_,'W')  then call err 'a non─integer power:'  z_
+0051 t=1;  u=1;     do j=1  for abs(z_);  t=t*n.1;  u=u*d.1
+0052 end   /*j*/
+0053 if z_<0  then parse value   t  u   with   u  t      /*swap  U and T */
+0054 end
+0055 when op=='/'  then do;      if n.2=0   then call err  'a zero divisor:'   zz.2
+0056 t=n.1*d.2;    u=n.2*d.1
+0057 end
+0058 when op=='÷'  then do;      if n.2=0   then call err  'a zero divisor:'   zz.2
+0059 t=trunc($div(n.1 '/' d.1));    u=1
+0060 end                           /* [↑]  this is integer division.     */
+0061 when op=='//' then do;      if n.2=0   then call err  'a zero divisor:'   zz.2
+0062 _=trunc($div(n.1 '/' d.1));     t=_ - trunc(_) * d.1;            u=1
+0063 end                          /* [↑]  modulus division.              */
+0064 when op=='ABS'  then do;   t=abs(n.1);       u=abs(d.1);        end
+0065 when op=='*'    then do;   t=n.1 * n.2;      u=d.1 * d.2;       end
+0066 when op=='EQ' | op=='='                then return $div(n.1 '/' d.1)  = fDiv(n.2 '/' d.2)
+0067 when op=='NE' | op=='\=' | op=='╪' | ,
+0068 op=='¬='    then return $div(n.1 '/' d.1) \= fDiv(n.2 '/' d.2)
+0069 when op=='GT' | op=='>'                then return $div(n.1 '/' d.1) >  fDiv(n.2 '/' d.2)
+0070 when op=='LT' | op=='<'                then return $div(n.1 '/' d.1) <  fDiv(n.2 '/' d.2)
+0071 when op=='GE' | op=='≥'  | op=='>='    then return $div(n.1 '/' d.1) >= fDiv(n.2 '/' d.2)
+0072 when op=='LE' | op=='≤'  | op=='<='    then return $div(n.1 '/' d.1) <= fDiv(n.2 '/' d.2)
+0073 otherwise       call err  'an illegal function:'   op
+0074 end   /*select*/
+0075 
+0076 if t==0  then return 0;            g=gcd(t, u);             t=t/g;                   u=u/g
+0077 if u==1  then return t
+0078 return t'/'u
+0079 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0080 eDivs: procedure; parse arg x 1 b,a
+0081 do j=2  while j*j<x;       if x//j\==0  then iterate;   a=a j;   b=x%j b;     end
+0082 if j*j==x  then return a j b;                                            return a b
+0083 /*───────────────────────────────────────────────────────────────────────────────────────────────────*/
+0084 err:   say;   say '***error*** '    f     " detected"   arg(1);    say;         exit 13
+0085 gcd:   procedure; parse arg x,y; if x=0  then return y;  do until _==0; _=x//y; x=y; y=_; end; return x
+0086 lcm:   procedure; parse arg x,y; if y=0  then return 0; x=x*y/gcd(x, y);        return x
+0087 p:     return word( arg(1), 1)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                86 86
+002 y                86
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            4 6
+002 _                -> newV2            62 85

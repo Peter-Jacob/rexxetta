@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program searches a collection of strings   (an array of periodic table elements).*/
+0002 hay.=                                            /*initialize the haystack collection.  */
+0003 hay.1  = 'sodium'
+0004 hay.2  = 'phosphorous'
+0005 hay.3  = 'californium'
+0006 hay.4  = 'copernicium'
+0007 hay.5  = 'gold'
+0008 hay.6  = 'thallium'
+0009 hay.7  = 'carbon'
+0010 hay.8  = 'silver'
+0011 hay.9  = 'curium'
+0012 hay.10 = 'copper'
+0013 hay.11 = 'helium'
+0014 hay.12 = 'sulfur'
+0015 
+0016 needle = 'gold'                                  /*we'll be looking for the gold.       */
+0017 upper needle                                     /*in case some people capitalize stuff.*/
+0018 found=0                                          /*assume the needle isn't found yet.   */
+0019 
+0020 do j=1  while hay.j\==''               /*keep looking in the haystack.        */
+0021 _=hay.j;     upper _                   /*make it uppercase to be safe.        */
+0022 if _=needle  then do;  found=1         /*we've found the needle in haystack.  */
+0023 leave           /*   ··· and stop looking, of course.  */
+0024 end
+0025 end   /*j*/
+0026 
+0027 if found  then return j                          /*return the haystack  index  number.  */
+0028 else say  needle  "wasn't found in the haystack!"
+0029 return 0                                         /*indicates the needle  wasn't  found. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 hay.             2 3 4 5 6 7 8 9 10 11 12 13 14
+002 needle           16
+003 found            18 22
+004 j                20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            21

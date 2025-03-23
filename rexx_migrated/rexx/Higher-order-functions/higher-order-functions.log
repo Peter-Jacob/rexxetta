@@ -1,0 +1,23 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates the  passing of a  name of a function  to another function. */
+0002 call function  'fact'   ,   6;           say right(    'fact{'$"} = ", 30)    result
+0003 call function  'square' ,  13;           say right(  'square{'$"} = ", 30)    result
+0004 call function  'cube'   ,   3;           say right(    'cube{'$"} = ", 30)    result
+0005 call function  'reverse', 721;           say right( 'reverse{'$"} = ", 30)    result
+0006 exit                                             /*stick a fork in it,  we're all done. */
+0007 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0008 cube:     return $**3
+0009 fact:     procedure expose $;  !=1;      do j=2  to $;    !=!*j;     end;         return !
+0010 function: arg ?.;   parse arg ,$;        signal value (?.)
+0011 reverse:  return 'REVERSE'($)
+0012 square:   return $**2
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !                -> newV1            9 9
+002 $                -> newV2            10

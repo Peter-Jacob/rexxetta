@@ -1,0 +1,62 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program to compute and display  (unsigned)  Stirling numbers   of the first kind.*/
+0002 parse arg lim .                                  /*obtain optional argument from the CL.*/
+0003 if lim=='' | lim==","  then lim= 12              /*Not specified?  Then use the default.*/
+0004 olim= lim                                        /*save     the original value of  LIM. */
+0005 lim= abs(lim)                                    /*only use the absolute value of  LIM. */
+0006 numeric digits max(9, 2*lim)                     /*(over) specify maximum number in grid*/
+0007 @.=;                                 @.0.0= 1    /*define the   (0, 0)th  value  in grid*/
+0008 do n=0  for lim+1                        /* [↓]  initialize some  values  "   " */
+0009 if n>0  then @.n.0 = 0                   /*assign value if  N > zero.           */
+0010 do k=n+1  to lim
+0011 @.n.k = 0                              /*zero some values in grid  if  K > N. */
+0012 end   /*k*/
+0013 end     /*n*/
+0014 max#.= 0                                         /* [↓]  calculate values for the grid. */
+0015 do   n=1  for lim;           nm= n - 1
+0016 do k=1  for lim;           km= k - 1
+0017 @.n.k = @.nm.km  +  nm * @.nm.k        /*calculate an unsigned number in grid.*/
+0018 max#.k= max(max#.k, @.n.k)             /*find the      maximum value   "   "  */
+0019 max#.b= max(max#.b, @.n.k)             /*find the maximum value for all rows. */
+0020 end   /*k*/
+0021 end     /*n*/
+0022 
+0023 do k=1  for lim                          /*find max column width for each column*/
+0024 max#.a= max#.a + length(max#.k)
+0025 end   /*k*/
+0026 /* [↓]  only show the maximum value ?  */
+0027 w= length(max#.b)                                /*calculate max width of all numbers.  */
+0028 if olim<0  then do;  say 'The maximum value  (which has '      w      " decimal digits):"
+0029 say max#.b                  /*display maximum number in the grid.  */
+0030 exit                        /*stick a fork in it,  we're all done. */
+0031 end
+0032 wi= max(3, length(lim+1) )                       /*the maximum width of the grid's index*/
+0033 say 'row'  center('columns', max(9, max#.a + lim), '═')    /*display header of the grid.*/
+0034 
+0035 do r=0  for lim+1;   $=                  /* [↓]  display the grid to the term.  */
+0036 do c=0  for lim+1  until c>=r          /*build a row of grid, 1 col at a time.*/
+0037 $= $  right(@.r.c, length(max#.c) )    /*append a column to a row of the grid.*/
+0038 end   /*c*/
+0039 say right(r,wi)  strip(substr($,2), 'T') /*display a single row of the grid.    */
+0040 end     /*r*/                            /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 lim              2 3 5
+002 olim             4
+003 n                8 15
+004 k                10 16 23
+005 max#.            14 18 19 24
+006 nm               15
+007 km               16
+008 w                27
+009 wi               32
+010 r                35
+011 c                36
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           7 7 9 11 17
+002 $                -> newV2            35 37

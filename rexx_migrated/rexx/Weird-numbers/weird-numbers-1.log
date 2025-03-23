@@ -1,0 +1,108 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program  finds and displays  N   weird numbers in a vertical format (with index).*/
+0002 parse arg n cols .                               /*obtain optional arguments from the CL*/
+0003 if    n=='' |    n==","  then    n= 25           /*Not specified?  Then use the default.*/
+0004 if cols=='' | cols==","  then cols= 10           /* "      "         "   "   "     "    */
+0005 w= 10                                            /*width of a number in any column.     */
+0006 if cols>0 then say ' index │'center(' weird numbers',   1 + cols*(w+1)     )
+0007 if cols>0 then say '───────┼'center(""              ,   1 + cols*(w+1), '─')
+0008 idx= 1;                          $=              /*index for the output list;  $: 1 line*/
+0009 weirds= 0                                        /*the count of weird numbers  (so far).*/
+0010 do j=2  by 2  until weirds==n               /*examine even integers 'til have 'nuff*/
+0011 if \weird(j)  then iterate                  /*Not a  weird  number?  Then skip it. */
+0012 weirds= weirds + 1                          /*bump the count of  weird   numbers.  */
+0013 c= commas(j)                                /*maybe add commas to the number.      */
+0014 $= $ right(c, max(w, length(c) ) )          /*add a nice prime ──► list, allow big#*/
+0015 if weirds//cols\==0  then iterate           /*have we populated a line of output?  */
+0016 say center(idx, 7)'│'  substr($, 2);   $=   /*display what we have so far  (cols). */
+0017 idx= idx + cols                             /*bump the  index  count for the output*/
+0018 end   /*j*/
+0019 
+0020 if $\==''  then say center(idx, 7)"│"  substr($, 2)  /*possible display residual output.*/
+0021 if cols>0 then say '───────┴'center(""    ,  1 + cols*(w+1), '─')
+0022 say
+0023 say 'Found '       commas(weirds)          ' weird numbers'
+0024 exit 0                                           /*stick a fork in it,  we're all done. */
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 commas: parse arg _;  do ic=length(_)-3  to 1  by -3; _=insert(',', _, ic); end;  return _
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 DaS:  procedure; parse arg x 1 z 1,b;       a= 1 /*get X,Z,B (the 1st arg); init A list.*/
+0029 r= 0;         q= 1                         /* [↓] ══integer square root══     ___ */
+0030 do while q<=z; q=q*4; end             /*R:  an integer which will be    √ X  */
+0031 do while q>1;  q=q%4;  _= z-r-q;  r=r%2;  if _>=0  then  do;  z=_;  r=r+q;  end
+0032 end   /*while q>1*/                   /* [↑]  compute the integer sqrt of  X.*/
+0033 sig= a                                     /*initialize the sigma so far.     ___ */
+0034 do j=2  to r - (r*r==x)                /*divide by some integers up to   √ X  */
+0035 if x//j==0  then do;  a=a j;  b= x%j b /*if ÷, add both divisors to  α and ß. */
+0036 sig= sig +j +x%j /*bump the sigma (the sum of divisors).*/
+0037 end
+0038 end   /*j*/                            /* [↑]  %  is the REXX integer division*/
+0039 /* [↓]  adjust for a square.        ___*/
+0040 if j*j==x  then  return sig+j   a j b      /*Was  X  a square?    If so, add  √ X */
+0041 return sig     a   b      /*return the divisors  (both lists).   */
+0042 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0043 weird: procedure; parse arg x .                  /*obtain a # to be tested for weirdness*/
+0044 if x<70 | x//3==0   then return 0         /*test if X is too low or multiple of 3*/
+0045 parse value  DaS(x)  with  sigma divs     /*obtain sigma and the proper divisors.*/
+0046 if sigma<=x  then  return 0               /*X  isn't abundant  (sigma too small).*/
+0047 #= words(divs)                            /*count the number of divisors for  X. */
+0048 if #<3   then return 0                    /*Not enough divisors?    "      "     */
+0049 if #>15  then return 0                    /*number of divs > 15?  It's not weird.*/
+0050 a.=                                       /*initialize the    A.   stemmed array.*/
+0051 do i=1  for #;     _= word(divs, i)   /*obtain one of the divisors of  X.    */
+0052 @.i= _;          a._= .               /*assign proper divs──►@ array; also id*/
+0053 end   /*i*/
+0054 df= sigma - x                             /*calculate difference between Σ and X.*/
+0055 if a.df==.  then return 0                 /*Any divisor is equal to DF? Not weird*/
+0056 c= 0                                      /*zero combo counter; calc. power of 2.*/
+0057 do p=1  for 2**#-2;         c= c + 1  /*convert P──►binary with leading zeros*/
+0058 yy.c= strip( x2b( d2x(p) ),  'L', 0)  /*store this particular combination.   */
+0059 end   /*p*/
+0060 /* [↓]  decreasing partitions is faster*/
+0061 do part=c  by -1  for c;      s= 0    /*test of a partition add to the arg X.*/
+0062 _= yy.part;           L= length(_)    /*obtain one method of partitioning.   */
+0063 do cp=L  by -1  for L               /*obtain a sum of  a  partition.       */
+0064 if substr(_,cp,1)  then do;  s= s + @.cp            /*1 bit?  Then add ──►S*/
+0065 if s==x  then return 0 /*Sum equal?  Not weird*/
+0066 if s==df then return 0 /*Sum = DF?    "    "  */
+0067 if s>x   then iterate  /*Sum too big? Try next*/
+0068 end
+0069 end   /*cp*/
+0070 end   /*part*/;           return 1    /*no sum equal to  X,  so  X  is weird.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                43
+002 z                28 31
+003 b                28 35
+004 a                28 35
+005 r                29 31 31
+006 q                29 30 31
+007 while            30
+008 sig              33 36
+009 j                34
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 sigma            45
+015 divs             45
+016 a.               50 52
+017 i                51
+018 df               54
+019 c                56 57
+020 p                57
+021 yy.              58
+022 part             61
+023 s                61 64
+024 L                62
+025 cp               63
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           52
+002 $                -> newV2            8 14 16
+003 _                -> newV3            26 26 31 51 62
+004 #                -> newV4            47

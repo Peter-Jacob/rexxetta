@@ -1,0 +1,53 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program finds and displays  N  number of anti─primes or highly─composite numbers.*/
+0002 parse arg N .                                    /*obtain optional argument from the CL.*/
+0003 if N=='' | N==","  then N= 20                    /*Not specified?  Then use the default.*/
+0004 @.= .;    @.1= 1;     @.2= 2;     @.4= 3;     @.5= 2;     @.6= 4
+0005 say '─index─ ──anti─prime──'                     /*display a title for the numbers shown*/
+0006 #= 1                                             /*the count of anti─primes found  "  " */
+0007 maxD= 1                                          /*the maximum number of divisors so far*/
+0008 say center(#, 7)  right(1, 10)                   /*display the index and the anti─prime.*/
+0009 do once=1  for 1
+0010 do i=2  by  2  to 59                     /*step through possible numbers by twos*/
+0011 d= #divs(i);  if d<=maxD  then iterate   /*get # divisors;  Is too small?  Skip.*/
+0012 #= # + 1;     maxD= d                    /*found an anti─prime #;  set new minD.*/
+0013 say center(#, 7)  right(i, 10)           /*display the index and the anti─prime.*/
+0014 if #>=N  then leave once                 /*if we have enough anti─primes, done. */
+0015 end   /*i*/
+0016 
+0017 do j=60  by 20                           /*step through possible numbers by 20. */
+0018 d= #divs(j);  if d<=maxD  then iterate   /*get # divisors;  Is too small?  Skip.*/
+0019 #= # + 1;     maxD= d                    /*found an anti─prime #;  set new minD.*/
+0020 say center(#, 7)  right(j, 10)           /*display the index and the anti─prime.*/
+0021 if #>=N  then leave once                 /*if we have enough anti─primes, done. */
+0022 L= length(j)                             /*obtain the length of the index  (J). */
+0023 if L>3  then j= j + left(4, L-2, 0) - 20 /*Length>3?  Then calculate a long jump*/
+0024 end   /*j*/
+0025 end      /*once*/
+0026 exit                                             /*stick a fork in it,  we're all done. */
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 #divs: parse arg x;  if @.x\==.  then return @.x /*if pre─computed, then return shortcut*/
+0029 $= 3;     y= x % 2
+0030 /* [↑]   start with known num of Pdivs.*/
+0031 do k=3  for x%2-3  while k<y
+0032 if x//k==0  then do;  $= $ + 2 /*if no remainder, then found a divisor*/
+0033 y= x % k /*bump  $  Pdivs,  calculate limit  Y. */
+0034 if k>=y  then do; $= $ - 1; leave; end  /*limit?*/
+0035 end                         /*                   ___ */
+0036 else if k*k>x  then leave        /*only divide up to √ x  */
+0037 end   /*k*/                    /* [↑]  this form of DO loop is faster.*/
+0038 return $+1                                /*bump "proper divisors" to "divisors".*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                28
+002 y                29 33
+003 k                31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           4 4 4 4 4 4
+002 #                -> newV2            6 12 19
+003 $                -> newV3            29 32 34

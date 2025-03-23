@@ -1,0 +1,50 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program determines and displays the best shuffle for any list of words or tokens.*/
+0002 parse arg $                                      /*get some words from the command line.*/
+0003 if $=''  then $= 'tree abracadabra seesaw elk grrrrrr up a'          /*use the defaults?*/
+0004 w=0;                #=words($)                   /* [↑]  finds the widest word in $ list*/
+0005 do i=1  for #;  @.i=word($,i);  w=max(w, length(@.i) );   end  /*i*/
+0006 w= w+9                                           /*add 9 blanks for output indentation. */
+0007 do n=1  for #;  new= bestShuffle(@.n)    /*process the examples in the @ array. */
+0008 same=0;                    do m=1  for length(@.n)
+0009 same=same  +  (substr(@.n, m, 1) == substr(new, m, 1) )
+0010 end   /*m*/
+0011 say '       original:'   left(@.n, w)    'new:'    left(new,w)    'score:'    same
+0012 end   /*n*/
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 bestShuffle: procedure; parse arg x 1 ox;    L=length(x);   if L<3  then return reverse(x)
+0016 /*[↑] fast track short strs*/
+0017 do j=1  for L-1;  parse var x =(j) a +1 b +1  /*get A,B at Jth & J+1 pos.*/
+0018 if a\==b  then iterate                        /*ignore any replicates.   */
+0019 c= verify(x,a);    if c==0  then iterate      /*   "    "      "         */
+0020 x= overlay( substr(x,c,1), overlay(a,x,c), j) /*swap the  x,c  characters*/
+0021 rx= reverse(x)                                /*obtain the reverse of X. */
+0022 y= substr(rx, verify(rx, a), 1)               /*get 2nd replicated char. */
+0023 x= overlay(y, overlay(a,x, lastpos(y,x)),j+1) /*fast swap of 2 characters*/
+0024 end   /*j*/
+0025 do k=1  for L;  a=substr(x, k, 1)      /*handle a possible rep*/
+0026 if a\==substr(ox, k, 1)  then iterate  /*skip non-replications*/
+0027 if k==L  then x= left(x, k-2)a || substr(x, k-1,1) /*last case*/
+0028 else x= left(x, k-1)substr(x, k+1, 1)a || substr(x,k+2)
+0029 end   /*k*/
+0030 return x
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                17 20 23 27
+002 a                17 25
+003 b                17
+004 c                19
+005 rx               21
+006 y                22
+007 k                25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 =(j)             -> newV1            17
+002 @.               -> newV2.           5
+003 $                -> newV3            2 3
+004 #                -> newV4            4

@@ -1,0 +1,64 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program computes the  check digit (last digit) for six or seven character SEDOLs.*/
+0002 @abcU    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'          /*the uppercase Latin alphabet.        */
+0003 alphaDigs= '0123456789'@abcU                     /*legal characters,  and then some.    */
+0004 allowable=space(translate(alphaDigs,,'AEIOU'),0) /*remove the vowels from the alphabet. */
+0005 weights  = 1317391                               /*various weights for SEDOL characters.*/
+0006 @.=                                              /* [↓]  the ARG statement capitalizes. */
+0007 arg @.1 .                                        /*allow a user─specified  SEDOL from CL*/
+0008 if @.1==''  then do                              /*if none, then assume eleven defaults.*/
+0009 @.1  =  710889                  /*if all numeric, we don't need quotes.*/
+0010 @.2  = 'B0YBKJ'
+0011 @.3  =  406566
+0012 @.4  = 'B0YBLH'
+0013 @.5  =  228276
+0014 @.6  = 'B0YBKL'
+0015 @.7  =  557910
+0016 @.8  = 'B0YBKR'
+0017 @.9  =  585284
+0018 @.10 = 'B0YBKT'
+0019 @.11 = 'B00030'
+0020 end
+0021 
+0022 do j=1  while  @.j\=='';      sedol=@.j    /*process each of the specified SEDOLs.*/
+0023 L=length(sedol)
+0024 if L<6 | L>7        then call ser "SEDOL isn't a valid length"
+0025 if left(sedol,1)==9 then call swa 'SEDOL is reserved for end user allocation'
+0026 _=verify(sedol, allowable)
+0027 if _\==0            then call ser 'illegal character in SEDOL:'  substr(sedol, _, 1)
+0028 sum=0                                      /*the  checkDigit  sum  (so far).      */
+0029 do k=1  for 6                      /*process each character in the SEDOL. */
+0030 sum=sum + ( pos( substr(sedol, k, 1), alphaDigs) -1) * substr(weights, k, 1)
+0031 end   /*k*/
+0032 
+0033 chkDig= (10-sum//10) // 10
+0034 r=right(sedol, 1)
+0035 if L==7 & chkDig\==r  then call ser sedol, 'invalid check digit:' r
+0036 say 'SEDOL:'   left(sedol,15)      'SEDOL + check digit ───► '   left(sedol,6)chkDig
+0037 end       /*j*/
+0038 exit                                             /*stick a fork in it,  we're all done. */
+0039 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0040 sed:  say;  say 'SEDOL:'  sedol;          say;                          return
+0041 ser:  say;  say '***error***'   arg(1);   call sed;                     exit 13
+0042 swa:  say;  say '***warning***' arg(1);   say;                          return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 alphaDigs        3
+002 allowable        4
+003 weights          5
+004 j                22
+005 sedol            22
+006 L                23
+007 sum              28 30
+008 k                29
+009 chkDig           33
+010 r                34
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @abcU            -> newV1            2
+002 @.               -> newV2.           6 9 10 11 12 13 14 15 16 17 18 19
+003 _                -> newV3            26

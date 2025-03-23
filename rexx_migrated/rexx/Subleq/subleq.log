@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program  simulates  the  execution  of a   One─Instruction Set Computer  (OISC). */
+0002 signal on halt                                   /*enable user to  halt  the simulation.*/
+0003 parse arg $                                      /*get optional low memory vals from CL.*/
+0004 $$= '15 17 -1 17 -1 -1 16 1 -1 16 3 -1 15 15 0 0 -1'  /*common stuff for EBCDIC & ASCII.*/
+0005 /*EBCDIC "then" choice [↓]       H   e   l   l   o  , BLANK w   o   r   l   d  !  LF*/
+0006 if $='' then if 6=="f6"x  then $=$$ 200 133 147 147 150 107 64 166 150 153 147 132 90 21 0
+0007 else $=$$  72 101 108 108 111  44 32 119 111 114 108 100 33 10 0
+0008 /* [↑]  ASCII   (the "else" choice).                Line Feed≡LF*/
+0009 @.= 0                                            /*zero all memory & instruction pointer*/
+0010 do j=0  for words($);  @.j=word($,j+1)  /*assign memory.  OISC is zero─indexed.*/
+0011 end   /*j*/                             /*obtain A, B, C memory values──►────┐ */
+0012 do #=0  by 3 until #<0;     a= @(#-3);    b= @(#-2);     c= @(#-1)   /* ◄─────────┘ */
+0013 select                                   /*choose an instruction state.         */
+0014 when a<0  then @.b= charin()             /*  read a character from the terminal.*/
+0015 when b<0  then call charout , d2c(@.a)   /* write "     "      to   "     "     */
+0016 otherwise      @.b= @.b - @.a            /*put difference  ────►  location  B.  */
+0017 if @.b<=0  then #= c         /*Not positive?   Then set  #  to  C.  */
+0018 end   /*select*/                         /* [↑]  choose one of two states.      */
+0019 end       /*#*/                              /*leave the DO loop if  #  is negative.*/
+0020 exit                                             /*stick a fork in it,  we're all done. */
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 @:     parse arg @z;    return @.@z              /*return  a  memory location (cell @Z).*/
+0023 halt:  say 'The One─Instruction Set Computer simulation pgm was halted by user.';   exit 1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $$               -> newV1            4
+002 @.               -> newV2.           9 10
+003 @z               -> newV3            22
+004 $                -> newV4            3 6
+005 #                -> newV5            12 17

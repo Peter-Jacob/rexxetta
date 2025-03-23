@@ -1,0 +1,54 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program computes the  Jaro distance  between two strings  (or a list of strings).*/
+0002 @.=                                              /*define a default for the  @.  array. */
+0003 parse arg @.1                                    /*obtain an optional character string. */
+0004 if @.1=''  then do;  @.1= 'MARTHA     MARHTA'    /*Nothing specified?  Use the defaults.*/
+0005 @.2= 'DIXON      DICKSONX'
+0006 @.3= 'JELLYFISH  SMELLYFISH'
+0007 @.4= 'DWAYNE     DUANE'
+0008 end                              /* [↑] embedded blanks are shown as is.*/
+0009 
+0010 do j=1  while @.j\==''                    /*process all the strings in the list. */
+0011 d= jaroD(@.j)
+0012 say 'Jaro distance is  '       format(d, , 8)        " for strings:  "         @.j
+0013 end   /*j*/                               /* └──── digits past the decimal point.*/
+0014 exit 0                                           /*stick a fork in it,  we're all done. */
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 jaroD: procedure; arg s.1 s.2 .;       L1= length(s.1);      L2= length(s.2);      m= 0
+0017 if L1==0 | L2==0  then return 0           /*check if any string is a null string.*/
+0018 f= max(L1, L2) % 2   -   1                /*calculate furthest distanced allowed.*/
+0019 r.= 0                                     /* [↓]  see if the char is near enough.*/
+0020 do k=1  for L1;   p= pos( substr(s.1, k, 1), s.2,  max(1, k-f) )
+0021 r.k= p
+0022 if p\==0 & abs(p-k)<=f  then m= m+1  /*if near enough, count it as a match. */
+0023 else r.k= 0  /*       ··· otherwise, don't count it.*/
+0024 end   /*k*/
+0025 t= 0
+0026 do o=1  for L1;         om= o - 1;       if  r.o==0  |  r.om==0  then iterate
+0027 if pos( substr(s.1, o, 1), s.2)==0  then iterate
+0028 if r.o<r.om  then t= t + 1
+0029 end   /*o*/                          /* [↑]  count number of transpositions.*/
+0030 
+0031 if m==0  then return 0
+0032 return (m/L1  +  m/L2  +  (m-t)/m)   /   3
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                10
+002 d                11
+003 L1               16
+004 L2               16
+005 m                16 22
+006 f                18
+007 r.               19 21
+008 k                20
+009 p                20
+010 t                25 28
+011 o                26
+012 om               26
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 3 4 5 6 7

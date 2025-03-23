@@ -1,0 +1,23 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 select
+0002 when g=='angel'              then many='host'
+0003 when g=='ass' | g=='donkey'  then many='pace'
+0004 when g=='crocodile'          then many='bask'
+0005 when g=='crow'               then many='murder'
+0006 when g=='lark'               then many='ascension'
+0007 when g=='quail'              then many='bevy'
+0008 when g=='wolf'               then many='pack'
+0009 otherwise  say
+0010 say '*** error! ***'
+0011 say g  "isn't one of the known thingys."
+0012 say
+0013 exit 13
+0014 end   /*select*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

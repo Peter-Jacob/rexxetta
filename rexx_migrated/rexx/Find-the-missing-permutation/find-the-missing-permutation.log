@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX pgm finds one or more missing permutations from an internal list & displays them.*/
+0002 list= 'ABCD CABD ACDB DACB BCDA ACBD ADCB CDAB DABC BCAD CADB CDBA CBAD ABDC ADBC BDCA',
+0003 "DCBA BACD BADC BDAC CBDA DBCA DCAB"       /*list that is missing one permutation.*/
+0004 @.=                                              /* [↓]  needs to be as long as  THINGS.*/
+0005 @abcU = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'             /*an uppercase (Latin/Roman) alphabet. */
+0006 things= 4                                        /*number of unique letters to be used. */
+0007 bunch = 4                                        /*number letters to be used at a time. */
+0008 do j=1  for things              /* [↓]  only get a portion of alphabet.*/
+0009 $.j= substr(@abcU, j, 1)        /*extract just one letter from alphabet*/
+0010 end   /*j*/                     /* [↑]  build a letter array for speed.*/
+0011 call permSet 1                                   /*invoke PERMSET subroutine recursively*/
+0012 exit                                             /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 permSet: procedure expose $. @. bunch list things; parse arg ? /*calls self recursively.*/
+0015 if ?>bunch  then do;  _=
+0016 do m=1  for bunch           /*build a permutation.   */
+0017 _= _  ||  @.m               /*add permutation──►list.*/
+0018 end   /*m*/
+0019 /* [↓]  is in the list?  */
+0020 if wordpos(_,list)==0  then say _  ' is missing from the list.'
+0021 end
+0022 else do x=1  for things                   /*build a permutation.   */
+0023 do k=1  for ?-1
+0024 if @.k==$.x  then iterate x /*was permutation built? */
+0025 end  /*k*/
+0026 @.?= $.x                             /*define as being built. */
+0027 call permSet  ?+1                    /*call self recursively. */
+0028 end   /*x*/
+0029 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 m                16
+002 k                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @abcU            -> newV1            5
+002 @.               -> newV2.           4 26
+003 $.               -> newV3.           9
+004 ?                -> newV4            14
+005 _                -> newV5            15 17

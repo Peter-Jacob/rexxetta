@@ -1,0 +1,62 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program defines (for any 2 points on the curve), returns the sum of the 2 points.*/
+0002 numeric digits 100                               /*try to ensure a min. of accuracy loss*/
+0003 a= func(1)             ;            say  '    a =              '          show(a)
+0004 b= func(2)             ;            say  '    b =              '          show(b)
+0005 c= add(a, b)           ;            say  '    c = (a+b)       ='          show(c)
+0006 d= neg(c)              ;            say  '    d = -c          ='          show(d)
+0007 e= add(c, d)           ;            say  '    e = (c+d)       ='          show(e)
+0008 g= add(a, add(b, d))   ;            say  '    g = (a+b+d)     ='          show(g)
+0009 exit                                             /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 cbrt:  procedure; parse arg x;                                            return root(x,3)
+0012 conv:  procedure; arg z; if isZ(z)  then return 'zero'; return left('',z>=0)format(z,,5)/1
+0013 root:  procedure; parse arg x,y;  if x=0 | y=1  then return x/1;   d=5;   return rootI()/1
+0014 rootG: parse value format(x,2,1,,0)  'E0'  with  ? 'E' _ .;    return (?/y'E'_ %y) + (x>1)
+0015 func:  procedure; parse arg y,k;  if k=='' then k=7;           return cbrt(y**2-k) y
+0016 inf:                                                           return '1e' || (digits()%2)
+0017 isZ:   procedure; parse arg px . ;                             return abs(px) >= inf()
+0018 neg:   procedure; parse arg px py;                             return px         (-py)
+0019 show:  procedure; parse arg x  y ;                             return conv(x)  conv(y)
+0020 zero:                                                          return inf()    inf()
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 add:   procedure; parse arg px py, qx qy;     if px=qx & py=qy  then return dbl(px py)
+0023 if isZ(px  py)  then return qx qy;     if isZ(qx qy)     then return     px py
+0024 z= qx - px;       if z=0  then do;     $= inf();         rx= inf();         end
+0025 else do;     $= (qy-py) / z;   rx= $*$ - px - qx; end
+0026 ry= $ * (px-rx) - py;                                         return  rx  ry
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 dbl:   procedure;  parse arg px py;      if isZ(px py)  then return px py;        z= py+py
+0029 if z=0  then $= inf()
+0030 else $= (3*px*py) / (py+py)
+0031 rx= $*$ - px*px;      ry= $ * (px-rx) - py;       return rx ry
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 rootI: ox=x;  oy=y;  x=abs(x);  y=abs(y);  a=digits()+5;  numeric form;  g=rootG();  m=y-1
+0034 do  until  d==a;    d=min(d+d,a);               numeric digits d;          o=0
+0035 do  until o=g;    o=g;   g=format((m*g**y+x)/y/g**m,,d-2);  end  /*until o=g*/
+0036 end  /*until d==a*/;       _=g*sign(ox);   if oy<0  then _=1/_;         return _
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 px               28
+002 py               28
+003 z                28
+004 rx               31
+005 ry               31
+006 oy               33
+007 x                33
+008 y                33
+009 a                33
+010 g                33 35
+011 m                33
+012 until            34 35
+013 d                34
+014 o                34 35
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 ?                -> newV1            14
+002 _                -> newV2            14 36 36
+003 $                -> newV3            24 25 29

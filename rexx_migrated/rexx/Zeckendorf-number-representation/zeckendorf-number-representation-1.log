@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:36
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 11.10.2012 Walter Pachl
+0003 **********************************************************************/
+0004 fib='13 8 5 3 2 1'
+0005 Do i=6 To 1 By -1                   /* Prepare Fibonacci Numbers     */
+0006 Parse Var fib f.i fib             /* f.1 ... f.7                   */
+0007 End
+0008 Do n=0 To 20                        /* for all numbers in the task   */
+0009 m=n                               /* copy of number                */
+0010 r=''                              /* result for n                  */
+0011 Do i=6 To 1 By -1                 /* loop through numbers          */
+0012 If m>=f.i Then Do               /* f.i must be used              */
+0013 r=r||1                        /* 1 into result                 */
+0014 m=m-f.i                       /* subtract                      */
+0015 End
+0016 Else                            /* f.i is larger than the rest   */
+0017 r=r||0                        /* 0 into result                 */
+0018 End
+0019 r=strip(r,'L','0')                /* strip leading zeros           */
+0020 If r='' Then r='0'                /* take care of 0                */
+0021 Say right(n,2)':  'right(r,6)     /* show result                   */
+0022 End
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 fib              6 6
+002 f.               6
+003 n                8
+004 m                9 14
+005 r                10 13 17 19 20
+006 i                11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

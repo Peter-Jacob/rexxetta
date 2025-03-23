@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /* ft=rexx */
+0002 /* GET3.RX - Display contents of an URL on the terminal. */
+0003 /* Usage: rexx get3.rx http://rosettacode.org            */
+0004 parse arg url .
+0005 address system 'curl' url with output fifo ''
+0006 address system 'more' with input fifo ''
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 url              4
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

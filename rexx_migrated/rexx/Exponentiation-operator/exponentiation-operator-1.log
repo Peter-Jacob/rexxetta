@@ -1,0 +1,64 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program  computes and displays  various   (integer)   exponentiations.           */
+0002 say center('digits='digits(), 79, "─")
+0003 say 'iPow(17, 65)  is:'
+0004 say  iPow(17, 65)
+0005 say
+0006 
+0007 say 'iPow(0, -3)  is:'
+0008 say  iPow(0, -3)
+0009 say
+0010 
+0011 say 'iPow(8, 0)  is:'
+0012 say  iPow(8, 0)
+0013 say
+0014 
+0015 numeric digits 12;                               say center('digits='digits(), 79, "─")
+0016 say 'iPow(2, -10)  is:'
+0017 say  iPow(2, -10)
+0018 say
+0019 
+0020 numeric digits 30;                               say center('digits='digits(), 79, "─")
+0021 say 'iPow(-3.1415926535897932384626433, 3)  is:'
+0022 say  iPow(-3.1415926535897932384626433, 3)
+0023 say
+0024 
+0025 numeric digits 60;                               say center('digits='digits(), 79, "─")
+0026 say 'iPow(5, 70)  is:'
+0027 say  iPow(5, 70)
+0028 say
+0029 
+0030 numeric digits 100;                              say center('digits='digits(), 79, "─")
+0031 say 'iPow(17, 65)  is:'
+0032 say  iPow(17, 65)
+0033 say
+0034 
+0035 numeric digits 1000;                             say center('digits='digits(), 79, "─")
+0036 say 'iPow(2, 1000)  is:'
+0037 say  iPow(2, 1000)
+0038 exit                                             /*stick a fork in it,  we're all done. */
+0039 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0040 errMsg: say;     say '***error***';     say;     say arg(1);     say;     say;     exit 13
+0041 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0042 iPow:   procedure;  parse arg x 1 _,p;           #args= arg()  /*_:   is a copy of  X.  */
+0043 if #args<2            then call errMsg  "not enough arguments specified"
+0044 if #args>2            then call errMsg  "too many arguments specified"
+0045 if \datatype(x, 'N')  then call errMsg  "1st arg isn't numeric:"         x
+0046 if \datatype(p, 'W')  then call errMsg  "2nd arg isn't an integer:"      p
+0047 if p=0                then return 1                    /*handle powers of zero. */
+0048 if x=0  |  x=1        then return x                    /*handle special cases.  */
+0049 do abs(p) - 1;      _= _ * x;   end             /*perform exponentiation */
+0050 if p<0                then _= 1 / _                    /*process its reciprocal.*/
+0051 return _
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                42
+002 p                42
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #args            -> newV1            42
+002 _                -> newV2            42 49 50

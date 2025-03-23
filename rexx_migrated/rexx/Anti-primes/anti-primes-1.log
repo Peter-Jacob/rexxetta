@@ -1,0 +1,54 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program finds and displays  N  number of anti─primes or highly─composite numbers.*/
+0002 parse arg N .                                    /*obtain optional argument from the CL.*/
+0003 if N=='' | N==","  then N= 20                    /*Not specified?  Then use the default.*/
+0004 maxD= 0                                          /*the maximum number of divisors so far*/
+0005 say '─index─ ──anti─prime──'                     /*display a title for the numbers shown*/
+0006 #= 0                                             /*the count of anti─primes found  "  " */
+0007 do once=1  for 1
+0008 do i=1  for 59                           /*step through possible numbers by twos*/
+0009 d= #divs(i);  if d<=maxD  then iterate   /*get # divisors;  Is too small?  Skip.*/
+0010 #= # + 1;     maxD= d                    /*found an anti─prime #;  set new minD.*/
+0011 say center(#, 7)  right(i, 10)           /*display the index and the anti─prime.*/
+0012 if #>=N  then leave once                 /*if we have enough anti─primes, done. */
+0013 end   /*i*/
+0014 
+0015 do j=60  by 20                           /*step through possible numbers by 20. */
+0016 d= #divs(j);  if d<=maxD  then iterate   /*get # divisors;  Is too small?  Skip.*/
+0017 #= # + 1;     maxD= d                    /*found an anti─prime #;  set new minD.*/
+0018 say center(#, 7)  right(j, 10)           /*display the index and the anti─prime.*/
+0019 if #>=N  then leave                      /*if we have enough anti─primes, done. */
+0020 end   /*j*/
+0021 end      /*once*/
+0022 exit                                             /*stick a fork in it,  we're all done. */
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 #divs: procedure; parse arg x 1 y                /*X and Y:  both set from 1st argument.*/
+0025 if x<3   then return x                    /*handle special cases for one and two.*/
+0026 if x==4  then return 3                    /*   "      "      "    " four.        */
+0027 if x<6   then return 2                    /*   "      "      "    " three or five*/
+0028 odd= x // 2                               /*check if   X   is  odd  or not.      */
+0029 if odd  then      #= 1                    /*Odd?   Assume  Pdivisors  count of 1.*/
+0030 else do;  #= 3;     y= x % 2      /*Even?     "        "        "    " 3.*/
+0031 end                          /* [↑]   start with known num of Pdivs.*/
+0032 
+0033 do k=3  for x%2-3  by 1+odd  while k<y  /*for odd numbers, skip evens.*/
+0034 if x//k==0  then do;  #= # + 2 /*if no remainder, then found a divisor*/
+0035 y= x % k /*bump  #  Pdivs,  calculate limit  Y. */
+0036 if k>=y  then do; #= # - 1; leave; end  /*limit?*/
+0037 end                         /*                   ___ */
+0038 else if k*k>x  then leave        /*only divide up to √ x  */
+0039 end   /*k*/                    /* [↑]  this form of DO loop is faster.*/
+0040 return #+1                                /*bump "proper divisors" to "divisors".*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                24
+002 y                24 30 35
+003 odd              28
+004 k                33
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            6 10 17 29 30 34 36

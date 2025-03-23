@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX pgms demonstrates various methods/approaches of invoking/calling a REXX function.*/
+0002 
+0003 /*╔════════════════════════════════════════════════════════════════════╗
+0004 ║ Calling a function that REQUIRES no arguments.                     ║
+0005 ║                                                                    ║
+0006 ║ In the REXX language, there is no way to require the caller to not ║
+0007 ║ pass arguments, but the programmer can check if any arguments were ║
+0008 ║ (or weren't) passed.                                               ║
+0009 ╚════════════════════════════════════════════════════════════════════╝*/
+0010 
+0011 yr= yearFunc()                              /*the function name is caseless if it isn't */
+0012 /*enclosed in quotes (') or apostrophes (").*/
+0013 say 'year='  yr
+0014 exit                                             /*stick a fork in it,  we're all done. */
+0015 
+0016 yearFunc: procedure                              /*function  ARG  returns the # of args.*/
+0017 errmsg= '***error***'                  /*an error message eyecatcher string.  */
+0018 if arg() \== 0  then say errmsg  "the YEARFUNC function won't accept arguments."
+0019 return left( date('Sorted'), 3)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 yr               11
+002 errmsg           17
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

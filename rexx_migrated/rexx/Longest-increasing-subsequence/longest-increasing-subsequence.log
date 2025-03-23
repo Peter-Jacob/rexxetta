@@ -1,0 +1,60 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*REXX program finds & displays the  longest increasing subsequence  from a list of #'s.*/
+0002 $.=;  $.1= 3 2 6 4 5 1                           /*define the 1st list to be examined.  */
+0003 $.2= 0 8 4 12 2 10 6 14 1 9 5 13 3 11 7 15 /*   "    "  2nd   "   "  "     "      */
+0004 
+0005 do j=1   while  $.j\=='';     say        /* [↓]  process all of the list for LIS*/
+0006 say ' input: '  $.j                      /*display the (original) input list.   */
+0007 call LIS        $.j                      /*invoke the  LIS  function.           */
+0008 say 'output: '  result                   /*display the  output (result from LIS)*/
+0009 end   /*j*/
+0010 exit                                             /*stick a fork in it,  we're all done. */
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 LIS: procedure; parse arg x;   n= words(x);   if n==0  then return ''
+0013 p.=;                            m.= p.
+0014 do #=1  to n;  _= # - 1;  @._= word(x, #)    /*build an array (@) from input.*/
+0015 end   /*#*/
+0016 L= 0
+0017 do j=0  to n-1;  lo= 1
+0018 HI= L
+0019 do  while LO<=HI;    middle= (LO+HI) % 2
+0020 _= m.middle            /*create a temporary value for @ index.*/
+0021 if @._<@.j  then LO= middle + 1
+0022 else HI= middle - 1
+0023 end   /*while*/
+0024 newLO= LO
+0025 _= newLO - 1                   /*create a temporary value for M index.*/
+0026 p.j= m._
+0027 m.newLO= j
+0028 if newLO>L  then L= newLO
+0029 end   /*i*/
+0030 k= m.L;                $=                   /* [↓]  build a list for the result.   */
+0031 do L;  $= @.k $;  k= p.k    /*perform this  DO  loop   L   times.  */
+0032 end   /*i*/
+0033 return strip($)                             /*the result has an extra leading blank*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                12
+002 n                12
+003 p.               13 26
+004 m.               13 27
+005 L                16 28
+006 j                17
+007 lo               17
+008 HI               18
+009 while            19
+010 middle           19
+011 LO               21
+012 newLO            24
+013 k                30 31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $.               -> newV1.           2 2 3
+002 @.               -> newV2.           14
+003 #                -> newV3            14
+004 _                -> newV4            14 20 25
+005 $                -> newV5            30 31

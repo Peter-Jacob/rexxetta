@@ -1,0 +1,39 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /* REXX ****************************************************************
+0002 * 01.11.2012 Walter Pachl
+0003 ***********************************************************************/
+0004 s='STRING'                             /* Test input                  */
+0005 Say 's='s
+0006 ol=''                                  /* initialize target           */
+0007 Do While s<>''                         /* loop through input          */
+0008 Parse Var s c +1 s                   /* pick a character            */
+0009 cx=c2x(c)                            /* convert to hex              */
+0010 cb=x2b(cx)                           /* convert to bits             */
+0011 ol=ol||substr(cb,2)                  /* append to target            */
+0012 End
+0013 l=length(ol)                           /* current length              */
+0014 lm=l//8
+0015 ol=ol||copies('0',8-lm)                /* pad to multiple of 8        */
+0016 pd=copies(' ',l)||copies('0',8-lm)
+0017 Say 'b='ol                             /* show target                 */
+0018 Say '  'pd 'padding'
+0019 r=''                                   /* initialize result           */
+0020 Do While length(ol)>6                  /* loop through target         */
+0021 Parse Var ol b +7 ol                 /* pick 7 bits                 */
+0022 b='0'||b                             /* add a leading '0'           */
+0023 x=b2x(b)                             /* convert to hex              */
+0024 r=r||x2c(x)                          /* convert to character        */
+0025 End                                  /* and append to result        */
+0026 Say 'r='r                              /* show result                 */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 ol               21 21
+002 b                21 22
+003 x                23
+004 r                24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

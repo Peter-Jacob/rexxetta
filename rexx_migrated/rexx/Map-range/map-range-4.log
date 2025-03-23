@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program maps a number from one range to another range.           */
+0002 /* 31.10.2013 Walter Pachl   */
+0003 /*                  'translated' from an older version 1 without using Procedure */
+0004 do j=0  to 10
+0005 say right(j,3)   ' maps to '   mapRange(0,10,-1,0,j)
+0006 end
+0007 exit
+0008 /*──────────────────────────────────MAPRANGE subroutine─────────────────*/
+0009 mapRange: return arg(3)+(arg(5)-arg(1))*(arg(4)-arg(3))/(arg(2)-arg(1))
+0010 /* Arguments are arg a1,a2,b1,b2,x */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                4
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

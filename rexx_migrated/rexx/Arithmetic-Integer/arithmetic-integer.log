@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program obtains two integers from the C.L. (a prompt);  displays some operations.*/
+0002 numeric digits 20                                /*#s are round at 20th significant dig.*/
+0003 parse arg x y .                                  /*maybe the integers are on the  C.L.  */
+0004 
+0005 do while \datatype(x,'W') | \datatype(y,'W')   /*both   X  and  Y   must be integers. */
+0006 say "─────Enter two integer values  (separated by blanks):"
+0007 parse pull x y .                               /*accept two thingys from command line.*/
+0008 end   /*while*/
+0009 /* [↓]  perform this  DO  loop twice.  */
+0010 do j=1  for 2                               /*show  A  oper  B,   then  B  oper  A.*/
+0011 call show 'addition'          ,  "+",   x+y
+0012 call show 'subtraction'       ,  "-",   x-y
+0013 call show 'multiplication'    ,  "*",   x*y
+0014 call show 'int  division'     ,  "%",   x%y,  '    [rounds down]'
+0015 call show 'real division'     ,  "/",   x/y
+0016 call show 'division remainder',  "//",  x//y, '    [sign from 1st operand]'
+0017 call show 'power'             ,  "**",  x**y
+0018 
+0019 parse value  x  y    with    y  x           /*swap the two values and perform again*/
+0020 if j==1  then say copies('═', 79)           /*display a fence after the 1st round. */
+0021 end   /*j*/
+0022 exit                                             /*stick a fork in it,  we're all done. */
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 show: parse arg c,o,#,?;   say right(c,25)' '  x  center(o,4)  y  " ───► "  #  ?;   return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 c                24
+002 o                24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            24
+002 ?                -> newV2            24

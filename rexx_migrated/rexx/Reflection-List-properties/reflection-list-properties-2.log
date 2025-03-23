@@ -1,0 +1,21 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /* REXX shows the "equivalent" to PL/I's PUT DATA for a simple variable */
+0002 /* put_data2('a.') to show all a.tail values isn't that easy :-)        */
+0003 j=2
+0004 abc.j= -4.12
+0005 Say put_data('abc.2')     /* Put Data(abc(2)) */
+0006 string=put_data('abc.2')  /* Put string(string) Data(abc(2)) */
+0007 Say string
+0008 Exit
+0009 put_data:
+0010 Parse Arg variable
+0011 return(variable'='''value(variable)'''')
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 variable         10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

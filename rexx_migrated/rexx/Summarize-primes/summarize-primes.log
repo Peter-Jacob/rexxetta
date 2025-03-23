@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX pgm finds summation primes P,  primes which the sum of primes up to P are prime. */
+0002 parse arg hi .                                   /*obtain optional argument from the CL.*/
+0003 if hi=='' | hi==","  then hi= 1000               /*Not specified?  Then use the default.*/
+0004 call genP                                        /*build array of semaphores for primes.*/
+0005 w= 30;     w2= w*2%3;      pad= left('',w-w2)    /*the width of the columns two & three.*/
+0006 title= ' summation primes which the sum of primes up to  P  is also prime,  P  < '  ,
+0007 commas(hi)
+0008 say ' index │' center(subword(title, 1, 2), w)  center('prime sum', w)  /*display title.*/
+0009 say '───────┼'center(""   , 1 + (w+1)*2,  '─')                          /*   "    sep.  */
+0010 found= 0                                         /*initialize # of summation primes.    */
+0011 $= 0       /*sum of primes up to the current prime*/
+0012 do j=1  for hi-1;  p= @.j;  $= $ + p   /*find summation primes within range.  */
+0013 if \!.$  then iterate                  /*Is sum─of─primes a prime?  Then skip.*/
+0014 found= found + 1                       /*bump the number of summation primes. */
+0015 say right(j, 6) '│'strip( right(commas(p), w2)pad || right(commas($), w2), "T")
+0016 end   /*j*/
+0017 
+0018 say '───────┴'center(""   , 1 + (w+1)*2,  '─')   /*display foot separator after output. */
+0019 say
+0020 say 'Found '       commas(found)      title
+0021 exit 0                                           /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 genP: !.= 0;  sP= 0                              /*prime semaphores;  sP= sum of primes.*/
+0026 @.1=2;  @.2=3;  @.3=5;  @.4=7;  @.5=11     /*define some low primes.              */
+0027 !.2=1;  !.3=1;  !.5=1;  !.7=1;  !.11=1     /*   "     "   "    "     flags.       */
+0028 #=5;  sq.#= @.# **2      /*number of primes so far;     prime². */
+0029 /* [↓]  generate more  primes  ≤  high.*/
+0030 do j=@.#+2  by 2  until @.#>=hi & @.#>sP /*find odd primes where  P≥hi and P>sP.*/
+0031 parse var j '' -1 _; if _==5  then iterate            /*J ÷ by 5?  (right digit)*/
+0032 if j//3==0  then iterate;  if j//7==0  then iterate   /*J ÷ by 3?;   J ÷ by 7?  */
+0033 do k=5  while sq.k<=j             /* [↓]  divide by the known odd primes.*/
+0034 if j // @.k == 0  then iterate j  /*Is  J ÷ X?  Then not prime.     ___  */
+0035 end   /*k*/                       /* [↑]  only process numbers  ≤  √ J   */
+0036 #= #+1;    @.#= j;   sq.#= j*j;   !.j= 1 /*bump # Ps; assign next P; P square; P*/
+0037 if @.#<hi  then sP= sP + @.#             /*maybe add this prime to sum─of─primes*/
+0038 end          /*j*/;               return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                31
+002 k                33
+003 sq.              36
+004 sP               37
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           26 26 26 26 26 36
+002 !.               -> newV2.           27 27 27 27 27 36
+003 $                -> newV3            11 12
+004 ?                -> newV4            23 23
+005 #                -> newV5            28 36
+006 _                -> newV6            31

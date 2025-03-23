@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program  encodes  several example text strings  using  the  ROT-13  algorithm.   */
+0002 $='foo'                         ; say "simple text=" $;  say 'rot-13 text=' rot13($);  say
+0003 $='bar'                         ; say "simple text=" $;  say 'rot-13 text=' rot13($);  say
+0004 $="Noyr jnf V, 'rer V fnj Ryon."; say "simple text=" $;  say 'rot-13 text=' rot13($);  say
+0005 $='abc?  ABC!'                  ; say "simple text=" $;  say 'rot-13 text=' rot13($);  say
+0006 $='abjurer NOWHERE'             ; say "simple text=" $;  say 'rot-13 text=' rot13($);  say
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 rot13: return  translate( arg(1), 'abcdefghijklmABCDEFGHIJKLMnopqrstuvwxyzNOPQRSTUVWXYZ',,
+0010 "nopqrstuvwxyzNOPQRSTUVWXYZabcdefghijklmABCDEFGHIJKLM")
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            2 3 4 5 6

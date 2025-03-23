@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX program displays a  NxN  multiplication table  (in a boxed grid) to the terminal.*/
+0002 parse arg sz .                                   /*obtain optional argument from the CL.*/
+0003 if sz=='' | sz==","  then sz= 12                 /*Not specified?  Then use the default.*/
+0004 w= max(3, length(sz**2) );    __= copies('─', w) /*calculate the width of the table cell*/
+0005 ___= __'──'         /*literals used in the subroutines.    */
+0006 do r=1  for sz                           /*calculate & format a row of the table*/
+0007 if r==1  then call top left('│(x)', w+1) /*show title of multiplication table.  */
+0008 $= '│'center(r"x", w)"│"                 /*index for a multiplication table row.*/
+0009 do c=1  for sz;     prod=         /*build a row of multiplication table. */
+0010 if r<=c  then prod= r * c         /*only display when the  row ≤ column. */
+0011 $= $  ||  right(prod,  w+1) '|'   /*append product to a cell in the row. */
+0012 end   /*k*/
+0013 say $                                    /*show a row of multiplication table.  */
+0014 if r\==sz  then call sep                 /*show a separator except for last row.*/
+0015 end          /*j*/
+0016 call bot                                         /*show the bottom line of the table.   */
+0017 exit 0                                           /*stick a fork in it,  we're all done. */
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 hdr: $= ?'│';   do i=1  for sz; $=$ || right(i"x|", w+3);  end;  say $;   call sep; return
+0020 dap: $= left($, length($) - 1)arg(1);                                               return
+0021 top: $= '┌'__"┬"copies(___'┬', sz);  call dap "┐";  ?= arg(1);   say $;   call hdr; return
+0022 sep: $= '├'__"┼"copies(___'┼', sz);  call dap "┤";               say $;             return
+0023 bot: $= '└'__"┴"copies(___'┴', sz);  call dap "┘";               say $;             return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 sz               2 3
+002 w                4
+003 r                6
+004 c                9
+005 prod             9 10
+006 i                19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 ___              -> newV1            5
+002 __               -> newV2            4
+003 $                -> newV3            8 11 19
+004 ?                -> newV4            21

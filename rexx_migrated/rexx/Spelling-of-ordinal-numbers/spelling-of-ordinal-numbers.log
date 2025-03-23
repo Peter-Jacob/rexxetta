@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX programs spells out  ordinal numbers  (in English, using the American system).   */
+0002 numeric digits 3000                              /*just in case the user uses gihugic #s*/
+0003 parse arg n                                      /*obtain optional arguments from the CL*/
+0004 
+0005 if n='' | n=","  then n= 1  2  3  4  5  11  65  100  101  272  23456  8007006005004003
+0006 
+0007 pgmOpts= 'ordinal  quiet'                        /*define options needed for $SPELL#.REX*/
+0008 
+0009 
+0010 do j=1  for words(n)                        /*process each of the specified numbers*/
+0011 x=word(n, j)                                /*obtain a number from the input list. */
+0012 os=$spell#(x  pgmOpts)                      /*invoke REXX routine to spell ordinal#*/
+0013 say right(x, max(20, length(x) ) )      ' spelled ordinal number ───► '      os
+0014 end   /*j*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                3 5
+002 pgmOpts          7
+003 j                10
+004 x                11
+005 os               12
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,50 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 numeric digits ddd               /*sets the current precision to  DDD   */
+0002 numeric fuzz   fff               /*arithmetic comparisons with FFF fuzzy*/
+0003 numeric form   kkk               /*exponential: scientific | engineering*/
+0004 
+0005 low=min(a,b,c,d,e,f,g, ...)      /*finds the min of specified arguments.*/
+0006 big=min(a,b,c,d,e,f,g, ...)      /*finds the max of specified arguments.*/
+0007 
+0008 rrr=random(low,high)             /*gets a random integer from LOW-->HIGH*/
+0009 arr=random(low,high,seed)        /* ... with a seed (to make repeatable)*/
+0010 
+0011 mzp=sign(x)                      /*finds the sign of  x   (-1, 0, +1).  */
+0012 
+0013 fs=format(x)                    /*formats X  with the current DIGITS() */
+0014 fb=format(x,bbb)                /*            BBB  digs  before decimal*/
+0015 fa=format(x,bbb,aaa)            /*            AAA  digs  after  decimal*/
+0016 fa=format(x,,0)                 /*            rounds  X  to an integer.*/
+0017 fe=format(x,,eee)               /*            exponent has eee places. */
+0018 ft=format(x,,eee,ttt)           /*if x exceeds TTT digits, force exp.  */
+0019 
+0020 hh=b2x(bbb)                      /*converts binary/bits to hexadecimal. */
+0021 dd=c2d(ccc)                      /*converts character   to decimal.     */
+0022 hh=c2x(ccc)                      /*converts character   to hexadecimal. */
+0023 cc=d2c(ddd)                      /*converts decimal     to character.   */
+0024 hh=d2x(ddd)                      /*converts decimal     to hexadecimal. */
+0025 bb=x2b(hhh)                      /*converts hexadecimal to binary (bits)*/
+0026 cc=x2c(hhh)                      /*converts hexadecimal to character.   */
+0027 dd=x2d(hhh)                      /*converts hexadecimal to decimal.     */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 low              5
+002 big              6
+003 rrr              8
+004 arr              9
+005 mzp              11
+006 fs               13
+007 fb               14
+008 fa               15 16
+009 fe               17
+010 ft               18
+011 hh               20 22 24
+012 dd               21 27
+013 cc               23 26
+014 bb               25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*REXX pgm creates a new empty file and directory; in curr dir and root.*/
+0002 do 2                            /*perform three statements twice.*/
+0003 'COPY NUL output.txt'           /*copy a "null" (empty) file.    */
+0004 'MKDIR DOCS'                    /*make a directory (aka: folder).*/
+0005 'CD \'                          /*change currect dir to the root.*/
+0006 end   /*2*/                     /*now, go and perform them again.*/
+0007 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

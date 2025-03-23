@@ -1,0 +1,60 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX program displays results of probabilistic choices, gen random #s per probability.*/
+0002 parse arg trials digs seed .                     /*obtain the optional arguments from CL*/
+0003 if trials=='' | trials==","  then trials= +1e6   /*Not specified?  Then use the default.*/
+0004 if   digs=='' |   digs==","  then   digs=   15   /* "      "         "   "   "     "    */
+0005 if datatype(seed, 'W')  then call random ,,seed  /*allows repeatability for RANDOM nums.*/
+0006 numeric digits digs                              /*use a specific number of decimal digs*/
+0007 names= 'aleph beth gimel daleth he waw zayin heth ───totals───►'   /*names of the cells.*/
+0008 hi= 100000                                                         /*max REXX RANDOM num*/
+0009 z= words(names);             #= z - 1            /*#: the number of actual/usable names.*/
+0010 $= 0                                             /*initialize sum of the probabilities. */
+0011 do n=1  for #;    prob.n= 1 / (n+4);     if n==#  then prob.n= 1759 / 27720
+0012 $= $ + prob.n;   Hprob.n= prob.n * hi /*spread the range of probabilities.   */
+0013 end   /*n*/
+0014 prob.z= $                                        /*define the value of the ───totals───.*/
+0015 @.= 0                                            /*initialize all counters in the range.*/
+0016 @.z= trials                                      /*define the last counter of  "    "   */
+0017 do j=1  for trials;    r= random(hi)  /*gen  TRIAL  number of random numbers.*/
+0018 do k=1  for #                     /*for each cell, compute  percentages. */
+0019 if r<=Hprob.k  then @.k= @.k + 1  /* "    "    "  range, bump the counter*/
+0020 end   /*k*/
+0021 end       /*j*/
+0022 _= '═'                                           /*_:  padding used by the  CENTER  BIF.*/
+0023 w= digs + 6                                      /*W:  display width for the percentages*/
+0024 d= 4 + max( length(trials), length('count') )    /* [↓]  display a formatted top header.*/
+0025 say center('name',15,_)  center('count',d,_) center('target %',w,_) center('actual %',w,_)
+0026 
+0027 do cell=1  for z                            /*display each of the cells and totals.*/
+0028 say  ' '   left( word(names, cell), 13)             right(@.cell, d-2)  " " ,
+0029 left( format(   prob.cell   * 100, d),   w-2) ,
+0030 left( format( @.cell/trials * 100, d),   w-2)   /* [↓]  foot title. [↓] */
+0031 if cell==#  then say  center(_,15,_)   center(_,d,_)    center(_,w,_)   center(_,w,_)
+0032 end   /*c*/                                 /*stick a fork in it,  we are all done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 trials           2 3
+002 digs             2 4
+003 seed             2
+004 names            7
+005 hi               8
+006 z                9
+007 n                11
+008 prob.            11 11 14
+009 Hprob.           12
+010 j                17
+011 r                17
+012 k                18
+013 w                23
+014 d                24
+015 cell             27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           15 16 19
+002 #                -> newV2            9
+003 $                -> newV3            10 12
+004 _                -> newV4            22

@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX program  generates and displays a random  32-bit  number  using the  RANDOM  BIF.*/
+0002 numeric digits 10                                /*ensure REXX has enough decimal digits*/
+0003 _=2**16                                          /*a handy─dandy constant to have around*/
+0004 r#= random(0, _-1) * _    +    random(0, _-1)    /*generate an unsigned 32-bit random #.*/
+0005 say r#                                           /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 r#               4
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            3

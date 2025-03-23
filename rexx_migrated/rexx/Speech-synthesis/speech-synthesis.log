@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX program uses a command line interface to invoke Windows SAM for speech synthesis.*/
+0002 parse arg t                                      /*get the (optional) text from the C.L.*/
+0003 if t=''  then exit                               /*Nothing to say?    Then exit program.*/
+0004 dquote= '"'
+0005 rate= 1                                          /*talk:   -10 (slow)   to   10 (fast). */
+0006 /* [↓]  where the rubber meets the road*/
+0007 'NIRCMD'  "speak text"  dquote  t  dquote   rate /*NIRCMD  invokes Microsoft's Sam voice*/
+0008 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 t                2
+002 dquote           4
+003 rate             5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,52 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX program  calculates and displays the   fusc   (or  Stern's Diatomic)   sequence. */
+0002 parse arg st # xw .                              /*obtain optional arguments from the CL*/
+0003 if st=='' | st==","  then st=   0                /*Not specified?  Then use the default.*/
+0004 if  #=='' |  #==","  then  #= 256                /* "      "         "   "   "     "    */
+0005 if xw=='' | xw==","  then xw=   0                /* "      "         "   "   "     "    */
+0006 list= xw<1                                       /*boolean value:  LIST  to show numbers*/
+0007 @.=;        @.0= 0;       @.1= 1                 /*assign array default; assign low vals*/
+0008 mL= 0                                            /*the maximum length (digits)  so far. */
+0009 $=                                               /* "  list of  fusc  numbers    "  "   */
+0010 do j=0  for #                                 /*process a bunch of integers from zero*/
+0011 if j>1  then if j//2  then do;  _= (j-1) % 2;   p= (j+1) % 2;   @.j= @._ + @.p;   end
+0012 else do;  _= j % 2;                       @.j= @._;         end
+0013 if list  then if j>=st  then $= $ commas(@.j)                      /*add it to a list*/
+0014 else nop                                   /*NOP≡placeholder.*/
+0015 else do;   if length(@.j)<=mL  then iterate               /*still too small.*/
+0016 mL= length(@.j)                                /*found increase. */
+0017 if mL==1  then say '═══index═══   ═══fusc number═══'
+0018 say right( commas(j), 9)     right( commas(@.j), 14)
+0019 if mL==xw  then leave     /*Found max length?  Then stop looking.*/
+0020 end                             /* [↑]  display fusc #s of maximum len.*/
+0021 end   /*j*/
+0022 /*$   has a superfluous leading blank. */
+0023 if $==''  then exit 0                            /*display a horizontal list of fusc #s.*/
+0024 row= -1                                          /*output will be starting ar row  zero.*/
+0025 $$= 0                                            /*initialize with the zeroth entry (=0)*/
+0026 do k=2  for #;       y= word($, k)        /*start processing with the 2nd number.*/
+0027 if y==1  then do;  row= row + 1           /*Is it unity?    Then bump row number.*/
+0028 say 'row('row")="  $$  /*display the row that was just created*/
+0029 $$= 1                  /*initialize a new row with 1  (unity).*/
+0030 end
+0031 else $$= $$  y                   /*Not unity?   Just append it to a row.*/
+0032 end   /*k*/
+0033 
+0034 if $$\==''  then say "row("row+1')='  $$         /*display any residual data in the row.*/
+0035 exit 0                                           /*stick a fork in it,  we're all done. */
+0036 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0037 commas:  parse arg ?;  do _=length(?)-3  to 1  by -3; ?=insert(',', ?, _); end;   return ?
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           7 7 7 11 12
+002 $$               -> newV2            25 29
+003 #                -> newV3            2 4
+004 $                -> newV4            9 13
+005 _                -> newV5            11 12 37
+006 ?                -> newV6            37 37

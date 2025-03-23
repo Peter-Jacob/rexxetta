@@ -1,0 +1,78 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX program verifies if a   horizontal ray   from   point P   intersects  a polygon. */
+0002 call points 5 5,       5 8,       -10  5,       0  5,       10  5,       8  5,       10 10
+0003 A= 2.5;     B= 7.5                      /* ◄───── used for shorter arguments (below).*/
+0004 call poly 0 0, 10 0,  10 10,  0 10                             ;   call test 'square'
+0005 call poly 0 0, 10 0,  10 10,  0 10,  A  A,   B  A,   B  B, A B ;   call test 'square hole'
+0006 call poly 0 0,  A A,   0 10,  A  B,  B  B,  10 10,  10  0      ;   call test 'irregular'
+0007 call poly 3 0,  7 0,  10  5,  7 10,  3 10,   0  5              ;   call test 'hexagon'
+0008 exit 0                                           /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 in$out: procedure expose point. poly.;     parse arg p;              #= 0
+0011 do side=1  to poly.0  by 2;  #= # +intersect(p, side);   end /*side*/
+0012 return # // 2                            /*ODD  is inside.     EVEN  is outside.*/
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 intersect: procedure expose point. poly.;         parse arg ?,s;                 sp= s + 1
+0015 epsilon= '1e'  ||  (-digits() % 2)
+0016 Px= point.?.x;     Ax= poly.s.x;       Bx= poly.sp.x
+0017 Py= point.?.y;     Ay= poly.s.y;       By= poly.sp.y  /* [↓]  do vertex swap.*/
+0018 if Ay>By           then parse  value   Ax Ay Bx By    with    Bx By Ax Ay
+0019 if Py=Ay | Py=By   then Py= Py + epsilon
+0020 if Py<Ay | Py>By | Px>max(Ax, Bx)  then  return 0
+0021 if                 Px<min(Ax, Bx)  then  return 1
+0022 if Ax\=Bx          then red = (By-Ay) / (Bx-Ax)
+0023 else red = i"1e"  ||  (digits() *2)      /* ◄─── infinity.*/
+0024 if Ax\=Px          then return  (Py-Ay) / (Px-Ax)  >=  red
+0025 else return  1
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 points: wx= 0;  wy= 0;   do j=1  for arg();         parse value  arg(j)    with   xx  yy
+0028 wx= max(wx, length(xx) );  call  value  'POINT.'j".X",   xx
+0029 wy= max(wy, length(yy) );  call  value  'POINT.'j".Y",       yy
+0030 end   /*j*/
+0031 call value point.0,  j-1                         /*define the number of points. */
+0032 return                                           /* [↑]  adjust J  (for DO loop)*/
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 poly:   @= 'POLY.';      parse arg Fx Fy                 /* [↓]  process the X,Y points.*/
+0035 n= 0
+0036 do j=1  for arg();      n= n + 1;  parse value arg(j)   with   xx yy
+0037 call value @ || n'.X',  xx ;       call value  @ || n".Y", yy
+0038 if n//2  then iterate;  n= n + 1        /*Inside? Then skip this point.*/
+0039 call value @ || n'.X',  xx ;       call value  @ || n".Y", yy
+0040 end   /*j*/
+0041 n= n + 1                                         /*POLY.0  is # segments(sides).*/
+0042 call value @ || n'.X', Fx;       call value @ || n".Y", Fy;     call value @'0', n
+0043 return
+0044 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0045 test:   say;     do k=1  for point.0;    w= wx + wy + 2  /*W, WX, WY ≡are various widths*/
+0046 say right('  ['arg(1)"]  point:",  30),
+0047 right( right(point.k.x, wx)', 'right(point.k.y, wy), w)     "  is  ",
+0048 right( word('outside inside',  in$out(k) + 1),  7)
+0049 end   /*k*/
+0050 return                                           /* [↑] format the output nicely*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 Fx               34
+002 Fy               34
+003 n                35 36 38 41
+004 j                36
+005 Ax               16 18
+006 Bx               16 18
+007 Py               17 19
+008 Ay               17 18
+009 By               17 18
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 xx               36
+015 yy               36
+016 k                45
+017 w                45
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            10 11
+002 ?                -> newV2            14

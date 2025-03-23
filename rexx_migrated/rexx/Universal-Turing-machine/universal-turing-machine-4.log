@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program executes a  Turing machine  based on   initial state,  tape, and rules.  */
+0002 state = 'A'                                      /*the initial  Turing machine  state.  */
+0003 term  = 'halt'                                   /*a state that is used for the  halt.  */
+0004 blank =  0                                       /*this character is a  "true"  blank.  */
+0005 call Turing_rule  'A 1 1 right A'                /*define a rule for the Turing machine.*/
+0006 call Turing_rule  'A 2 3 right B'                /*   "   "   "   "   "     "      "    */
+0007 call Turing_rule  'A 0 0 left  E'                /*   "   "   "   "   "     "      "    */
+0008 call Turing_rule  'B 1 1 right B'                /*   "   "   "   "   "     "      "    */
+0009 call Turing_rule  'B 2 2 right B'                /*   "   "   "   "   "     "      "    */
+0010 call Turing_rule  'B 0 0 left  C'                /*   "   "   "   "   "     "      "    */
+0011 call Turing_rule  'C 1 2 left  D'                /*   "   "   "   "   "     "      "    */
+0012 call Turing_rule  'C 2 2 left  C'                /*   "   "   "   "   "     "      "    */
+0013 call Turing_rule  'C 3 2 left  E'                /*   "   "   "   "   "     "      "    */
+0014 call Turing_rule  'D 1 1 left  D'                /*   "   "   "   "   "     "      "    */
+0015 call Turing_rule  'D 2 2 left  D'                /*   "   "   "   "   "     "      "    */
+0016 call Turing_rule  'D 3 1 right A'                /*   "   "   "   "   "     "      "    */
+0017 call Turing_rule  'E 1 1 left  E'                /*   "   "   "   "   "     "      "    */
+0018 call Turing_rule  'E 0 0 right halt'             /*   "   "   "   "   "     "      "    */
+0019 call Turing_init   1 2 2 1 2 2 1 2 1 2 1 2 1 2   /*initialize the tape to some string(s)*/
+0020 call TM                                          /*go and invoke the Turning machine.   */
+0021 exit                                             /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 TM: ∙∙∙
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 state            2
+002 term             3
+003 blank            4
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

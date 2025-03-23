@@ -1,0 +1,15 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program finds the  lowest (positive)  integer  whose  square  ends in  269,696.  */
+0002 do j=2  by 2  until right(j * j, 6) == 269696 /*start  J  at two,  increment by two. */
+0003 end                                           /*◄── signifies the end of the DO loop.*/
+0004 /* [↑]     *     means multiplication. */
+0005 say "The smallest integer whose square ends in  269,696  is: "    j
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                2
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

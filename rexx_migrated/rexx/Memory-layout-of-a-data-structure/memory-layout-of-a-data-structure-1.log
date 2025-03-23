@@ -1,0 +1,132 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Decode Memory structure of  RS-232 Plug Definition
+0003 * Not sure if I understood it completely :-) Open for corrections
+0004 * You never stop learning (as long as you live)
+0005 * 03.08.2012 Walter Pachl
+0006 **********************************************************************/
+0007 Call decode 'ABC'
+0008 Call decode 'XY'
+0009 Exit
+0010 
+0011 decode:
+0012 Parse Arg c
+0013 cb=c2b(c)
+0014 If length(cb)=24 Then Do
+0015 Parse Var cb,
+0016 /*    1 - PG  */ Protective ground      +1,
+0017 /* 3  2 - TD  */ Transmitted_data       +1,
+0018 /* 2  3 - RD  */ Received_data          +1,
+0019 /* 7  4 - RTS */ Request_to_send        +1,
+0020 /* 8  5 - CTS */ Clear_to_send          +1,
+0021 /* 6  6 - DSR */ Data_set_ready         +1,
+0022 /* 5  7 - SG  */ Signal_ground          +1,
+0023 /* 1  8 - CD  */ Carrier_detect         +1,
+0024 /*    9 - +   */ plus_voltage           +1,
+0025 /*   10 - -   */ minus_voltage          +1,
+0026 /*   11 -     */ .                      +1,
+0027 /*   12 - SCD */ Secondary_CD           +1,
+0028 /*   13 - SCS */ Secondary_CTS          +1,
+0029 /*   14 - STD */ Secondary_TD           +1,
+0030 /*   15 - TC  */ Transmit_clock         +1,
+0031 /*   16 - SRD */ Secondary_RD           +1,
+0032 /*   17 - RC  */ Receiver_clock         +1,
+0033 /*   18 -     */ .                      +1,
+0034 /*   19 - SRS */ Secondary_RTS          +1,
+0035 /* 4 20 - DTR */ Data_terminal_ready    +1,
+0036 /*   21 - SQD */ Signal_quality_detector+1,
+0037 /* 9 22 - RI  */ Ring_indicator         +1,
+0038 /*   23 - DRS */ Data_rate_select       +1,
+0039 /*   24 - XTC */ External_clock         +1
+0040 Say '24 bins:' cb
+0041 Say ' 1 - PG  Protective ground       ='Protective ground
+0042 Say ' 2 - TD  Transmitted data        ='Transmitted_data
+0043 Say ' 3 - RD  Received data           ='Received_data
+0044 Say ' 4 - RTS Request to send         ='Request_to_send
+0045 Say ' 5 - CTS Clear to send           ='Clear_to_send
+0046 Say ' 6 - DSR Data set ready          ='Data_set_ready
+0047 Say ' 7 - SG  Signal ground           ='Signal_ground
+0048 Say ' 8 - CD  Carrier detect          ='Carrier_detect
+0049 Say ' 9 - +   plus voltage            ='plus_voltage
+0050 Say '10 - -   minus voltage           ='minus_voltage
+0051 Say ' '
+0052 Say '12 - SCD Secondary CD            ='Secondary_CD
+0053 Say '13 - SCS Secondary CTS           ='Secondary_CTS
+0054 Say '14 - STD Secondary TD            ='Secondary_TD
+0055 Say '15 - TC  Transmit clock          ='Transmit_clock
+0056 Say '16 - SRD Secondary RD            ='Secondary_RD
+0057 Say '17 - RC  Receiver clock          ='Receiver_clock
+0058 Say ' '
+0059 Say '19 - SRS Secondary RTS           ='Secondary_RTS
+0060 Say '20 - DTR Data terminal ready     ='Data_terminal_ready
+0061 Say '21 - SQD Signal quality detector ='Signal_quality_detector
+0062 Say '22 - RI  Ring indicator          ='Ring_indicator
+0063 Say '23 - DRS Data rate select        ='Data_rate_select
+0064 Say '24 - XTC External hlock          ='External_clock
+0065 End
+0066 Else Do
+0067 Parse Var cb,
+0068 /* 1  8 - CD  */ Carrier_detect         +1,
+0069 /* 2  3 - RD  */ Received_data          +1,
+0070 /* 3  2 - TD  */ Transmitted_data       +1,
+0071 /* 4 20 - DTR */ Data_terminal_ready    +1,
+0072 /* 5  7 - SG  */ Signal_ground          +1,
+0073 /* 6  6 - DSR */ Data_set_ready         +1,
+0074 /* 7  4 - RTS */ Request_to_send        +1,
+0075 /* 8  5 - CTS */ Clear_to_send          +1,
+0076 /* 9 22 - RI  */ Ring_indicator         +1
+0077 Say ' '
+0078 Say '9-bin:' left(cb,9)
+0079 Say ' 1 CD   Carrier detect      ='Carrier_detect
+0080 Say ' 2 RD   Received data       ='Received_data
+0081 Say ' 3 TD   Transmitted data    ='Transmitted_data
+0082 Say ' 4 DTR  Data terminal ready ='Data_terminal_ready
+0083 Say ' 5 SG   Signal ground       ='Signal_ground
+0084 Say ' 6 DSR  Data set ready      ='Data_set_ready
+0085 Say ' 7 RTS  Request to send     ='Request_to_send
+0086 Say ' 8 CTS  Clear to send       ='Clear_to_send
+0087 Say ' 9 RI   Ring indicator      ='Ring_indicator
+0088 End
+0089 Return
+0090 c2b: Procedure
+0091 /* REXX ***************************************************************
+0092 * c2b Convert a character string to a bit string
+0093 * 03.08.2012 Walter Pachl
+0094 **********************************************************************/
+0095 Parse Arg c
+0096 x=c2x(c)
+0097 res=''
+0098 Do While x<>''
+0099 Parse Var x hb +1 x
+0100 Select
+0101 When hb='0' Then bs='0000'
+0102 When hb='1' Then bs='0001'
+0103 When hb='2' Then bs='0010'
+0104 When hb='3' Then bs='0011'
+0105 When hb='4' Then bs='0100'
+0106 When hb='5' Then bs='0101'
+0107 When hb='6' Then bs='0110'
+0108 When hb='7' Then bs='0111'
+0109 When hb='8' Then bs='1000'
+0110 When hb='9' Then bs='1001'
+0111 When hb='A' Then bs='1010'
+0112 When hb='B' Then bs='1011'
+0113 When hb='C' Then bs='1100'
+0114 When hb='D' Then bs='1101'
+0115 When hb='E' Then bs='1110'
+0116 When hb='F' Then bs='1111'
+0117 End
+0118 res=res||bs
+0119 End
+0120 Return res
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                99 99
+002 hb               99
+003 res              118
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

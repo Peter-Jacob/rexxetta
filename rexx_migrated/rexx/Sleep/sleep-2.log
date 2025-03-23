@@ -1,0 +1,93 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program delays (or SLEEPS) a number of whole seconds; fractional secs are ignored*/
+0002 trace off                                              /*suppress REXX error messages.  */
+0003 parse arg !                                            /*obtain all the arguments.      */
+0004 if !all(arg()) then exit                               /*documentation requested ?      */
+0005 if !cms  then address ''                               /*if CMS, then use fast cmd path.*/
+0006 signal on halt                                         /*handle  HALT  gracefully.      */
+0007 signal on noValue                                      /*handle the REXX noValue error. */
+0008 signal on syntax                                       /*handle the REXX syntax errors. */
+0009 
+0010 /*┌────────────────────────────────────────────────────────────────────┐
+0011 ┌─┘ The  DELAY  function is used to delay (wait) a specific amount of  └─┐
+0012 │ (wall-clock)  time specified in seconds.  Any fraction part is ignored.│
+0013 │                                                                        │
+0014 │ If the REXX program invoking  DELAY  function is running under PC/REXX │
+0015 │ or  Personal REXX,  this REXX program should never be invoked as those │
+0016 └─┐ REXXes have their own built-in function (BIF)  named   "DELAY".    ┌─┘
+0017 └────────────────────────────────────────────────────────────────────┘*/
+0018 
+0019 @cpsleep  = 'CP SLEEP'                                 /*point to the (CP) SLEEP command*/
+0020 @ping     = 'PING'                                     /*  "    "  "  DOS  PING     "   */
+0021 
+0022 parse var ! n _                                        /*parse argument from the parms. */
+0023 if _\=='' | arg()>1  then call er 59                   /*are there too many arguments ? */
+0024 if n==''             then n=1                          /*No args?  Then assume  1 second*/
+0025 if \isNum(n)  then call er 53,n 'delay-seconds'        /*is   n   not numeric?   Error. */
+0026 n=n%1                                                  /*elide any fractional second.   */
+0027 if n<=0  then return 0
+0028 /* ┌────────────────────┐ */
+0029 /* │ delay  n  seconds. │ */
+0030 /* └────────────────────┘ */
+0031 select
+0032 when !cms     then @cpsleep  n%1  "SEC"              /*is this CMS?  Then use CP SLEEP*/
+0033 when !tso     then call sleep n%1                    /* "   "  TSO?    "   "  SLEEP   */
+0034 when !regina  then call sleep n%1                    /* "   " Regina?  "   "    "     */
+0035 when !dos     then @ping '-n' n "127.0.0.1 > NUL"    /* "   "  DOS?    "   "   PING   */
+0036 otherwise          nop
+0037 end   /*select*/
+0038 
+0039 return 0                                               /*return a zero value to invoker.*/
+0040 /*─────────────────────────────general 1─line subroutines───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────*/
+0041 !all:  !!=!;!=space(!);upper !;call !fid;!nt=right(!var('OS'),2)=="NT";!cls=word('CLS VMFCLEAR CLRSCREEN',1+!cms+!tso*2);if arg(1)\==1 then return 0;if wordpos(!,"? ?SAMPLES ?AUTHOR ?FLOW")==0 then return 0;!call=']$H';call "$H" !fn !;!call=;return 1
+0042 !cal:    if symbol('!CALL')\=="VAR"  then !call=;        return !call
+0043 !env:    !env='ENVIRONMENT'; if !sys=="MSDOS" | !brexx | !r4 | !roo  then !env='SYSTEM';  if !os2  then !env="OS2"!env;  !ebcdic=3=='f3'x;  if !crx  then !env="DOS";      return
+0044 !fid:    parse upper source !sys !fun !fid . 1 . . !fn !ft !fm .;  call !sys;  if !dos  then do;  _=lastpos('\',!fn);  !fm=left(!fn,_);  !fn=substr(!fn,_+1); parse var !fn !fn "." !ft; end;   return word(0 !fn !ft !fm, 1+('0'arg(1)))
+0045 !rex:    parse upper version !ver !vernum !verdate .;  !brexx='BY'==!vernum;  !kexx="KEXX"==!ver;  !pcrexx='REXX/PERSONAL'==!ver | "REXX/PC"==!ver;  !r4='REXX-R4'==!ver;  !regina="REXX-REGINA"==left(!ver,11);  !roo='REXX-ROO'==!ver; call !env; return
+0046 !sys:    !cms=!sys=='CMS';  !os2=!sys=="OS2";  !tso=!sys=='TSO' | !sys=="MVS";  !vse=!sys=='VSE';  !dos=pos("DOS",!sys)\==0 | pos('WIN',!sys)\==0 | !sys=="CMD";  !crx=left(!sys,6)=='DOSCRX';  call !rex;   return
+0047 !var:    call !fid;  if !kexx  then return space(dosenv(arg(1)));   return space(value(arg(1), , !env))
+0048 er:      parse arg _1,_2;  call '$ERR'  "14"p(_1)  p(word(_1,2)  !fid(1))  _2;   if _1<0  then return _1;     exit result
+0049 p:       return word(arg(1), 1)
+0050 halt:    call er .1
+0051 isNum:   return datatype(arg(1), 'N')
+0052 noValue: !sigl=sigl;  call er 17, !fid(2)  !fid(3)  !sigl  condition('D')  sourceline(!sigl)
+0053 syntax:  !sigl=sigl;  call er 13, !fid(2)  !fid(3)  !sigl  !cal()  condition('D')  sourceline(!sigl)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @cpsleep         -> newV1            19
+002 !verdate         -> newV2            45
+003 !ebcdic          -> newV3            43
+004 !vernum          -> newV4            45
+005 !pcrexx          -> newV5            45
+006 !regina          -> newV6            45
+007 !brexx           -> newV7            45
+008 @ping            -> newV8            20
+009 !call            -> newV9            41 41
+010 !kexx            -> newV10           45
+011 !cls             -> newV11           41
+012 !env             -> newV12           43 43 43
+013 !sys             -> newV13           44
+014 !fun             -> newV14           44
+015 !fid             -> newV15           44
+016 !ver             -> newV16           45
+017 !roo             -> newV17           45
+018 !os2             -> newV18           46
+019 !tso             -> newV19           46
+020 !vse             -> newV20           46
+021 !dos             -> newV21           46
+022 !crx             -> newV22           46
+023 !nt              -> newV23           41
+024 !fn              -> newV24           44 44 44 44
+025 !ft              -> newV25           44 44
+026 !fm              -> newV26           44 44
+027 !r4              -> newV27           45
+028 _1               -> newV28           48
+029 _2               -> newV29           48
+030 !                -> newV30           3 22 41
+031 _                -> newV31           22 44

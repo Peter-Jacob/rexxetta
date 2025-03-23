@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program displays the elapsed time for a REXX function (or subroutine). */
+0002 arg reps .                             /*obtain an optional argument from C.L.*/
+0003 if reps==''  then reps=100000          /*Not specified?  No, then use default.*/
+0004 call time 'Reset'                      /*only the 1st character is examined.  */
+0005 junk = silly(reps)                     /*invoke the  SILLY  function (below). */
+0006 /*───►   CALL SILLY REPS    also works.*/
+0007 
+0008 /*                          The   J   is for the CPU time used   */
+0009 /*                                │   by the REXX program since  */
+0010 /*                        ┌───────┘   since the time was  RESET. */
+0011 /*                        │           This is a Regina extension.*/
+0012 /*                        ↓                                      */
+0013 say 'function SILLY took' format(time("J"),,2)  'seconds for' reps "iterations."
+0014 /*                             ↑                                 */
+0015 /*                             │                                 */
+0016 /*            ┌────────►───────┘                                 */
+0017 /*            │                                                  */
+0018 /* The above  2  for the  FORMAT  function displays the time with*/
+0019 /* two decimal digits (rounded)  past the decimal point).  Using */
+0020 /* a   0  (zero)    would round the  time  to whole seconds.     */
+0021 exit                                   /*stick a fork in it,  we're all done. */
+0022 /*────────────────────────────────────────────────────────────────────────────*/
+0023 silly: procedure               /*chew up some CPU time doing some silly stuff.*/
+0024 do j=1  for arg(1) /*wash,  apply,  lather,  rinse,  repeat.  ··· */
+0025 @.j=random() date() time() digits() fuzz() form() xrange() queued()
+0026 end   /*j*/
+0027 return j-1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 reps             3
+002 junk             5
+003 j                24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           25

@@ -1,0 +1,47 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program  simulates a number of trials  of a  random digit  and show it's skew %. */
+0002 parse arg func times delta seed .                /*obtain arguments (options) from C.L. */
+0003 if  func=='' |  func==","   then  func= 'RANDOM' /*function not specified?  Use default.*/
+0004 if times=='' | times==","   then times= 1000000  /*times     "      "        "     "    */
+0005 if delta=='' | delta==","   then delta=   1/2    /*delta%    "      "        "     "    */
+0006 if datatype(seed, 'W')  then call random ,,seed  /*use some RAND seed for repeatability.*/
+0007 highDig= 9                                       /*use this var for the highest digit.  */
+0008 !.= 0                                            /*initialize all possible random trials*/
+0009 do times                                   /* [↓]  perform a bunch of trials.     */
+0010 if func=='RANDOM'  then ?= random(highDig)                  /*use RANDOM function.*/
+0011 else interpret '?=' func "(0,"highDig')' /* " specified   "    */
+0012 !.?= !.? + 1                                        /*bump the invocation counter.*/
+0013 end   /*times*/                            /* [↑]  store trials ───► pigeonholes. */
+0014 /* [↓]  compute the digit's skewness.  */
+0015 g= times /  (1 + highDig)                        /*calculate number of each digit throw.*/
+0016 w= max(9, length( commas(times) ) )              /*maximum length of  number  of trials.*/
+0017 pad= left('', 9)                                 /*this is used for output indentation. */
+0018 say pad  'digit'   center(" hits", w)    ' skew '    "skew %"    'result'     /*header. */
+0019 say sep                                          /*display a separator line.            */
+0020 /** [↑]  show header and the separator.*/
+0021 do k=0  to highDig                       /*process each of the possible digits. */
+0022 skew= g - !.k                            /*calculate the  skew   for the digit. */
+0023 skewPC= (1 - (g - abs(skew)) / g) * 100  /*    "      "    "  percentage for dig*/
+0024 say pad center(k, 5)               right( commas(!.k), w)     right(skew, 6)  ,
+0025 right( format(skewPC, , 3), 6) center( word('ok skewed', 1+(skewPC>delta)), 6)
+0026 end   /*k*/
+0027 say sep                                          /*display a separator line.            */
+0028 y= 5+1+w+1+6+1+6+1+6                                                      /*width + seps*/
+0029 say pad center(" (with  "  commas(times)   '  trials)'  , y)              /*# trials.   */
+0030 say pad center(" (skewed when exceeds "      delta'%)'  , y)              /*skewed note.*/
+0031 exit 0                                           /*stick a fork in it,  we're all done. */
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 commas: parse arg _;  do jc=length(_)-3  to 1  by -3; _=insert(',', _, jc); end;  return _
+0034 sep:    say pad  '─────'   center('', w, '─')   '──────'    "──────"    '──────'; return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 jc               33
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           8 12
+002 ?                -> newV2            10
+003 _                -> newV3            33 33

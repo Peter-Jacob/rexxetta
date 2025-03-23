@@ -1,0 +1,80 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program creates/displays Matrix (the movie) digital rain; favors non-Latin chars.*/
+0002 signal on halt                                   /*allow the user to halt/stop this pgm.*/
+0003 parse arg pc seed .                              /*obtain optional arguments from the CL*/
+0004 if pc=='' | pc==","     then pc= 20              /*Not specified?  Then use the default.*/
+0005 if datatype(seed, 'W')  then call random ,,seed  /*Numeric?  Use seed for repeatability.*/
+0006 parse value  scrsize()  with  sd  sw  .          /*obtain the dimensions of the screen. */
+0007 if sd==0  then sd= 54;  sd= sd - 2 + 1           /*Not defined? Then use default; adjust*/
+0008 if sw==0  then sw= 80;  sw= sw - 1               /* "      "      "   "     "        "  */
+0009 lowC= c2d(' ')  +  1                             /*don't use any characters  ≤  a blank.*/
+0010 @.= ' '                                          /*PC  is the % new Matric rain streams.*/
+0011 cloud= copies(@., sw)                            /*the cloud, where matrix rain is born.*/
+0012 cls= 'CLS'                                       /*DOS command used to clear the screen.*/
+0013 do  forever;   call nimbus     /*define bottom of cloud  (the drops). */
+0014 call rain       /*generate rain, display the raindrops.*/
+0015 end   /*j*/
+0016 halt:  exit                                      /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 rain:   do a=sd  by -1  for sd-1;   _= a-1;   @.a= @._;   end;      call fogger;    return
+0019 show:   cls;  @.1= cloud;    do r=1  for sd;  say strip(@.r, 'T');  end  /*r*/;     return
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 nimbus: if random(, 100)<pc  then call mist      /*should this be a new rain stream ?   */
+0022 else call unmist    /*should any of the rain streams cease?*/
+0023 return                                   /*note: this subroutine may pass──►MIST*/
+0024 if random(, 100)<pc         then return  /*should this be a new rain stream ?   */
+0025 ?= random(1, sw)                         /*pick a random rain cloud position.   */
+0026 if substr(cloud,?,1)\==' '  then return  /*Is cloud position not a blank? Return*/
+0027 /*───── ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ────────────────────────────────────────────────────*/
+0028 mist:   ?= random(1, sw)                         /*obtain a random column in cloud.     */
+0029 if substr(cloud,?,1)\==' '  then return  /*if this stream is active, return.    */
+0030 if random(, 100)<pc         then return  /*should this be a new rain stream ?   */
+0031 cloud= overlay(drop(), cloud, ?)         /*seed cloud with new matrix rain drop.*/
+0032 return
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 unmist: ?= random(1, sw)                         /*obtain a random column in cloud.     */
+0035 if substr(cloud,?,1) ==' '  then return  /*if this stream is dry,  return.      */
+0036 if random(, 100)>pc         then return  /*should this be a new dry stream ?    */
+0037 cloud= overlay(' ', cloud, ?);   return  /*seed cloud with new matrix rain drop.*/
+0038 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0039 drop:   Lat= random(1, 4)                        /*Now, chose a matrix rain stream char.*/
+0040 tChr= 254;    if Lat==1  then tChr= 127  /*choose the  type of rain stream char.*/
+0041 return d2c( random(lowC, tChr) )         /*Lat = 1?   This favors Latin letters.*/
+0042 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0043 fogger: do f=1  for sw                           /*display a screen full of rain streams*/
+0044 if substr(cloud, f, 1) \== ' '   then cloud= overlay( drop(), cloud, f)
+0045 end   /*f*/;        call show;   return  /* [↑]  if raindrop, then change drop. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pc               3 4
+002 seed             3
+003 NORMAL.3         
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 sd               6 7 7
+018 sw               6 8 8
+019 lowC             9
+020 cloud            11 31 37 44
+021 cls              12
+022 r                19
+023 tChr             40 40
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           10 18 19
+002 _                -> newV2            18
+003 ?                -> newV3            25

@@ -1,0 +1,149 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program  evaluates an  infix─type arithmetic expression  and displays the result.*/
+0002 nchars = '0123456789.eEdDqQ'                     /*possible parts of a number,  sans  ± */
+0003 e='***error***';    $=" ";     doubleOps= '&|*/';      z=       /*handy─dandy variables.*/
+0004 parse arg x 1 ox1;    if x=''  then call serr "no input was specified."
+0005 x=space(x);   L=length(x);     x=translate(x, '()()', "[]{}")
+0006 j=0
+0007 do forever;    j=j+1;     if j>L  then leave;    _=substr(x, j, 1);   _2=getX()
+0008 newT=pos(_,' ()[]{}^÷')\==0;  if newT  then do;  z=z _ $;  iterate;   end
+0009 possDouble=pos(_,doubleOps)\==0             /*is    _   a possible double operator?*/
+0010 if possDouble  then do                      /* "  this  "     "       "       "    */
+0011 if _2==_  then do       /*yupper, it's one of a double operator*/
+0012 _=_ || _ /*create and use a double char operator*/
+0013 x=overlay($, x, Nj)      /*blank out 2nd symbol.*/
+0014 end
+0015 z=z _ $;  iterate
+0016 end
+0017 if _=='+' | _=="-"  then do;  p_=word(z, max(1,words(z)))   /*last  Z  token.      */
+0018 if p_=='('   then z=z 0       /*handle a unary ±     */
+0019 z=z _ $;     iterate
+0020 end
+0021 lets=0;  sigs=0;  #=_
+0022 
+0023 do j=j+1  to L;   _=substr(x,j,1)                    /*build a valid number.*/
+0024 if lets==1 & sigs==0 then if _=='+' | _=="-"  then do;  sigs=1
+0025 #=# || _
+0026 iterate
+0027 end
+0028 if pos(_,nchars)==0  then leave
+0029 lets=lets+datatype(_,'M')            /*keep track of the number of exponents*/
+0030 #=# || translate(_,'EEEEE', "eDdQq") /*keep building the number.            */
+0031 end   /*j*/
+0032 j=j-1
+0033 if \datatype(#,'N')  then call  serr  "invalid number: "     #
+0034 z=z # $
+0035 end   /*forever*/
+0036 
+0037 _=word(z,1);      if _=='+' | _=="-"  then z=0 z /*handle the unary cases.              */
+0038 x='(' space(z) ")";    tokens=words(x)           /*force stacking for the expression.   */
+0039 do i=1  for tokens;  @.i=word(x,i);  end /*i*/ /*assign input tokens.                 */
+0040 L=max(20,length(x))                              /*use 20 for the minimum display width.*/
+0041 op= ')(-+/*^';    Rop=substr(op,3);     p.=;     s.=;     n=length(op);    epr=;    stack=
+0042 
+0043 do i=1  for n;  _=substr(op,i,1);     s._=(i+1)%2;     p._=s._ + (i==n);      end  /*i*/
+0044 /* [↑]  assign the operator priorities.*/
+0045 do #=1  for tokens;   ?=@.#                    /*process each token from the  @. list.*/
+0046 if ?=='**'      then ?="^"                     /*convert to REXX-type exponentiation. */
+0047 select                                      /*@.#  is:   (   operator   )   operand*/
+0048 when ?=='('  then stack="(" stack
+0049 when isOp(?) then do                        /*is the token an operator ?           */
+0050 !=word(stack,1)           /*get token from stack.*/
+0051 do  while !\==')' & s.!>=p.?;  epr=epr !            /*addition.*/
+0052 stack=subword(stack, 2)                  /*del token from stack*/
+0053 !=       word(stack, 1)                  /*get token from stack*/
+0054 end   /*while*/
+0055 stack=? stack                              /*add token  to  stack*/
+0056 end
+0057 when ?==')' then do;   !=word(stack, 1)                      /*get token from stack*/
+0058 do  while !\=='(';             epr=epr ! /*append to expression*/
+0059 stack=subword(stack, 2)                  /*del token from stack*/
+0060 !=       word(stack, 1)                  /*get token from stack*/
+0061 end   /*while*/
+0062 stack=subword(stack, 2)                     /*del token from stack*/
+0063 end
+0064 otherwise  epr=epr ?                                          /*add operand to  epr.*/
+0065 end   /*select*/
+0066 end     /*#*/
+0067 
+0068 epr=space(epr stack);     tokens=words(epr);     x=epr;     z=;     stack=
+0069 do i=1  for tokens; @.i=word(epr,i);  end /*i*/                 /*assign input tokens.*/
+0070 Dop='/ // % ÷';           Bop="& | &&"           /*division   operands; binary operands.*/
+0071 Aop='- + * ^ **' Dop Bop; Lop=Aop "||"           /*arithmetic operands; legal  operands.*/
+0072 
+0073 do #=1  for tokens;   ?=@.#;   ??=?            /*process each token from   @.  list.  */
+0074 w=words(stack);  b=word(stack, max(1, w  ) )   /*stack count;  the last entry.        */
+0075 a=word(stack, max(1, w-1) )   /*stack's  "first"  operand.           */
+0076 division  =wordpos(?, Dop)\==0                 /*flag:  doing a division operation.   */
+0077 arith     =wordpos(?, Aop)\==0                 /*flag:  doing arithmetic operation.   */
+0078 bitOp     =wordpos(?, Bop)\==0                 /*flag:  doing binary mathematics.     */
+0079 if datatype(?, 'N')  then do; stack=stack ?;                iterate; end
+0080 if wordpos(?,Lop)==0 then do;  z=e  "illegal operator:" ?;        leave; end
+0081 if w<2               then do;  z=e  "illegal epr expression.";    leave; end
+0082 if ?=='^'            then ??="**"              /*REXXify   ^ ──► **   (make it legal).*/
+0083 if ?=='÷'            then ??="/"               /*REXXify   ÷ ──► /    (make it legal).*/
+0084 if division  &  b=0  then do;  z=e  "division by zero"        b;  leave; end
+0085 if bitOp & \isBit(a) then do;  z=e  "token isn't logical: "   a;  leave; end
+0086 if bitOp & \isBit(b) then do;  z=e  "token isn't logical: "   b;  leave; end
+0087 select                              /*perform an arithmetic operation.     */
+0088 when ??=='+'             then y = a +  b
+0089 when ??=='-'             then y = a -  b
+0090 when ??=='*'             then y = a *  b
+0091 when ??=='/' | ??=="÷"   then y = a /  b
+0092 when ??=='//'            then y = a // b
+0093 when ??=='%'             then y = a %  b
+0094 when ??=='^' | ??=="**"  then y = a ** b
+0095 when ??=='||'            then y = a || b
+0096 otherwise              z=e 'invalid operator:' ?;         leave
+0097 end   /*select*/
+0098 if datatype(y, 'W')   then y=y/1               /*normalize the number with  ÷  by  1. */
+0099 _=subword(stack, 1, w-2);  stack=_ y           /*rebuild the stack with the answer.   */
+0100 end   /*#*/
+0101 
+0102 if word(z, 1)==e  then stack=                    /*handle the special case of errors.   */
+0103 z=space(z stack)                                 /*append any residual entries.         */
+0104 say 'answer──►'   z                              /*display the answer  (result).        */
+0105 parse source upper . how .                       /*invoked via  C.L.  or REXX program ? */
+0106 if how=='COMMAND' | \datatype(z, 'W')  then exit /*stick a fork in it,  we're all done. */
+0107 return z                                         /*return  Z ──► invoker  (the RESULT). */
+0108 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0109 isBit: return arg(1)==0 | arg(1) == 1            /*returns  1  if 1st argument is binary*/
+0110 isOp:  return pos(arg(1), rOp) \== 0             /*is argument 1 a  "real"  operator?   */
+0111 serr:  say;   say e arg(1);   say;   exit 13     /*issue an error message with some text*/
+0112 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0113 getX:            do Nj=j+1  to length(x);   _n=substr(x, Nj, 1);    if _n==$  then iterate
+0114 return  substr(x, Nj, 1)        /* [↑]  ignore any blanks in expression*/
+0115 end   /*Nj*/
+0116 return $                                  /*reached end-of-tokens,  return $.    */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                4 5 5 13 38
+002 ox1              4
+003 L                5 40
+004 j                6 7 23 32
+005 newT             8
+006 z                8 15 18 19 34 37
+007 possDouble       9
+008 p_               17
+009 lets             21 29
+010 sigs             21 24
+011 tokens           38
+012 i                39
+013 op               41
+014 Rop              41
+015 p.               41
+016 s.               41
+017 n                41
+018 epr              41
+019 stack            41
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _2               -> newV1            7
+002 @.               -> newV2.           39
+003 $                -> newV3            3
+004 _                -> newV4            7 12 23 37
+005 #                -> newV5            21 25 30

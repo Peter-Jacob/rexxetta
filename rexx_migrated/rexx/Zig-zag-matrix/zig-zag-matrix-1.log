@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:36
+-------------------------------------------------------------------------
+0001 /*REXX program  produces and displays a    zig─zag  matrix   (a square array).          */
+0002 parse arg n start inc .                          /*obtain optional arguments from the CL*/
+0003 if     n=='' |     n==","  then     n= 5         /*Not specified?  Then use the default.*/
+0004 if start=='' | start==","  then start= 0         /* "      "         "   "   "     "    */
+0005 if   inc=='' |   inc==","  then   inc= 1         /* "      "         "   "   "     "    */
+0006 row= 1;           col= 1;        size= n**2      /*start: 1st row & column;  array size.*/
+0007 do j=start  by inc  for size;    @.row.col= j
+0008 if (row+col)//2==0  then do;  if col<n    then col= col+1;     else row= row+2
+0009 if row\==1  then row= row-1
+0010 end
+0011 else do;  if row<n    then row= row+1;     else col= col+2
+0012 if col\==1  then col= col-1
+0013 end
+0014 end   /*j*/                              /* [↑]     //    is REXX  ÷  remainder.*/
+0015 call show                                        /*display a (square) matrix──►terminal.*/
+0016 exit                                             /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 show: w= max(length(start), length(start+size*inc))  /*max width of any matrix elements,*/
+0019 do   r=1  for n  ;  _=   right(@.r.1, w)     /*show the rows of the matrix.     */
+0020 do c=2  for n-1;  _= _ right(@.r.c, w)     /*build a line for output of a row.*/
+0021 end   /*c*/;  say _                        /* [↑]  align the matrix elements. */
+0022 end     /*r*/;      return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                2 3
+002 start            2 4
+003 inc              2 5
+004 row              6 9 11
+005 col              6 8 12
+006 size             6
+007 j                7
+008 r                19
+009 c                20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           7
+002 _                -> newV2            19 20

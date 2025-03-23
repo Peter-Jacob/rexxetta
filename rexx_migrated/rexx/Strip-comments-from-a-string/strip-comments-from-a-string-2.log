@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 Call stripd ' apples, pears # and bananas'
+0002 Call stripd ' apples, pears and bananas'
+0003 Exit
+0004 stripd:
+0005 Parse Arg old
+0006 dlist='#;'                        /* delimiter list             */
+0007 p=verify(old,dlist,'M')          /* find position of delimiter */
+0008 If p>0 Then                       /* delimiter found            */
+0009 new=strip(left(old,p-1))
+0010 Else
+0011 new=strip(old)
+0012 Say '>'old'<'
+0013 Say '>'new'<'
+0014 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 old              5
+002 dlist            6
+003 p                7
+004 new              9 11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

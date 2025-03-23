@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*REXX program computes the  CRC─32  (32 bit Cyclic Redundancy Check)  checksum  for a  */
+0002 /*─────────────────────────────────given string  [as described in ISO 3309, ITU─T V.42].*/
+0003 call show  'The quick brown fox jumps over the lazy dog'               /*the 1st string.*/
+0004 call show  'Generate CRC32 Checksum For Byte Array Example'            /* "  2nd    "   */
+0005 exit                                             /*stick a fork in it,  we're all done. */
+0006 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0007 CRC_32: procedure; parse arg !,$; c= 'edb88320'x /*2nd arg used for repeated invocations*/
+0008 f= 'ffFFffFF'x /* [↓]  build an  8─bit  indexed table,*/
+0009 do i=0  for 256;        z= d2c(i)      /*                  one byte at a time.*/
+0010 r= right(z, 4, '0'x)                   /*insure the  "R"   is thirty─two bits.*/
+0011 /* [↓]  handle each rightmost byte bit.*/
+0012 do j=0  for 8;       rb= x2b(c2x(r)) /*handle each bit of rightmost 8 bits. */
+0013 r= x2c( b2x(0 || left(rb, 31) ) )    /*shift it right (an unsigned)  1  bit.*/
+0014 if right(rb,1)  then r= bitxor(r, c) /*this is a bin bit for XOR grunt─work.*/
+0015 end    /*j*/
+0016 !.z= r                                 /*assign to an eight─bit index table.  */
+0017 end      /*i*/
+0018 $=bitxor( word($ '0000000'x, 1), f)      /*utilize the user's CRC or a default. */
+0019 do k=1  for length(!  )                /*start number crunching the input data*/
+0020 ?= bitxor(right($,1),  substr(!,k,1) )
+0021 $= bitxor('0'x || left($, 3),  !.?)
+0022 end   /*k*/
+0023 return $                                 /*return with cyclic redundancy check. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 show:   procedure;   parse arg Xstring;   numeric digits 12;      say;     say
+0026 checksum= bitxor(CRC_32(Xstring), 'ffFFffFF'x) /*invoke CRC_32 to create a CRC. */
+0027 say center(' input string [length of' length(Xstring) "bytes] ", 79, '═')
+0028 say Xstring;      say                          /*show the string on its own line*/
+0029 say  "hex CRC─32 checksum ="   c2x(checksum)     left('', 15),
+0030 "dec CRC─32 checksum ="   c2d(checksum)   /*show the CRC─32 in hex and dec.*/
+0031 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 Xstring          25
+002 checksum         26
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           16
+002 !                -> newV2            7
+003 $                -> newV3            7 18 21
+004 ?                -> newV4            20

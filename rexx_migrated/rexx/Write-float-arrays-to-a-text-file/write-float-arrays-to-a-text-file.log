@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program writes  two arrays  to a file  with a  specified (limited)  precision.   */
+0002 numeric digits 1000                              /*allow use of a huge number of digits.*/
+0003 oFID= 'filename'                                 /*name of the  output  File IDentifier.*/
+0004 x.=;  y.=;                     x.1= 1    ;    y.1=      1
+0005 x.2= 2    ;    y.2=      1.4142135623730951
+0006 x.3= 3    ;    y.3=      1.7320508075688772
+0007 x.4= 1e11 ;    y.4= 316227.76601683791
+0008 xPrecision= 3                                    /*the precision for the   X   numbers. */
+0009 yPrecision= 5                                    /* "      "      "   "    Y      "     */
+0010 do j=1  while  x.j\==''          /*process and reformat all the numbers.*/
+0011 newX=rule(x.j, xPrecision)       /*format  X  numbers with new precision*/
+0012 newY=rule(y.j, yPrecision)       /*   "    Y     "      "   "      "    */
+0013 aLine=translate(newX || left('',4) || newY,   "e",  'E')
+0014 say aLine                        /*display re─formatted numbers ──► term*/
+0015 call lineout oFID, aLine         /*write         "         "     "  disk*/
+0016 end   /*j*/
+0017 exit                                             /*stick a fork in it,  we're all done. */
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 rule: procedure;   parse arg z 1 oz,p;     numeric digits p;       z=format(z,,p)
+0020 parse var z  mantissa      'E'  exponent                /*get the dec dig exponent*/
+0021 parse var    mantissa int  '.'  fraction                /* "  integer and fraction*/
+0022 fraction=strip(fraction, 'T', 0) /*strip  trailing  zeroes.*/
+0023 if fraction\==''  then fraction="."fraction             /*any fractional digits ? */
+0024 if exponent\==''  then exponent="E"exponent             /*in exponential format ? */
+0025 z=int || fraction || exponent                           /*format #  (as per rules)*/
+0026 if datatype(z,'W')  then return format(oz/1,,0)         /*is it a whole number ?  */
+0027 return format(oz/1,,,3,0)      /*3 dec. digs in exponent.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 mantissa         21
+002 int              21
+003 fraction         21 22 23
+004 exponent         24
+005 z                25
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

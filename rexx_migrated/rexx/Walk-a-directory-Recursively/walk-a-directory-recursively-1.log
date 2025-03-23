@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program shows all files in a  directory tree  that match a given search criteria.*/
+0002 parse arg xdir;  if xdir=''  then xdir='\'       /*Any DIR specified?  Then use default.*/
+0003 @.=0                                             /*default result in case ADDRESS fails.*/
+0004 dirCmd= 'DIR /b /s'                              /*the DOS command to do heavy lifting. */
+0005 trace off                                        /*suppress REXX error message for fails*/
+0006 address system  dirCmd xdir  with output stem @. /*issue the DOS DIR command with option*/
+0007 if rc\==0  then do                               /*did the DOS DIR command get an error?*/
+0008 say '***error!*** from DIR' xDIR /*error message that shows "que pasa". */
+0009 say 'return code='  rc           /*show the  return code  from  DOS DIR.*/
+0010 exit rc                          /*exit with    "     "     "    "   "  */
+0011 end                              /* [↑]  bad ADDRESS cmd  (from DOS DIR)*/
+0012 #=@.rc                                           /*the number of  @.  entries generated.*/
+0013 if #==0  then #='   no   '                       /*use a better word choice for 0 (zero)*/
+0014 say center('directory '      xdir      " has "      #       ' matching entries.', 79, "─")
+0015 
+0016 do j=1  for #;       say @.j     /*show all the files that met criteria.*/
+0017 end   /*j*/
+0018 exit @.0+rc                                      /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 xdir             2 2
+002 dirCmd           4
+003 j                16
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           3
+002 #                -> newV2            12 13

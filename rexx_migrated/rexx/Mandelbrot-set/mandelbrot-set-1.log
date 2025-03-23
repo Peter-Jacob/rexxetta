@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program  generates and displays a Mandelbrot set as an ASCII art character image.*/
+0002 @ = '>=<;:9876543210/.-,+*)(''&%$#"!'            /*the characters used in the display.  */
+0003 Xsize = 59;  minRE = -2;  maxRE = +1;     stepX = (maxRE-minRE) / Xsize
+0004 Ysize = 21;  minIM = -1;  maxIM = +1;     stepY = (maxIM-minIM) / Ysize
+0005 
+0006 do y=0  for ysize;      im=minIM + stepY*y
+0007 $=
+0008 do x=0  for Xsize;   re=minRE + stepX*x;    zr=re;    zi=im
+0009 
+0010 do n=0  for 30;  a=zr**2;   b=zi**2;    if a+b>4  then leave
+0011 zi=zr*zi*2 + im;            zr=a-b+re
+0012 end   /*n*/
+0013 
+0014 $=$ || substr(@, n+1, 1)                 /*append number (as a char) to $ string*/
+0015 end       /*x*/
+0016 say $                                          /*display a line of  character  output.*/
+0017 end             /*y*/                          /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 Xsize            3
+002 minRE            3
+003 maxRE            3
+004 stepX            3
+005 Ysize            4
+006 minIM            4
+007 maxIM            4
+008 stepY            4
+009 y                6
+010 im               6
+011 x                8
+012 re               8
+013 zr               8 11
+014 zi               8 11
+015 n                10
+016 a                10
+017 b                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            2
+002 $                -> newV2            7 14

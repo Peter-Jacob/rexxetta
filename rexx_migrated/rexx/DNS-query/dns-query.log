@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program displays  IPV4 and IPV6  addresses for a supplied  domain name.*/
+0002 parse arg tar .                        /*obtain optional domain name from C.L.*/
+0003 if tar==''  then tar= 'www.kame.net'   /*Not specified?  Then use the default.*/
+0004 tFID    = '\TEMP\DNSQUERY.$$$'         /*define temp file to store IPV4 output*/
+0005 pingOpts= '-l 0    -n 1    -w 0'   tar /*define options for the PING command. */
+0006 trace off                              /*don't show PING none─zero return code*/
+0007 /* [↓]  perform 2 versions of PING cmd.*/
+0008 do j=4  to 6  by 2                   /*handle  IPV4  and  IPV6  addresses.  */
+0009 'PING'  (-j)  pingOpts  ">"   tFID   /*restrict PING's output to a minimum. */
+0010 q=charin(tFID, 1, 999)               /*read the output file from  PING  cmd.*/
+0011 parse var  q   '['   ipaddr    "]"   /*parse  IP  address from the output.  */
+0012 say 'IPV'j "for domain name  "  tar  '  is  '  ipaddr        /*IPVx address.*/
+0013 call lineout tFID                    /* ◄──┬─◄  needed by some REXXes to    */
+0014 end   /*j*/                          /*    └─◄  force (TEMP) file integrity.*/
+0015 /*stick a fork in it,  we're all done. */
+0016 'ERASE'  tFID                          /*clean up (delete) the temporary file.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 q                11
+002 ipaddr           11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

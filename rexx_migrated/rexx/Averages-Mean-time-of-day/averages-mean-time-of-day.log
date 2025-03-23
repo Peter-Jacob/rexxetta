@@ -1,0 +1,117 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 25.06.2014 Walter Pachl
+0003 * taken from ooRexx using my very aged sin/cos/artan functions
+0004 *--------------------------------------------------------------------*/
+0005 times='23:00:17 23:40:20 00:12:45 00:17:19'
+0006 sum=0
+0007 day=86400
+0008 pi=3.14159265358979323846264
+0009 x=0
+0010 y=0
+0011 Do i=1 To words(times)                 /* loop over times            */
+0012 time.i=word(times,i)                 /* pick a time                */
+0013 alpha.i=t2a(time.i)                  /* convert to angle (radians) */
+0014 /* Say time.i format(alpha.i,6,9) */
+0015 x=x+sin(alpha.i)                     /* accumulate sines           */
+0016 y=y+cos(alpha.i)                     /* accumulate cosines         */
+0017 End
+0018 ww=arctan(x/y)                         /* compute average angle      */
+0019 ss=ww*86400/(2*pi)                     /* convert to seconds         */
+0020 If ss<0 Then ss=ss+day                 /* avoid negative value       */
+0021 m=ss%60                                /* split into hh mm ss        */
+0022 s=ss-m*60
+0023 h=m%60
+0024 m=m-h*60
+0025 Say f2(h)':'f2(m)':'f2(s)              /* show the mean time         */
+0026 Exit
+0027 
+0028 t2a: Procedure Expose day pi           /* convert time to angle      */
+0029 Parse Arg hh ':' mm ':' ss
+0030 sec=(hh*60+mm)*60+ss
+0031 If sec>(day/2) Then
+0032 sec=sec-day
+0033 a=2*pi*sec/day
+0034 Return a
+0035 
+0036 f2: return right(format(arg(1),2,0),2,0)
+0037 
+0038 
+0039 sin: Procedure Expose pi
+0040 Parse Arg x
+0041 prec=digits()
+0042 Numeric Digits (2*prec)
+0043 Do While x>pi
+0044 x=x-pi
+0045 End
+0046 Do While x<-pi
+0047 x=x+pi
+0048 End
+0049 o=x
+0050 u=1
+0051 r=x
+0052 Do i=3 By 2
+0053 ra=r
+0054 o=-o*x*x
+0055 u=u*i*(i-1)
+0056 r=r+(o/u)
+0057 If r=ra Then Leave
+0058 End
+0059 Numeric Digits prec
+0060 Return r+0
+0061 
+0062 cos: Procedure Expose pi
+0063 Parse Arg x
+0064 prec=digits()
+0065 Numeric Digits (2*prec)
+0066 Numeric Fuzz 3
+0067 o=1
+0068 u=1
+0069 r=1
+0070 Do i=1 By 2
+0071 ra=r
+0072 o=-o*x*x
+0073 u=u*i*(i+1)
+0074 r=r+(o/u)
+0075 If r=ra Then Leave
+0076 End
+0077 Numeric Digits prec
+0078 Return r+0
+0079 
+0080 arctan: Procedure
+0081 Parse Arg x
+0082 prec=digits()
+0083 Numeric Digits (2*prec)
+0084 Numeric Fuzz 3
+0085 o=x
+0086 u=1
+0087 r=x
+0088 k=0
+0089 Do i=3 By 2
+0090 ra=r
+0091 o=-o*x*x
+0092 r=r+(o/i)
+0093 If r=ra Then
+0094 Leave
+0095 k=k+1
+0096 If k//1000=0 Then
+0097 Say i left(r,40) format(abs(o/i),15,5)
+0098 End
+0099 Numeric Digits (prec)
+0100 Return r+0
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                81
+002 prec             82
+003 o                85 91
+004 u                86
+005 r                87 92
+006 k                88 95
+007 i                89
+008 ra               90
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

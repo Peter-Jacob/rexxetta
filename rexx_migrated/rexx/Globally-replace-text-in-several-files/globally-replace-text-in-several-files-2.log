@@ -1,0 +1,108 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Copy all files *.txt to *.rpl
+0003 * replacing all occurrences of old by new
+0004 * Execute in the directory containing the files to be processed
+0005 * 16.01.2013 Walter Pachl
+0006 *                         ...if file names contain blanks
+0007 **********************************************************************/
+0008 Parse Arg a
+0009 If a='?' Then Do
+0010 Do i=2 To 5
+0011 Say substr(sourceline(i),3)
+0012 End
+0013 Exit
+0014 End
+0015 'dir *.rpl'
+0016 Say 'May I erase *.rpl?'
+0017 Parse Upper Pull answer
+0018 If answer='Y' | answer='J' Then
+0019 'erase *.rpl'
+0020 Else Do
+0021 Say 'Giving up..'
+0022 Exit
+0023 End
+0024 old='Goodbye London!'
+0025 new='Hello New York!'
+0026 dir='dir.dir'
+0027 'dir *.* >' dir
+0028 Do While lines(dir)>0
+0029 Parse Value linein(dir) With 37 f
+0030 Select
+0031 When f='' |,
+0032 left(f,1)='.' |,
+0033 pos(' Bytes',f)>0 Then Iterate
+0034 When right(f,4)='.txt' Then
+0035 Call replace
+0036 Otherwise
+0037 Say left(f,50) 'not eligible for replacing'
+0038 End
+0039 End
+0040 Exit
+0041 
+0042 replace:
+0043 /* REXX ***************************************************************
+0044 * Copy a file fn.txt to fn.rpl
+0045 * replacing all occurrences of old by new
+0046 **********************************************************************/
+0047 oid=fn(f)'.rpl'
+0048 cnt.=0
+0049 Do ii=1 By 1 While lines(f)>0
+0050 l=linein(f)
+0051 ol=repl(l,new,old)
+0052 Call lineout oid,ol
+0053 End
+0054 Call lineout f
+0055 Call lineout oid
+0056 Select
+0057 When cnt.0changes=0 Then Do
+0058 'erase' oid
+0059 Say left(f,50) 'no changes'
+0060 End
+0061 When cnt.0changes=1 Then
+0062 Say left(f,50) '1 change'
+0063 Otherwise
+0064 Say left(f '->' oid,50) cnt.0changes 'changes'
+0065 End
+0066 Return
+0067 
+0068 fn: Procedure
+0069 /* REXX ***************************************************************
+0070 * Get the file name of a file id
+0071 **********************************************************************/
+0072 parse Arg fid
+0073 Parse Var fid fn '.' ft
+0074 Return fn
+0075 
+0076 repl: Procedure Expose cnt.
+0077 /* REXX ***************************************************************
+0078 * Replace an old string by a new one
+0079 **********************************************************************/
+0080 Parse Arg s,new,old
+0081 ol=''
+0082 Do Until p=0
+0083 p=pos(old,s)
+0084 If p>0 Then Do
+0085 ol=ol||left(s,p-1)||new
+0086 s=substr(s,p+length(old))
+0087 cnt.0changes=cnt.0changes+1
+0088 End
+0089 Else
+0090 ol=ol||s
+0091 End
+0092 Return ol
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                80 86
+002 new              80
+003 old              80
+004 ol               81 85 90
+005 Until            82
+006 p                83
+007 cnt.             87
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

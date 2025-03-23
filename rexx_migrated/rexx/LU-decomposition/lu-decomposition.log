@@ -1,0 +1,79 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program creates a  matrix  from console input, performs/shows  LU  decomposition.*/
+0002 #= 0;    P.= 0;    PA.= 0;     L.= 0;     U.= 0  /*initialize some variables to zero.   */
+0003 parse arg x                                      /*obtain matrix elements from the C.L. */
+0004 call bldAMat;       call showMat 'A'    /*build and display A  matrix.*/
+0005 call bldPmat;       call showMat 'P'    /*  "    "     "    P     "   */
+0006 call multMat;       call showMat 'PA'   /*  "    "     "    PA    "   */
+0007 do y=1  for N;  call bldUmat;       call bldLmat        /*build     U  and  L     "   */
+0008 end   /*y*/
+0009 call showMat 'L';   call showMat 'U'    /*display   L  and  U     "   */
+0010 exit                                             /*stick a fork in it,  we're all done. */
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 bldAMat: ?= words(x);  do N=1  for ?  until N**2>=?                /*find matrix size.  */
+0013 end  /*N*/
+0014 if N**2\==?  then do;  say '***error*** wrong # of elements entered:'  ?;  exit 9
+0015 end
+0016 do    r=1  for N                                 /*build   A   matrix.*/
+0017 do c=1  for N;        #= # + 1;     _= word(x, #);        A.r.c= _
+0018 if \datatype(_, 'N')  then call er "element isn't numeric: "  _
+0019 end   /*c*/
+0020 end      /*r*/;          return
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 bldLmat:          do    r=1  for N                                 /*build lower matrix.*/
+0023 do c=1  for N;        if r==c  then do;   L.r.c= 1;   iterate;    end
+0024 if c\==y | r==c | c>r  then iterate
+0025 _= PA.r.c
+0026 do k=1  for c-1;    _= _   -   U.k.c * L.r.k
+0027 end  /*k*/
+0028 L.r.c= _ / U.c.c
+0029 end   /*c*/
+0030 end      /*r*/;          return
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 bldPmat: c= N;    do r=N  by -1  for N;    P.r.c= 1;     c= c + 1  /*build perm. matrix.*/
+0033 if c>N  then c= N%2;     if c==N  then c= 1
+0034 end   /*r*/;             return
+0035 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0036 bldUmat:          do    r=1  for N;        if r\==y  then iterate  /*build upper matrix.*/
+0037 do c=1  for N;        if c<r    then iterate
+0038 _= PA.r.c
+0039 do k=1  for r-1;     _= _   -   U.k.c * L.r.k
+0040 end   /*k*/
+0041 U.r.c= _ / 1
+0042 end   /*c*/
+0043 end      /*r*/;          return
+0044 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0045 multMat:          do      i=1  for N                 /*multiply matrix  P and A  ──► PA */
+0046 do   j=1  for N
+0047 do k=1  for N;      pa.i.j=  (pa.i.j   +   p.i.k * a.k.j)    /    1
+0048 end   /*k*/
+0049 end     /*j*/                   /*÷ by one does normalization [↑]. */
+0050 end        /*i*/;        return
+0051 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0052 showMat: parse arg mat,rows,cols;   say;   rows= word(rows N,1);   cols= word(cols rows,1)
+0053 w= 0;    do    r=1  for rows
+0054 do c=1  for cols;     w= max(w,  length( value( mat'.'r"."c ) ) )
+0055 end  /*c*/
+0056 end     /*r*/
+0057 say center(mat  'matrix',  cols * (w + 1) + 7,  "─")      /*display the header.*/
+0058 do    r=1  for rows;     _=
+0059 do c=1  for cols;     _= _ right( value(mat'.'r"."c),   w + 1)
+0060 end   /*c*/
+0061 say _
+0062 end      /*r*/;       return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 mat              52
+002 rows             52 52
+003 cols             52 52
+004 w                53 54
+005 r                53 58
+006 c                54 59
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            2 17
+002 _                -> newV2            17 25 26 38 39 58 59

@@ -1,0 +1,62 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX program cuts rectangles into two symmetric pieces,  the rectangles are cut along */
+0002 /*────────────────────────────────────────────────── unit dimensions and may be rotated.*/
+0003 numeric digits 20                                /*be able to handle some big integers. */
+0004 parse arg N .;    if N=='' | N==","  then N= 10  /*N  not specified?   Then use default.*/
+0005 dir.= 0;   dir.0.1= -1;   dir.1.0= -1;   dir.2.1= 1;   dir.3.0= 1  /*the four directions*/
+0006 
+0007 do   y=2   to N;   say                      /*calculate rectangles up to size  NxN.*/
+0008 do x=1  for y;   if x//2  &  y//2  then iterate            /*Both X&Y odd?  Skip.*/
+0009 z= solve(y,x,1);  _= comma(z);  _= right(_, max(14, length(_)))   /*align output.*/
+0010 say right(y, 9)    "x"    right(x, 2)    'rectangle can be cut'    _     "way"s(z).
+0011 end   /*x*/
+0012 end     /*y*/
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 comma: procedure; arg _;  do k=length(_)-3  to 1  by -3; _=insert(',',_,k); end;  return _
+0016 s:     if arg(1)=1  then return arg(3);   return word( arg(2) 's', 1)      /*pluralizer.*/
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 solve: procedure expose # @. dir. h len next. w;  @.= 0    /*zero rectangle coördinates.*/
+0019 parse arg h,w,recur                                 /*get values for some args.  */
+0020 if h//2  then do;    t= w;    w= h;    h= t;    if h//2  then return 0
+0021 end
+0022 if w==1  then return 1
+0023 if w==2  then return h
+0024 if h==2  then return w                              /* [↓]  % is REXX's integer ÷*/
+0025 cy= h % 2;       cx= w % 2;     wp= w + 1           /*cut the rectangle in half. */
+0026 len= (h+1) * wp - 1                                 /*extend area of rectangle.  */
+0027 next.0= '-1';    next.1= -wp;   next.2= 1;     next.3= wp  /*direction & distance*/
+0028 if recur  then #= 0
+0029 cywp= cy * wp                                              /*shortcut calculation*/
+0030 do x=cx+1  to  w-1;     t= cywp + x;          @.t= 1
+0031 _= len - t;             @._= 1;               call walk cy - 1,  x
+0032 end   /*x*/
+0033 #= # + 1
+0034 if h==w  then #= # + #                              /*double rectangle cut count.*/
+0035 else if w//2==0  &  recur  then call solve w, h, 0
+0036 return #
+0037 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0038 walk:  procedure expose # @. dir. h len next. w wp;              parse arg y,x
+0039 if y==h | x==0 | x==w | y==0  then do;   #= # + 2;        return;            end
+0040 t= y*wp + x;     @.t= @.t + 1;           _= len - t
+0041 @._= @._ + 1
+0042 do j=0  for 4;       _= t + next.j      /*try each of 4 directions.*/
+0043 if @._==0  then call walk  y + dir.j.0,     x + dir.j.1
+0044 end   /*j*/
+0045 @.t= @.t - 1
+0046 _= len - t;      @._= @._ - 1;           return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                38
+002 x                38
+003 t                40
+004 j                42
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           18 30 31 40 41 45 46
+002 _                -> newV2            9 9 15 31 40 42 46
+003 #                -> newV3            28 33 34 39

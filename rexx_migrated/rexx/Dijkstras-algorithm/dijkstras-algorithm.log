@@ -1,0 +1,76 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program determines the  least costly path  between  two vertices  given a list.  */
+0002 $.= copies(9, digits() )                         /*edge cost:  indicates doesn't exist. */
+0003 xList= '!. @. $. beg fin bestP best$ xx yy'      /*common  EXPOSEd  variables for subs. */
+0004 @abc=  'abcdefghijklmnopqrstuvwxyz'              /*list of all the possible vertices.   */
+0005 verts= 0;  edges= 0                              /*the number of vertices and also edges*/
+0006 do #=1  for length(@abc);              _= substr(@abc, #, 1)
+0007 call value translate(_), #;      @@.#= _
+0008 end   /*#*/
+0009 call def$  a  b   7                              /*define an  edge  and  its  cost.     */
+0010 call def$  a  c   9                              /*   "    "    "    "    "     "       */
+0011 call def$  a  f  14                              /*   "    "    "    "    "     "       */
+0012 call def$  b  c  10                              /*   "    "    "    "    "     "       */
+0013 call def$  b  d  15                              /*   "    "    "    "    "     "       */
+0014 call def$  c  d  11                              /*   "    "    "    "    "     "       */
+0015 call def$  c  f   2                              /*   "    "    "    "    "     "       */
+0016 call def$  d  e   6                              /*   "    "    "    "    "     "       */
+0017 call def$  e  f   9                              /*   "    "    "    "    "     "       */
+0018 beg= a;    fin= e                                /*the  BEGin  and  FINish  vertexes.   */
+0019 say;       say 'number of    edges = '   edges
+0020 say 'number of vertices = '   verts                 "    ["left(@abc, verts)"]"
+0021 best$= $.;    bestP=
+0022 say;                         do jv=2  to verts;    call paths verts, jv;       end  /*jv*/
+0023 @costIs= right('cost =', 16)
+0024 if bestP==$.  then say 'no path found.'
+0025 else say 'best path ='   translate(bestP, @abc, 123456789)   @costIs   best$
+0026 exit                                             /*stick a fork in it,  we're all done. */
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 apath: parse arg pathx 1 p1 2 p2 3;             Lp= length(pathx);              $= $.p1.p2
+0029 if $>=best$  then return
+0030 pv= p2;                      do ka=3  to Lp;   _= substr(pathx, ka, 1)
+0031 if $.pv._>=best$  then return
+0032 $= $ + $.pv._;    if $>=best$  then return;      pv= _
+0033 end   /*ka*/
+0034 best$= $;    bestP= pathx
+0035 return
+0036 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0037 def$:  parse arg xx yy $ .;         if $.xx.yy<$  &  $.yy.xx<$  |  xx==yy  then return
+0038 edges= edges + 1;            verts= verts  +  ($.xx\==0)  +  ($.yy\==0)
+0039 $.xx= 0;        $.yy= 0;     $.xx.yy= $
+0040 say left('', 40)     "cost of    "     @@.xx     '───►'     @@.yy     "   is "    $
+0041 return
+0042 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0043 paths: procedure expose (xList);    parse arg xx, yy, @.
+0044 do kp=1  for xx;     _= kp;   !.kp= _;   end   /*build a path list.*/
+0045 call .path 1
+0046 return
+0047 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0048 .path: procedure expose (xList);    parse arg ?, _
+0049 if ?>yy  then do;            if @.1\==beg | @.yy\==fin  then return
+0050 do #=1  for yy;  _= _ || @.#;  end  /*#*/;             call apath _
+0051 end
+0052 else do qq=1  for xx                    /*build vertex paths recursively*/
+0053 do kp=1  for ?-1;  if @.kp==!.qq  then iterate qq;  end  /*kp*/
+0054 @.?= !.qq;     call .path ?+1      /*recursive call for next path. */
+0055 end   /*qq*/
+0056 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 kp               53
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @costIs          -> newV1            23
+002 @abc             -> newV2            4
+003 @@.              -> newV3.           7
+004 $.               -> newV4.           2 39 39 39
+005 @.               -> newV5.           43 54
+006 !.               -> newV6.           44
+007 #                -> newV7            6 50
+008 _                -> newV8            6 30 44 48 50
+009 $                -> newV9            28 32 37
+010 ?                -> newV10           48

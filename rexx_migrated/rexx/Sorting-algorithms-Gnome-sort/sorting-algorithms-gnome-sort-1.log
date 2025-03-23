@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program sorts an array using the gnome sort algorithm (elements contain blanks). */
+0002 call gen                                         /*generate the  @   stemmed array.     */
+0003 call show     'before sort'                      /*display the   before  array elements.*/
+0004 say copies('▒', 60) /*show a separator line between sorts. */
+0005 call gnomeSort  #                                /*invoke the well─known  gnome  sort.  */
+0006 call show     ' after sort'                      /*display the    after  array elements.*/
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 gen: @.=;  @.1= '---the seven virtues---';    @.4= "Hope"           ;    @.7= 'Justice'
+0010 @.2= '=======================';    @.5= "Charity  [Love]";    @.8= 'Prudence'
+0011 @.3= 'Faith'                  ;    @.6= "Fortitude"      ;    @.9= 'Temperance'
+0012 do #=1  while @.#\==''; end;   #= #-1;   w= length(#);  return /*get #items*/
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 gnomeSort: procedure expose @.;  parse arg n;     k= 2            /*N: is number items. */
+0015 do j=3  while k<=n;                  p= k - 1        /*P: is previous item.*/
+0016 if @.p<<=@.k  then do;      k= j;    iterate;   end  /*order is OK so far. */
+0017 _= @.p;       @.p= @.k;     @.k= _                   /*swap two @ entries. */
+0018 k= k - 1;     if k==1  then k= j;    else j= j-1     /*test for 1st index. */
+0019 end    /*j*/;                                return
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 show:  do j=1  for #;   say '       element'  right(j, w)  arg(1)":"  @.j;   end;   return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                14
+002 k                14 16 18 18
+003 j                15
+004 p                15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           9 9 9 10 10 10 11 11 11 17 17
+002 #                -> newV2            12 12
+003 _                -> newV3            17

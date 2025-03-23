@@ -1,0 +1,47 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program  finds words  with the  largest set of  anagrams  (of the same size).    */
+0002 iFID= 'unixdict.txt'                             /*the dictionary input File IDentifier.*/
+0003 $=;     !.=;      ww=0;       uw=0;      most=0  /*initialize a bunch of REXX variables.*/
+0004 /* [↓]  read the entire file (by lines)*/
+0005 do  while lines(iFID) \== 0                  /*Got any data?   Then read a record.  */
+0006 parse value  linein(iFID)  with  @ .         /*obtain a word from an input line.    */
+0007 len=length(@);  if len<3  then iterate       /*onesies and twosies words can't win. */
+0008 if \datatype(@, 'M')      then iterate       /*ignore any  non─anagramable words.   */
+0009 uw=uw + 1                                    /*count of the (useable) words in file.*/
+0010 _=sortA(@)                                   /*sort the letters in the word.        */
+0011 !._=!._ @;       #=words(!._)                /*append it to !._;  bump the counter. */
+0012 if #==most  then $=$ _                       /*append the sorted word──► max anagram*/
+0013 else if #>most  then do;   $=_;   most=#;   if len>ww  then ww=len;    end
+0014 end   /*while*/                              /*$ ◄── list of high count anagrams.   */
+0015 say '─────────────────────────'    uw    "usable words in the dictionary file: "      iFID
+0016 say
+0017 do m=1  for words($);   z=subword($, m, 1)  /*the high count of the anagrams.      */
+0018 say '     '     left(word(!.z, 1),  ww)      '   [anagrams: '      subword(!.z, 2)"]"
+0019 end   /*m*/                                 /*W   is the maximum width of any word.*/
+0020 say
+0021 say '───── Found'   words($)    "words  (each of which have"    words(!.z)-1  'anagrams).'
+0022 exit                                             /*stick a fork in it,  we're all done. */
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 sortA: arg char 2 xx,@.                          /*get the first letter of arg;  @.=null*/
+0025 @.char=char                               /*no need to concatenate the first char*/
+0026 /*[↓]  sort/put letters alphabetically.*/
+0027 do length(xx);   parse var xx char 2 xx;    @.char=@.char || char;    end
+0028 /*reassemble word with sorted letters. */
+0029 return @.a || @.b || @.c || @.d || @.e || @.f||@.g||@.h||@.i||@.j||@.k||@.l||@.m||,
+0030 @.n || @.o || @.p || @.q || @.r || @.s||@.t||@.u||@.v||@.w||@.x||@.y||@.z
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 xx               27 27
+002 char             27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           3 11
+002 @.               -> newV2.           25 27
+003 $                -> newV3            3 12 13
+004 @                -> newV4            6
+005 _                -> newV5            10
+006 #                -> newV6            11

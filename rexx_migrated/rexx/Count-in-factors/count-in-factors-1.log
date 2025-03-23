@@ -1,0 +1,55 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*REXX program lists the prime factors of a specified integer  (or a range of integers).*/
+0002 @.=left('', 8);  @.0="{unity} ";  @.1='[prime] ' /*some tags  and  handy-dandy literals.*/
+0003 parse arg LO HI @ .                              /*get optional arguments from the C.L. */
+0004 if LO=='' | LO==","  then do; LO=1; HI=40;  end  /*Not specified?  Then use the default.*/
+0005 if HI=='' | HI==","  then HI= LO                 /* "      "         "   "   "     "    */
+0006 if  @==''            then  @= 'x'                /* "      "         "   "   "     "    */
+0007 if length(@)\==1  then @= x2c(@)                 /*Not length 1?  Then use hexadecimal. */
+0008 tell= (HI>0)                                     /*if  HIGH  is positive, then show #'s.*/
+0009 HI= abs(HI)                                      /*use the absolute value for  HIGH.    */
+0010 w= length(HI)                                    /*get maximum width for pretty output. */
+0011 numeric digits max(9, w + 1)                     /*maybe bump the precision of numbers. */
+0012 #= 0                                             /*the number of primes found (so far). */
+0013 do n=abs(LO)  to HI;          f= factr(n)   /*process a single number  or  a range.*/
+0014 p= words( translate(f, ,@) )  -  (n==1)     /*P:  is the number of prime factors.  */
+0015 if p==1  then #= # + 1                      /*bump the primes counter (exclude N=1)*/
+0016 if tell  then say right(n, w)  '='  @.p  f  /*display if a prime, plus its factors.*/
+0017 end   /*n*/
+0018 say
+0019 say right(#, w)          ' primes found.'        /*display the number of primes found.  */
+0020 exit                                             /*stick a fork in it,  we're all done. */
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 factr: procedure expose @; parse arg z 1 n,$;  if z<2  then return z   /*is Z too small?*/
+0023 do  while z//2==0;   $= $||@||2;   z= z%2;    end  /*maybe add factor of   2 */
+0024 do  while z//3==0;   $= $||@||3;   z= z%3;    end  /*  "    "     "    "   3 */
+0025 do  while z//5==0;   $= $||@||5;   z= z%5;    end  /*  "    "     "    "   5 */
+0026 do  while z//7==0;   $= $||@||7;   z= z%7;    end  /*  "    "     "    "   7 */
+0027 
+0028 do j=11  by 6  while j<=z               /*insure that  J  isn't divisible by 3.*/
+0029 parse var j  ''  -1  _                  /*get the last decimal digit of  J.    */
+0030 if _\==5  then do while  z//j==0;  $=$||@||j;  z= z%j;  end   /*maybe reduce Z.*/
+0031 if _ ==3  then iterate                  /*Next # ÷ by 5?  Skip.     ___        */
+0032 if j*j>n  then leave                    /*are we higher than the   √ N   ?     */
+0033 y= j + 2                                /*obtain the next odd divisor.         */
+0034 do while  z//y==0;  $=$||@||y;  z= z%y;   end  /*maybe reduce Z.*/
+0035 end   /*j*/
+0036 if z==1  then return substr($,       1+length(@) )  /*Is residual=1?  Don't add 1*/
+0037 return substr($||@||z, 1+length(@) )  /*elide superfluous header.  */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                29
+002 while            30 34
+003 z                30 34
+004 y                33
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 2 2
+002 @                -> newV2            3 6 7
+003 #                -> newV3            12 15
+004 $                -> newV4            22 23 24 25 26 30 34
+005 _                -> newV5            29

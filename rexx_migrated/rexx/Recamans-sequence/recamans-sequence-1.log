@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX pgm computes a Recamán sequence up to N; the 1st dup; # terms for a range of #'s.*/
+0002 parse arg N h .                                  /*obtain optional arguments from the CL*/
+0003 if N=='' | N==","  then N=   15                  /*Not specified?  Then use the default.*/
+0004 if h=='' | h==","  then h= 1000                  /* "      "         "   "   "     "    */
+0005 say "Recamán's sequence for the first "        N         " numbers: "    recaman(N)
+0006 say;  say "The first duplicate number in the Recamán's sequence is: "          recaman(0)
+0007 say;  say "The number of terms to complete the range  0───►"h    ' is: '       recaman(-h)
+0008 exit 0                                           /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 recaman: procedure; parse arg y,,d.; $=0;  !.=0;   _=0;   !.0=1  /*init. array and vars.*/
+0011 r= y<0;          Reca= 0;    hi= abs(y)      /*for the 2nd invoke.  */
+0012 o= y==0;         if y<1  then y= 1e8         /* "   "  3rd    "     */
+0013 do #=1  for y-1;          z= _ - #                    /*next # might be < 0. */
+0014 if z<0  then              z= _ + #                    /*this is faster than: */
+0015 else if !.z  then z= _ + #                    /*if !.z | z<0 then ···*/
+0016 !.z= 1;                      _= z                     /*mark it;  add to seq.*/
+0017 if r  then do;  if z>hi      then iterate             /*ignore #'s too large.*/
+0018 if d.z==''   then Reca= Reca + 1      /*Unique? Bump counter.*/
+0019 d.z= .                                /*mark # as a new low. */
+0020 if Reca>=hi  then return #            /*list is complete ≥ HI*/
+0021 iterate
+0022 end                                        /* [↑]  a range of #s. */
+0023 if o  then do;  if d.z==.  then return z;  d.z=.;  iterate  /*check if dup #.*/
+0024 end
+0025 $= $ z                                                /*add number to $ list?*/
+0026 end   /*#*/;                    return $              /*return the  $  list. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                10 12
+002 d.               10 19 23
+003 r                11
+004 Reca             11 18
+005 hi               11
+006 o                12
+007 z                13 14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           10 10 16
+002 $                -> newV2            10 25
+003 _                -> newV3            10 16
+004 #                -> newV4            13

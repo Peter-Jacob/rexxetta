@@ -1,0 +1,49 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program  sorts and displays  an array  using the  pancake sort  algorithm.       */
+0002 call gen                                         /*generate elements in the   @.  array.*/
+0003 call show          'before sort'                 /*display the   BEFORE  array elements.*/
+0004 say copies('▒', 60)                    /*display a separator line for eyeballs*/
+0005 call pancakeSort         #                       /*invoke the   pancake  sort.   Yummy. */
+0006 call show          ' after sort'                 /*display the    AFTER array elements. */
+0007 exit 0                                           /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 inOrder: parse arg n; do j=1  for n-1;  k= j+1;  if @.j>@.k  then return 0; end;  return 1
+0010 panFlip: parse arg y;  do i=1  for (y+1)%2; yi=y-i+1; _=@.i; @.i=@.yi; @.yi=_; end; return
+0011 show: do k=1  for #;  say @element right(k,length(#)) arg(1)':' right(@.k,9);  end; return
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 gen:  fibs= '-55 -21 -1 -8 -8 -21 -55 0 0'       /*some non─positive Fibonacci numbers, */
+0014 @element= right('element', 21)             /*     most Fibs of which are repeated.*/
+0015 
+0016 /* ┌◄─┬──◄─ some paired bread primes which are of the form:  (P-3)÷2  and  2∙P+3  */
+0017 /* │  │     where P is a prime. Bread primes are related to sandwich & meat primes*/
+0018 /* ↓  ↓ ──── ════ ───── ══════ ────── ══════ ────── ═══════ ─────── ═══════ ──────*/
+0019 bp=2 17 5 29 7 37 13 61 43 181 47 197 67 277 97 397 113 461 137 557 167 677 173 701,
+0020 797 1117 307 1237 1597 463 1861 467
+0021 $= bp fibs;       #= words($)              /*combine the two lists; get # of items*/
+0022 do j=1  for #; @.j= word($, j);  end /*◄─── obtain a number from the $ list.*/
+0023 return                                     /* [↑]  populate the  @.  array with #s*/
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 pancakeSort: procedure expose @.;   parse arg n .;  if inOrder(n)  then return
+0026 do n=n  by -1  for n-1
+0027 != @.1;   ?= 1;                   do j=2  to n;  if @.j<=!  then iterate
+0028 != @.j;        ?= j
+0029 end   /*j*/
+0030 call panFlip ?;  call panFlip n
+0031 end   /*n*/;                      return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                25 26
+002 j                27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @element         -> newV1            14
+002 @.               -> newV2.           10 10 22
+003 _                -> newV3            10
+004 $                -> newV4            21
+005 #                -> newV5            21
+006 !                -> newV6            27 28
+007 ?                -> newV7            27 28

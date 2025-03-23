@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program converts an integer (or a range)  ──►  a Van der Corput number in base 2.*/
+0002 numeric digits 1000                              /*handle almost anything the user wants*/
+0003 parse arg a b .                                  /*obtain the optional arguments from CL*/
+0004 if a==''  then parse value  0  10   with   a  b  /*Not specified?  Then use the defaults*/
+0005 if b==''  then b= a                              /*assume a  range  for a single number.*/
+0006 
+0007 do j=a  to b                               /*traipse through the range of numbers.*/
+0008 _= VdC( abs(j) )                           /*convert absolute value of an integer.*/
+0009 leading= substr('-',   2 + sign(j) )       /*if needed,  elide the leading sign.  */
+0010 say leading  ||  _                         /*show number, with leading minus sign?*/
+0011 end   /*j*/
+0012 exit                                             /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 VdC: procedure;    y= x2b( d2x( arg(1) ) )  + 0  /*convert to  hexadecimal, then binary.*/
+0015 if y==0  then return 0                      /*handle the special case of zero.     */
+0016 return '.'reverse(y)          /*heavy lifting is performed by REXX.  */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                3 4
+002 b                3 4 5
+003 NORMAL.3         
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 j                7
+013 leading          9
+014 y                14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            8

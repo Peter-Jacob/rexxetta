@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program  verifies  that  an array  is sorted  using  a   jortSort   algorithm.   */
+0002 parse arg $                                      /*obtain the list of numbers from C.L. */
+0003 if $=''  then $=1 2 4 3                          /*Not specified?  Then use the default.*/
+0004 say 'array items='  space($)                     /*display the list to the terminal.    */
+0005 if jortSort($)  then say  'The array is sorted.'
+0006 else say  "The array isn't sorted."
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 eSort:    procedure expose @.;                    h=@.0       /*exchange sort.*/
+0010 do while h>1;                 h=h%2
+0011 do i=1  for @.0-h;          j=i;      k=h+i
+0012 do  while @.k<@.j;        t=@.j;    @.j=@.k;    @.k=t
+0013 if h>=j  then leave;      j=j-h;    k=k-h
+0014 end   /*while @.k<@.j*/
+0015 end     /*i*/
+0016 end       /*while h>1*/
+0017 return
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 jortSort: parse arg x;   @.0=words(x)                         /*assign # items in list. */
+0020 do j=1  for @.0; !.j=word(x,j); @.j=!.j /*save a copy of original.*/
+0021 end   /*j*/
+0022 call eSort                                          /*sort with exchange sort.*/
+0023 do k=1  for @.0
+0024 if !.k\==@.k  then return 0             /*the array isn't sorted. */
+0025 end   /*k*/
+0026 return 1                                            /*the array is    sorted. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                19
+002 j                20
+003 k                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           12 12 19 20
+002 !.               -> newV2.           20
+003 $                -> newV3            2 3

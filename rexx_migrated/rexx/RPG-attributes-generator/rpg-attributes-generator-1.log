@@ -1,0 +1,80 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /* REXX
+0002 Generates 4 random, whole values between 1 and 6.
+0003 Saves the sum of the 3 largest values.
+0004 Generates a total of 6 values this way.
+0005 Displays the total, and all 6 values once finished.
+0006 */
+0007 Do try=1 By 1
+0008 ge15=0
+0009 sum=0
+0010 ol=''
+0011 Do i=1 To 6
+0012 rl=''
+0013 Do j=1 To 4
+0014 rl=rl (random(5)+1)
+0015 End
+0016 rl=wordsort(rl)
+0017 rsum.i=maxsum()
+0018 If rsum.i>=15 Then ge15=ge15+1
+0019 sum=sum+rsum.i
+0020 ol=ol right(rsum.i,2)
+0021 End
+0022 Say ol '->' ge15 sum
+0023 If ge15>=2 & sum>=75 Then Leave
+0024 End
+0025 Say try 'iterations'
+0026 Say ol '=>' sum
+0027 Exit
+0028 
+0029 maxsum: procedure Expose rl
+0030 /**********************************************************************
+0031 * Comute the sum of the 3 largest values
+0032 **********************************************************************/
+0033 m=0
+0034 Do i=2 To 4
+0035 m=m+word(rl,i)
+0036 End
+0037 Return m
+0038 
+0039 wordsort: Procedure
+0040 /**********************************************************************
+0041 * Sort the list of words supplied as argument. Return the sorted list
+0042 **********************************************************************/
+0043 Parse Arg wl
+0044 wa.=''
+0045 wa.0=0
+0046 Do While wl<>''
+0047 Parse Var wl w wl
+0048 Do i=1 To wa.0
+0049 If wa.i>w Then Leave
+0050 End
+0051 If i<=wa.0 Then Do
+0052 Do j=wa.0 To i By -1
+0053 ii=j+1
+0054 wa.ii=wa.j
+0055 End
+0056 End
+0057 wa.i=w
+0058 wa.0=wa.0+1
+0059 End
+0060 swl=''
+0061 Do i=1 To wa.0
+0062 swl=swl wa.i
+0063 End
+0064 Return strip(swl)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 wl               47 47
+002 w                47
+003 i                48 61
+004 j                52
+005 ii               53
+006 wa.              54 57 58
+007 swl              60 62
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

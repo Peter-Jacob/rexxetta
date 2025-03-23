@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program finds  N  semordnilap pairs using a specified dictionary  (UNIXDICT.TXT).*/
+0002 parse arg n iFID .                               /*obtain optional argument from the CL.*/
+0003 if    n=='' |    n=="," then    n= 5             /*Not specified?  Then use the default.*/
+0004 if iFID=='' | iFID=="," then iFID='UNIXDICT.TXT' /* "      "         "   "   "     "    */
+0005 #= 0                                             /*number of semordnilaps  (so far).    */
+0006 @.=                                              /*caseless non─duplicated dict. words. */
+0007 do while lines(iFID)\==0;  _= linein(iFID);  u= space(_, 0);  upper u  /*get a word.*/
+0008 if length(u)<2 | @.u\==''  then iterate      /*word can't be a unique semordnilap.  */
+0009 r= reverse(u)                                /*obtain reverse of the dictionary word*/
+0010 if @.r\==''  then do;   #= # + 1             /*found a semordnilap word; bump count.*/
+0011 if #<=n  then say right(@.r,  max(32, length(@.r) ) )','   u
+0012 end
+0013 @.u= _                                       /*define reverse of the dictionary word*/
+0014 end   /*while*/                              /*stick a fork in it,  we're all done. */
+0015 say
+0016 say "There're "     #     ' unique semordnilap pairs in the dictionary file: '    iFID
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                2 3
+002 while            7
+003 u                7
+004 r                9
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           6 13
+002 #                -> newV2            5 10
+003 _                -> newV3            7

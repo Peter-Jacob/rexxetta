@@ -1,0 +1,52 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*REXX program shows a horizontal list of Pythagorean triples up to a specified number. */
+0002 parse arg n .                                    /*obtain optional argument from the CL.*/
+0003 if n=='' | n==","  then n= 100                   /*Not specified?  Then use the default.*/
+0004 do k=1  for n;   @.k= k*k            /*precompute the squares of usable #'s.*/
+0005 end   /*k*/
+0006 sw= linesize() - 1                               /*obtain the terminal width (less one).*/
+0007 say  'Pythagorean triples  (a² + b² = c²,   c ≤'  n"):"     /*display the list's title. */
+0008 $=                                               /*assign a  null  to the triples list. */
+0009 do     a=1  for n-2;      bump= a//2 /*Note:   A*A   is faster than   A**2. */
+0010 do b=a+1  to  n-1  by 1+bump
+0011 ab= @.a + @.b                      /*AB: a shortcut for the sum of A² & B²*/
+0012 if bump==0 & b//2==0  then cump= 2
+0013 else cump= 1
+0014 do c=b+cump  to n by  cump
+0015 if ab<@.c   then leave           /*Too small?   Then try the next  B.   */
+0016 if ab==@.c  then do;  $=$  '{'a","   ||   b','c"}";  leave;  end
+0017 end   /*c*/
+0018 end     /*b*/
+0019 end       /*a*/
+0020 #= words($);                     say
+0021 do j=1  until p==0;             p= lastPos('}', $, sw)    /*find the last } */
+0022 if p\==0  then do;   _= left($, p)
+0023 say strip(_)
+0024 $= substr($, p+1)
+0025 end
+0026 end   /*j*/
+0027 say strip($);                    say
+0028 say #  ' members listed.'                        /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                2 3
+002 k                4
+003 sw               6
+004 a                9
+005 bump             9
+006 b                10
+007 ab               11
+008 cump             12
+009 c                14
+010 j                21
+011 p                21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           4
+002 $                -> newV2            8 16 24
+003 #                -> newV3            20
+004 _                -> newV4            22

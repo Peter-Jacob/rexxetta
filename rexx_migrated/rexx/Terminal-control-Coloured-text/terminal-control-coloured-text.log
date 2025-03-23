@@ -1,0 +1,73 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program to display sixteen lines,  each of a different color.    */
+0002 parse arg !;  if !all()  then exit     /*exit if documentation specified*/
+0003 if \!dos  &  \!os2       then exit     /*if this isn't DOS,  then exit. */
+0004 if \!pcrexx              then exit     /*if this isn't PC/REXX,   exit. */
+0005 
+0006 color.0  = 'black'                     /*┌─────────────────────────────┐*/
+0007 color.1  = 'dark blue'                 /*│ Normally, all programs issue│*/
+0008 color.2  = 'dark green'                /*│ the  (above) error messages │*/
+0009 color.3  = 'dark cyan/turquois'        /*│ through another REXX program│*/
+0010 color.4  = 'dark red'                  /*│ ($ERR)  which has more      │*/
+0011 color.5  = 'dark pink/magenta'         /*│ verbiage and  explanations, │*/
+0012 color.6  = 'dark yellow (orange)'      /*│ and issues the error text in│*/
+0013 color.7  = 'dark white'                /*│ red (if color is available).│*/
+0014 color.8  = 'brite black (grey/gray)'   /*└─────────────────────────────┘*/
+0015 color.9  = 'bright blue'
+0016 color.10 = 'bright green'
+0017 color.11 = 'bright cyan/turquois'
+0018 color.12 = 'bright red'
+0019 color.13 = 'bright pink/magenta'
+0020 color.14 = 'bright yellow'
+0021 color.15 = 'bright white'
+0022 
+0023 do j=0  to 15                 /*show all sixteen color codes.  */
+0024 call scrwrite ,,'color code=['right(j,2)"]" color.j,,,j;   say
+0025 end   /*j*/                   /*the  "SAY"  forces a  NEWLINE. */
+0026 exit                                   /*stick a fork in it, we're done.*/
+0027 /*══════════════════════════════════general 1-line subs═════════════════*/
+0028 !all:!!=!;!=space(!);upper !;call !fid;!nt=right(!var('OS'),2)=='NT';!cls=word('CLS VMFCLEAR CLRSCREEN',1+!cms+!tso*2);if arg(1)\==1 then return 0;if wordpos(!,'? ?SAMPLES ?AUTHOR ?FLOW')==0 then return 0;!call=']$H';call '$H' !fn !;!call=;return 1
+0029 !cal:if symbol('!CALL')\=="VAR" then !call=;return !call
+0030 !env:!env='ENVIRONMENT';if !sys=='MSDOS'|!brexx|!r4|!roo then !env='SYSTEM';if !os2 then !env='OS2'!env;!ebcdic=1=='f0'x;return
+0031 !fid:parse upper source !sys !fun !fid . 1 . . !fn !ft !fm .;call !sys;if !dos then do;_=lastpos('\',!fn);!fm=left(!fn,_);!fn=substr(!fn,_+1);parse var !fn !fn '.' !ft;end;return word(0 !fn !ft !fm,1+('0'arg(1)))
+0032 !rex:parse upper version !ver !vernum !verdate .;!brexx='BY'==!vernum;!kexx='KEXX'==!ver;!pcrexx='REXX/PERSONAL'==!ver|'REXX/PC'==!ver;!r4='REXX-R4'==!ver;!regina='REXX-REGINA'==left(!ver,11);!roo='REXX-ROO'==!ver;call !env;return
+0033 !sys:!cms=!sys=='CMS';!os2=!sys=='OS2';!tso=!sys=='TSO'|!sys=='MVS';!vse=!sys=='VSE';!dos=pos('DOS',!sys)\==0|pos('WIN',!sys)\==0|!sys=='CMD';call !rex;return
+0034 !var:call !fid;if !kexx then return space(dosenv(arg(1)));return space(value(arg(1),,!env))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 version          32
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !env:!env        -> newV1            30
+002 !sys:!cms        -> newV2            33
+003 !verdate         -> newV3            32
+004 !all:!!          -> newV4            28
+005 !ebcdic          -> newV5            30
+006 !vernum          -> newV6            32
+007 !pcrexx          -> newV7            32
+008 !regina          -> newV8            32
+009 !brexx           -> newV9            32
+010 !call            -> newV10           28 28
+011 !kexx            -> newV11           32
+012 !cls             -> newV12           28
+013 !env             -> newV13           30 30
+014 !sys             -> newV14           31
+015 !fun             -> newV15           31
+016 !fid             -> newV16           31
+017 !ver             -> newV17           32
+018 !roo             -> newV18           32
+019 !os2             -> newV19           33
+020 !tso             -> newV20           33
+021 !vse             -> newV21           33
+022 !dos             -> newV22           33
+023 !nt              -> newV23           28
+024 !fn              -> newV24           31 31 31 31
+025 !ft              -> newV25           31 31
+026 !fm              -> newV26           31 31
+027 !r4              -> newV27           32
+028 !                -> newV28           2 28
+029 _                -> newV29           31

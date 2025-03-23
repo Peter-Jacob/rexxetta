@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX pgm computes/displays the Jacobi symbol, the # of rows & columns can be specified*/
+0002 parse arg rows cols .                            /*obtain optional arguments from the CL*/
+0003 if rows='' | rows==","  then rows= 17            /*Not specified?  Then use the default.*/
+0004 if cols='' | cols==","  then cols= 16            /* "      "         "   "   "      "   */
+0005 call hdrs                                        /*display the (two) headers to the term*/
+0006 do r=1  by 2  to rows;     _= right(r, 3)  /*build odd (numbered) rows of a table.*/
+0007 do c=0  to cols         /* [↓]  build a column for a table row.*/
+0008 _= _ ! right(jacobi(c, r), 2);   != '│'  /*reset grid end char.*/
+0009 end   /*c*/
+0010 say _ '║';  != '║'                         /*display a table row; reset grid glyph*/
+0011 end   /*r*/
+0012 say translate(@.2, '╩╧╝', "╬╤╗")                 /*display the bottom of the grid border*/
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 hdrs: @.1= 'n/a ║';      do c=0  to cols;    @.1= @.1 || right(c, 3)"  ";   end
+0016 L= length(@.1);                        @.1= left(@.1,   L - 1)    ;          say @.1
+0017 @.2= '════╬';      do c=0  to cols;    @.2= @.2 || "════╤"        ;   end
+0018 L= length(@.2);                        @.2= left(@.2,   L - 1)"╗" ;          say @.2
+0019 != '║'        ;    return                  /*define an external grid border glyph.*/
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 jacobi: procedure; parse arg a,n;  er= '***error***';        $ = 1      /*define result.*/
+0022 if n//2==0  then do;   say er    n   " must be a positive odd integer.";   exit 13
+0023 end
+0024 a= a // n                                      /*obtain  A  modulus  N          */
+0025 do while a\==0                               /*perform while  A  isn't zero.  */
+0026 do while a//2==0;  a= a % 2   /*divide  A  (as a integer) by 2 */
+0027 if n//8==3 | n//8==5  then $= -$               /*use  N mod  8 */
+0028 end   /*while a//2==0*/
+0029 parse value  a  n     with     n  a          /*swap values of variables:  A N */
+0030 if a//4==3 & n//4==3  then $= -$             /* A mod 4, N mod 4.   Both ≡ 3 ?*/
+0031 a= a // n                                    /*obtain  A  modulus  N          */
+0032 end   /*while a\==0*/
+0033 if n==1  then return $
+0034 return 0
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                21 24 26 29 31
+002 n                21 29
+003 er               21
+004 while            25 26
+005 L                16 18
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           15 16 17 17 18
+002 _                -> newV2            6 8
+003 !                -> newV3            8 10 19
+004 $                -> newV4            21 27 30

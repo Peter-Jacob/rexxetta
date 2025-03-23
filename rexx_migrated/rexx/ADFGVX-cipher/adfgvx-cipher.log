@@ -1,0 +1,144 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 cls
+0003 eol=x2c(0D0A) ; msg="ATTACKAT1200AM"
+0004 keyword= upper('lifeguard') ; cyph= 'ADFGVX'
+0005 
+0006 s_sort= keyword ; new_key= ''
+0007 do while length(s_sort) > 0
+0008 nmax= 0
+0009 do i=1 to length(s_sort)
+0010 ch= substr(s_sort,i,1)
+0011 num= c2d(ch)
+0012 if num > nmax then do
+0013 nmax= num
+0014 max_i = i
+0015 end
+0016 end
+0017 s_sort= delstr(s_sort,max_i,1)
+0018 new_key= d2c(nmax)||new_key
+0019 end        /* Alphabetical sorting */
+0020 
+0021 j=0 ; num_str= '' ; rnd_s= ''
+0022 do while j < 36
+0023 num= random(0,35)
+0024 if wordpos(num,num_str) = 0 then do
+0025 j= j + 1
+0026 	     num_str= num_str||num||' '
+0027 		 if num >= 10 then do
+0028 		    num= num - 10 + x2d(41)
+0029 num= d2c(num)
+0030 		    end
+0031 		 rnd_s= rnd_s||num
+0032 end
+0033 end	  /* say 'Generated string: '||rnd_s||eol */
+0034 
+0035 say 'Polybius square:'||eol
+0036 call tab cyph, rnd_s ,1
+0037 say "Only characters from the '"|| msg||"'"||eol
+0038 t= translate(rnd_s,' ',msg)
+0039 _t= translate(rnd_s,' ',t)
+0040 call tab cyph, _t ,1
+0041 
+0042 len_c= length(cyph) ; cyph_T=''
+0043 do i=1 to len_c
+0044 ch_i= substr(cyph,i,1)
+0045 do j=1 to len_c
+0046 ch_j= substr(cyph,j,1)
+0047 cyph_T= cyph_T||ch_i||ch_j||' '
+0048 end
+0049 end
+0050 
+0051 enc_msg= ''
+0052 do i=1 to length(msg)
+0053 ch= substr(msg,i,1)
+0054 j= pos(ch,rnd_s,1)
+0055 enc_msg= enc_msg||word(cyph_T,j)
+0056 end
+0057 
+0058 say "Conversion by table: "||eol||eol||msg||" ==> "||enc_msg||eol
+0059 call tab keyword, enc_msg
+0060 
+0061 len= length(keyword)
+0062 n_row= 0 ; column.= ''
+0063 do while enc_msg <> ''
+0064 parse var enc_msg 1 s1 +(len) enc_msg
+0065 n_row= n_row+1
+0066 do m= 1 to len
+0067 ch_m= substr(s1,m,1)
+0068 column.m= column.m||ch_m
+0069 end
+0070 end
+0071 
+0072 s_lst= ''
+0073 do m= 1 to len
+0074 ch= substr(new_key,m,1)
+0075 i= pos(ch,keyword,1)
+0076 w_i= column.i
+0077 s_lst= s_lst||w_i||' '
+0078 end
+0079 
+0080 row.= '' ; t_row= ''
+0081 do i=1 to len
+0082 w_i= word(s_lst,i)
+0083 do j=1 to n_row
+0084 row.j= row.j||substr(w_i,j,1)
+0085 end
+0086 end
+0087 do j=1 to n_row; t_row= t_row||row.j; end
+0088 
+0089 say "Sorted by columns:"||eol
+0090 call tab new_key, t_row
+0091 
+0092 say '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+0093 say 'Encrypted message: '||s_lst
+0094 say '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+0095 
+0096 exit
+0097 tab:
+0098 parse arg h, s, p  /* header, string, param */
+0099 
+0100 lh= length(h) ;
+0101 s= h||copies('-',lh)||s ; ls= length(s)
+0102 h=' -'||h
+0103 
+0104 t= ''  ; j= 1
+0105 do i= 1 to ls by lh
+0106 row= substr(s,i,lh)
+0107 r_ch= ''
+0108 do l=1 to lh
+0109 ch= substr(row,l,1)
+0110 r_ch= r_ch||ch||' '
+0111 end
+0112 row= r_ch
+0113 if p <> '' then row= row||'|'||substr(h,j,1)
+0114 t= t||row||eol
+0115 j= j + 1
+0116 end
+0117 say t
+0118 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 h                98 102
+002 s                98 101
+003 p                98
+004 lh               100
+005 ls               101
+006 t                104 114
+007 j                104 115
+008 i                105
+009 row              106 112 113
+010 r_ch             107 110
+011 l                108
+012 ch               109
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 num_str          -> newV1            26
+002 +(len)           -> newV2            64
+003 rnd_s            -> newV3            31
+004 num              -> newV4            28
+005 _t               -> newV5            39

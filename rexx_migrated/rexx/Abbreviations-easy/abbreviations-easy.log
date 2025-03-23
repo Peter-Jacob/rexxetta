@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program validates a user  "word"  against a  "command table"  with abbreviations.*/
+0002 parse arg uw                                     /*obtain optional arguments from the CL*/
+0003 if uw=''  then uw= 'riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin'
+0004 say 'user words: '   uw
+0005 
+0006 @= 'Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress COpy'   ,
+0007 'COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find'   ,
+0008 'NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput'   ,
+0009 'Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO'   ,
+0010 'MErge MOve MODify MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT'   ,
+0011 'READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT'   ,
+0012 'RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer Type Up'
+0013 
+0014 say 'full words: '   validate(uw)                /*display the result(s) to the terminal*/
+0015 exit                                             /*stick a fork in it,  we're all done. */
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 validate: procedure expose @;  arg x;  upper @   /*ARG   capitalizes all the  X  words. */
+0018 $=                                     /*initialize the return string to null.*/
+0019 do j=1  to words(x);   _=word(x, j) /*obtain a word from the     X  list.  */
+0020 do k=1  to words(@); a=word(@, k) /*get a legitimate command name from @.*/
+0021 L=verify(_, 'abcdefghijklmnopqrstuvwxyz', "M")  /*maybe get abbrev's len.*/
+0022 if L==0  then L=length(_)         /*0?  Command name can't be abbreviated*/
+0023 if abbrev(a, _, L)   then do; $=$ a;  iterate j;  end  /*is valid abbrev?*/
+0024 end   /*k*/
+0025 $=$ '*error*'                       /*processed the whole list, not valid. */
+0026 end     /*j*/
+0027 return strip($)                        /*elide the superfluous leading blank. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 uw               2 3
+002 j                19
+003 k                20
+004 a                20
+005 L                21 22
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            6
+002 $                -> newV2            18 23 25
+003 _                -> newV3            19

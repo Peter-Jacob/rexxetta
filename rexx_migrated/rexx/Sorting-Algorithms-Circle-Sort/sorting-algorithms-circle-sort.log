@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program uses a  circle sort algorithm  to sort an array (or list) of numbers.    */
+0002 parse arg x                                      /*obtain optional arguments from the CL*/
+0003 if x='' | x=","  then x= 6 7 8 9 2 5 3 4 1       /*Not specified?  Then use the default.*/
+0004 call make_array  'before sort:'                  /*display the list and make an array.  */
+0005 call circleSort       #                          /*invoke the circle sort subroutine.   */
+0006 call make_list   ' after sort:'                  /*make a list and display it to console*/
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 circleSort:      do while  .circleSrt(1, arg(1), 0)\==0;     end;                   return
+0010 make_array: #= words(x);    do i=1 for #;  @.i= word(x, i);  end;  say arg(1)  x;   return
+0011 make_list:  y= @.1;         do j=2 for #-1;  y= y  @.j;      end;  say arg(1)  y;   return
+0012 .swap:      parse arg a,b;  parse  value  @.a @.b  with  @.b @.a;  swaps= swaps+1;  return
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 .circleSrt: procedure expose @.;  parse arg LO,HI,swaps    /*obtain  LO & HI  arguments.*/
+0015 if LO==HI  then return swaps                   /*1 element?  Done with sort.*/
+0016 high= HI;      low= LO;     mid= (HI-LO) % 2   /*assign some indices.       */
+0017 /* [↓]  sort a section of #'s*/
+0018 do  while LO<HI                     /*sort within a section.     */
+0019 if @.LO>@.HI  then call .swap LO,HI /*are numbers out of order ? */
+0020 LO= LO + 1;        HI= HI - 1       /*add to LO;  shrink the HI. */
+0021 end   /*while*/                     /*just process one section.  */
+0022 _= HI + 1                                      /*point to  HI  plus one.    */
+0023 if LO==HI  &  @.LO>@._  then call .swap LO, _  /*numbers still out of order?*/
+0024 swaps= .circleSrt(low,        low+mid,  swaps) /*sort the   lower  section. */
+0025 swaps= .circleSrt(low+mid+1,  high,     swaps) /*  "   "   higher     "     */
+0026 return swaps                                   /*the section sorting is done*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 LO               14 20
+002 HI               14 20
+003 swaps            14 24 25
+004 high             16
+005 low              16
+006 mid              16
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           10 12 12
+002 _                -> newV2            22

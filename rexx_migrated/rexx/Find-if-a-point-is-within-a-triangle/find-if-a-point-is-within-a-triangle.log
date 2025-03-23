@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program determines if a   specified point   is within a   specified triangle.    */
+0002 parse arg p a b c .                              /*obtain optional arguments from the CL*/
+0003 if p=='' | p==","  then p= '(0,0)'               /*Not specified?  Then use the default.*/
+0004 if a=='' | a==","  then a= '(1.5,2.4)'           /* "      "         "   "   "     "    */
+0005 if b=='' | b==","  then b= '(5.1,-3.1)'          /* "      "         "   "   "     "    */
+0006 if c=='' | c==","  then c= '(-3.8,0.5)'          /* "      "         "   "   "     "    */
+0007 if  ?(p, a, b, c)  then @= ' is '                /*Is the point  inside the triangle ?  */
+0008 else @= " isn't "             /* "  "    "   outside  "      "       */
+0009 say 'point'   p    @    " within the triangle "      a     ','       b       ","       c
+0010 exit 0                                           /*stick a fork in it,  we're all done. */
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 cert: parse arg z,W; if datatype(z,'N')  then return z; call serr z /*return coördinate.*/
+0013 serr: say W 'data point '  z  " isn't numeric or missing."; exit 13 /*tell error message*/
+0014 x: procedure; parse arg "(" x ','      ;  return cert(x,"X")  /*return the X coördinate.*/
+0015 y: procedure; parse arg       ',' y ")";  return cert(y,"Y")  /*   "    "  Y      "     */
+0016 $: parse arg aa,bb,cc;  return (x(aa)-x(cc)) *(y(bb)-y(cc)) - (x(bb)-x(cc)) *(y(aa)-y(cc))
+0017 ?: #1=$(p,a,b); #2=$(p,b,c); #3=$(p,c,a); return (#1>=0&#2>=0&#3>=0) | (#1<=0&#2<=0&#3<=0)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 aa               16
+002 bb               16
+003 cc               16
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #2               -> newV1            17
+002 #3               -> newV2            17
+003 @                -> newV3            7

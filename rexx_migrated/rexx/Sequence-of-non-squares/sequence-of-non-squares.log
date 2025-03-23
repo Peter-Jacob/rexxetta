@@ -1,0 +1,68 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX pgm displays some non─square numbers, & also displays a validation check up to 1M*/
+0002 parse arg N M .                                  /*obtain optional arguments from the CL*/
+0003 if N=='' | N==","  then N=      22               /*Not specified?  Then use the default.*/
+0004 if M=='' | M==","  then M= 1000000               /* "      "         "   "   "     "    */
+0005 say 'The first '    N    " non─square numbers:"  /*display a header of what's to come.  */
+0006 say                                              /* [↑]  default for  M  is one million.*/
+0007 say center('index', 20)        center("non─square numbers", 20)
+0008 say center(''     , 20, "═")   center(''                  , 20, "═")
+0009 do j=1  for N
+0010 say  center(j, 20)   center(j +floor(1/2 +sqrt(j)), 20)
+0011 end   /*j*/
+0012 #= 0
+0013 do k=1  for M                          /*have it step through a million of 'em*/
+0014 $= k + floor( sqrt(k) + .5 )           /*use the specified formula (algorithm)*/
+0015 iRoot= iSqrt($)                        /*··· and also use the  ISQRT function.*/
+0016 if iRoot * iRoot == $   then #= # + 1  /*have we found a mistook?    (sic)    */
+0017 end   /*k*/
+0018 say;                     if #==0  then #= 'no'   /*use gooder English for display below.*/
+0019 say 'Using the formula:  floor[ 1/2 +  sqrt(n) ], '    #    " squares found up to "   M'.'
+0020 /* [↑]  display (possible) error count.*/
+0021 exit                                             /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 floor: parse arg floor_;        return trunc( floor_ - (floor_ < 0) )
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 iSqrt: procedure; parse arg x;  #=1; r= 0;         do  while # <= x;  #= #*4;  end
+0026 do while #>1; #=#%4; _=x-r-#; r=r%2; if _<0 then iterate; x=_; r=r+#; end; return r
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 sqrt:  procedure; parse arg x; if x=0 then return 0; d=digits(); m.=9; numeric form; h=d+6
+0029 numeric digits;  parse value format(x,2,1,,0) 'E0'  with  g 'E' _ .;  g=g *.5'e'_%2
+0030 do j=0  while h>9;      m.j= h;              h= h % 2  + 1;  end /*j*/
+0031 do k=j+5  to 0  by -1;  numeric digits m.k;  g= (g+x/g)*.5;  end /*k*/;  return g
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                28
+002 d                28
+003 m.               28 30
+004 h                28 30
+005 iRoot            15
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                29 29 31
+024 j                30
+025 k                31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            12 16 18 25 25 26
+002 $                -> newV2            14
+003 _                -> newV3            26 29

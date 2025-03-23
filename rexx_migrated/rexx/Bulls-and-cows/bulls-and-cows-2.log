@@ -1,0 +1,112 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX program to play the game of  "Bulls & Cows". *******************
+0002 * Changes from Version 1:
+0003 * ?= -> qq='' (righthandside mandatory and I never use ? as symbol -
+0004 *                               although it is available on all Rexxes)
+0005 * implemented singular/plural distinction differently
+0006 * change getRand to avoid invalid digit rejection
+0007 * check user's input for multiple digits
+0008 * add feature MM to ease guessing (MM=Mastermind - a similar game)
+0009 * add feature ? to see the solution (for the impatient player)
+0010 * program runs as is on ooRexx and on TSO (after changing | to !)
+0011 * Made source and output more compact
+0012 * formatted source 'my way'  2 July 2012 Walter Pachl
+0013 **********************************************************************/
+0014 ask='<Bulls & Cows game>   Please enter a four-digit guess  (or QUIT):'
+0015 
+0016 b.='bulls'; b.1='bull'
+0017 c.='cows';  c.1='cow'
+0018 qq=getRand()
+0019 mm=0
+0020 Do Forever
+0021 If get_guess()==qq Then leave
+0022 Call scorer
+0023 Say "You got" bulls b.bulls "and" cows c.cows"."
+0024 If mm Then
+0025 Say mms
+0026 End   /*forever*/
+0027 Say "         *******************************************"
+0028 Say "         *                                         *"
+0029 Say "         *  Congratulations, you've guessed it !!  *"
+0030 Say "         *                                         *"
+0031 Say "         *******************************************"
+0032 Exit
+0033 
+0034 get_guess:                           /*get a guess from the guesser. */
+0035 
+0036 do forever
+0037 Say ask
+0038 Parse Pull guessi
+0039 guess=translate(guessi)
+0040 bc=verify(guess,987654321)
+0041 Select
+0042 When guess='?'       Then Say qq 'is the correct sequence'
+0043 When guess='QUIT'    Then Exit
+0044 When guess='MM'      Then Do
+0045 Say 'Mastermind output enabled'
+0046 mm=1
+0047 End
+0048 When guess=''        Then Call ser 'no argument specified.'
+0049 When words(guess)>1  Then Call ser 'too many arguments specified.'
+0050 When verify(0,guess)=0 Then Call ser 'illegal digit: 0'
+0051 When bc>0 Then Call ser 'illegal character:' substr(guessi,bc,1)
+0052 When length(guess)<4 Then Call ser 'not enough digits'
+0053 When length(guess)>4 Then Call ser 'too many digits'
+0054 When dups(guess)     Then Call ser '4 DIFFERENT digits, please'
+0055 Otherwise Do
+0056 /********** Say guess ************/
+0057 Return guess
+0058 End
+0059 End
+0060 End
+0061 
+0062 getRand:
+0063 digits='123456789'
+0064 qq=''
+0065 Do i=1 To 4
+0066 d=random(1,length(digits))
+0067 d=substr(digits,d,1)
+0068 qq=qq||d
+0069 digits=space(translate(digits,' ',d),0)
+0070 /************ Say qq digits ************/
+0071 End
+0072 Return qq
+0073 
+0074 scorer: g=qq
+0075 mms='----'
+0076 bulls=0
+0077 Do j=1 for 4
+0078 If substr(guess,j,1)=substr(qq,j,1) Then Do
+0079 bulls=bulls+1
+0080 guess=overlay(' ',guess,j)
+0081 mms=overlay('+',mms,j)
+0082 End
+0083 End
+0084 cows=0
+0085 Do j=1 To 4
+0086 If pos(substr(guess,j,1),qq)>0 Then Do
+0087 cows=cows+1
+0088 mms=overlay('.',mms,j)
+0089 End
+0090 End
+0091 Return
+0092 
+0093 dups: Procedure
+0094 Parse Arg s
+0095 Do i=1 To 3
+0096 If pos(substr(s,i,1),substr(s,i+1))>0 Then
+0097 Return 1
+0098 End
+0099 Return 0
+0100 
+0101 ser: Say '*** error ***' arg(1); Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                94
+002 i                95
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

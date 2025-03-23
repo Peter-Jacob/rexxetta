@@ -1,0 +1,77 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program  generates and displays a  number triangle  for partitions of a number.  */
+0002 numeric digits 400                               /*be able to handle larger numbers.    */
+0003 parse arg N .                                    /*obtain optional argument from the CL.*/
+0004 if N==''  then N= 25                             /*N  specified?  Then use the default. */
+0005 @.= 0;          @.0= 1;       aN= abs(N)         /*initialize a partition number; AN abs*/
+0006 if N==N+0  then say  '         G('aN"):"   G(N)  /*just do this for well formed numbers.*/
+0007 say  'partitions('aN"):"   partitions(aN)          /*do it the easy way.*/
+0008 exit 0                                           /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 G: procedure; parse arg nn;  !.= 0;    !.4.2= 2;     mx= 1;    aN= abs(nn);    build= nn>0
+0011 do j=1  for aN%2;      !.j.j= 1      /*gen shortcuts for unity elements.*/
+0012 end   /*j*/
+0013 
+0014 do     t=1  for 1+build;        #.=1 /*generate triangle once or twice. */
+0015 do   r=1  for aN;   #.2= r % 2     /*#.2  is a shortcut calculation.  */
+0016 do c=3  to  r-2;  #.c= gen#(r,c)
+0017 end   /*c*/
+0018 L= length(mx);      p= 0;     __=  /*__  will be a row of the triangle*/
+0019 do cc=1  for r; p= p + #.cc    /*only sum the last row of numbers.*/
+0020 if \build  then iterate        /*should we skip building triangle?*/
+0021 mx= max(mx, #.cc)              /*used to build the symmetric #s.  */
+0022 __= __  right(#.cc, L)         /*construct a row of the triangle. */
+0023 end   /*cc*/
+0024 if t==1  then iterate              /*Is this 1st time through? No show*/
+0025 say  center( strip(__),  2 + (aN-1) * (length(mx) + 1) )
+0026 end       /*r*/                    /* [↑]  center row of the triangle.*/
+0027 end         /*t*/
+0028 return p                               /*return with the generated number.*/
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 gen#: procedure expose !.;   parse arg x,y             /*obtain the  X and Y  arguments.*/
+0031 if !.x.y\==0  then  return !.x.y                 /*was number generated before ?  */
+0032 if y>x%2  then do;  nx= x+1-(y-x%2)*2-(x//2==0)
+0033 ny= nx % 2;  !.x.y= !.nx.ny
+0034 return !.x.y                 /*return the calculated number.  */
+0035 end                               /* [↑]  right half of triangle.  */
+0036 $= 1                                             /* [↓]   left   "   "     "      */
+0037 do q=2  for y-1;   xy= x-y;   if q>xy  then iterate
+0038 if q==2  then $= $  +  xy % 2
+0039 else if q==xy-1  then $= $ + 1
+0040 else $= $ + gen#(xy,q)    /*recurse.*/
+0041 end   /*q*/
+0042 !.x.y=$; return $                                /*use memoization; return with #.*/
+0043 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0044 partitions: procedure expose @.; parse arg n;   if @.n\==0  then return @.n   /* ◄─────┐*/
+0045 $= 0                                         /*Already known?  Return ►────┘*/
+0046 do k=1  for n                       /*process  N  partitions.      */
+0047 #= n - (k*3-1) * k % 2              /*calculate a partition number.*/
+0048 if #<0  then leave                  /*Is it negative?  Then leave. */
+0049 if @.#==0  then x= partitions(#)    /* [◄] this is a recursive call*/
+0050 else x= @.#              /*the value is already known.  */
+0051 #= # - k
+0052 if #<0  then  y= 0                  /*Is negative?   Then use zero.*/
+0053 else  if @.#==0  then y= partitions(p)    /*recursive call.*/
+0054 else y= @.#
+0055 if k//2  then $= $ + x + y          /*use this method if K is odd. */
+0056 else $= $ - x - y          /* "    "     "    " "  " even.*/
+0057 end   /*k*/                         /* [↑]  Euler's recursive func.*/
+0058 @.n= $;             return $                 /*use memoization;  return num.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                44
+002 k                46
+003 x                49
+004 y                52
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           5 5 58
+002 !.               -> newV2.           10 10 11 33 42
+003 #.               -> newV3.           14 15 16
+004 __               -> newV4            18 22
+005 $                -> newV5            36 38 45 55
+006 #                -> newV6            47 51

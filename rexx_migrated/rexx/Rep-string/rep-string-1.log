@@ -1,0 +1,62 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 11.05.2013 Walter Pachl
+0003 * 14.05.2013 Walter Pachl extend to show additional rep-strings
+0004 **********************************************************************/
+0005 Call repstring '1001110011'
+0006 Call repstring '1110111011'
+0007 Call repstring '0010010010'
+0008 Call repstring '1010101010'
+0009 Call repstring '1111111111'
+0010 Call repstring '0100101101'
+0011 Call repstring '0100100'
+0012 Call repstring '101'
+0013 Call repstring '11'
+0014 Call repstring '00'
+0015 Call repstring '1'
+0016 Exit
+0017 
+0018 repstring:
+0019 Parse Arg s
+0020 sq=''''s''''
+0021 n=length(s)
+0022 Do l=length(s)%2 to 1 By -1
+0023 If substr(s,l+1,l)=left(s,l) Then Leave
+0024 End
+0025 If l>0 Then Do
+0026 rep_str=left(s,l)
+0027 Do i=1 By 1
+0028 If substr(s,i*l+1,l)<>rep_str Then
+0029 Leave
+0030 End
+0031 If left(copies(rep_str,n),length(s))=s Then Do
+0032 Call show_rep rep_str              /* show result                */
+0033 Do i=length(rep_str)-1 To 1 By -1  /* look for shorter rep_str-s */
+0034 rep_str=left(s,i)
+0035 If left(copies(rep_str,n),length(s))=s Then
+0036 Call show_rep rep_str
+0037 End
+0038 End
+0039 Else
+0040 Call show_norep
+0041 End
+0042 Else
+0043 Call show_norep
+0044 Return
+0045 
+0046 show_rep:
+0047 Parse Arg rs
+0048 Say right(sq,12) 'has a repetition length of' length(rs) 'i.e.' ''''rs''''
+0049 Return
+0050 show_norep:
+0051 Say right(sq,12) 'is not a repeated string'
+0052 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 rs               47
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

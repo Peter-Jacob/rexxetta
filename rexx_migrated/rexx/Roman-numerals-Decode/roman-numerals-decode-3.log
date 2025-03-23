@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program  converts  Roman numeral number(s)  ───►  Arabic numerals  (or numbers). */
+0002 numeric digits 1000                              /*so we can handle the big numbers.    */
+0003 parse arg z                                      /*obtain optional arguments from the CL*/
+0004 if z=''  then z= "MCMXC mmviii IIXX LU MDCLXVI MDWLXVI ((mmm)) [[[[[D]]]]]"  /*defaults.*/
+0005 
+0006 do j=1  for words(z);   y=word(z, j)        /*process each of the Roman numbers.   */
+0007 say  right(y, 20)':'    rom2dec(y)          /*display original and decimal version.*/
+0008 end   /*j*/
+0009 exit                                             /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 rom2dec:  procedure;   h='0'x;   #=0;   $=1;   arg n .         /*"ARG"  uppercases  N.  */
+0012 n=translate(n, '()()', "[]{}");  _=verify(n, 'MDCLXVUIJ()')    /*trans grouping symbols.*/
+0013 if _\==0  then return '***error*** invalid Roman numeral:'  substr(n,_,1)   /*tell error*/
+0014 @.=1; @.m=1000; @.d=500; @.c=100; @.l=50; @.x=10; @.u=5; @.v=5 /*Roman numeral values.  */
+0015 /* [↓]  convert number.  */
+0016 do k=length(n)  to 1  by -1;  _=substr(n, k, 1)             /*examine a Roman numeral*/
+0017 /* [↑]  scale up or down.*/
+0018 if _=='(' | _==")"  then  do;  $=$*1000; if _=='(' then $=1 /* (≡scale ↑;  )≡scale ↓ */
+0019 iterate                      /*go & process next digit*/
+0020 end
+0021 _=@._*$                                                     /*scale it if necessary. */
+0022 if _>h  then h=_                                            /*remember Roman numeral.*/
+0023 if _<h  then #=#-_                                          /*char>next?  Then sub.  */
+0024 else #=#+_                                          /*            else add.  */
+0025 end   /*k*/
+0026 return #                                                       /*return Arabic number.  */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                3 4
+002 j                6
+003 y                6
+004 h                11 22
+005 n                12
+006 k                16
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           14 14 14 14 14 14 14 14
+002 #                -> newV2            11 23
+003 $                -> newV3            11 18 18
+004 _                -> newV4            12 16 21

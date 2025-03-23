@@ -1,0 +1,59 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program displays  various alignments  for words in an array of  text strings.    */
+0002 size= 0;        t.=;   cols= 0;   wid.= 0;   @.= /*zero or nullify some variables.      */
+0003 t.1 = "Given$a$text$file$of$many$lines,$where$fields$within$a$line$"
+0004 t.2 = "are$delineated$by$a$single$'dollar'$character,$write$a$program"
+0005 t.3 = "that$aligns$each$column$of$fields$by$ensuring$that$words$in$each$"
+0006 t.4 = "column$are$separated$by$at$least$one$space."
+0007 t.5 = "Further,$allow$for$each$word$in$a$column$to$be$either$left$"
+0008 t.6 = "justified,$right$justified,$or$center$justified$within$its$column."
+0009 do r=1  while t.r\==''                         /* [↓]  process all the text lines.    */
+0010 _= strip(t.r,,'$')                             /*strip leading & trailing dollar signs*/
+0011 do c=1  until _==''        /* [↓]  process each of the words.     */
+0012 parse var _   @.r.c '$' _  /*extract the words from a line of text*/
+0013 wid.c= max(wid.c, length(@.r.c) )   /*find the maximum word width.*/
+0014 end   /*c*/
+0015 cols= max(cols, c)                             /*use the maximum COLS found.          */
+0016 end    /*r*/
+0017 
+0018 do k=1  for cols;   size= size + wid.k;   end  /*find the width of the biggest line.  */
+0019 rows= r - 1                                      /*adjust ROWS because of the  DO  loop.*/
+0020 do j=1  for 3;      say;      say              /*show two blank lines for a separator.*/
+0021 say center(word('left right center', j)  "aligned", size+cols+1, "═")     /*show title*/
+0022 
+0023 do r=0  to rows;       _=;    != '│';              if r==0  then != '┬'
+0024 do c=1  for cols;                            x= @.r.c
+0025 if r==0  then x= copies("─", wid.c + 1)
+0026 if j==1  then _= _  ||  !  ||    left(x, wid.c)   /*justify  left*/
+0027 if j==2  then _= _  ||  !  ||   right(x, wid.c)   /*   "    ruggt*/
+0028 if j==3  then _= _  ||  !  ||  center(x, wid.c)   /*   "     ctr.*/
+0029 end   /*c*/
+0030 if r==0  then do;    _= '┌'substr(_, 2, length(_) - 1)"┐"   /*top line.*/
+0031 bot= '└'substr(_, 2, length(_) - 2)"┘"   /*bot   "  */
+0032 end
+0033 else _= _ || !         /*append trailing end boxing character.*/
+0034 say _
+0035 end         /*r*/               /* [↑]  shows words in boxes.          */
+0036 say translate(bot, '┴', "┬")                   /*display the bottom line of the box.  */
+0037 end   /*j*/                                    /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 wid.             13
+002 cols             15
+003 k                18
+004 size             18
+005 rows             19
+006 j                20
+007 r                23
+008 c                24
+009 x                24 25
+010 bot              31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 12
+002 _                -> newV2            10 12 12 23 26 27 28 30
+003 !                -> newV3            23 23

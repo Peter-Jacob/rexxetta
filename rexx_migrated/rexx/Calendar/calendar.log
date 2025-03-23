@@ -1,0 +1,174 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX program to show any year's (monthly) calendar (with/without grid)*/
+0002 
+0003 @abc='abcdefghijklmnopqrstuvwxyz'; @abcU=@abc; upper @abcU
+0004 calfill=' '; mc=12; _='1 3 1234567890' "fb"x
+0005 parse var _ grid calspaces # chk . cv_ days.1 days.2 days.3 daysn sd sw
+0006 _=0; parse var _ cols 1 jd 1 lowerCase 1 maxKalPuts 1 narrow 1,
+0007 narrower 1 narrowest 1 short 1 shorter 1 shortest 1,
+0008 small 1 smaller 1 smallest 1 upperCase
+0009 parse arg mm '/' dd "/" yyyy _ '(' ops;  uops=ops
+0010 if _\=='' | \is#(mm) | \is#(dd) | \is#(yyyy) then call erx 86
+0011 
+0012 do while ops\==''; ops=strip(ops,'L'); parse var ops _1 2 1 _ . 1 _o ops
+0013 upper _
+0014 select
+0015 when  abb('CALSPaces')  then calspaces=nai()
+0016 when  abb('DEPth')      then        sd=nai()
+0017 when abbn('GRIDs')      then      grid=no()
+0018 when abbn('LOWercase')  then lowerCase=no()
+0019 when  abb('CALMONths')  then        mc=nai()
+0020 when abbn('NARrow')     then    narrow=no()
+0021 when abbn('NARROWER')   then  narrower=no()
+0022 when abbn('NARROWESt')  then narrowest=no()
+0023 when abbn('SHORt')      then     short=no()
+0024 when abbn('SHORTER')    then   shorter=no()
+0025 when abbn('SHORTESt')   then  shortest=no()
+0026 when abbn('SMALl')      then     small=no()
+0027 when abbn('SMALLER')    then   smaller=no()
+0028 when abbn('SMALLESt')   then  smallest=no()
+0029 when abbn('UPPercase')  then upperCase=no()
+0030 when  abb('WIDth')      then        sw=nai()
+0031 otherwise nop
+0032 end    /*select*/
+0033 end         /*do while opts\== ...*/
+0034 
+0035 mc=int(mc,'monthscalender'); if mc>0 then cal=1
+0036 days='Sunday Monday Tuesday Wednesday Thursday Friday Saturday'
+0037 months='January February March April May June July August September October November December'
+0038 days=' 'days;  months=' 'months
+0039 cyyyy=right(date(),4);  hyy=left(cyyyy,2);  lyy=right(cyyyy,2)
+0040 dy.=31; _=30; parse var _ dy.4 1 dy.6 1 dy.9 1 dy.11; dy.2=28+ly(yyyy)
+0041 yy=right(yyyy,2); sd=p(sd 43); sw=p(sw 80); cw=10; cindent=1; calwidth=76
+0042 if small    then do; narrow=1   ; short=1   ; end
+0043 if smaller  then do; narrower=1 ; shorter=1 ; end
+0044 if smallest then do; narrowest=1; shortest=1; end
+0045 if shortest then shorter=1
+0046 if shorter  then short  =1
+0047 if narrow    then do; cw=9; cindent=3; calwidth=69; end
+0048 if narrower  then do; cw=4; cindent=1; calwidth=34; end
+0049 if narrowest then do; cw=2; cindent=1; calwidth=20; end
+0050 cv_=calwidth+calspaces+2
+0051 calfill=left(copies(calfill,cw),cw)
+0052 do j=1 for 7;         _=word(days,j)
+0053 do jw=1 for 3;  _d=strip(substr(_,cw*jw-cw+1,cw))
+0054 if jw=1 then _d=centre(_d,cw+1)
+0055 else _d=left(_d,cw+1)
+0056 days.jw=days.jw||_d
+0057 end   /*jw*/
+0058 __=daysn
+0059 if narrower  then daysn=__||centre(left(_,3),5)
+0060 if narrowest then daysn=__||center(left(_,2),3)
+0061 end   /*j*/
+0062 _yyyy=yyyy; calPuts=0; cv=1; _mm=mm+0; month=word(months,mm)
+0063 dy.2=28+ly(_yyyy); dim=dy._mm; _dd=01; dow=dow(_mm,_dd,_yyyy); $dd=dd+0
+0064 
+0065 /*─────────────────────────────now: the business of the building the cal*/
+0066 call calGen
+0067 do _j=2 to mc
+0068 if cv_\=='' then do
+0069 cv=cv+cv_
+0070 if cv+cv_>=sw then do; cv=1; call calPut
+0071 call fcalPuts;call calPb
+0072 end
+0073 else calPuts=0
+0074 end
+0075 else do;call calPb;call calPut;call fcalPuts;end
+0076 _mm=_mm+1;  if _mm==13 then do;  _mm=1; _yyyy=_yyyy+1;  end
+0077 month=word(months,_mm); dy.2=28+ly(_yyyy); dim=dy._mm
+0078 dow=dow(_mm,_dd,_yyyy); $dd=0; call calGen
+0079 end   /*_j*/
+0080 call fcalPuts
+0081 return _
+0082 
+0083 /*─────────────────────────────calGen subroutine────────────────────────*/
+0084 calGen: cellX=;cellJ=;cellM=;calCells=0;calline=0
+0085 call calPut
+0086 call calPutl copies('─',calwidth),"┌┐"; call calHd
+0087 call calPutl month ' ' _yyyy          ; call calHd
+0088 if narrowest | narrower then call calPutl daysn
+0089 else do jw=1 for 3
+0090 if space(days.jw)\=='' then call calPutl days.jw
+0091 end
+0092 calft=1; calfb=0
+0093 do jf=1 for dow-1; call cellDraw calFill,calFill; end
+0094 do jy=1 for dim; call cellDraw jy; end
+0095 calfb=1
+0096 do 7; call cellDraw calFill,calFill; end
+0097 if sd>32 & \shorter then call calPut
+0098 return
+0099 
+0100 /*─────────────────────────────cellDraw subroutine──────────────────────*/
+0101 cellDraw: parse arg zz,cdDOY;zz=right(zz,2);calCells=calCells+1
+0102 if calCells>7 then do
+0103 calLine=calLine+1
+0104 cellX=substr(cellX,2)
+0105 cellJ=substr(cellJ,2)
+0106 cellM=substr(cellM,2)
+0107 cellB=translate(cellX,,")(─-"#)
+0108 if calLine==1 then call cx
+0109 call calCsm; call calPutl cellX; call calCsj; call cx
+0110 cellX=; cellJ=; cellM=; calCells=1
+0111 end
+0112 cdDOY=right(cdDOY,cw); cellM=cellM'│'center('',cw)
+0113 cellX=cellX'│'centre(zz,cw); cellJ=cellJ'│'center('',cw)
+0114 return
+0115 
+0116 /*═════════════════════════════general 1-line subs══════════════════════*/
+0117 abb:arg abbu;parse arg abb;return abbrev(abbu,_,abbl(abb))
+0118 abbl:return verify(arg(1)'a',@abc,'M')-1
+0119 abbn:parse arg abbn;return abb(abbn)|abb('NO'abbn)
+0120 calCsj:if sd>49&\shorter then call calPutl cellB;if sd>24&\short then call calPutl cellJ; return
+0121 calCsm:if sd>24&\short then call calPutl cellM;if sd>49&\shorter then call calPutl cellB;return
+0122 calHd:if sd>24&\shorter then call calPutl;if sd>32&\shortest then call calPutl;return
+0123 calPb:if \grid&shortest then call put chk;return
+0124 calPut:calPuts=calPuts+1;maxKalPuts=max(maxKalPuts,calPuts);if symbol('CT.'calPuts)\=='VAR' then ct.calPuts=;ct.calPuts=overlay(arg(1),ct.calPuts,cv);return
+0125 calPutl:call calPut copies(' ',cindent)left(arg(2)"│",1)center(arg(1),calwidth)||right('│'arg(2),1);return
+0126 cx:cx_='├┤';cx=copies(copies('─',cw)'┼',7);if calft then do;cx=translate(cx,'┬',"┼");calft=0;end;if calfb then do;cx=translate(cx,'┴',"┼");cx_='└┘';calfb=0;end;call calPutl cx,cx_;return
+0127 dow:procedure;arg m,d,y;if m<3 then do;m=m+12;y=y-1;end;yl=left(y,2);yr=right(y,2);w=(d+(m+1)*26%10+yr+yr%4+yl%4+5*yl)//7;if w==0 then w=7;return w
+0128 er:parse arg _1,_2;call '$ERR' "14"p(_1) p(word(_1,2) !fid(1)) _2;if _1<0 then return _1;exit result
+0129 err:call er '-'arg(1),arg(2);return ''
+0130 erx:call er '-'arg(1),arg(2);exit ''
+0131 fcalPuts: do j=1 for maxKalPuts;call put ct.j;end;ct.=;maxKalPuts=0;calPuts=0;return
+0132 int:int=numx(arg(1),arg(2));if \isint(int) then call erx 92,arg(1) arg(2);return int/1
+0133 is#:return verify(arg(1),#)==0
+0134 isint:return datatype(arg(1),'W')
+0135 lower:return translate(arg(1),@abc,@abcU)
+0136 ly:arg _;if length(_)==2 then _=hyy||_;ly=_//4==0;if ly==0 then return 0;ly=((_//100\==0)|_//400==0);return ly
+0137 na:if arg(1)\=='' then call erx 01,arg(2);parse var ops na ops;if na=='' then call erx 35,_o;return na
+0138 nai:return int(na(),_o)
+0139 nan:return numx(na(),_o)
+0140 no:if arg(1)\=='' then call erx 01,arg(2);return left(_,2)\=='NO'
+0141 num:procedure;parse arg x .,f,q;if x=='' then return x;if datatype(x,'N') then return x/1;x=space(translate(x,,','),0);if datatype(x,'N') then return x/1;return numnot()
+0142 numnot:if q==1 then return x;if q=='' then call er 53,x f;call erx 53,x f
+0143 numx:return num(arg(1),arg(2),1)
+0144 p:return word(arg(1),1)
+0145 put:_=arg(1);_=translate(_,,'_'chk);if \grid then _=ungrid(_);if lowerCase then _=lower(_);if upperCase then upper _;if shortest&_=' ' then return;call tell _;return
+0146 tell:say arg(1);return
+0147 ungrid:return translate(arg(1),,"│║─═┤┐└┴┬├┼┘┌╔╗╚╝╟╢╞╡╫╪╤╧╥╨╠╣")
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                141 141
+002 f                141
+003 q                141
+004 put:_            145
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @abcU            -> newV1            3
+002 _yyyy            -> newV2            62 76
+003 @abc             -> newV3            3
+004 _mm              -> newV4            62 76 76
+005 _dd              -> newV5            63
+006 $dd              -> newV6            63 78
+007 _1               -> newV7            12 128
+008 _o               -> newV8            12
+009 _d               -> newV9            53 54
+010 __               -> newV10           58
+011 _j               -> newV11           67
+012 _2               -> newV12           128
+013 _                -> newV13           4 5 6 6 9 12 40 40 52 136 145 145 145
+014 #                -> newV14           5

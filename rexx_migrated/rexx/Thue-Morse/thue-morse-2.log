@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX pgm generates & displays the Thue─Morse sequence up to the Nth term (inclusive). */
+0002 parse arg N .                                    /*obtain the optional argument from CL.*/
+0003 if N=='' | N==","  then N= 80                    /*Not specified?  Then use the default.*/
+0004 $=                                               /*the Thue─Morse sequence  (so far).   */
+0005 do j=0  to N                            /*generate sequence up to the Nth item.*/
+0006 $= $ || length( space( translate( x2b( d2x(j) ), , 0), 0)) // 2  /*append to $.*/
+0007 end   /*j*/
+0008 say $                                            /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                2 3
+002 j                5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            4 6

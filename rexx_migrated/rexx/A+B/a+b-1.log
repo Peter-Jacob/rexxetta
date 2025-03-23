@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program obtains two numbers from the input stream (the console), shows their sum.*/
+0002 parse pull a b                                   /*obtain two numbers from input stream.*/
+0003 say a+b                                          /*display the sum to the terminal.     */
+0004 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             2
+002 a                2
+003 b                2
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

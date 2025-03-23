@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program displays a   finite liner combination   in an   infinite vector basis.   */
+0002 @.= .;           @.1  =    '  1,  2,  3     '    /*define a specific test case for build*/
+0003 @.2  =    '  0,  1,  2,  3 '    /*   "   "     "      "    "   "    "  */
+0004 @.3  =    '  1,  0,  3,  4 '    /*   "   "     "      "    "   "    "  */
+0005 @.4  =    '  1,  2,  0     '    /*   "   "     "      "    "   "    "  */
+0006 @.5  =    '  0,  0,  0     '    /*   "   "     "      "    "   "    "  */
+0007 @.6  =       0                  /*   "   "     "      "    "   "    "  */
+0008 @.7  =    '  1,  1,  1     '    /*   "   "     "      "    "   "    "  */
+0009 @.8  =    ' -1, -1, -1     '    /*   "   "     "      "    "   "    "  */
+0010 @.9  =    ' -1, -2,  0, -3 '    /*   "   "     "      "    "   "    "  */
+0011 @.10 =      -1                  /*   "   "     "      "    "   "    "  */
+0012 do j=1  while  @.j\==.;        n= 0            /*process each vector; zero element cnt*/
+0013 y= space( translate(@.j, ,',') )               /*elide commas and superfluous blanks. */
+0014 $=                                             /*nullify  output  (liner combination).*/
+0015 do k=1  for words(y);     #= word(y, k)   /* ◄───── process each of the elements.*/
+0016 if #=0  then iterate;     a= abs(# / 1)   /*if the value is zero, then ignore it.*/
+0017 if #<0  then s= '- '                      /*define the sign:   minus (-).        */
+0018 else s= '+ '                      /*   "    "    "     plus  (+).        */
+0019 n= n + 1                                  /*bump the number of elements in vector*/
+0020 if n==1  then s= strip(s)                 /*if the 1st element used, remove blank*/
+0021 if a\==1    then s= s  ||  a'*'           /*if multiplier is unity, then ignore #*/
+0022 $= $  s'e('k")"                           /*construct a liner combination element*/
+0023 end   /*k*/
+0024 $= strip( strip($), 'L', "+")                  /*strip leading plus sign (1st element)*/
+0025 if $==''  then $= 0                            /*handle special case of no elements.  */
+0026 say right( space(@.j), 20)  ' ──► '   strip($) /*align the output for presentation.   */
+0027 end       /*j*/                                /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                12
+002 n                12 19
+003 y                13
+004 k                15
+005 a                16
+006 s                17 20 21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 2 3 4 5 6 7 8 9 10 11
+002 $                -> newV2            14 22 24 25
+003 #                -> newV3            15

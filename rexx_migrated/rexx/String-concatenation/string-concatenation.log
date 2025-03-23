@@ -1,0 +1,21 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 s = "hello"
+0002 say s "literal"
+0003 t = s "literal"         /*whitespace between the two strings causes a space in the output.*/
+0004 say t
+0005 /*the above method works without spaces too.*/
+0006 
+0007 genus= "straw"
+0008 say genus"berry"        /*this outputs strawberry.*/
+0009 say genus || "berry"    /*concatenation using a double-pipe does not cause spaces.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                1
+002 t                3
+003 genus            7
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

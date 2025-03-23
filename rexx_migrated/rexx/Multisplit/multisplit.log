@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX program  splits  a (character) string  based on different  separator  delimiters.*/
+0002 parse arg $                                      /*obtain optional string from the C.L. */
+0003 if $=''   then $= "a!===b=!=c"                   /*None specified?  Then use the default*/
+0004 say 'old string:' $                              /*display the old string to the screen.*/
+0005 null= '0'x                                       /*null char.   It can be most anything.*/
+0006 seps= '== != ='                                  /*list of separator strings to be used.*/
+0007 /* [↓]   process the tokens in  SEPS.  */
+0008 do j=1  for words(seps)                        /*parse the string with all the seps.  */
+0009 sep=word(seps,j)                               /*pick a separator to use in below code*/
+0010 /* [↓]   process characters in the sep.*/
+0011 do k=1  for length(sep)                  /*parse for various separator versions.*/
+0012 sep=strip(insert(null, sep, k), , null)  /*allow imbedded "nulls" in separator, */
+0013 $=changestr(sep, $, null)                /*       ··· but not trailing "nulls". */
+0014 /* [↓]   process strings in the input. */
+0015 do  until $==old;      old=$        /*keep changing until no more changes. */
+0016 $=changestr(null || null, $, null)  /*reduce replicated "nulls" in string. */
+0017 end   /*until*/
+0018 /* [↓]  use  BIF  or  external program.*/
+0019 sep=changestr(null, sep, '')             /*remove true nulls from the separator.*/
+0020 end        /*k*/
+0021 end              /*j*/
+0022 
+0023 showNull= ' {} '                                 /*just one more thing, display the ··· */
+0024 $=changestr(null, $, showNull)                   /*        ··· showing of "null" chars. */
+0025 say 'new string:' $                              /*now, display the new string to term. */
+0026 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 null             5
+002 seps             6
+003 j                8
+004 sep              9 12 19
+005 k                11
+006 until            15
+007 old              15
+008 showNull         23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            2 3 13 16 24

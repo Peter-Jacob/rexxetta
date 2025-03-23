@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program implements the "NOTES" command (append text to a file from the C.L.). */
+0002 notes = 'notes.txt'                           /*the  fileID  of the  'notes'  file.  */
+0003 Select
+0004 When arg(1)='?' Then Do
+0005 Say "'rexx notes text' appends text to file" notes
+0006 Say "'rexx notes' displays file" notes
+0007 End
+0008 When arg()==0  Then Do                      /*No arguments?  Then display the file.*/
+0009 Do while lines(notes)>0
+0010 Say linein(notes)                       /* display a line of file --> screen.  */
+0011 End
+0012 End
+0013 Otherwise Do
+0014 timestamp=right(date(),11,0) time() date('W') /*create current date & time stamp */
+0015 If 'f2'x==2  Then tab='05'x               /* this is an EBCDIC system.           */
+0016 Else tab='09'x               /*  "   "  "  ASCII    "               */
+0017 Call lineout notes,timestamp              /*append the timestamp to "notes" file.*/
+0018 Call lineout notes,tab||arg(1)            /*   "    "     text    "    "      "  */
+0019 End
+0020 End                                         /*stick a fork in it,  we're all Done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 notes            2
+002 timestamp        14
+003 tab              15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

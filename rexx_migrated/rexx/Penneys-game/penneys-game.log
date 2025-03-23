@@ -1,0 +1,97 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program plays/simulates  Penney's Game,  a  two─player  coin toss sequence game. */
+0002 __= copies('─', 9)                               /*literal for eye─catching fence.      */
+0003 signal on halt                                   /*a clean way out if  CLBF  quits.     */
+0004 parse arg # seed .                               /*obtain optional arguments from the CL*/
+0005 if #==''  | #==","     then #= 3                 /*Not specified?  Then use the default.*/
+0006 if datatype(seed,'W')  then call random ,,seed   /*use seed for RANDOM #s repeatability.*/
+0007 wins=0;    do games=1                            /*simulate a number of Penney's games. */
+0008 call game                             /*simulate a single inning of a game.  */
+0009 end   /*games*/                       /*keep at it until  QUIT  or  halt.    */
+0010 exit                                             /*stick a fork in it,  we're all done. */
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 halt:  say;   say __  "Penney's Game was halted.";   say;   exit 13
+0013 r:     arg ,$;       do  arg(1);    $=$ || random(100, 9991) // 2;   end;         return $
+0014 s:     if arg(1)==1  then return arg(3);   return word(arg(2) 's',1)       /*pluralizer.*/
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 game:  @.=;  tosses=@.                                 /*the coin toss sequence so far. */
+0017 toss1= r(1)                                     /*result:   0=computer,   1=CBLF.*/
+0018 if \toss1  then call randComp                   /*maybe let the computer go first*/
+0019 if  toss1  then say __ "You win the first toss, so you pick your sequence first."
+0020 else say __ "The computer won first toss, the pick was: "    @.comp
+0021 call prompter                   /*get the human's guess from C.L.*/
+0022 call randComp                   /*get computer's guess if needed.*/
+0023 /*CBLF:  carbon-based life form. */
+0024 say __  "      your pick:"  @.CBLF              /*echo human's pick to terminal. */
+0025 say __  "computer's pick:"  @.comp              /*  "  comp.'s   "   "     "     */
+0026 say                                             /* [↓]  flip the coin 'til a win.*/
+0027 do  flips=1  until pos(@.CBLF, tosses)\==0   |   pos(@.comp, tosses)\==0
+0028 tosses= tosses || translate( r(1), 'HT', 10)
+0029 end   /*flips*/                           /* [↑]   this is a flipping coin,*/
+0030 /* [↓] series of tosses*/
+0031 say __ "The tossed coin series was: "   tosses
+0032 say
+0033 @@@="won this toss with "   flips   ' coin tosses.'
+0034 if pos(@.CBLF,tosses)\==0  then do;  say __  "You"  @@@;  wins=wins+1;  end
+0035 else      say __  "The computer"  @@@
+0036 _=wins;  if _==0  then _='no'
+0037 say __ "You've won"  _  "game"s(wins)  'out of ' games"."
+0038 say;  say copies('╩╦', 79 % 2)'╩';   say
+0039 return
+0040 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0041 prompter: oops= __ 'Oops!  ';            a=            /*define some handy REXX literals*/
+0042 @a_z= 'ABCDEFG-IJKLMNOPQRS+UVWXYZ'           /*the extraneous alphabetic chars*/
+0043 p=__ 'Pick a sequence of'  #  "coin tosses of  H or T (Heads or Tails) or Quit:"
+0044 do  until  ok;   say;  say p;  pull a     /*uppercase the answer.          */
+0045 if abbrev('QUIT', a, 1)  then exit 1      /*the human wants to  quit.      */
+0046 a= space( translate(a,,@a_z',./\;:_'), 0) /*elide extraneous characters.   */
+0047 b= translate(a, 10, 'HT');   L= length(a) /*translate ───► bin; get length.*/
+0048 ok= 0                                     /*the response is  OK  (so far). */
+0049 select                                /*verify the user response.      */
+0050 when \datatype(b, 'B')  then say oops "Illegal response."
+0051 when \datatype(a, 'M')  then say oops "Illegal characters in response."
+0052 when L==0               then say oops "No choice was given."
+0053 when L<#                then say oops "Not enough coin choices."
+0054 when L>#                then say oops "Too many coin choices."
+0055 when a==@.comp          then say oops "You can't choose the computer's" ,
+0056 "choice: "    @.comp
+0057 otherwise          ok= 1
+0058 end   /*select*/
+0059 end       /*until ok*/
+0060 @.CBLF= a;           @.CBLF!= b              /*we have the human's guess now. */
+0061 return
+0062 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0063 randComp: if @.comp\==''  then return                  /*the computer already has a pick*/
+0064 _= @.CBLF!                                   /* [↓] use best-choice algorithm.*/
+0065 if _\==''  then g= left((\substr(_, min(2, #), 1))left(_, 1)substr(_, 3), #)
+0066 do  until g\==@.CBLF!;   g= r(#);   end    /*otherwise, generate a choice.  */
+0067 @.comp= translate(g, 'HT', 10)
+0068 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 seed             4
+002 wins             7 34
+003 games            7
+004 tosses           16 28
+005 toss1            17
+006 flips            27
+007 a                41 46
+008 p                43
+009 b                47
+010 L                47
+011 ok               48
+012 g                65 66
+013 until            66
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @a_z             -> newV1            42
+002 @@@              -> newV2            33
+003 __               -> newV3            2
+004 @.               -> newV4.           60 60 67
+005 #                -> newV5            4 5
+006 $                -> newV6            13
+007 _                -> newV7            36 36 64

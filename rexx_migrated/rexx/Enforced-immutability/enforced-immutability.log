@@ -1,0 +1,49 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program  emulates  immutable variables  (as a post-computational check).         */
+0002 call immutable '$=1'                             /* ◄─── assigns an immutable variable. */
+0003 call immutable '   pi = 3.14159'                 /* ◄───    "     "     "         "     */
+0004 call immutable 'radius= 2*pi/4 '                 /* ◄───    "     "     "         "     */
+0005 call immutable '     r=13/2    '                 /* ◄───    "     "     "         "     */
+0006 call immutable '     d=0002 * r'                 /* ◄───    "     "     "         "     */
+0007 call immutable ' f.1  = 12**2  '                 /* ◄───    "     "     "         "     */
+0008 
+0009 say '       $ ='  $                              /*show the variable, just to be sure.  */
+0010 say '      pi ='  pi                             /*  "   "      "       "   "  "   "    */
+0011 say '  radius ='  radius                         /*  "   "      "       "   "  "   "    */
+0012 say '       r ='  r                              /*  "   "      "       "   "  "   "    */
+0013 say '       d ='  d                              /*  "   "      "       "   "  "   "    */
+0014 
+0015 do radius=10  to  -10  by -1 /*perform some faux important stuff.   */
+0016 circum=$*pi*2*radius         /*some kind of impressive calculation. */
+0017 end   /*k*/                  /* [↑]  that should do it, by gum.     */
+0018 call immutable                                   /* ◄═══ see if immutable variables OK. */
+0019 exit                                             /*stick a fork in it,  we're all done. */
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 immutable: if symbol('immutable.0')=='LIT'  then immutable.0= /*1st time see immutable? */
+0022 if arg()==0 then do                                /* [↓]  chk all immutables*/
+0023 do __=1  for words(immutable.0); _=word(immutable.0,__)
+0024 if value(_)==value('IMMUTABLE.!'_)  then iterate   /*same?*/
+0025 call ser -12, 'immutable variable  ' _ "  compromised."
+0026 end   /*__*/                  /* [↑]  Error?  ERRmsg, exit*/
+0027 return 0                        /*return and indicate  A-OK.*/
+0028 end                             /* [↓] immutable must have =*/
+0029 if pos('=',arg(1))==0  then call ser -4, "no equal sign in assignment:"  arg(1)
+0030 parse arg _ '=' __;         upper _;    _=space(_)    /*purify variable name.*/
+0031 if symbol("_")=='BAD'  then call ser -8,_ "isn't a valid variable symbol."
+0032 immutable.0=immutable.0 _                        /*add immutable var to list.*/
+0033 interpret '__='__;     call value _,__           /*assign value to a variable*/
+0034 call value 'IMMUTABLE.!'_,__                     /*assign value to bkup var. */
+0035 return words(immutable.0)                        /*return number immutables. */
+0036 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0037 ser:       say;     say '***error***'  arg(2);     say;     exit arg(1)     /*error msg.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 immutable.       32
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 __               -> newV1            23 30
+002 _                -> newV2            23 30 30

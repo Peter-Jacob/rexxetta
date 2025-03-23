@@ -1,0 +1,86 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*REXX program counts the occurences of all characters in a file
+0002 * Adapted version 1 for TSO (EXECIO instead of linein)
+0003 * No translation to uppercase takes place
+0004 * There is no need for tails being hex
+0005 * 25.07.2012 Walter Pachl
+0006 ***********************************************************************/
+0007 
+0008 Parse arg dsn .                    /*Data set to be processed       */
+0009 if dsn='' Then                     /*none specified?                */
+0010 dsn='PRIV.V100(TEST)'            /* Use default.                  */
+0011 c.=0                               /* Character counts              */
+0012 "ALLOC   FI(IN) DA("dsn") SHR REUSE"
+0013 'EXECIO   * DISKR IN (STEM L. FINIS'
+0014 'FREE   FI(IN)'
+0015 totChars=0                         /*count of the total num of chars*/
+0016 totLetters=0                       /*count of the total num letters.*/
+0017 indent=left('',20)                 /*used for indentation of output.*/
+0018 
+0019 do j=1 to l.0                      /*process all lines              */
+0020 rec=l.j                          /*take line number j             */
+0021 Say '>'rec'<' length(rec)        /*that's in PRIV.V100(TEST)      */
+0022 Say ' E8C44D8FF015674BCDEF'
+0023 Say ' 61100711200000000002'
+0024 do k=1 for length(rec)           /*loop over characters           */
+0025 totChars=totChars+1            /*Increment total number of chars*/
+0026 c=substr(rec,k,1)              /*get character number k         */
+0027 c.c=c.c+1                      /*increment the character's count*/
+0028 End
+0029 End                              /*maybe we're ½ done by now, or ¬*/
+0030 
+0031 w=length(totChars)                 /*used for right-aligning counts.*/
+0032 say 'file -----' dsn "----- has" j-1 'records.'
+0033 say 'file -----' dsn "----- has" totChars 'characters.'
+0034 
+0035 do L=0 to 255                      /* display nonzero letter counts */
+0036 c=d2c(l)                         /* the character in question     */
+0037 if c.c>0 &,                      /* was found in the file         */
+0038 datatype(c,'M')>0 Then Do     /* and is a Latin letter         */
+0039 say indent "(Latin) letter " c 'count:' right(c.c,w) /* tell    */
+0040 totLetters=totLetters+c.c      /* increment number of letters   */
+0041 End
+0042 End
+0043 
+0044 say 'file -----' dsn "----- has" totLetters '(Latin) letters.'
+0045 say '                           other characters follow'
+0046 other=0
+0047 do m=0 to 255                      /* now for non-letters           */
+0048 c=d2c(m)                         /* the character in question     */
+0049 y=c2x(c)                         /* the hex representation        */
+0050 if c.c>0 &,                      /* was found in the file         */
+0051 datatype(c,'M')=0 Then Do     /* and is not a Latin letter     */
+0052 other=other+c.c                /* increment count               */
+0053 _=right(c.c,w)                 /* prepare output of count       */
+0054 select                         /*make the character viewable.   */
+0055 when c<<' ' | m==255 then say indent  "'"y"'x character count:" _
+0056 when c==' '          then say indent   "blank character count:" _
+0057 otherwise                 say indent "   " c 'character count:' _
+0058 end
+0059 end
+0060 end
+0061 say 'file -----' dsn "----- has" other 'other characters.'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 dsn              8 10
+002 c.               11 27
+003 totChars         15 25
+004 totLetters       16 40
+005 indent           17
+006 j                19
+007 rec              20
+008 k                24
+009 c                26 36 48
+010 w                31
+011 L                35
+012 other            46 52
+013 m                47
+014 y                49
+015 datatype(c,'�')  51
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            53

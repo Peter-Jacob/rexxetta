@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program converts & displays a URL─encoded string ──► its original unencoded form.*/
+0002 url. =
+0003 url.1='http%3A%2F%2Ffoo%20bar%2F'
+0004 url.2='mailto%3A%22Ivan%20Aim%22%20%3Civan%2Eaim%40email%2Ecom%3E'
+0005 url.3='%6D%61%69%6C%74%6F%3A%22%49%72%6D%61%20%55%73%65%72%22%20%3C%69%72%6D%61%2E%75%73%65%72%40%6D%61%69%6C%2E%63%6F%6D%3E'
+0006 
+0007 do j=1  until url.j=='';   say       /*process each URL; display blank line.*/
+0008 say           url.j                  /*display the original URL.            */
+0009 say URLdecode(url.j)                 /*   "     "  decoded   "              */
+0010 end   /*j*/
+0011 exit                                             /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 URLdecode:  procedure;  parse arg yyy            /*get encoded URL from argument list.  */
+0014 yyy= translate(yyy, , '+')           /*a special case for an encoded blank. */
+0015 URL=
+0016 do  until yyy==''
+0017 parse var  yyy     plain  '%'  +1  code  +2  yyy
+0018 URL= URL || plain
+0019 if datatype(code, 'X')  then URL= URL || x2c(code)
+0020 else URL= URL'%'code
+0021 end   /*until*/
+0022 return URL
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 yyy              17 17
+002 plain            17
+003 code             17
+004 URL              18 19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

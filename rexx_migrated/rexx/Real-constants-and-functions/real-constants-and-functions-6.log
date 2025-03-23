@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 ╔════════════════════════════════════════════════════════════════════╗
+0002 ╔═╝                                __                                  ╚═╗
+0003 ║                                 √                                      ║
+0004 ║                                                                        ║
+0005 ║ While the above REXX code seems like it's doing a lot of extra work,   ║
+0006 ║ it saves a substantial amount of processing time when the precision    ║
+0007 ║ (DIGITs)  is a lot greater than the default  (default is nine digits). ║
+0008 ║                                                                        ║
+0009 ║ Indeed, when computing square roots in the hundreds  (even thousands)  ║
+0010 ║ of digits,  this technique reduces the amount of CPU processing time   ║
+0011 ║ by keeping the length of the computations to a minimum (due to a large ║
+0012 ║ precision),  while the accuracy at the beginning isn't important for   ║
+0013 ║ calculating the (first) guesstimate  (the running square root guess).  ║
+0014 ║                                                                        ║
+0015 ║ Each iteration of   K   (approximately) doubles the number of digits,  ║
+0016 ║ but takes almost four times longer to compute  (actually, around 3.8). ║
+0017 ║                                                                        ║
+0018 ║ The REXX code could be streamlined (pruned)  by removing  the          ║
+0019 ║ The    NUMERIC FUZZ 0      statement can be removed  if  it is known   ║
+0020 ║ that  it is already set to zero.  (which is the default).              ║
+0021 ║                                                                        ║
+0022 ║ Also, the   NUMERIC FORM   statement can be removed  if  it is known   ║
+0023 ║ that the   form  is  SCIENTIFIC   (which is the default).              ║
+0024 ║                                  __                                    ║
+0025 ╚═╗                               √                                    ╔═╝
+0026 ╚════════════════════════════════════════════════════════════════════╝
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

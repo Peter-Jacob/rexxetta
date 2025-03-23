@@ -1,0 +1,73 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*REXX program counts the number of ways to make change with coins from an given amount.*/
+0002 numeric digits 20                                /*be able to handle large amounts of $.*/
+0003 parse arg N $                                    /*obtain optional arguments from the CL*/
+0004 if N='' | N=","    then N= 100                   /*Not specified?  Then Use $1  (≡100¢).*/
+0005 if $='' | $=","    then $= 1 5 10 25             /*Use penny/nickel/dime/quarter default*/
+0006 X= N                                             /*save original for possible error msgs*/
+0007 if left(N,1)=='$'  then do                       /*the amount has a leading dollar sign.*/
+0008 _= substr(N, 2)          /*the amount was specified in  dollars.*/
+0009 if \isNum(_)  then call ser  "amount isn't numeric: "   N
+0010 N= 100 * _               /*change amount (in $) ───►  cents (¢).*/
+0011 end
+0012 max$= 10 ** digits()                             /*the maximum amount this pgm can have.*/
+0013 if \isNum(N)  then call  ser  X   " amount isn't numeric."
+0014 if N=0        then call  ser  X   " amount can't be zero."
+0015 if N<0        then call  ser  X   " amount can't be negative."
+0016 if N>max$     then call  ser  X   " amount can't be greater than " max$'.'
+0017 coins= words($);   !.= .;     NN= N;       p= 0  /*#coins specified; coins; amount; prev*/
+0018 @.= 0                                            /*verify a coin was only specified once*/
+0019 do j=1  for coins;     _= word($, j)   /*create a fast way of accessing specie*/
+0020 ?= _  ' coin'                          /*define an array element for the coin.*/
+0021 if _=='½' | _=="1/2"   then _= .5      /*an alternate spelling of a half─cent.*/
+0022 if _=='¼' | _=="1/4"   then _= .25     /* "     "         "     " " quarter─¢.*/
+0023 if \isNum(_)  then call ser ? "coin value isn't numeric."
+0024 if _<0        then call ser ? "coin value can't be negative."
+0025 if _<=0       then call ser ? "coin value can't be zero."
+0026 if @._        then call ser ? "coin was already specified."
+0027 if _<p        then call ser ? "coin must be greater than previous:"    p
+0028 if _>N        then call ser ? "coin must be less or equal to amount:"  X
+0029 @._= 1;   p= _                         /*signify coin was specified; set prev.*/
+0030 $.j= _                                 /*assign the value to a particular coin*/
+0031 end   /*j*/
+0032 _= n // 100;                    cnt= ' cents'    /* [↓]  is the amount in whole dollars?*/
+0033 if _=0  then do;   NN= '$'  ||  (NN%100);  cnt=  /*show the amount in dollars, not cents*/
+0034 end
+0035 say 'with an amount of '        comma(NN)cnt",  there are "       comma( MKchg(N, coins) )
+0036 say 'ways to make change with coins of the following denominations: '    $
+0037 exit                                             /*stick a fork in it,  we're all done. */
+0038 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0039 isNum: return datatype(arg(1), 'N')              /*return 1 if arg is numeric, 0 if not.*/
+0040 ser:   say;   say '***error***';   say;   say arg(1);   say;   exit 13      /*error msg.*/
+0041 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0042 comma: procedure; parse arg _;     n= _'.9';      #= 123456789;       b= verify(n, #, "M")
+0043 e= verify(n, #'0', , verify(n, #"0.", 'M'))  -  4
+0044 do j=e  to b  by -3;   _= insert(',', _, j);    end  /*j*/;          return _
+0045 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0046 MKchg: procedure expose $. !.;           parse arg a,k       /*function is recursive.   */
+0047 if !.a.k\==.  then return !.a.k                       /*found this A & K before? */
+0048 if a==0       then return 1                           /*unroll for a special case*/
+0049 if k==1       then return 1                           /*   "    "  "    "      " */
+0050 if k==2  then f= 1                                    /*handle this special case.*/
+0051 else f= MKchg(a, k-1)                        /*count, recurse the amount*/
+0052 if a==$.k  then do;  !.a.k= f+1;  return !.a.k;  end  /*handle this special case.*/
+0053 if a <$.k  then do;  !.a.k= f  ;  return f    ;  end  /*   "     "     "      "  */
+0054 !.a.k= f + MKchg(a-$.k, k);       return !.a.k        /*compute, define, return. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                46
+002 k                46
+003 f                50
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           17 52 53 54
+002 @.               -> newV2.           18 29
+003 $.               -> newV3.           30
+004 $                -> newV4            3 5
+005 _                -> newV5            8 19 21 22 32 42 44
+006 ?                -> newV6            20
+007 #                -> newV7            42

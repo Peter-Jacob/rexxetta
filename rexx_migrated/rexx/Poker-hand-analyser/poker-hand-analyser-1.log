@@ -1,0 +1,123 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 10.12.2013 Walter Pachl
+0003 *--------------------------------------------------------------------*/
+0004 
+0005 d.1='2h 2d 2s ks qd'; x.1='three-of-a-kind'
+0006 d.2='2h 5h 7d 8s 9d'; x.2='high-card'
+0007 d.3='ah 2d 3s 4s 5s'; x.3='straight'
+0008 d.4='2h 3h 2d 3s 3d'; x.4='full-house'
+0009 d.5='2h 7h 2d 3s 3d'; x.5='two-pair'
+0010 d.6='2h 7h 7d 7s 7c'; x.6='four-of-a-kind'
+0011 d.7='th jh qh kh ah'; x.7='straight-flush'
+0012 d.8='4h 4c kc 5d tc'; x.8='one-pair'
+0013 d.9='qc tc 7c 6c 4c'; x.9='flush'
+0014 d.10='ah 2h 3h 4h'
+0015 d.11='ah 2h 3h 4h 5h 6h'
+0016 d.12='2h 2h 3h 4h 5h'
+0017 d.13='xh 2h 3h 4h 5h'
+0018 d.14='2x 2h 3h 4h 5h'
+0019 Do ci=1 To 14
+0020 Call poker d.ci,x.ci
+0021 end
+0022 Exit
+0023 
+0024 poker:
+0025 Parse Arg deck,expected
+0026 have.=0
+0027 f.=0; fmax=0
+0028 s.=0; smax=0
+0029 cnt.=0
+0030 If words(deck)<5 Then Return err('less than 5 cards')
+0031 If words(deck)>5 Then Return err('more than 5 cards')
+0032 Do i=1 To 5
+0033 c=word(deck,i)
+0034 Parse Var c f +1 s
+0035 If have.f.s=1 Then Return err('duplicate card:' c)
+0036 have.f.s=1
+0037 m=pos(f,'a23456789tjqk')
+0038 If m=0 Then Return err('invalid face' f 'in' c)
+0039 cnt.m=cnt.m+1
+0040 n=pos(s,'hdcs')
+0041 If n=0 Then Return err('invalid suit' s 'in' c)
+0042 f.m=f.m+1; fmax=max(fmax,f.m)
+0043 s.n=s.n+1; smax=max(smax,s.n)
+0044 End
+0045 cntl=''
+0046 cnt.14=cnt.1
+0047 Do i=1 To 14
+0048 cntl=cntl||cnt.i
+0049 End
+0050 Select
+0051 When fmax=4 Then res='four-of-a-kind'
+0052 When fmax=3 Then Do
+0053 If x_pair() Then
+0054 res='full-house'
+0055 Else
+0056 res='three-of-a-kind'
+0057 End
+0058 When fmax=2 Then Do
+0059 If x_2pair() Then
+0060 res='two-pair'
+0061 Else
+0062 res='one-pair'
+0063 End
+0064 When smax=5 Then Do
+0065 If x_street() Then
+0066 res='straight-flush'
+0067 Else
+0068 res='flush'
+0069 End
+0070 When x_street() Then
+0071 res='straight'
+0072 Otherwise
+0073 res='high-card'
+0074 End
+0075 Say deck res
+0076 If res<>expected Then
+0077 Say copies(' ',14) expected
+0078 Return
+0079 
+0080 x_pair:
+0081 Do p=1 To 13
+0082 If f.p=2 Then return 1
+0083 End
+0084 Return 0
+0085 
+0086 x_2pair:
+0087 pp=0
+0088 Do p=1 To 13
+0089 If f.p=2 Then pp=pp+1
+0090 End
+0091 Return pp=2
+0092 
+0093 x_street:
+0094 Return pos('11111',cntl)>0
+0095 
+0096 err:
+0097 Say deck 'Error:' arg(1)
+0098 Return 0
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 c                34
+002 f                34
+003 s                34
+004 have.            36
+005 m                37
+006 cnt.             39 46
+007 n                40
+008 f.               42
+009 fmax             42
+010 s.               43
+011 smax             43
+012 cntl             45 48
+013 i                47
+014 res              54 56 60 62 66 68 71 73
+015 p                81 88
+016 pp               87 89
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

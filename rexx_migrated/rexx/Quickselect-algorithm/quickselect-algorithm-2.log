@@ -1,0 +1,65 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX program sorts a list (which may be numbers) by using the quick select algorithm. */
+0002 parse arg list;  if list=''  then list= 9 8 7 6 5 0 1 2 3 4   /*Not given?  Use default.*/
+0003 say right('list: ', 22)           list
+0004 #= words(list)
+0005 do i=1  for #;  @.i= word(list, i) /*assign all the items ──► @. (array). */
+0006 end   /*i*/                        /* [↑]  #: number of items in the list.*/
+0007 say
+0008 do j=1  for #                              /*show  1 ──►  # items place and value.*/
+0009 say right('item', 20)     right(j, length(#))",  value: "       qSel(1, #, j)
+0010 end   /*j*/
+0011 exit                                             /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 qPart: procedure expose @.;  parse arg L 1 ?,R,X;               xVal= @.X
+0014 call swap X,R                             /*swap the two named items  (X and R). */
+0015 do k=L  to R-1             /*process the left side of the list.   */
+0016 if @.k>xVal  then iterate  /*when an item > item #X, then skip it.*/
+0017 call swap ?,k              /*swap the two named items  (? and K). */
+0018 ?= ? + 1                   /*bump the item number (point to next).*/
+0019 end   /*k*/
+0020 call swap R,?                             /*swap the two named items  (R and ?). */
+0021 return ?                                  /*return the item number to invoker.   */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 qSel: procedure expose @.;  parse arg L,R,z;  if L==R  then return @.L  /*only one item?*/
+0024 do forever                               /*keep searching until we're all done. */
+0025 new= qPart(L, R, (L+R) % 2)              /*partition the list into roughly  ½.  */
+0026 $= new - L + 1                           /*calculate the pivot distance less L+1*/
+0027 if $==z  then return @.new               /*we're all done with this pivot part. */
+0028 else if  z<$  then     R= new-1 /*decrease the right half of the array.*/
+0029 else do; z= z-$   /*decrease the distance.               */
+0030 L= new+1 /*increase the  left half of the array.*/
+0031 end
+0032 end   /*forever*/
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 swap: parse arg _1,_2;  parse value @._1 @._2  with  @._2 @._1;  return  /*swap 2 items.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 L                23 30
+002 R                23
+003 z                23 29
+004 new              25
+005 k                15
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           5 34 34
+002 _1               -> newV2            34
+003 _2               -> newV3            34
+004 #                -> newV4            4
+005 ?                -> newV5            13 18
+006 $                -> newV6            26

@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program emulates a multiple─range  DO  loop  (all variables can be any numbers). */
+0002 prod=  1;
+0003 sum=  0;
+0004 x= +5;
+0005 y= -5;
+0006 z= -2;
+0007 one=  1;
+0008 three=  3;
+0009 seven=  7;
+0010 
+0011 do j=   -three  to      3**3      by three  ;      call meat;      end;
+0012 do j=   -seven  to    seven       by   x    ;      call meat;      end;
+0013 do j=      555  to      550 - y             ;      call meat;      end;
+0014 do j=       22  to      -28       by -three ;      call meat;      end;
+0015 do j=     1927  to     1939                 ;      call meat;      end;
+0016 do j=        x  to        y       by   z    ;      call meat;      end;
+0017 do j=    11**x  to    11**x + one           ;      call meat;      end;
+0018 
+0019 say ' sum= ' || commas( sum);                          /*display   SUM   with commas.   */
+0020 say 'prod= ' || commas(prod);                          /*   "     PROD     "     "      */
+0021 exit;                                                  /*stick a fork in it, we're done.*/
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 commas: procedure; parse arg _;     n= _'.9';     #= 123456789;     b= verify(n, #, "M")
+0024 e= verify(n, #'0', , verify(n, #"0.", 'M') )  - 4
+0025 do j=e  to b  by -3;      _= insert(',', _, j);   end;                  return _
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 meat:  sum= sum + abs(j);
+0028 if abs(prod)<2**27 & j\==0  then prod= prod * j;
+0029 return;
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                23
+002 b                23
+003 e                24
+004 j                25
+005 prod             28
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            23 25
+002 #                -> newV2            23

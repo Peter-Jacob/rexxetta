@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program calculates the   "information entropy"   for  ~this~  REXX program.      */
+0002 numeric digits length( e() ) % 2   -  length(.)  /*use 1/2 of the decimal digits of  E. */
+0003 #= 0;   @.= 0;   $=;   $$=;   recs= sourceline() /*define some handy─dandy REXX vars.   */
+0004 do m=1  for recs; $=$||sourceLine(m) /* [↓]  obtain program source and ──► $*/
+0005 end   /*m*/                          /* [↑]  $ str won't have any meta chars*/
+0006 L=length($)                                      /*the byte length of this REXX program.*/
+0007 do j=1  for L;  _= substr($, j, 1)   /*process each character in  $  string.*/
+0008 if @._==0  then do;  #= # + 1        /*¿Character unique?  Bump char counter*/
+0009 $$= $$ || _     /*add this character to the  $$  list. */
+0010 end
+0011 @._= @._ + 1                         /*keep track of this character's count.*/
+0012 end   /*j*/                          /* [↑]  characters are all 8─bit bytes.*/
+0013 sum= 0                                           /*calculate info entropy for each char.*/
+0014 do i=1  for #;  _= substr($$, i, 1)  /*obtain a character from unique list. */
+0015 sum= sum -  @._ / L * log2(@._ / L)  /*add {negatively} the char entropies. */
+0016 end   /*i*/
+0017 say '    program length: '   L                   /*pgm length doesn't include meta chars*/
+0018 say 'program statements: '   recs                /*pgm statements are actually pgm lines*/
+0019 say ' unique characters: '   #;           say    /*characters are 8─bit bytes of the pgm*/
+0020 say 'The information entropy of this REXX program ──► '       format(sum,,12)
+0021 exit                                             /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 e: e= 2.718281828459045235360287471352662497757247093699959574966967627724076630; return e
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 log2: procedure;  parse arg x 1 ox;     ig= x>1.5;     ii= 0;         is= 1 - 2 * (ig\==1)
+0026 numeric digits digits()+5;        call e   /*the precision of E must be≥digits(). */
+0027 do  while  ig & ox>1.5 | \ig&ox<.5;       _= e;       do j=-1;   iz= ox * _ ** -is
+0028 if j>=0 & (ig & iz<1 | \ig&iz>.5)  then leave;    _= _ * _;    izz= iz;  end /*j*/
+0029 ox=izz;  ii=ii+is*2**j;  end /*while*/;   x= x * e** -ii -1;   z= 0;  _= -1;  p= z
+0030 do k=1;   _= -_ * x;   z= z+_/k;        if z=p  then leave;  p= z;    end  /*k*/
+0031 r= z + ii;  if arg()==2  then return r;   return r / log2(2,.)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                25 29
+002 ox               25 29
+003 ig               25
+004 ii               25 29
+005 is               25
+006 j                27
+007 iz               27
+008 izz              28
+009 z                29 30
+010 p                29 30
+011 k                30
+012 r                31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           3 11
+002 $$               -> newV2            3 9
+003 #                -> newV3            3 8
+004 $                -> newV4            3 4
+005 _                -> newV5            7 14 27 28 29 30

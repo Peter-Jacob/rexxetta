@@ -1,0 +1,59 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program  displays the lyrics of the song "The Name Game" by Shirley Ellis.  */
+0002 /* 20230526 Walter Pachl refurbished Gerald Schildberger's original program        */
+0003 Parse Arg namelist                          /*obtain optional argument(s) from C.L.*/
+0004 If namelist='' Then                         /*Not specified?                       */
+0005 namelist="gAry, eARL, billy, FeLix, MarY" /*  Then use the default.              */
+0006 /* [?]  names separated by commas.     */
+0007 Do While namelist>''
+0008 namelist=space(namelist)                  /*elide superfluous blanks from list.  */
+0009 Parse Var namelist name',' namelist       /*get name (could be 2 words) from list*/
+0010 call song name                            /*invoke subroutine to display lyrics. */
+0011 End
+0012 Exit                                        /*stick a fork in it,  we're all Done. */
+0013 /*---------------------------------------------------------------------------------*/
+0014 song:
+0015 Parse Arg name
+0016 Parse Value 'b f m' With bb ff mm
+0017 lowercase='abcdefghijklmnopqrstuvwxyz'     /*build 2 alphabets*/
+0018 uppercase=translate(lowercase)
+0019 name =translate(left(name,1),uppercase,lowercase)||,
+0020 translate(substr(name,2),lowercase,uppercase)
+0021 namel=translate(name,lowercase,uppercase)
+0022 Parse Var name first +1 rest
+0023 Select
+0024 When pos(first,'AEIOU')>0 Then Do
+0025 Say name','  name", bo-b"namel
+0026 Say 'Banana-fana fo-f'namel
+0027 Say 'Fee-fi-mo-m'namel
+0028 End
+0029 When pos(first,'BFM')>0 Then Do
+0030 Select
+0031 When first=='B' Then bb=''
+0032 When first=='F' Then ff=''
+0033 When first=='M' Then mm=''
+0034 End
+0035 Say name',' name', bo-'bb||rest
+0036 Say 'Banana-fana fo-'ff||rest
+0037 Say 'Fee-fi-mo-'mm||rest
+0038 End
+0039 Otherwise Do
+0040 Say name','  name', bo-b'rest
+0041 Say 'Banana-fana fo-f'rest
+0042 Say 'Fee-fi-mo-m'rest
+0043 End
+0044 End /*select*/
+0045 Say name'!'
+0046 Say ''
+0047 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 name             22
+002 first            22
+003 rest             22
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

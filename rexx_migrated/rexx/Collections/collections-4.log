@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 primeList = '2 3 5 7 11 13 17 19 23 29 31 37 41 43'        /* or ···  */
+0002 primeList =  2 3 5 7 11 13 17 19 23 29 31 37 41 43
+0003 
+0004 /*in this case, the quotes  (')  can be elided.*/
+0005 
+0006 primes= words(primeList)          /*the  WORDS  BIF  counts the number of blank─ */
+0007 /*separated words (in this case, prime numbers)*/
+0008 /*in the  value  of the variable   "primeList".*/
+0009 
+0010 do j=1  for primes              /*can also be coded as:      do j=1  to primes */
+0011 say 'prime'    j    "is"    word(primeList, j)
+0012 /*this method  (using the   WORD   BIF) isn't  */
+0013 /*very efficient for very large arrays  (those */
+0014 /*with many many thousands of elements).       */
+0015 end   /*j*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 primeList        1 2
+002 primes           6
+003 j                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:36
+-------------------------------------------------------------------------
+0001 /*REXX program writes a "record" (event) to the  (Microsoft)  Windows event log.        */
+0002 
+0003 eCMD = 'EVENTCREATE'                         /*name of the command that'll be used. */
+0004 type = 'INFORMATION'                         /*one of:  ERROR  WARNING  INFORMATION */
+0005 id =  234                                  /*in range:  1 ───►  1000  (inclusive).*/
+0006 logName = 'APPLICATION'                         /*information about what this is.      */
+0007 source = 'REXX'                                /*     "        "   who's doing this.  */
+0008 desc = 'attempting to add an entry for a Rosetta Code demonstration.'
+0009 desc = '"'  ||  desc  ||  '"'                /*enclose description in double quotes.*/
+0010 
+0011 eCMD  '/T'  type       "/ID"  id       '/L'  logName       "/SO"  source       '/D'  desc
+0012 
+0013 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 eCMD             3
+002 type             4
+003 id               5
+004 logName          6
+005 source           7
+006 desc             8 9
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

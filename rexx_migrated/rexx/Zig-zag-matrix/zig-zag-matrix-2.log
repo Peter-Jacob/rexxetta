@@ -1,0 +1,86 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:36
+-------------------------------------------------------------------------
+0001 /*REXX program  produces and displays a zig-zag  matrix (a square array) */
+0002 Parse Arg n start inc .   /* obtain optional arguments from command line */
+0003 if     n=='' |     n==","  then     n= 5 /*Not specified? use the default*/
+0004 if start=='' | start==","  then start= 0 /* "      "       "   "     "   */
+0005 if   inc=='' |   inc==","  then   inc= 1 /* "      "       "   "     "   */
+0006 Parse Value 1 1 n**2 With row col size
+0007 Do x=start By inc For size
+0008 m.row.col=x
+0009 If (row+col)//2=0 Then do  /* moving upward                            */
+0010 Select
+0011 when row=1 Then Do     /* at upper bound                           */
+0012 If col<n Then
+0013 col=col+1          /* move right                               */
+0014 Else
+0015 row=2              /* move down                                */
+0016 End
+0017 when col=n Then        /* at right border                          */
+0018 row=row+1            /* move down                                */
+0019 Otherwise Do           /* in all other cases                       */
+0020 row=row-1            /* move up                                  */
+0021 col=col+1            /* and to the right                         */
+0022 End
+0023 End
+0024 End
+0025 Else Do                    /* moving downward                          */
+0026 Select
+0027 When col=1 Then Do     /* at lower bound                           */
+0028 If row=n Then        /* in bottom row                            */
+0029 col=2              /* move right                               */
+0030 Else                 /* otherwise                                */
+0031 row=row+1          /* move down                                */
+0032 End
+0033 When row=n Then        /* at lower bound                           */
+0034 col=col+1            /* move right                               */
+0035 Otherwise Do           /* in all other cases                       */
+0036 row=row+1            /* move down                                */
+0037 col=col-1            /* and to the left                          */
+0038 End
+0039 End
+0040 End
+0041 End
+0042 Call show
+0043 Exit
+0044 /*-----------------------------------------------------------------------*/
+0045 show:
+0046 w=length(start+size*inc)            /* max width of any matrix element */
+0047 Do row=1 To n                       /* loop over rows                  */
+0048 line=right(m.row.1,w)             /* first element                   */
+0049 Do column=2 To n                  /* loop over other elements        */
+0050 line=line right(m.row.column,w) /* build output line               */
+0051 End
+0052 Say line
+0053 End                               /* display the line                */
+0054 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                2 3
+002 start            2 4
+003 inc              2 5
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 row              6 15 18 20 31 36 47
+017 col              6 13 21 29 34 37
+018 size             6
+019 x                7
+020 m.               8
+021 w                46
+022 line             48 50
+023 column           49
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,100 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 27.05.2013 Walter Pachl
+0003 **********************************************************************/
+0004 Numeric Digits 100
+0005 say center('input IP address'   ,30),
+0006 center('hex IP address'     ,32),
+0007 center('decimal IP address' ,39)         'space  port'
+0008 
+0009 say copies(_,30) copies(_,32) copies(_,39) copies(_,5) copies(_,5) /*hdr*/
+0010 call expand '127.0.0.1'
+0011 call expand '127.0.0.1:80'
+0012 call expand '::1'
+0013 call expand '[::1]:80'
+0014 call expand '2605:2700:0:3::4713:93e3'
+0015 call expand '[2605:2700:0:3::4713:93e3]:80'
+0016 Say ' '
+0017 Say 'The following 2 are the same'
+0018 Call expand '2001:0db8:0:0:0:0:1428:57ab'
+0019 Call expand '2001:db8::1428:57ab'
+0020 Say ' '
+0021 Say 'The following 3 are all the same'
+0022 Call expand '2001:0db8:0:0:8d3:0:0:0'
+0023 Call expand '2001:db8:0:0:8d3::'
+0024 Call expand '2001:db8::8d3:0:0:0'
+0025 Exit
+0026 
+0027 expand: Procedure
+0028 Parse Arg s
+0029 If pos('.',s)>0 Then
+0030 Parse Value expand_ip4(s) With exp space port
+0031 Else
+0032 Parse Value expand_ip6(s) With exp space port
+0033 Say left(s,30) right(exp,32) right(x2d(exp),39) right(space,5) right(port,5)
+0034 Return
+0035 
+0036 expand_ip4: Procedure
+0037 Parse Arg s
+0038 If pos(':',s)>0 Then
+0039 Parse Var s s ':' port
+0040 Else
+0041 port=''
+0042 Do i=1 To 4
+0043 Parse Var s a.i '.' s
+0044 End
+0045 res=''
+0046 Do i=1 To 4
+0047 res=res||d2x(a.i,2)
+0048 End
+0049 Return res 'IPv4' port
+0050 
+0051 expand_ip6: Procedure
+0052 /**********************************************************************
+0053 * Note: Doublecolon ('::') requires the inclusion of as many 0000
+0054 * tokens as necessary to result in 8 tokens
+0055 **********************************************************************/
+0056 Parse Arg s
+0057 If pos(']:',s)>0 Then
+0058 Parse Var s '[' s ']:' port
+0059 Else
+0060 port=''
+0061 sc=s
+0062 ii=0
+0063 Do i=1 To 8 While s<>''
+0064 Parse Var s x.i ':' s
+0065 If left(s,1)=':' Then Do
+0066 ii=i
+0067 s=substr(s,2)
+0068 End
+0069 End
+0070 n=i-1
+0071 ol=''
+0072 o2=''
+0073 Do i=1 To n
+0074 ol=ol||right(x.i,4,'0')
+0075 o2=o2||right(x.i,4,'0')
+0076 If i=ii Then Do
+0077 ol=ol||'----'
+0078 Do j=1 To 8-n
+0079 o2=o2||'0000'
+0080 End
+0081 End
+0082 End
+0083 Return o2 'IPv6' port
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                64 64 67
+002 x.               64
+003 ii               66
+004 n                70
+005 ol               71 74 77
+006 o2               72 75 79
+007 i                73
+008 j                78
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

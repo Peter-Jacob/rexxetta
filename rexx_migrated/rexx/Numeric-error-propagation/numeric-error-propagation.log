@@ -1,0 +1,67 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program calculates the distance between two points (2D)  with error propagation. */
+0002 parse arg a b .                                           /*obtain arguments from the CL*/
+0003 if a=='' | a==","  then a= '100±1.1,  50±1.2'             /*Not given? Then use default.*/
+0004 if b=='' | b==","  then b= '200±2.2, 100±2.3'             /* "    "      "   "     "    */
+0005 parse var a  ax ',' ay;     parse var b  bx ',' by        /*obtain X,Y from A & B point.*/
+0006 parse var ax ax '±' axe;    parse var bx bx '±' bxE       /*   "   err   "  Ax  and  Bx.*/
+0007 parse var ay ay '±' aye;    parse var by by '±' byE       /*   "    "    "  Ay   "   By.*/
+0008 if axE==''  then axE= 0;    if bxE==""  then bxE= 0       /*No error?  Then use default.*/
+0009 if ayE==''  then ayE= 0;    if byE==""  then byE= 0       /* "   "       "   "     "    */
+0010 say ' A point (x,y)=   ' ax "±"   axE',   ' ay "±" ayE /*display  A  point (with err)*/
+0011 say ' B point (x.y)=   ' bx "±"   bxE',   ' by "±" byE /*   "     B    "      "   "  */
+0012 say                                                    /*blank line for the eyeballs.*/
+0013 dx= ax-bx;  dxE= sqrt(axE**2 + bxE**2); xe= #(dx, 2, dxE) /*compute  X distances (& err)*/
+0014 dy= ay-by;  dyE= sqrt(ayE**2 + byE**2); ye= #(dy, 2, dyE) /*   "     Y     "      "  "  */
+0015 D= sqrt(dx**2 + dy**2)                                    /*compute the   2D  distance. */
+0016 say 'distance=' D "±" #(D**2, .5, sqrt(xE**2 + yE**2)) /*display  "     "      "     */
+0017 exit 0                                           /*stick a fork in it,  we're all done. */
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 #: procedure; arg x,p,e; if p=.5 then z=1/sqrt(abs(x)); else z=abs(x)**(p-1); return p*e*z
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 sqrt: procedure; parse arg x;  if x=0  then return 0;  d=digits();  numeric digits;  h=d+6
+0022 numeric form;  parse value format(x,2,1,,0) 'E0' with g "E" _ .;    g=g * .5'e'_ % 2
+0023 m.=9;       do j=0  while h>9;       m.j=h;               h=h%2+1;        end  /*j*/
+0024 do k=j+5  to 0  by -1;   numeric digits m.k;  g=(g+x/g)*.5;   end  /*k*/
+0025 numeric digits d;                    return g/1
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 sqrt: procedure; parse arg x;  if x=0  then return 0;  d=digits();  numeric digits;  h=d+6
+0028 numeric form;  parse value format(x,2,1,,0) 'E0' with g "E" _ .;   g= g * .5'e'_ % 2
+0029 m.= 9;   do j=0  while h>9;       m.j= h;               h= h%2+1;        end  /*j*/
+0030 do k=j+5  to 0  by -1;   numeric digits m.k;   g= (g+x/g)*.5;   end  /*k*/
+0031 numeric digits d;                 return g/1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                27
+002 d                27
+003 h                27 29
+004 bxE              8
+005 ayE              9
+006 dx               13
+007 dxE              13
+008 xe               13
+009 dy               14
+010 dyE              14
+011 ye               14
+012 D                15
+013 z                19
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                28 28 30
+024 m.               29 29
+025 j                29
+026 k                30
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            22 28

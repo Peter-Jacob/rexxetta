@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX pgm computes & shows the factorial of a non─negative integer, and also its length*/
+0002 numeric digits 100000                            /*100k digits:  handles  N  up to  25k.*/
+0003 parse arg n                                      /*obtain optional argument from the CL.*/
+0004 if n=''                   then call er  'no argument specified.'
+0005 if arg()>1 | words(n)>1   then call er  'too many arguments specified.'
+0006 if \datatype(n,'N')       then call er  "argument isn't numeric: "          n
+0007 if \datatype(n,'W')       then call er  "argument isn't a whole number: "   n
+0008 if n<0                    then call er  "argument can't be negative: "      n
+0009 != 1                                             /*define the factorial product (so far)*/
+0010 do j=2  to n;       !=!*j                  /*compute the factorial the hard way.  */
+0011 end   /*j*/                                /* [↑]  where da rubber meets da road. */
+0012 
+0013 say n'!  is  ['length(!) "digits]:"              /*display number of digits in factorial*/
+0014 say                                              /*add some whitespace to the output.   */
+0015 say !                                            /*display the factorial product──►term.*/
+0016 exit                                             /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 er:    say;       say '***error***';      say;      say arg(1);      say;          exit 13
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                3
+002 j                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !                -> newV1            9 10

@@ -1,0 +1,49 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX program obtains the cursor position (within it's window) and displays it's color.*/
+0002 parse value  cursor()  with  r  c  .             /*get cursor's location in DOS screen. */
+0003 
+0004 hue=scrRead(r, c, 1, 'A')                        /*get color of the cursor's location.  */
+0005 if hue=='00'x  then color= 'black'               /*or dark grey, dark gray.             */
+0006 if hue=='01'x  then color= 'darkblue'
+0007 if hue=='02'x  then color= 'darkgreen'
+0008 if hue=='03'x  then color= 'darkturquoise'       /*or dark cyan.                        */
+0009 if hue=='04'x  then color= 'darkred'             /*or maroon.                           */
+0010 if hue=='05'x  then color= 'darkmagenta'         /*or dark pink.                        */
+0011 if hue=='06'x  then color= 'orange'              /*or dark yellow, orage, brown.        */
+0012 if hue=='07'x  then color= 'gray'                /*or grey, gray, dark white.           */
+0013 if hue=='08'x  then color= 'gray'                /*or grey, gray, dark white.           */
+0014 if hue=='09'x  then color= 'blue'                /*or bright blue.                      */
+0015 if hue=='0A'x  then color= 'green'               /*or bright green.                     */
+0016 if hue=='0B'x  then color= 'turquoise'           /*or bright turquoise, cyan, britecyan.*/
+0017 if hue=='0C'x  then color= 'red'                 /*or bright red.                       */
+0018 if hue=='0D'x  then color= 'magenta'             /*or bright magenta, pink, brite pink. */
+0019 if hue=='0E'x  then color= 'yellow'              /*or bright yellow.                    */
+0020 if hue=='0F'x  then color= 'white'               /*or bright, brite white.              */
+0021 say 'screen location ('r","c') color is:' color  /*display color of char at row, column.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 NORMAL.1         
+002 NORMAL.2         
+003 NORMAL.3         
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 r                2
+017 c                2
+018 hue              4
+019 color            5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,23 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates reading a character from (at) at  specific screen location. */
+0002 row = 6                                      /*point to a particular row   on screen*/
+0003 col = 3                                      /*  "    " "     "      column "    "  */
+0004 howMany = 1                                      /*read this many characters from screen*/
+0005 
+0006 stuff = scrRead(row, col, howMany)               /*this'll do it.                       */
+0007 
+0008 other = scrRead(40, 3, 1)                        /*same thing,  but for row forty.      */
+0009 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 row              2
+002 col              3
+003 howMany          4
+004 stuff            6
+005 other            8
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

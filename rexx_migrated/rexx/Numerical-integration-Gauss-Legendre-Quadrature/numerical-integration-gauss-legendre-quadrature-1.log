@@ -1,0 +1,130 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*---------------------------------------------------------------------
+0002 * 31.10.2013 Walter Pachl  Translation from PL/I
+0003 * 01.11.2014 -"- see Version 2 for improvements
+0004 *--------------------------------------------------------------------*/
+0005 Call time 'R'
+0006 prec=60
+0007 Numeric Digits prec
+0008 epsilon=1/10**prec
+0009 pi=3.141592653589793238462643383279502884197169399375105820974944592307
+0010 exact = exp(3,prec)-exp(-3,prec)
+0011 Do n = 1 To 20
+0012 a = -3; b = 3
+0013 r.=0
+0014 call gaussquad
+0015 sum=0
+0016 Do j=1 To n
+0017 sum=sum + r.2.j * exp((a+b)/2+r.1.j*(b-a)/2,prec)
+0018 End
+0019 z = (b-a)/2 * sum
+0020 Say right(n,2) format(z,2,40) format(z-exact,2,4,,0)
+0021 End
+0022 Say  '  ' exact '(exact)'
+0023 say '... and took' format(time('E'),,2) "seconds"
+0024 Exit
+0025 
+0026 gaussquad:
+0027 p0.0=1; p0.1=1
+0028 p1.0=2; p1.1=1; p1.2=0
+0029 Do k = 2 To n
+0030 tmp.0=p1.0+1
+0031 Do L = 1 To p1.0
+0032 tmp.l = p1.l
+0033 End
+0034 tmp.l=0
+0035 tmp2.0=p0.0+2
+0036 tmp2.1=0
+0037 tmp2.2=0
+0038 Do L = 1 To p0.0
+0039 l2=l+2
+0040 tmp2.l2=p0.l
+0041 End
+0042 Do j=1 To tmp.0
+0043 tmp.j = ((2*k-1)*tmp.j - (k-1)*tmp2.j)/k
+0044 End
+0045 p0.0=p1.0
+0046 Do j=1 To p0.0
+0047 p0.j = p1.j
+0048 End
+0049 p1.0=tmp.0
+0050 Do j=1 To p1.0
+0051 p1.j=tmp.j
+0052 End
+0053 End
+0054 Do i = 1 To n
+0055 x = cos(pi*(i-0.25)/(n+0.5),prec)
+0056 Do iter = 1 To 10
+0057 f = p1.1; df = 0
+0058 Do k = 2 To p1.0
+0059 df = f + x*df
+0060 f  = p1.k + x * f
+0061 End
+0062 dx =  f / df
+0063 x = x - dx
+0064 If abs(dx) < epsilon then leave
+0065 End
+0066 r.1.i = x
+0067 r.2.i = 2/((1-x**2)*df**2)
+0068 End
+0069 Return
+0070 
+0071 cos: Procedure
+0072 /* REXX ****************************************************************
+0073 * Return cos(x) -- with specified precision
+0074 * cos(x) = 1-(x**2/2!)+(x**4/4!)-(x**6/6!)+-...
+0075 * 920903 Walter Pachl
+0076 ***********************************************************************/
+0077 Parse Arg x,prec
+0078 If prec='' Then prec=9
+0079 Numeric Digits (2*prec)
+0080 Numeric Fuzz 3
+0081 o=1
+0082 u=1
+0083 r=1
+0084 Do i=1 By 2
+0085 ra=r
+0086 o=-o*x*x
+0087 u=u*i*(i+1)
+0088 r=r+(o/u)
+0089 If r=ra Then Leave
+0090 End
+0091 Numeric Digits prec
+0092 Return r+0
+0093 
+0094 exp: Procedure
+0095 /***********************************************************************
+0096 * Return exp(x) -- with reasonable precision
+0097 * 920903 Walter Pachl
+0098 ***********************************************************************/
+0099 Parse Arg x,prec
+0100 If prec<9 Then prec=9
+0101 Numeric Digits (2*prec)
+0102 Numeric Fuzz   3
+0103 o=1
+0104 u=1
+0105 r=1
+0106 Do i=1 By 1
+0107 ra=r
+0108 o=o*x
+0109 u=u*i
+0110 r=r+(o/u)
+0111 If r=ra Then Leave
+0112 End
+0113 Numeric Digits (prec)
+0114 Return r+0
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                99
+002 prec             99 100
+003 o                103 108
+004 u                104 109
+005 r                105 110
+006 i                106
+007 ra               107
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

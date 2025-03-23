@@ -1,0 +1,54 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program calculates the value of  pi  using the  AGM  algorithm.                  */
+0002 parse arg d .;   if d=='' | d==","  then d= 500  /*D  not specified?  Then use default. */
+0003 numeric digits d+5                               /*set the numeric decimal digits to D+5*/
+0004 z= 1/4;                a= 1;     g= sqrt(1/2)    /*calculate some initial values.       */
+0005 n= 1
+0006 do j=1   until a==old;       old= a       /*keep calculating until no more noise.*/
+0007 x= (a+g) * .5;               g= sqrt(a*g) /*calculate the next set of terms.     */
+0008 z= z - n*(x-a)**2;  n= n+n;  a= x         /*Z  is used in the final calculation. */
+0009 end   /*j*/                               /* [↑]  stop if  A  equals  OLD.       */
+0010 
+0011 pi= a**2 / z                                     /*compute the finished  value of  pi.  */
+0012 numeric digits d                                 /*set the numeric decimal digits to  D.*/
+0013 say pi / 1                                       /*display the computed value of  pi.   */
+0014 exit 0                                           /*stick a fork in it,  we're all done. */
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 sqrt: procedure; parse arg x;  if x=0  then return 0;  d=digits();  numeric digits;  h=d+6
+0017 numeric form; m.=9; parse value format(x,2,1,,0) 'E0' with g "E" _ .; g=g *.5'e'_ %2
+0018 do j=0  while h>9;        m.j=h;                 h=h%2+1;          end  /*j*/
+0019 do k=j+5  to 0  by -1;    numeric digits m.k;    g=(g+x/g)*.5;     end  /*k*/
+0020 numeric digits d;     return g/1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                16
+002 d                16
+003 h                16 18
+004 m.               17 18
+005 n                5 8
+006 j                6 18
+007 old              6
+008 x                7
+009 pi               11
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                17 17 19
+024 k                19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            17

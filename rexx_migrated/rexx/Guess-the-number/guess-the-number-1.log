@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 #!/usr/bin/rexx
+0002 /*REXX program to play:    Guess the number  */
+0003 
+0004 number = random(1,10)
+0005 say "I have thought of a number. Try to guess it!"
+0006 
+0007 guess=0    /* We don't want a valid guess, before we start */
+0008 
+0009 do while guess \= number
+0010 pull guess
+0011 if guess \= number then
+0012 say "Sorry, the guess was wrong. Try again!"
+0013 /* endif - There is no endif in rexx. */
+0014 end
+0015 
+0016 say "Well done! You guessed it!"
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 number           4
+002 guess            7
+003 while            9
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

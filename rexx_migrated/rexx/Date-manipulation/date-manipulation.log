@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX program adds 12 hours to a  given date and time, displaying the before and after.*/
+0002 aDate = 'March 7 2009 7:30pm EST'               /*the original or base date to be used.*/
+0003 
+0004 parse var aDate mon dd yyyy hhmm tz .            /*obtain the various parts and pieces. */
+0005 
+0006 mins = time('M', hhmm, "C")                    /*get the number minutes past midnight.*/
+0007 mins = mins + (12*60)                          /*add  twelve hours  to the  timestamp.*/
+0008 nMins = mins // 1440                            /*compute number min into same/next day*/
+0009 days = mins %  1440                            /*compute number of days added to dats.*/
+0010 aBdays = date('B', dd left(mon,3) yyyy)          /*number of base days since REXX epoch.*/
+0011 nBdays = aBdays + days                           /*now,  add the number of days added.  */
+0012 nDate = date(,nBdays, 'B')                      /*calculate the new  date  (maybe).    */
+0013 nTime = time('C', nMins, "M")                   /*    "      "   "   time     "        */
+0014 
+0015 say aDate ' +  12 hours  ───► '  ndate ntime tz  /*display the new timestamp to console.*/
+0016 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 aDate            4
+002 mon              4
+003 dd               4
+004 yyyy             4
+005 hhmm             4
+006 tz               4
+007 mins             6 7
+008 nMins            8
+009 days             9
+010 aBdays           10
+011 nBdays           11
+012 nDate            12
+013 nTime            13
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX pgm determines if a string is comprised of all unique characters (no duplicates).*/
+0002 @.=                                              /*assign a default for the  @.  array. */
+0003 parse arg @.1                                    /*obtain optional argument from the CL.*/
+0004 if @.1=''  then do;   @.1=                       /*Not specified?  Then assume defaults.*/
+0005 @.2= .
+0006 @.3= 'abcABC'
+0007 @.4= 'XYZ ZYX'
+0008 @.5= '1234567890ABCDEFGHIJKLMN0PQRSTUVWXYZ'
+0009 end
+0010 
+0011 do j=1;  if j\==1  &  @.j==''  then leave   /*String is null & not j=1?  We're done*/
+0012 say copies('─', 79)                         /*display a separator line  (a fence). */
+0013 say 'Testing for the string (length' length(@.j)"): "   @.j
+0014 say
+0015 dup= isUnique(@.j)
+0016 say 'The characters in the string'   word("are aren't", 1 + (dup>0) )  'all unique.'
+0017 if dup==0  then iterate
+0018 ?= substr(@.j, dup, 1)
+0019 say 'The character '  ?  " ('"c2x(?)"'x)  at position "  dup ,
+0020 ' is repeated at position '  pos(?, @.j, dup+1)
+0021 end   /*j*/
+0022 exit                                             /*stick a fork in it,  we're all done. */
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 isUnique: procedure; parse arg x                          /*obtain the character string.*/
+0025 do k=1  to length(x) - 1           /*examine all but the last.   */
+0026 p= pos( substr(x, k, 1), x, k + 1) /*see if the Kth char is a dup*/
+0027 if p\==0  then return k            /*Find a dup? Return location.*/
+0028 end   /*k*/
+0029 return 0                                        /*indicate all chars unique.  */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                24
+002 k                25
+003 p                26
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 3 4 5 6 7 8
+002 ?                -> newV2            18

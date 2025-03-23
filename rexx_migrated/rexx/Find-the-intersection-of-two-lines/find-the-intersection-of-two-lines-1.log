@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 Parse Value '(4.0,0.0)'  With '(' xa ',' ya ')'
+0003 Parse Value '(6.0,10.0)' With '(' xb ',' yb ')'
+0004 Parse Value '(0.0,3.0)'  With '(' xc ',' yc ')'
+0005 Parse Value '(10.0,7.0)' With '(' xd ',' yd ')'
+0006 
+0007 Say 'The two lines are:'
+0008 Say 'yab='ya-xa*((yb-ya)/(xb-xa))'+x*'||((yb-ya)/(xb-xa))
+0009 Say 'ycd='yc-xc*((yd-yc)/(xd-xc))'+x*'||((yd-yc)/(xd-xc))
+0010 
+0011 x=((yc-xc*((yd-yc)/(xd-xc)))-(ya-xa*((yb-ya)/(xb-xa))))/,
+0012 (((yb-ya)/(xb-xa))-((yd-yc)/(xd-xc)))
+0013 Say 'x='||x
+0014 y=ya-xa*((yb-ya)/(xb-xa))+x*((yb-ya)/(xb-xa))
+0015 Say 'yab='y
+0016 Say 'ycd='yc-xc*((yd-yc)/(xd-xc))+x*((yd-yc)/(xd-xc))
+0017 Say 'Intersection: ('||x','y')'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 NORMAL.1         
+002 NORMAL.2         
+003 NORMAL.3         
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 xd               5
+008 yd               5
+009 x                11
+010 y                14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

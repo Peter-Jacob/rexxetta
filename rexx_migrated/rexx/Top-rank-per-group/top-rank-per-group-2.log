@@ -1,0 +1,92 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 12.02.2014 Walter Pachl
+0003 *--------------------------------------------------------------------*/
+0004 Parse Arg topn .                 /* get number for top N salaries. */
+0005 Select
+0006 When topn='' Then              /* no argument                    */
+0007 topn=1                       /* assume only  1.                */
+0008 When topn='?' Then             /* user wants help                */
+0009 Call help
+0010 When datatype(topn)<>'NUM' Then /* Argument is not a number      */
+0011 Call exit 'Invalid argument ('topn'). Must be a number!'
+0012 Otherwise
+0013 Nop
+0014 End
+0015 Parse Value '0 0 0 0' with en dn esal. de. deptl
+0016 /*employee name,  ID, salary, dept.*/
+0017 Call read "Tyler Bennett,E10297,32000,D101"
+0018 Call read "George Woltman,E00127,53500,D101"
+0019 Call read "John Rappl,E21437,47000,D050"
+0020 Call read "Adam Smith,E63535,18000,D202"
+0021 Call read "Claire Buckman,E39876,27800,D202"
+0022 Call read "David McClellan,E04242,41500,D101"
+0023 Call read "Rich Holcomb,E01234,49500,D202"
+0024 Call read "Nathan Adams,E41298,21900,D050"
+0025 Call read "Richard Potter,E43128,15900,D101"
+0026 Call read "David Motsinger,E27002,19250,D202"
+0027 Call read "Tim Sampair,E03033,27000,D101"
+0028 Call read "Kim Arlich,E10001,57000,D190"
+0029 Call read "Timothy Grove,E16398,29900,D190"
+0030 Say en 'employees,' dn "departments:" deptl
+0031 Do e=1 To en
+0032 d=dept.e
+0033 Do di=1 To de.d
+0034 If esal.d.di<sal.e Then
+0035 Leave
+0036 End
+0037 Do j=de.d To di By -1
+0038 j1=j+1
+0039 esal.d.j1=esal.d.j
+0040 enum.d.j1=enum.d.j
+0041 End
+0042 esal.d.di=sal.e
+0043 enum.d.di=id.e
+0044 de.d=de.d+1
+0045 End
+0046 /*---------------------------------------------------------------------
+0047 * Output
+0048 *--------------------------------------------------------------------*/
+0049 Say ' '
+0050 Say 'Showing top' topn 'salaries in each department.'
+0051 Say ' '
+0052 Do While deptl<>''
+0053 Parse Var deptl d deptl
+0054 Do i=1 To min(topn,de.d)
+0055 id=enum.d.i
+0056 Say 'department:  'd'  $'esal.d.i id name.id
+0057 End
+0058 Say ' '
+0059 End
+0060 Exit
+0061 
+0062 read:
+0063 en=en+1
+0064 Parse Arg name ',' id.en "," sal.en ',' dept.en
+0065 If wordpos(dept.en,deptl)=0 Then Do
+0066 dn=dn+1
+0067 deptl=deptl dept.en
+0068 End
+0069 z=id.en
+0070 name.z=name
+0071 Return
+0072 
+0073 exit: Say arg(1)
+0074 help: Say 'Syntax: rexx topsal [topn]'
+0075 Exit
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 name             64
+002 id.              64
+003 sal.             64
+004 dept.            64
+005 dn               66
+006 deptl            67
+007 z                69
+008 name.            70
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

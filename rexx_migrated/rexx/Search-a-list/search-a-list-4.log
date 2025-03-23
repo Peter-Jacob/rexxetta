@@ -1,0 +1,50 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program searches a collection of strings   (an array of periodic table elements).*/
+0002 /*───────────────names of the first 200 elements of the periodic table.─────────────*/
+0003 _=  'hydrogen helium lithium beryllium boron carbon nitrogen oxygen fluorine neon sodium'
+0004 _=_ 'magnesium aluminum silicon phosphorous sulfur chlorine argon potassium calcium'
+0005 _=_ 'scandium titanium vanadium chromium manganese iron cobalt nickel copper zinc'
+0006 _=_ 'gallium germanium arsenic selenium bromine krypton rubidium strontium yttrium'
+0007 _=_ 'zirconium niobium molybdenum technetium ruthenium rhodium palladium silver cadmium'
+0008 _=_ 'indium tin antimony tellurium iodine xenon cesium barium lanthanum cerium'
+0009 _=_ 'praseodymium neodymium promethium samarium europium gadolinium terbium dysprosium'
+0010 _=_ 'holmium erbium thulium ytterbium lutetium hafnium tantalum tungsten rhenium osmium'
+0011 _=_ 'iridium platinum gold mercury thallium lead bismuth polonium astatine radon'
+0012 _=_ 'francium radium actinium thorium protactinium uranium neptunium plutonium americium'
+0013 _=_ 'curium berkelium californium einsteinium fermium mendelevium nobelium lawrencium'
+0014 _=_ 'rutherfordium dubnium seaborgium bohrium hassium meitnerium darmstadtium'
+0015 _=_ 'roentgenium copernicium nihonium flerovium moscovium livermorium tennessine'
+0016 _=_ 'oganesson ununennium unbinilium unbiunium unbibium unbitrium unbiquadium'
+0017 _=_ 'unbipentium unbihexium unbiseptium unbioctium unbiennium untrinilium untriunium'
+0018 _=_ 'untribium untritrium untriquadium untripentium untrihexium untriseptium untrioctium'
+0019 _=_ 'untriennium unquadnilium unquadunium unquadbium unquadtrium unquadquadium'
+0020 _=_ 'unquadpentium unquadhexium unquadseptium unquadoctium unquadennium unpentnilium'
+0021 _=_ 'unpentunium unpentbium unpenttrium unpentquadium unpentpentium unpenthexium'
+0022 _=_ 'unpentseptium unpentoctium unpentennium unhexnilium unhexunium unhexbium unhextrium'
+0023 _=_ 'unhexquadium unhexpentium unhexhexium unhexseptium unhexoctium unhexennium'
+0024 _=_ 'unseptnilium unseptunium unseptbium unsepttrium unseptquadium unseptpentium'
+0025 _=_ 'unsepthexium unseptseptium unseptoctium unseptennium unoctnilium unoctunium'
+0026 _=_ 'unoctbium unocttrium unoctquadium unoctpentium unocthexium unoctseptium unoctoctium'
+0027 _=_ 'unoctennium unennilium unennunium unennbium unenntrium unennquadium unennpentium'
+0028 _=_ 'unennhexium unennseptium unennoctium unennennium binilnilium'
+0029 
+0030 haystack= _                                      /*assign the elements ───►  haystack.  */
+0031 needle  = 'gold'                                 /*we'll be looking for the gold.       */
+0032 upper needle haystack                            /*in case some people capitalize stuff.*/
+0033 idx= wordpos(needle, haystack)                   /*use REXX's BIF:  WORDPOS             */
+0034 if idx\==0  then return idx                      /*return the haystack  index  number.  */
+0035 else say  needle  "wasn't found in the haystack!"
+0036 return 0                                         /*indicates the needle  wasn't  found. */
+0037 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 haystack         30
+002 needle           31
+003 idx              33
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28

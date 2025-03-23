@@ -1,0 +1,24 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /* Include a file and INTERPRET it; this code uses ARexx file IO BIFs */
+0002 say 'This is a program running.'
+0003 if Open(other,'SYS:Rexxc/otherprogram.rexx','READ') then do
+0004 say "Now we opened a file with another chunk of code. Let's read it into a variable."
+0005 othercode=''
+0006 do until EOF(other)
+0007 othercode=othercode || ReadLn(other) || ';'
+0008 end
+0009 call Close(other)
+0010 say 'Now we run it as part of our program.'
+0011 interpret othercode
+0012 end
+0013 say 'The usual program resumes here.'
+0014 exit 0
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 othercode        5 7
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,88 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX pgm shows named parameters when called as a subroutine/function*/
+0002 /*┌────────────────────────────────────────────────────────────────────┐
+0003 │ The syntax of:   xxx = func1(parmName2=arg2, parmName1=arg1)       │
+0004 │                                                                    │
+0005 │ in the REXX language is interpreted specifically as:               │
+0006 │                                                                    │
+0007 │                  xxx = func1(    yyy       ,       zzz     )       │
+0008 │                                                                    │
+0009 │ where  yyy  is the logical result of comparing (the REXX variables)│
+0010 │                                                                    │
+0011 │                    parmName2   with   arg2                   and   │
+0012 │                                                                    │
+0013 │ where  zzz  is the logical result of comparing (the REXX variables)│
+0014 │                                                                    │
+0015 │                    parmName1   with   arg1                         │
+0016 │                                                                    │
+0017 │ (either as two strings,  or arithmetically if both "parmName2" and │
+0018 │ "arg2"  are both valid REXX numbers.   In the REXX language, there │
+0019 │ is no way to declare (define) what a variable is [or its type], as │
+0020 │ each literal that can be a variable is assumed to be one.  If it's │
+0021 │ not defined, then its uppercase name is used for the value.        │
+0022 │                                                                    │
+0023 │ Consider the one-line REXX program:    say Where are you?          │
+0024 │ causes REXX to consider that four-word expression as a  "SAY"      │
+0025 │ statement, followed by three REXX variables,  each of which aren't │
+0026 │ defined (that is, have a value), so REXX uses a value which is the │
+0027 │ uppercased value of the REXX variable name, namely three values in │
+0028 │ this case,  so the following is displayed:   WHERE ARE YOU?        │
+0029 │                                                                    │
+0030 │ [There is a mechanism in REXX to catch this behavior and raise the │
+0031 │ NOVALUE  condition.]                                               │
+0032 │                                                                    │
+0033 │ To allow a solution to be used for this task's requirement,  and   │
+0034 │ and not get tangled up with the legal REXX syntactical expressions │
+0035 │ shown,  this REXX  programming example  uses a  variation  of the  │
+0036 │ task's illustration  to allow a  method in REXX  of using  named   │
+0037 │ parameters:      xxx = func1('parmName2=' arg2, "parmName1=" arg1) │
+0038 │                                                                    │
+0039 │ Also,  REXX allows the omitting of arguments by just specifying a  │
+0040 │ comma  (or nothing at all,  in the case of a single argument):     │
+0041 │                                                                    │
+0042 │                  xxx = func1(,zzz)                                 │
+0043 │                                                                    │
+0044 │ would indicate that the 1st argument has been omitted.             │
+0045 │                                                                    │
+0046 │                  xxx = func1(yyy)                                  │
+0047 │                                                                    │
+0048 │ would indicate that the 2nd argument  (and all other subsequent    │
+0049 │ arguments)  has/have been omitted.                                 │
+0050 └────────────────────────────────────────────────────────────────────┘*/
+0051 
+0052 parse arg count,itemX                  /*assume 2 values have been used,*/
+0053 /*or whatever ... just to show...*/
+0054 do j=1  for arg();      _=arg(1)     /*now, lets examine each argument*/
+0055 if arg(j,'Omitted')     then iterate /*skip examining if argJ omitted.*/
+0056 /*(above)   This is superfluous, */
+0057 /* but it demonstrates a method. */
+0058 if \arg(j,"Exists")     then iterate /*exactly the same as previous.  */
+0059 /*Only 1st char (2nd arg) is used*/
+0060 first=strip(word(_,1))               /*extract the 1st word in arg(j).*/
+0061 if right(first,1)\=='=' then iterate /*skip if 1st word isn't:  xxx=  */
+0062 parse var _ varname '= ' value       /*parse the named variable &value*/
+0063 if varname==''          then iterate /*not the correct format, so skip*/
+0064 /*(above) fix this for real pgm. */
+0065 call value varname,value             /*use BIF to set REXX variable.  */
+0066 end   /*j*/
+0067 
+0068 /* ∙∙∙ perform some REXX magic here with specified parameters and stuff:*/
+0069 /*     do this,  do that,  perform dis & dat, compute, gears whiz, cogs */
+0070 /*     turn,  wheels spin,  belts move, things get assigned, stuff gets */
+0071 /*     computed,  wheels spin,  belts move,  things get assigned, motors*/
+0072 /*     humm, engines roar, coal gets burned, water turns to steam, real */
+0073 /*     work (some of it useful)  gets done,  and something is produced. */
+0074 
+0075 return  'the final meaning of life, or 42  --- whichever is appropriate.'
+0076 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 varname          62
+002 value            62
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            54 62

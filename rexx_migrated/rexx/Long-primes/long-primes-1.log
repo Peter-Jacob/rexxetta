@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*REXX pgm calculates/displays base ten  long primes  (AKA golden primes, proper primes,*/
+0002 /*───────────────────── maximal period primes, long period primes, full reptend primes).*/
+0003 parse arg a                                      /*obtain optional argument from the CL.*/
+0004 if a='' | a=","  then a= '500 -500 -1000 -2000 -4000 -8000 -16000' ,  /*Not specified?  */
+0005 '-32000 -64000 -128000 -512000 -1024000'     /*Then use default*/
+0006 do k=1  for words(a);     H=word(a, k)       /*step through the list of high limits.*/
+0007 neg= H<1                                     /*used as an indicator to display count*/
+0008 H= abs(H)                                    /*obtain the absolute value of  H.     */
+0009 $=                                           /*the list of  long primes   (so far). */
+0010 do j=7  to H  by 2                        /*start with 7,  just use odd integers.*/
+0011 if .len(j) + 1 \== j  then iterate        /*Period length wrong?   Then skip it. */
+0012 $=$ j                                     /*add the   long prime   to the $ list.*/
+0013 end   /*j*/
+0014 say
+0015 if neg  then do;  say 'number of long primes ≤ '    H     " is: "     words($);    end
+0016 else do;  say   'list of long primes ≤ '    H":";         say strip($);    end
+0017 end      /*k*/
+0018 exit                                             /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 .len: procedure; parse arg x;  r=1;   do x;                   r= 10*r // x;     end  /*x*/
+0021 rr=r;   do p=1  until r==rr;    r= 10*r // x;     end  /*p*/
+0022 return p
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                20
+002 r                20 20 21
+003 rr               21
+004 p                21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            9 12

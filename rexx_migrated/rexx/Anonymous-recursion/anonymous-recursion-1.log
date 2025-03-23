@@ -1,0 +1,23 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program to show anonymous recursion  (of a function or subroutine).              */
+0002 numeric digits 1e6                               /*in case the user goes ka-razy with X.*/
+0003 parse arg x .                                    /*obtain the optional argument from CL.*/
+0004 if x=='' | x==","  then x= 12                    /*Not specified?  Then use the default.*/
+0005 w= length(x)                                     /*W:  used for formatting the output.  */
+0006 do j=0  for x+1               /*use the  argument  as an upper limit.*/
+0007 say 'fibonacci('right(j, w)") ="   fib(j)
+0008 end  /*j*/                    /* [↑] show Fibonacci sequence: 0 ──► X*/
+0009 exit 0                                           /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 fib: procedure; parse arg z;  if z>=0  then return .(z)
+0012 say "***error***  argument can't be negative.";   exit
+0013 .:   procedure; parse arg #;  if #<2  then return #;              return .(#-1)  +  .(#-2)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            13

@@ -1,0 +1,116 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 10.01.2014 Walter Pachl  counts the number of possible ways
+0003 * 12.01.2014 corrected date and output
+0004 *--------------------------------------------------------------------*/
+0005 show=(arg(1)<>'')
+0006 blocks = 'BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM'
+0007 list = '$ A baRk bOOk trEat coMMon squaD conFuse'
+0008 list=translate(list)
+0009 Do i=1 To words(blocks)
+0010 blkn.i=word(blocks,i)'-'i
+0011 blk.i=word(blocks,i)
+0012 End
+0013 w.=''
+0014 wlen=0
+0015 Do i=1 To words(list)
+0016 w.i=word(list,i)
+0017 wlen=max(wlen,length(w.i))
+0018 End
+0019 Do wi=0 To words(list)
+0020 word = w.wi
+0021 ways=0
+0022 poss.=0
+0023 lw=length(word)
+0024 cannot=0
+0025 Do i=1 To lw                         /* loop over the characters   */
+0026 c=substr(word,i,1)                 /* the current character      */
+0027 Do j=1 To words(blocks)            /* loop over blocks           */
+0028 blk=word(blocks,j)
+0029 If pos(c,blk)>0 Then Do  /* block can be used in this position */
+0030 z=poss.i.0+1
+0031 poss.i.z=j
+0032 poss.i.0=z            /* number of possible blocks for pos i */
+0033 End
+0034 End
+0035 If poss.i.0=0 Then Do
+0036 cannot=1
+0037 Leave i
+0038 End
+0039 End
+0040 
+0041 If cannot=0 Then Do                  /* no prohibitive character   */
+0042 s.=0
+0043 Do j=1 To poss.1.0          /* build possible strings for char 1 */
+0044 z=s.1.0+1
+0045 s.1.z=poss.1.j
+0046 s.1.0=z
+0047 End
+0048 Do i=2 To lw          /* build possible strings for chars 1 to i */
+0049 ii=i-1
+0050 Do j=1 To poss.i.0
+0051 Do k=1 To s.ii.0
+0052 z=s.i.0+1
+0053 s.i.z=s.ii.k poss.i.j
+0054 s.i.0=z
+0055 End
+0056 End
+0057 End
+0058 Do p=1 To s.lw.0            /* loop through all possible strings */
+0059 v=valid(s.lw.p)                  /* test if the string is valid*/
+0060 If v Then Do                     /* it is                      */
+0061 ways=ways+1                    /* increment number of ways   */
+0062 way.ways=''                 /* and store the string's blocks */
+0063 Do ii=1 To lw
+0064 z=word(s.lw.p,ii)
+0065 way.ways=way.ways blk.z
+0066 End
+0067 End
+0068 End
+0069 End
+0070 /*---------------------------------------------------------------------
+0071 * now show the result
+0072 *--------------------------------------------------------------------*/
+0073 ol=left(''''word'''',wlen+2)
+0074 Select
+0075 When ways=0 Then
+0076 ol=ol 'cannot be spelt'
+0077 When ways=1 Then
+0078 ol=ol 'can be spelt'
+0079 Otherwise
+0080 ol=ol 'can be spelt in' ways 'ways'
+0081 End
+0082 Say ol'.'
+0083 If show Then Do
+0084 Do wj=1 To ways
+0085 Say copies(' ',10) way.wj
+0086 End
+0087 End
+0088 End
+0089 Exit
+0090 
+0091 valid: Procedure
+0092 /*---------------------------------------------------------------------
+0093 * Check if the same block is used more than once -> 0
+0094 * Else: the combination is valid
+0095 *--------------------------------------------------------------------*/
+0096 Parse Arg list
+0097 used.=0
+0098 Do i=1 To words(list)
+0099 w=word(list,i)
+0100 If used.w Then Return 0
+0101 used.w=1
+0102 End
+0103 Return 1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 list             96
+002 used.            97 101
+003 i                98
+004 w                99
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

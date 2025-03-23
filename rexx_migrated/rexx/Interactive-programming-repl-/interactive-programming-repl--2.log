@@ -1,0 +1,15 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates  interactive programming  by using a  function [F].         */
+0002 say f('Rosetta',  "Code",  ':')
+0003 say f('The definition of a trivial program is ',  " one that has no bugs.",  '───')
+0004 exit                                             /*stick a fork in it,  we're all done. */
+0005 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0006 f:  return arg(1) || copies(arg(3),2) || arg(2)  /*return the required string to invoker*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

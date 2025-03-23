@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program sums the first    N    terms o f    1/(k**2),          k=1 ──►  N.       */
+0002 parse arg N D .                                  /*obtain optional arguments from the CL*/
+0003 if N=='' | N==","  then N=1000                   /*Not specified?  Then use the default.*/
+0004 if D=='' | D==","  then D=  60                   /* "      "         "   "   "     "    */
+0005 numeric digits D                                 /*use D digits (9 is the REXX default).*/
+0006 w=length(N)                                      /*W   is used for aligning the output. */
+0007 $=0                                              /*initialize the sum to zero.          */
+0008 do k=1  for N                              /* [↓]  compute for   N   terms.       */
+0009 $=$  +  1/k**2                             /*add a squared reciprocal to the sum. */
+0010 parse var k s 2 m '' -1 e                  /*obtain the start and end decimal digs*/
+0011 if e\==0  then iterate                     /*does K  end  with the dec digit  0 ? */
+0012 if s\==1  then iterate                     /*  "  " start   "   "   "    "    1 ? */
+0013 if m\=0   then iterate                     /*  "  " middle  contain any non-zero ?*/
+0014 if k==N   then iterate                     /*  "  " equal N, then skip running sum*/
+0015 say  'The sum of'   right(k,w)     "terms is:"  $         /*display a running sum.*/
+0016 end   /*k*/
+0017 say                                                             /*a blank line for sep. */
+0018 say        'The sum of'   right(k-1,w)   "terms is:"  $         /*display the final sum.*/
+0019 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 k                10
+002 s                10
+003 m                10
+004 e                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            7 9

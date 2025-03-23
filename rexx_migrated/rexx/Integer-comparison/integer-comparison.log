@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program  prompts  for  two integers,   compares them,  and  displays the results.*/
+0002 numeric digits 2000                              /*for the users that really go ka─razy.*/
+0003 @=copies('─', 20)                                /*eyeball catcher for the user's eyen. */
+0004 a=getInt(@  'Please enter your 1st integer:')    /*obtain the 1st integer from the user.*/
+0005 b=getInt(@  'Please enter your 2nd integer:')    /*   "    "  2nd    "      "   "    "  */
+0006 say
+0007 if a<b  then say  @   a    ' is less than '        b
+0008 if a=b  then say  @   a    ' is equal to '         b
+0009 if a>b  then say  @   a    ' is greater than '     b
+0010 exit                                             /*stick a fork in it,  we're all done. */
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 getInt:       do forever;     say                /*keep prompting the user until success*/
+0013 say arg(1)         /*display the prompt message to console*/
+0014 parse pull x                       /*obtain  X,  and keep its case intact.*/
+0015 select
+0016 when x=''               then call serr "No argument was entered."
+0017 when words(x)>1         then call serr 'Too many arguments entered.'  x
+0018 when \datatype(x, 'N')  then call serr "Argument isn't numeric:"      x
+0019 when \datatype(x, 'W')  then call serr "Argument isn't an integer:"   x
+0020 otherwise    return x           /* [↑]  Eureka!   Return # to invoker. */
+0021 end   /*select*/
+0022 end      /*forever*/
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 serr:  say @  '***error*** '    arg(1);        say @  "Please try again.";          return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             14
+002 x                14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            3

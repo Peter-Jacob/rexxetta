@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program  finds  the  common directory path  for a list of files.       */
+0002 /* original code: Gerard Schildberger                                         */
+0003 /* 20230606 Walter Pachl refurbisher adn improved (file.4 = 'home' -> /)      */
+0004 file.  = ''                            /*the default for all file lists (null)*/
+0005 file.1 = '/home/user1/tmp/coverage/test'
+0006 /*123456789.123456789.123456768*/
+0007 file.2 = '/home/user1/tmp/covert/operator'
+0008 file.3 = '/home/user1/tmp/coven/members'
+0009 
+0010 L=length(file.1)                       /*use the length of the first string.  */
+0011 Do j=2 While file.j\==''               /*loop for the other file names        */
+0012 diffp=compare(file.j,file.1)         /*find the first different character   */
+0013 If diffp>0 Then Do                   /*Strings are different                */
+0014 L=min(L,diffp)                     /*get the minimum length equal strings.*/
+0015 If right(file.j,1)<>'/' Then Do    /*not a directory                      */
+0016 L=lastpos('/',left(file.j,L))     /* go back to directory end            */
+0017 If L=0 Then Do
+0018 Say 'common directory path: /'
+0019 Exit
+0020 End
+0021 End
+0022 End
+0023 End
+0024 common=left(file.1,lastpos('/',file.1,L)) /*determine the shortest DIR string.*/
+0025 If right(common,1)=='/' Then           /* remove the trailing /               */
+0026 common=left(common,length(common)-1)
+0027 If common=='' then common= "/"         /*if no common directory, assume home. */
+0028 Say 'common directory path: 'common
+0029 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 file.            4 5 7 8
+002 L                10 14 16
+003 j                11
+004 diffp            12
+005 common           24 26 27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

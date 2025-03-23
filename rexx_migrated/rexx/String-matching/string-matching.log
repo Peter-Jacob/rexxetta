@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates  some  basic   character string   testing  (for matching). */
+0002 parse arg A B                                    /*obtain A and B from the command line.*/
+0003 say 'string  A  = '    A                         /*display string   A   to the terminal.*/
+0004 say 'string  B  = '    B                         /*   "       "     B    "  "      "    */
+0005 say copies('░', 70)                              /*display a line separator  (fence).   */
+0006 LB= length(B)                                    /*get the length of string  B  in bytes*/
+0007 if left(A, LB)==B  then say  'string  A  starts with string  B'
+0008 else say  "string  A  doesn't start with string  B"
+0009 say                                              /* [↓] another method using COMPARE BIF*/
+0010 p= pos(B, A)
+0011 if p==0  then say  "string  A  doesn't contain string  B"
+0012 else say  'string  A  contains string  B  (starting in position'   p")"
+0013 say
+0014 if right(A, LB)==B  then say 'string  A  ends with string  B'
+0015 else say "string  A  doesn't end with string  B"
+0016 say
+0017 $=;   p= 0;                       do  until p==0;          p= pos(B, A, p+1)
+0018 if p\==0  then $= $','   p
+0019 end   /*until*/
+0020 
+0021 $= space( strip($, 'L', ",") )                   /*elide extra blanks and leading comma.*/
+0022 #= words($)                                      /*obtain number of words in  $  string.*/
+0023 
+0024 if #==0  then say "string  A  doesn't contain string  B"
+0025 else say 'string  A  contains string  B '    #    " time"left('s', #>1),
+0026 "(at position"left('s', #>1)  $")" /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 A                2
+002 B                2
+003 LB               6
+004 p                10 17 17
+005 until            17
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            17 18 21
+002 #                -> newV2            22

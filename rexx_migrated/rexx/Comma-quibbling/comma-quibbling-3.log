@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /* Rexx */
+0002 
+0003 i_ = 0
+0004 i_ = i_ + 1; lists.0 = i_; lists.i_ = '[]'
+0005 i_ = i_ + 1; lists.0 = i_; lists.i_ = '["ABC"]'
+0006 i_ = i_ + 1; lists.0 = i_; lists.i_ = '["ABC", ''DEF'']'
+0007 i_ = i_ + 1; lists.0 = i_; lists.i_ = '[ABC, DEF, G, H]'
+0008 
+0009 say
+0010 do i_ = 1 to lists.0
+0011 list = lists.i_
+0012 say right(list, 30) ':' quibbling03(list)
+0013 end i_
+0014 exit
+0015 
+0016 quibbling03:
+0017 procedure
+0018 parse arg '[' lst ']'
+0019 lst = changestr('"', changestr("'", lst, ''), '') /* remove double & single quotes */
+0020 lc = lastpos(',', lst)
+0021 if lc > 0 then
+0022 lst = overlay(' ', insert('and', lst, lc), lc)
+0023 lst = space(lst, 1) -- remove extra spaces
+0024 return '{'lst'}'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 lst              18 19 22 23
+002 lc               20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

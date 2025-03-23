@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates the  classic hash join algorithm  for two relations.        */
+0002 S.  =                   ;         R.  =
+0003 S.1 = 27 'Jonah'        ;         R.1 = "Jonah Whales"
+0004 S.2 = 18 'Alan'         ;         R.2 = "Jonah Spiders"
+0005 S.3 = 28 'Glory'        ;         R.3 = "Alan Ghosts"
+0006 S.4 = 18 'Popeye'       ;         R.4 = "Alan Zombies"
+0007 S.5 = 28 'Alan'         ;         R.5 = "Glory Buffy"
+0008 hash.=                                           /*initialize the  hash  table (array). */
+0009 do #=1  while S.#\=='';   parse var  S.#  age  name          /*extract information*/
+0010 hash.name=hash.name #                      /*build a hash table entry with its idx*/
+0011 end   /*#*/                                /* [↑]  REXX does the heavy work here. */
+0012 #=#-1                                            /*adjust for the DO loop  (#)  overage.*/
+0013 do j=1  while R.j\==''                     /*process a nemesis for a name element.*/
+0014 parse var  R.j  x  nemesis                 /*extract the name  and  its nemesis.  */
+0015 if hash.x==''  then do;   #=# + 1          /*Not in hash?  Then a new name; bump #*/
+0016 S.#=','  x       /*add a new name to the    S   table.  */
+0017 hash.x=#         /* "  "  "    "   "  "   hash    "     */
+0018 end                    /* [↑]  this  DO  isn't used today.    */
+0019 do k=1  for words(hash.x);   _=word(hash.x, k)          /*obtain the pointer.*/
+0020 S._=S._  nemesis                      /*add the nemesis ──► applicable hash. */
+0021 end   /*k*/
+0022 end        /*j*/
+0023 _='─'                                            /*the character used for the separator.*/
+0024 pad=left('', 4)                                  /*spacing used in header and the output*/
+0025 say  pad  center('age', 3)   pad   center("name", 20   )   pad    center('nemesis', 30   )
+0026 say  pad  center('───', 3)   pad   center(""    , 20, _)   pad    center(''       , 30, _)
+0027 
+0028 do n=1  for #;      parse  var  S.n    age  name  nems       /*obtain information.*/
+0029 if nems==''  then iterate                                    /*No nemesis?  Skip. */
+0030 say pad right(age,3) pad center(name,20) pad center(nems,30) /*display an  "S".   */
+0031 end   /*n*/                                /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 S.               28
+002 age              28
+003 name             28
+004 nems             28
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            9 12 15
+002 _                -> newV2            19 23

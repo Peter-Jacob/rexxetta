@@ -1,0 +1,81 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 26.07.2913 Walter Pachl
+0003 **********************************************************************/
+0004 Numeric Digits 30
+0005 Parse Arg a b c 1 alist
+0006 Select
+0007 When a='' | a='?' Then
+0008 Call exit 'rexx qgl a b c solves a*x**2+b*x+c'
+0009 When words(alist)<>3 Then
+0010 Call exit 'three numbers are required'
+0011 Otherwise
+0012 Nop
+0013 End
+0014 gl=a'*x**2'
+0015 Select
+0016 When b<0 Then gl=gl||b'*x'
+0017 When b>0 Then gl=gl||'+'||b'*x'
+0018 Otherwise Nop
+0019 End
+0020 Select
+0021 When c<0 Then gl=gl||c
+0022 When c>0 Then gl=gl||'+'||c
+0023 Otherwise Nop
+0024 End
+0025 Say gl '= 0'
+0026 
+0027 d=b**2-4*a*c
+0028 If d<0 Then Do
+0029 dd=sqrt(-d)
+0030 r=-b/(2*a)
+0031 i=dd/(2*a)
+0032 x1=r'+'i'i'
+0033 x2=r'-'i'i'
+0034 End
+0035 Else Do
+0036 dd=sqrt(d)
+0037 x1=(-b+dd)/(2*a)
+0038 x2=(-b-dd)/(2*a)
+0039 End
+0040 Say 'x1='||x1
+0041 Say 'x2='||x2
+0042 Exit
+0043 sqrt:
+0044 /* REXX ***************************************************************
+0045 * EXEC to calculate the square root of x with high precision
+0046 **********************************************************************/
+0047 Parse Arg x
+0048 prec=digits()
+0049 prec1=2*prec
+0050 eps=10**(-prec1)
+0051 k = 1
+0052 Numeric Digits prec1
+0053 r0= x
+0054 r = 1
+0055 Do i=1 By 1 Until r=r0 | (abs(r*r-x)<eps)
+0056 r0 = r
+0057 r  = (r + x/r) / 2
+0058 k  = min(prec1,2*k)
+0059 Numeric Digits (k + 5)
+0060 End
+0061 Numeric Digits prec
+0062 Return (r+0)
+0063 exit: Say arg(1)
+0064 Exit
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                47
+002 prec             48
+003 prec1            49
+004 eps              50
+005 k                51 58
+006 r0               53 56
+007 r                54 57
+008 i                55
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

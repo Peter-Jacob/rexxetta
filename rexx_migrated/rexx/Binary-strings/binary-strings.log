@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates methods (code examples)  to use and express  binary strings.*/
+0002 dingsta= '11110101'b                             /*four versions, bit string assignment.*/
+0003 dingsta= "11110101"b                             /*this is the same assignment as above.*/
+0004 dingsta= '11110101'B                             /*  "   "  "    "      "       "   "   */
+0005 dingsta= '1111 0101'B                            /*  "   "  "    "      "       "       */
+0006 
+0007 dingsta2= dingsta                                /*clone one string to another (a copy).*/
+0008 other= '1001 0101 1111 0111'b                    /*another binary  (or bit)  string.    */
+0009 if dingsta= other    then say 'they are equal'   /*compare the two  (binary)  strings.  */
+0010 if other== ''        then say "OTHER is empty."  /*see if the   OTHER   string is empty.*/
+0011 otherA= other || '$'                             /*append a dollar sign ($)  to  OTHER. */
+0012 otherB= other'$'                                 /*same as above,  but with less fuss.  */
+0013 guts= substr(c2b(other), 10, 3)                /*obtain the  10th  through  12th bits.*/
+0014 new= changeStr('A' , other, "Z")              /*change the upper  letter  A  ──►  Z. */
+0015 tt= changeStr('~~', other, ";")              /*change two tildes ──►  one semicolon.*/
+0016 joined= dingsta || dingsta2                      /*join two strings together (concat).  */
+0017 say joined c2b(joined)
+0018 exit                                             /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 c2b: Return x2b(c2x(arg(1)))                     /*return the string as a binary string.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 dingsta          2 3 4 5
+002 dingsta2         7
+003 other            8
+004 otherA           11
+005 otherB           12
+006 guts             13
+007 new              14
+008 tt               15
+009 joined           16
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

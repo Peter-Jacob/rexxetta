@@ -1,0 +1,52 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX program displays  square─free numbers  (integers > 1)  up to a specified limit.  */
+0002 numeric digits 20                                /*be able to handle larger numbers.    */
+0003 parse arg LO HI .                                /*obtain optional arguments from the CL*/
+0004 if LO=='' | LO==","  then LO=   1                /*Not specified?  Then use the default.*/
+0005 if HI=='' | HI==","  then HI= 145                /* "      "         "   "   "     "    */
+0006 sw= linesize() - 1                               /*use one less than a full line.       */
+0007 # = 0                                            /*count of square─free numbers found.  */
+0008 $=                                               /*variable that holds a line of numbers*/
+0009 do j=LO  to abs(HI)                         /*process all integers between LO & HI.*/
+0010 if \isSquareFree(j)   then iterate          /*Not square─free?   Then skip this #. */
+0011 #= # + 1                                    /*bump the count of square─free numbers*/
+0012 if HI<0  then iterate                       /*Only counting 'em? Then look for more*/
+0013 if length($ || j)<sw  then $= strip($ j)    /*append the number to the output list.*/
+0014 else do;   say $;   $=j;   end   /*display a line of numbers.*/
+0015 end   /*j*/
+0016 
+0017 if $\==''  then say $                            /*are there any residuals to display ? */
+0018 @theNum= 'The number of square─free numbers between '
+0019 if HI<0    then say @theNum  LO      " and "      abs(HI)       ' (inclusive)  is: '     #
+0020 exit                                             /*stick a fork in it,  we're all done. */
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 isSquareFree: procedure; parse arg x;  if x<1  then return 0  /*is the number too small?*/
+0023 odd= x//2                          /*ODD=1   if X is odd,   ODD=0 if even.*/
+0024 do k=2+odd  to iSqrt(x)  by 1+odd /*use all numbers, or just odds*/
+0025 if x // k**2 == 0  then return 0  /*Is  X  divisible by a square?*/
+0026 end   /*k*/                       /* [↑]  Yes? Then ¬ square─free*/
+0027 return 1                           /* [↑]       //  is REXX's ÷ remainder.*/
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 iSqrt: procedure; parse arg x;         q= 1;         do while q<=x;       q= q * 4
+0030 end   /*while q<=x*/
+0031 r= 0
+0032 do while q>1;        q= q % 4;     _= x - r - q;        r= r % 2
+0033 if _>=0  then do;    x= _;         r= r + q;            end
+0034 end   /*while q>1*/
+0035 return r                                  /*R  is the integer square root of  X. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                29 33
+002 q                29 29 32
+003 while            29
+004 r                31 32 33
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @theNum          -> newV1            18
+002 #                -> newV2            7 11
+003 $                -> newV3            8 13 14
+004 _                -> newV4            32

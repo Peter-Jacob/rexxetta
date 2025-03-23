@@ -1,0 +1,83 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX pgm finds integer sided triangles that satisfy Law of cosines for 60º, 90º, 120º.*/
+0002 parse arg os1 os2 os3 os4 .                      /*obtain optional arguments from the CL*/
+0003 if os1=='' | os1==","  then os1= 13; s1=abs(os1) /*Not specified?  Then use the default.*/
+0004 if os2=='' | os2==","  then os2= 13; s2=abs(os2) /* "      "         "   "   "     "    */
+0005 if os3=='' | os3==","  then os3= 13; s3=abs(os3) /* "      "         "   "   "     "    */
+0006 if os4=='' | os4==","  then os4= -0; s4=abs(os4) /* "      "         "   "   "     "    */
+0007 @.=                                              /*@:  array holds squares, max of sides*/
+0008 do j=1  for max(s1, s2, s3, s4);  @.j= j * j    /*use memoization.*/
+0009 end   /*j*/
+0010 if s1>0  then call s1                            /*handle the triangle case for   120º. */
+0011 if s2>0  then call s2                            /*handle the triangle case for    90º. */
+0012 if s3>0  then call s3                            /*handle the triangle case for    60º. */
+0013 if s4>0  then call s4                            /*handle the case for unique sides.    */
+0014 exit 0                                           /*stick a fork in it,  we're all done. */
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+0017 dAng: w= length(s); ang= ' 'd"º " uq' ';  ss= s * s;  @sol= " solutions found for"; return
+0018 foot: say right(commas(#) @sol ang  "(sides up to" commas(arg(1) +0)')', 65);  say; return
+0019 head: #= 0;  parse arg d,uq,s;  @= ',';   call dAng;      say center(ang, 65, '═'); return
+0020 show: #=#+1; arg p; if p>0  then say '     ('right(a,w)@ right(b,w)@ right(c,w)")"; return
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 s1:   call head 120,,s1                          /*────────── 120º:  a² + b² + ab  ≡ c² */
+0023 do     a=1    for s1;         ap1= a + 1
+0024 do   b=ap1  for s1-ap1+1;   x= @.a + @.b + a*b;     if x>ss  then iterate a
+0025 do c=b+1  for s1-b+1  until @.c>x
+0026 if x==@.c  then do;  call show os1;  iterate b;  end
+0027 end   /*c*/
+0028 end     /*b*/
+0029 end       /*a*/
+0030 call foot s1;                        return
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 s2:   call head  90,,s2                          /*────────── 90º:   a² + b²       ≡ c² */
+0033 do     a=1    for s2;         ap1= a + 1
+0034 do   b=ap1  for s2-ap1+1;   x= @.a + @.b;           if x>ss  then iterate a
+0035 do c=b+1  for s2-b+2  until @.c>x
+0036 if x==@.c  then do;  call show os2;  iterate b;  end
+0037 end   /*c*/
+0038 end     /*b*/
+0039 end       /*a*/
+0040 call foot s2;                        return
+0041 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0042 s3:   call head  60,,s3                          /*────────── 60º:   a² + b² ─ ab  ≡ c² */
+0043 do     a=1   for s3;          s3ma= s3 - a + 1
+0044 do   b=a   for s3ma;        x= @.a + @.b - a*b;     if x>ss  then iterate a
+0045 do c=a   for s3ma  until @.c>x
+0046 if x==@.c  then do;  call show os3;  iterate b;  end
+0047 end   /*c*/
+0048 end     /*b*/
+0049 end       /*a*/
+0050 call foot s2;                        return
+0051 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0052 s4:   call head  60, 'unique', os4               /*────────── 60º:  a² + b² ─ ab   ≡ c² */
+0053 do     a=1    for s4;         ap1= a + 1;    s4map1= s4 - ap1 + 1
+0054 do   b=ap1  for s4map1;     x= @.a + @.b - a*b;     if x>ss  then iterate a
+0055 do c=ap1  for s4map1  until @.c>x
+0056 if x==@.c  then do;  call show os4;  iterate b;  end
+0057 end   /*c*/
+0058 end     /*b*/
+0059 end       /*a*/
+0060 call foot s4;                        return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 d                19
+002 uq               19
+003 s                19
+004 a                23 33 43 53
+005 ap1              23 33 53
+006 b                24 34 44 54
+007 x                24 34 44 54
+008 c                25 35 45 55
+009 s3ma             43
+010 s4map1           53
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @sol             -> newV1            17
+002 @.               -> newV2.           7 8
+003 ?                -> newV3            16 16
+004 @                -> newV4            19

@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX program computes and displays palindromic gapful numbers, it also can show those */
+0002 /*─────────────────────── palindromic gapful numbers listed by their last decimal digit.*/
+0003 numeric digits 20                                /*ensure enough decimal digits gapfuls.*/
+0004 parse arg palGaps                                /*obtain optional arguments from the CL*/
+0005 if palGaps=''  then palGaps= 20 100@@15 1000@@10 /*Not specified?  Then use the defaults*/
+0006 
+0007 do until palGaps='';      parse var palGaps  stuff palGaps;      call palGap stuff
+0008 end   /*until*/
+0009 exit 0                                           /*stick a fork in it,  we're all done. */
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 palGap: procedure; parse arg n '@' sp "@" z;    #= 0;    if sp==''  then sp= 100
+0012 @ending= '  (ending in a specific digit) ';      if  z==''  then  z=   n
+0013 @which= ' last ';                                if  z==n   then @which= " first "
+0014 @palGap#Start= ' palindromic gapful numbers starting at: '
+0015 say center(@which   z    ' of '     n   @palGap#Start   sp" "   @ending, 140, "═")
+0016 #.= 0                                    /*array of result counts for each digit*/
+0017 newSP= max(110, sp%11*11)                /*calculate the new starting point.    */
+0018 tot= n * 9                               /*total # of results that are wanted.  */
+0019 $.=;                           sum= 0    /*blank lists;  digit results (so far).*/
+0020 do j=newSP  by 11  until sum==tot  /*loop 'til all digit counters filled. */
+0021 if reverse(j)  \==j  then iterate  /*Not a palindrome?       Then skip it.*/
+0022 parse var   j   a  2  ''  -1  b    /*obtain the first and last dec. digit.*/
+0023 if #.b          ==n  then iterate  /*Digit quota filled?     Then skip it.*/
+0024 if j // (a||b) \==0  then iterate  /*Not divisible by A||B?    "    "   " */
+0025 sum= sum + 1;        #.b= #.b + 1  /*bump the sum counter & digit counter.*/
+0026 $.b= $.b  j                        /*append   J   to the correct list.    */
+0027 end   /*j*/
+0028 /* [↓]  just show the last  Z  numbers.*/
+0029 do k=1  for 9;   say  k':'   strip( subword($.k, 1 + n - z) )
+0030 end   /*k*/;     say
+0031 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                22
+002 a                22
+003 b                22
+004 sum              25
+005 k                29
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @palGap#Start    -> newV1            14
+002 @ending          -> newV2            12
+003 @which           -> newV3            13 13
+004 #.               -> newV4.           16 25
+005 $.               -> newV5.           19 26
+006 #                -> newV6            11

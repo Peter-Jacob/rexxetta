@@ -1,0 +1,130 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program  finds and displays  N   weird numbers in a vertical format (with index).*/
+0002 parse arg n cols .                               /*obtain optional arguments from the CL*/
+0003 if    n=='' |    n==","  then    n=  400         /*Not specified?  Then use the default.*/
+0004 if cols=='' | cols==","  then cols=   10         /* "      "         "   "   "     "    */
+0005 w= 10                                            /*width of a number in any column.     */
+0006 call genP                                        /*generate primes just past   Hp.      */
+0007 if cols>0 then say ' index │'center(' weird numbers',   1 + cols*(w+1)     )
+0008 if cols>0 then say '───────┼'center(""              ,   1 + cols*(w+1), '─')
+0009 weirds= 0;                             !!.= 0    /*the count of weird numbers  (so far).*/
+0010 idx= 1;                          $=              /*index for the output list;  $: 1 line*/
+0011 do j=2  by 2  until weirds==n            /*examine even integers 'til have 'nuff*/
+0012 if \weird(j)  then iterate               /*Not a  weird  number?  Then skip it. */
+0013 weirds= weirds + 1                       /*bump the count of  weird   numbers.  */
+0014 do a=1  for #  until _>hp;  if @.a<sigma+j  then iterate;   _= j*@.a;   !!._= 1
+0015 end   /*a*/
+0016 c= commas(j)                             /*maybe add commas to the number.      */
+0017 $= $ right(c, max(w, length(c) ) )       /*add a nice prime ──► list, allow big#*/
+0018 if weirds//cols\==0  then iterate        /*have we populated a line of output?  */
+0019 say center(idx, 7)'│'  substr($, 2);  $= /*display what we have so far  (cols). */
+0020 idx= idx + cols                          /*bump the  index  count for the output*/
+0021 end   /*j*/
+0022 
+0023 if $\==''  then say center(idx, 7)"│"  substr($, 2)  /*possible display residual output.*/
+0024 if cols>0 then say '───────┴'center(""              ,  1 + cols*(w+1), '─')
+0025 say
+0026 say 'Found '       commas(weirds)          ' weird numbers'
+0027 exit 0                                           /*stick a fork in it,  we're all done. */
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 commas: parse arg _;  do ic=length(_)-3  to 1  by -3; _=insert(',', _, ic); end;  return _
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 DaS:  procedure; parse arg x 1 z 1,b;       a= 1 /*get X,Z,B (the 1st arg); init A list.*/
+0032 r= 0;         q= 1                         /* [↓] ══integer square root══     ___ */
+0033 do while q<=z; q=q*4; end             /*R:  an integer which will be    √ X  */
+0034 do while q>1;  q=q%4;  _= z-r-q;  r=r%2;  if _>=0  then  do;  z=_;  r=r+q;  end
+0035 end   /*while q>1*/                   /* [↑]  compute the integer sqrt of  X.*/
+0036 sig = a                                    /*initialize the sigma so far.     ___ */
+0037 do j=2  to r - (r*r==x)                /*divide by some integers up to   √ X  */
+0038 if x//j==0  then do;  a=a j;  b= x%j b /*if ÷, add both divisors to α & ß.    */
+0039 sig= sig +j +x%j /*bump the sigma (the sum of Pdivisors)*/
+0040 end
+0041 end   /*j*/                            /* [↑]  %  is the REXX integer division*/
+0042 /* [↓]  adjust for a square.        ___*/
+0043 if j*j==x  then  return sig+j  a j b       /*Was  X  a square?    If so, add  √ X */
+0044 return sig    a   b       /*return the divisors  (both lists).   */
+0045 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0046 genP: hp= 1000 * n                               /*high Prime limit; define 2 low primes*/
+0047 @.1=2;  @.2=3;  @.3=5;  @.4=7;  @.5=11     /*define some low primes.              */
+0048 #=5;     s.#= @.# **2    /*number of primes so far;     prime². */
+0049 /* [↓]  generate more  primes  ≤  high.*/
+0050 do j=@.#+2  by 2  for max(0, hp%2-@.#%2-1)      /*find odd primes from here on. */
+0051 parse var j '' -1 _; if     _==5  then iterate  /*J divisible by 5?  (right dig)*/
+0052 if j// 3==0  then iterate  /*"     "      " 3?             */
+0053 if j// 7==0  then iterate  /*"     "      " 7?             */
+0054 /* [↑]  the above five lines saves time*/
+0055 do k=5  while s.k<=j              /* [↓]  divide by the known odd primes.*/
+0056 if j // @.k == 0  then iterate j  /*Is  J ÷ X?  Then not prime.     ___  */
+0057 end   /*k*/                       /* [↑]  only process numbers  ≤  √ J   */
+0058 #= #+1;    @.#= j;    s.#= j*j           /*bump # of Ps; assign next P;  P²; P# */
+0059 end          /*j*/;           return
+0060 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0061 weird: procedure expose !!. sigma; parse arg x   /*obtain a # to be tested for weirdness*/
+0062 if x<70 | x//3==0       then return 0     /*test if X is too low or multiple of 3*/
+0063 if !!.x                 then return 1     /*Is this a prime*previous #? Found one*/
+0064 parse value  DaS(x)  with  sigma divs     /*obtain sigma and the proper divisors.*/
+0065 if sigma<=x  then  return 0               /*X  isn't abundant  (sigma too small).*/
+0066 #= words(divs)                            /*count the number of divisors for  X. */
+0067 if #<3   then return 0                    /*Not enough divisors?    "      "     */
+0068 if #>15  then return 0                    /*number of divs > 15?  It's not weird.*/
+0069 a.=                                       /*initialize the    A.   stemmed array.*/
+0070 do i=1  for #;     _= word(divs, i)   /*obtain one of the divisors of  X.    */
+0071 @.i= _;          a._= .               /*assign proper divs──►@ array; also id*/
+0072 end   /*i*/
+0073 df= sigma - x                             /*calculate difference between Σ and X.*/
+0074 if a.df==.  then return 0                 /*Any divisor is equal to DF? Not weird*/
+0075 c= 0;           u= 2**#                   /*zero combo counter; calc. power of 2.*/
+0076 do p=1  for u-2;            c= c + 1  /*convert P──►binary with leading zeros*/
+0077 yy.c= strip( x2b( d2x(p) ),  'L', 0)  /*store this particular combination.   */
+0078 end   /*p*/
+0079 /* [↓]  decreasing partitions is faster*/
+0080 do part=c  by -1  for c;      s= 0    /*test of a partition add to the arg X.*/
+0081 _= yy.part;           L= length(_)    /*obtain one method of partitioning.   */
+0082 do cp=L  by -1  for L               /*obtain a sum of  a  partition.       */
+0083 if substr(_,cp,1)  then do;  s= s + @.cp            /*1 bit?  Then add ──►S*/
+0084 if s==x  then return 0 /*Sum equal?  Not weird*/
+0085 if s==df then return 0 /*Sum = DF?    "    "  */
+0086 if s>x   then iterate  /*Sum too big? Try next*/
+0087 end
+0088 end   /*cp*/
+0089 end     /*part*/
+0090 return 1                                   /*no sum equal to  X,  so  X  is weird.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                61
+002 k                55
+003 s.               58
+004 a                31 38
+005 r                32 34 34
+006 q                32 33 34
+007 while            33
+008 sig              36 39
+009 j                37 50
+010 s.               48
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 sigma            64
+015 divs             64
+016 a.               69 71
+017 i                70
+018 df               73
+019 c                75 76
+020 u                75
+021 p                76
+022 yy.              77
+023 part             80
+024 s                80 83
+025 L                81
+026 cp               82
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !!.              -> newV1.           9 14
+002 @.               -> newV2.           47 47 47 47 47 58 71
+003 $                -> newV3            10 17 19
+004 _                -> newV4            14 29 29 34 51 70 81
+005 #                -> newV5            48 58 66

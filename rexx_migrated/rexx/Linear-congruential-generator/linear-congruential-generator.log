@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*REXX program uses a linear congruential generator (LCG)  that simulates the old  BSD  */
+0002 /*──────── and MS random number generators:    BSD= 0──►(2^31)-1     MS= 0──►(2^16)-1   */
+0003 numeric digits 20                                /*use enough dec. digs for the multiply*/
+0004 two@@16= 2**16                                   /*use a variable to contain  2^16      */
+0005 two@@31= 2**31                                   /* "  "     "     "    "     2^32      */
+0006 
+0007 do seed=0  for 2;       bsd= seed        /*perform for seed=0  and also  seed=1.*/
+0008 ms= seed        /*assign  SEED  to  two REXX variables.*/
+0009 say center(' seed='seed" ", 79, '─')     /*display the seed in a title/separator*/
+0010 /* [↓]  show 20 rand #'s for each seed.*/
+0011 do j=1  for 20                       /*generate & display 20 random numbers.*/
+0012 
+0013 bsd = (1103515245 * bsd   +     12345)   //    two@@31
+0014 ms  = (    214013 *  ms   +   2531011)   //    two@@31
+0015 /*  ↑                                  */
+0016 /*  └─────◄──── REXX remainder operator*/
+0017 
+0018 say '  state'   right(j,3)   " BSD"   right(bsd,     11)   left('', 13),
+0019 " MS"    right( ms,     11)   left('',  5),
+0020 " rand"  right(ms % two@@16,  6)
+0021 end   /*j*/
+0022 end       /*seed*/                       /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 two@@16          4
+002 two@@31          5
+003 seed             7
+004 bsd              7 13
+005 ms               8 14
+006 j                11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

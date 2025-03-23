@@ -1,0 +1,180 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Create a BMP file showing a few super ellipses
+0003 **********************************************************************/
+0004 Parse Version v
+0005 If pos('Regina',v)>0 Then
+0006 superegg='superegga.bmp'
+0007 Else
+0008 superegg='supereggo.bmp'
+0009 'erase' superegg
+0010 s='424d4600000000000000360000002800000038000000280000000100180000000000'X||,
+0011 '1000000000000000000000000000000000000000'x
+0012 z.0=0
+0013 black='000000'x
+0014 white='ffffff'x
+0015 red  ='00ff00'x
+0016 green='ff0000'x
+0017 blue ='0000ff'x
+0018 m=80
+0019 n=80
+0020 hor=m*8      /* 56 */
+0021 ver=n*8      /* 40 */
+0022 s=overlay(lend(hor),s,19,4)
+0023 s=overlay(lend(ver),s,23,4)
+0024 z.=copies('f747ff'x,3192%3)
+0025 z.=copies('ffffff'x,8*m)
+0026 z.0=648
+0027 u=320
+0028 v=320
+0029 Call supegg black,080,080,0.5,u,v
+0030 Call supegg black,110,110,1 ,u,v
+0031 Call supegg black,140,140,1.5,u,v
+0032 Call supegg blue ,170,170,2 ,u,v
+0033 Call supegg red ,200,200,2.5,u,v
+0034 Call supegg green,230,230,3 ,u,v
+0035 Call supegg black,260,260,4 ,u,v
+0036 Call supegg black,290,290,7 ,u,v
+0037 Do i=1 To z.0
+0038 s=s||z.i
+0039 End
+0040 
+0041 Call lineout superegg,s
+0042 Call lineout superegg
+0043 Exit
+0044 
+0045 supegg:
+0046 Parse Arg color,a,b,n,u,v
+0047 Do y=0 To b
+0048 t=(1-power(y/b,n))
+0049 x=a*power(t,1/n)
+0050 Call point color,format(u+x,4,0),format(v+y,4,0)
+0051 Call point color,format(u-x,4,0),format(v+y,4,0)
+0052 Call point color,format(u+x,4,0),format(v-y,4,0)
+0053 Call point color,format(u-x,4,0),format(v-y,4,0)
+0054 End
+0055 Do x=0 To a
+0056 t=(1-power(x/b,n))
+0057 y=a*power(t,1/n)
+0058 Call point color,format(u+x,4,0),format(v+y,4,0)
+0059 Call point color,format(u-x,4,0),format(v+y,4,0)
+0060 Call point color,format(u+x,4,0),format(v-y,4,0)
+0061 Call point color,format(u-x,4,0),format(v-y,4,0)
+0062 End
+0063 Return
+0064 
+0065 lend:
+0066 Return reverse(d2c(arg(1),4))
+0067 
+0068 point: Procedure Expose z.
+0069 Call trace 'O'
+0070 Parse Arg color,x0,y0
+0071 --Say x0 y0
+0072 Do x=x0-2 To x0+2
+0073 Do y=y0-2 To y0+2
+0074 z.y=overlay(copies(color,3),z.y,3*x)
+0075 End
+0076 End
+0077 Return
+0078 
+0079 power: Procedure
+0080 /***********************************************************************
+0081 * Return b**x for any x -- with reasonable or specified precision
+0082 * 920903 Walter Pachl
+0083 ***********************************************************************/
+0084 Parse Arg b,x,prec
+0085 If prec<9 Then prec=9
+0086 Numeric Digits (2*prec)
+0087 Numeric Fuzz   3
+0088 If b=0 Then Return 0
+0089 If b<>'' Then x=x*ln(b,prec+2)
+0090 o=1
+0091 u=1
+0092 r=1
+0093 Do i=1 By 1
+0094 ra=r
+0095 o=o*x
+0096 u=u*i
+0097 r=r+(o/u)
+0098 If r=ra Then Leave
+0099 End
+0100 Numeric Digits (prec)
+0101 Return r+0
+0102 
+0103 ln: Procedure
+0104 /***********************************************************************
+0105 * Return ln(x) -- with specified precision
+0106 * Three different series are used for the ranges  0 to 0.5
+0107 *                                                 0.5 to 1.5
+0108 *                                                 1.5 to infinity
+0109 * 920903 Walter Pachl
+0110 ***********************************************************************/
+0111 Parse Arg x,prec,b
+0112 If prec='' Then prec=9
+0113 Numeric Digits (2*prec)
+0114 Numeric Fuzz   3
+0115 Select
+0116 When x<=0 Then r='*** invalid argument ***'
+0117 When x<0.5 Then Do
+0118 z=(x-1)/(x+1)
+0119 o=z
+0120 r=z
+0121 k=1
+0122 Do i=3 By 2
+0123 ra=r
+0124 k=k+1
+0125 o=o*z*z
+0126 r=r+o/i
+0127 If r=ra Then Leave
+0128 End
+0129 r=2*r
+0130 End
+0131 When x<1.5 Then Do
+0132 z=(x-1)
+0133 o=z
+0134 r=z
+0135 k=1
+0136 Do i=2 By 1
+0137 ra=r
+0138 k=k+1
+0139 o=-o*z
+0140 r=r+o/i
+0141 If r=ra Then Leave
+0142 End
+0143 End
+0144 Otherwise /* 1.5<=x */ Do
+0145 z=(x+1)/(x-1)
+0146 o=1/z
+0147 r=o
+0148 k=1
+0149 Do i=3 By 2
+0150 ra=r
+0151 k=k+1
+0152 o=o/(z*z)
+0153 r=r+o/i
+0154 If r=ra Then Leave
+0155 End
+0156 r=2*r
+0157 End
+0158 End
+0159 If b<>'' Then
+0160 r=r/ln(b)
+0161 Numeric Digits (prec)
+0162 Return r+0
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                111
+002 prec             111 112
+003 b                111
+004 z                118 132 145
+005 o                119 125 133 139 146 152
+006 r                120 126 129 134 140 147 153 156 160
+007 k                121 124 135 138 148 151
+008 i                122 136 149
+009 ra               123 137 150
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

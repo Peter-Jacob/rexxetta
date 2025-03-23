@@ -1,0 +1,130 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program  converts  temperatures  for a number (8)  of  temperature scales.       */
+0002 numeric digits 120                               /*be able to support some huge numbers.*/
+0003 parse arg tList                                  /*get the specified temperature list.  */
+0004 
+0005 do  until  tList=''                            /*process the list of temperatures.    */
+0006 parse  var tList  x  ','  tList                /*temps are separated by commas.       */
+0007 x= translate(x, '((', "[{")                    /*support other grouping symbols.      */
+0008 x= space(x);      parse var x z '('            /*handle any comments  (if any).       */
+0009 parse upper  var  z  z   ' TO '  ! .           /*separate the  TO  option from number.*/
+0010 if !==''  then != 'ALL';   all= !=='ALL'       /*allow specification of "TO" opt*/
+0011 if z==''     then call serr "no arguments were specified."                 /*oops-ay. */
+0012 _= verify(z, '+-.0123456789')                  /*list of valid numeral/number thingys.*/
+0013 n= z
+0014 if _\==0  then do
+0015 if _==1  then call serr 'illegal temperature:'   z
+0016 n= left(z,  _ - 1)              /*pick off the number  (hopefully).    */
+0017 u= strip( substr(z, _) )        /*pick off the  temperature  unit.     */
+0018 end
+0019 else u= 'k'                          /*assume kelvin as per task requirement*/
+0020 
+0021 if \datatype(n, 'N')  then call serr 'illegal number:'    n
+0022 if \all  then do                               /*is there is a     TO  ααα     scale? */
+0023 call name !                      /*process the   TO   abbreviation.     */
+0024 != sn                           /*assign the full name to     !        */
+0025 end                              /*!: now contains temperature full name*/
+0026 call name u                                    /*allow alternate scale (miss)spellings*/
+0027 
+0028 select                                     /*convert ──► °Fahrenheit temperatures.*/
+0029 when sn=='CELSIUS'          then F= n       *  9/5   +  32
+0030 when sn=='DELISLE'          then F= 212 -(n *  6/5)
+0031 when sn=='FAHRENHEIT'       then F= n
+0032 when sn=='KELVIN'           then F= n       *  9/5   - 459.67
+0033 when sn=='NEWTON'           then F= n       * 60/11  +  32
+0034 when sn=='RANKINE'          then F= n                - 459.67    /*a single  R  is taken as Rankine.*/
+0035 when sn=='REAUMUR'          then F= n       *  9/4   +  32
+0036 when sn=='ROMER'            then F= (n-7.5) * 27/4   +  32
+0037 otherwise              call serr  'illegal temperature scale: '    u
+0038 end   /*select*/
+0039 
+0040 K = (F + 459.67)  *  5/9                       /*compute temperature to  kelvins.     */
+0041 say right(' ' x, 79, "─")                      /*show the original value, scale, sep. */
+0042 if all | !=='CELSIUS'           then say $(   ( F   -  32     )   *  5/9           )    'Celsius'
+0043 if all | !=='DELISLE'           then say $(   ( 212 -  F      )   *  5/6           )    'Delisle'
+0044 if all | !=='FAHRENHEIT'        then say $(     F                                  )    'Fahrenheit'
+0045 if all | !=='KELVIN'            then say $(        K                               )    'kelvin's(K)
+0046 if all | !=='NEWTON'            then say $(   ( F   -  32     )   *  11/60         )    'Newton'
+0047 if all | !=='RANKINE'           then say $(     F   + 459.67                       )    'Rankine'
+0048 if all | !=='REAUMUR'           then say $(   ( F   -  32     )   *  4/9           )    'Reaumur'
+0049 if all | !=='ROMER'             then say $(   ( F   -  32     )   *  4/27    + 7.5 )    'Romer'
+0050 end   /*until*/
+0051 
+0052 exit                                             /*stick a fork in it,  we're all done. */
+0053 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0054 s:    if arg(1)==1  then return arg(3);     return word( arg(2) 's',  1)
+0055 serr: say;   say '***error!***';    say;    say arg(1);    say;   exit 13
+0056 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0057 $:    procedure;           showDig= 8            /*only show  eight  significant digits.*/
+0058 _= format( arg(1), , showDig) / 1          /*format number 8 digs past dec, point.*/
+0059 p= pos(., _);        L= length(_)          /*find position of the decimal point.  */
+0060 /* [↓]  align integers with FP numbers.*/
+0061 if p==0  then _= _ || left('', 5+showDig+1)    /*the number has no decimal point. */
+0062 else _= _ || left('', 5+showDig-L+p)  /* "     "    "   a    "      "    */
+0063 return right(_, 50)                        /*return the re-formatted number (arg).*/
+0064 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0065 name: parse arg y                                       /*abbreviations  ──►  shortname.*/
+0066 yU= translate(y, 'eE', "éÉ");       upper yU      /*uppercase the temperature unit*/
+0067 if left(yU, 7)=='DEGREES'  then yU= substr(yU, 8) /*redundant "degrees" after  #? */
+0068 if left(yU, 6)=='DEGREE'   then yU= substr(yU, 7) /*   "      "degree"    "    "  */
+0069 yU= strip(yU)                                     /*elide blanks at front and back*/
+0070 _= length(yU)                                     /*obtain the    yU    length.   */
+0071 if right(yU,1)=='S' & _>1  then yU= left(yU, _-1) /*elide trailing plural, if any.*/
+0072 
+0073 select                                     /*abbreviations  ──►  shortname.*/
+0074 when abbrev('CENTIGRADE' , yU)    |,
+0075 abbrev('CENTRIGRADE', yU)    |,                     /* 50% misspelled.*/
+0076 abbrev('CETIGRADE'  , yU)    |,                     /* 50% misspelled.*/
+0077 abbrev('CENTINGRADE', yU)    |,
+0078 abbrev('CENTESIMAL' , yU)    |,
+0079 abbrev('CELCIU'     , yU)    |,                     /* 82% misspelled.*/
+0080 abbrev('CELCIOU'    , yU)    |,                     /*  4% misspelled.*/
+0081 abbrev('CELCUI'     , yU)    |,                     /*  4% misspelled.*/
+0082 abbrev('CELSUI'     , yU)    |,                     /*  2% misspelled.*/
+0083 abbrev('CELCEU'     , yU)    |,                     /*  2% misspelled.*/
+0084 abbrev('CELCU'      , yU)    |,                     /*  2% misspelled.*/
+0085 abbrev('CELISU'     , yU)    |,                     /*  1% misspelled.*/
+0086 abbrev('CELSU'      , yU)    |,                     /*  1% misspelled.*/
+0087 abbrev('CELSIU'     , yU)       then sn= 'CELSIUS'
+0088 when abbrev('DELISLE'    , yU,2)     then sn= 'DELISLE'
+0089 when abbrev('FARENHEIT'  , yU)    |,                     /* 39% misspelled.*/
+0090 abbrev('FARENHEIGHT', yU)    |,                     /* 15% misspelled.*/
+0091 abbrev('FARENHITE'  , yU)    |,                     /*  6% misspelled.*/
+0092 abbrev('FARENHIET'  , yU)    |,                     /*  3% misspelled.*/
+0093 abbrev('FARHENHEIT' , yU)    |,                     /*  3% misspelled.*/
+0094 abbrev('FARINHEIGHT', yU)    |,                     /*  2% misspelled.*/
+0095 abbrev('FARENHIGHT' , yU)    |,                     /*  2% misspelled.*/
+0096 abbrev('FAHRENHIET' , yU)    |,                     /*  2% misspelled.*/
+0097 abbrev('FERENHEIGHT', yU)    |,                     /*  2% misspelled.*/
+0098 abbrev('FEHRENHEIT' , yU)    |,                     /*  2% misspelled.*/
+0099 abbrev('FERENHEIT'  , yU)    |,                     /*  2% misspelled.*/
+0100 abbrev('FERINHEIGHT', yU)    |,                     /*  1% misspelled.*/
+0101 abbrev('FARIENHEIT' , yU)    |,                     /*  1% misspelled.*/
+0102 abbrev('FARINHEIT'  , yU)    |,                     /*  1% misspelled.*/
+0103 abbrev('FARANHITE'  , yU)    |,                     /*  1% misspelled.*/
+0104 abbrev('FAHRENHEIT' , yU)       then sn= 'FAHRENHEIT'
+0105 when abbrev('KALVIN'     , yU)    |,                     /* 27% misspelled.*/
+0106 abbrev('KERLIN'     , yU)    |,                     /* 18% misspelled.*/
+0107 abbrev('KEVEN'      , yU)    |,                     /*  9% misspelled.*/
+0108 abbrev('KELVIN'     , yU)       then sn= 'KELVIN'
+0109 when abbrev('NEUTON'     , yU)    |,                     /*100% misspelled.*/
+0110 abbrev('NEWTON'     , yU)       then sn= 'NEWTON'
+0111 when abbrev('RANKINE'    , yU, 1)    then sn= 'RANKINE'
+0112 when abbrev('REAUMUR'    , yU, 2)    then sn= 'REAUMUR'
+0113 when abbrev('ROEMER'     , yU, 2) |,
+0114 abbrev('ROMER'      , yU, 2)    then sn= 'ROMER'
+0115 otherwise                call serr  'illegal temperature scale:'   y
+0116 end   /*select*/
+0117 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                65
+002 yU               66 67 68 69 71
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !                -> newV1            9 10 24
+002 _                -> newV2            12 58 61 70

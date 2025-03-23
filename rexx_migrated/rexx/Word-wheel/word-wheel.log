@@ -1,0 +1,80 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX pgm finds (dictionary) words which can be found in a specified word wheel (grid).*/
+0002 parse arg grid minL iFID .                       /*obtain optional arguments from the CL*/
+0003 if grid==''|grid==","  then grid= 'ndeokgelw'    /*Not specified?  Then use the default.*/
+0004 if minL==''|minL==","  then minL= 3              /* "      "         "   "   "     "    */
+0005 if iFID==''|iFID==","  then iFID= 'UNIXDICT.TXT' /* "      "         "   "   "     "    */
+0006 oMinL= minL;                minL= abs(minL)      /*if negative, then don't show a list. */
+0007 gridU= grid;  upper gridU                        /*get an uppercase version of the grid.*/
+0008 Lg= length(grid);           Hg= Lg % 2  +  1     /*get length of grid & the middle char.*/
+0009 ctr= substr(grid, Hg, 1);   upper ctr            /*get uppercase center letter in grid. */
+0010 wrds= 0                                          /*# words that are in the dictionary.  */
+0011 wees= 0                                          /*"   "     "   "  too short.          */
+0012 bigs= 0                                          /*"   "     "   "  too long.           */
+0013 dups= 0                                          /*"   "     "   "  duplicates.         */
+0014 ills= 0                                          /*"   "     "   contain  "not" letters.*/
+0015 good= 0                                          /*"   "     "   contain center letter. */
+0016 nine= 0                                          /*" wheel─words that contain 9 letters.*/
+0017 say '                                Reading the file: ' iFID         /*align the text. */
+0018 @.= .                                            /*uppercase non─duplicated dict. words.*/
+0019 $=                                               /*the list of dictionary words in grid.*/
+0020 do recs=0  while lines(iFID)\==0            /*process all words in the dictionary. */
+0021 u= space( linein(iFID), 0);   upper u       /*elide blanks;  uppercase the word.   */
+0022 L= length(u)                                /*obtain the length of the word.       */
+0023 if @.u\==.           then do; dups= dups+1; iterate; end  /*is this a duplicate?   */
+0024 if L<minL            then do; wees= wees+1; iterate; end  /*is the word too short? */
+0025 if L>Lg              then do; bigs= bigs+1; iterate; end  /*is the word too long?  */
+0026 if \datatype(u,'M')  then do; ills= ills+1; iterate; end  /*has word non─letters?  */
+0027 @.u=                                        /*signify that  U  is a dictionary word*/
+0028 wrds= wrds + 1                              /*bump the number of "good" dist. words*/
+0029 if pos(ctr, u)==0        then iterate       /*word doesn't have center grid letter.*/
+0030 good= good + 1                              /*bump # center─letter words in dict.  */
+0031 if verify(u, gridU)\==0  then iterate       /*word contains a letter not in grid.  */
+0032 if pruned(u, gridU)      then iterate       /*have all the letters not been found? */
+0033 if L==9  then nine= nine + 1                /*bump # words that have nine letters. */
+0034 $= $ u                                      /*add this word to the "found" list.   */
+0035 end   /*recs*/
+0036 say
+0037 say '    number of  records (words) in the dictionary: '   right( commas(recs), 9)
+0038 say '    number of ill─formed words in the dictionary: '   right( commas(ills), 9)
+0039 say '    number of  duplicate words in the dictionary: '   right( commas(dups), 9)
+0040 say '    number of  too─small words in the dictionary: '   right( commas(wees), 9)
+0041 say '    number of  too─long  words in the dictionary: '   right( commas(bigs), 9)
+0042 say '    number of acceptable words in the dictionary: '   right( commas(wrds), 9)
+0043 say '    number center─letter words in the dictionary: '   right( commas(good), 9)
+0044 say '    the minimum length of words that can be used: '   right( commas(minL), 9)
+0045 say '                the word wheel (grid) being used: '   grid
+0046 say '      center of the word wheel (grid) being used: '   right('↑', Hg)
+0047 say;  #= words($);   $= strip($)
+0048 say '    number of word wheel words in the dictionary: '   right( commas(#   ), 9)
+0049 say '    number of   nine-letter   wheel words  found: '   right( commas(nine), 9)
+0050 if #==0  |  oMinL<0  then exit #
+0051 say
+0052 say '    The list of word wheel words found:';   say copies('─', length($));  say lower($)
+0053 exit #                                           /*stick a fork in it,  we're all done. */
+0054 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0055 lower:  arg aa; @='abcdefghijklmnopqrstuvwxyz'; @u=@; upper @u;  return translate(aa,@,@U)
+0056 commas: parse arg _;  do jc=length(_)-3  to 1  by -3; _=insert(',', _, jc); end;  return _
+0057 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0058 pruned: procedure; parse arg aa,gg               /*obtain word to be tested, & the grid.*/
+0059 do n=1  for length(aa);    p= pos( substr(aa,n,1), gg);  if p==0  then return 1
+0060 gg= overlay(., gg, p)                 /*"rub out" the found character in grid*/
+0061 end   /*n*/;               return 0   /*signify that the  AA  passed the test*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 aa               58
+002 gg               58 60
+003 n                59
+004 p                59
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           18 27
+002 @u               -> newV2            55
+003 $                -> newV3            19 34 47
+004 #                -> newV4            47
+005 @                -> newV5            55
+006 _                -> newV6            56 56

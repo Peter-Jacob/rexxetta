@@ -1,0 +1,521 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Solve the Transportation Problem using Vogel's Approximation
+0003 Default Input
+0004 2 3        # of sources / # of demands
+0005 25 35      sources
+0006 20 30 10   demands
+0007 3 5 7      cost matrix    <
+0008 3 2 5
+0009 * 20201210 support no input file -courtesy GS
+0010 *          Note: correctness of input is not checked
+0011 * 20210102 restored Vogel's Approximation and added Optimization
+0012 * 20210103 eliminated debug code
+0013 **********************************************************************/
+0014 Signal On Halt
+0015 Signal On Novalue
+0016 Signal On Syntax
+0017 
+0018 Parse Arg fid
+0019 If fid='' Then
+0020 fid='input1.txt'
+0021 Call init
+0022 m.=0
+0023 Do Forever
+0024 dmax.=0
+0025 dmax=0
+0026 Do r=1 To rr
+0027 dr.r=''
+0028 Do c=1 To cc
+0029 If cost.r.c<>'*' Then
+0030 dr.r=dr.r cost.r.c
+0031 End
+0032 dr.r=words(dr.r) dr.r
+0033 dr.r=diff(dr.r)
+0034 If dr.r>dmax Then Do; dmax=dr.r; dmax.0='R'; dmax.1=r; dmax.2=dr.r; End
+0035 End
+0036 Do c=1 To cc
+0037 dc.c=''
+0038 Do r=1 To rr
+0039 If cost.r.c<>'*' Then
+0040 dc.c=dc.c cost.r.c
+0041 End
+0042 dc.c=words(dc.c) dc.c
+0043 dc.c=diff(dc.c)
+0044 If dc.c>dmax Then Do; dmax=dc.c; dmax.0='C'; dmax.1=c; dmax.2=dc.c; End
+0045 End
+0046 cmin=999
+0047 Select
+0048 When dmax.0='R' Then Do
+0049 r=dmax.1
+0050 Do c=1 To cc
+0051 If cost.r.c<>'*' &,
+0052 cost.r.c<cmin Then Do
+0053 cmin=cost.r.c
+0054 cx=c
+0055 End
+0056 End
+0057 Call allocate r cx
+0058 End
+0059 When dmax.0='C' Then Do
+0060 c=dmax.1
+0061 Do r=1 To rr
+0062 If cost.r.c<>'*' &,
+0063 cost.r.c<cmin Then Do
+0064 cmin=cost.r.c
+0065 rx=r
+0066 End
+0067 End
+0068 Call allocate rx c
+0069 End
+0070 Otherwise
+0071 Leave
+0072 End
+0073 End
+0074 
+0075 Do r=1 To rr
+0076 Do c=1 To cc
+0077 If cost.r.c<>'*' Then Do
+0078 Call allocate r c
+0079 cost.r.c='*'
+0080 End
+0081 End
+0082 End
+0083 
+0084 Call show_alloc 'Vogel''s Approximation'
+0085 
+0086 Do r=1 To rr
+0087 Do c=1 To cc
+0088 cost.r.c=word(matrix.r.c,3)   /* restore cost.*.* */
+0089 End
+0090 End
+0091 
+0092 Call steppingstone
+0093 Exit
+0094 
+0095 /**********************************************************************
+0096 * Subroutines for Vogel's Approximation
+0097 **********************************************************************/
+0098 
+0099 init:
+0100 If lines(fid)=0 Then Do
+0101 Say 'Input file not specified or not found. Using default input instead.'
+0102 fid='Default input'
+0103 in.1=sourceline(4)
+0104 Parse Var in.1 numSources .
+0105 Do i=2 To numSources+3
+0106 in.i=sourceline(i+3)
+0107 End
+0108 End
+0109 Else Do
+0110 Do i=1 By 1 while lines(fid)>0
+0111 in.i=linein(fid)
+0112 End
+0113 End
+0114 Parse Var in.1 numSources numDestinations . 1 rr cc .
+0115 source.=0
+0116 demand.=0
+0117 source_sum=0
+0118 Do i=1 To numSources
+0119 Parse Var in.2 source.i in.2
+0120 ss.i=source.i
+0121 source_in.i=source.i
+0122 source_sum=source_sum+source.i
+0123 End
+0124 l=linein(fid)
+0125 demand_sum=0
+0126 Do i=1 To numDestinations
+0127 Parse Var in.3 demand.i in.3
+0128 dd.i=demand.i
+0129 demand_in.i=demand.i
+0130 demand_sum=demand_sum+demand.i
+0131 End
+0132 Do i=1 To numSources
+0133 j=i+3
+0134 l=in.j
+0135 Do j=1 To numDestinations
+0136 Parse Var l cost.i.j l
+0137 End
+0138 End
+0139 Do i=1 To numSources
+0140 ol=format(source.i,3)
+0141 Do j=1 To numDestinations
+0142 ol=ol format(cost.i.j,4)
+0143 End
+0144 End
+0145 ol='   '
+0146 Do j=1 To numDestinations
+0147 ol=ol format(demand.j,4)
+0148 End
+0149 
+0150 Select
+0151 When source_sum=demand_sum Then Nop  /* balanced */
+0152 When source_sum>demand_sum Then Do   /* unbalanced - add dummy demand */
+0153 Say 'This is an unbalanced case (sources exceed demands). We add a dummy consumer.'
+0154 cc=cc+1
+0155 demand.cc=source_sum-demand_sum
+0156 demand_in.cc=demand.cc
+0157 dd.cc=demand.cc
+0158 Do r=1 To rr
+0159 cost.r.cc=0
+0160 End
+0161 End
+0162 Otherwise /* demand_sum>source_sum */ Do /* unbalanced - add dummy source */
+0163 Say 'This is an unbalanced case (demands exceed sources). We add a dummy source.'
+0164 rr=rr+1
+0165 source.rr=demand_sum-source_sum
+0166 source_in.rr=source.rr
+0167 ss.rr=source.rr
+0168 Do c=1 To cc
+0169 cost.rr.c=0
+0170 End
+0171 End
+0172 End
+0173 
+0174 Say 'Sources / Demands / Cost'
+0175 ol='    '
+0176 Do c=1 To cc
+0177 ol=ol format(demand.c,3)
+0178 End
+0179 Say ol
+0180 
+0181 Do r=1 To rr
+0182 ol=format(source.r,4)
+0183 Do c=1 To cc
+0184 ol=ol format(cost.r.c,3)
+0185 matrix.r.c=r c cost.r.c 0
+0186 End
+0187 Say ol
+0188 End
+0189 Return
+0190 
+0191 allocate: Procedure Expose m. source. demand. cost. rr cc matrix.
+0192 Parse Arg r c
+0193 sh=min(source.r,demand.c)
+0194 source.r=source.r-sh
+0195 demand.c=demand.c-sh
+0196 m.r.c=sh
+0197 matrix.r.c=subword(matrix.r.c,1,3) sh
+0198 If source.r=0 Then Do
+0199 Do c=1 To cc
+0200 cost.r.c='*'
+0201 End
+0202 End
+0203 If demand.c=0 Then Do
+0204 Do r=1 To rr
+0205 cost.r.c='*'
+0206 End
+0207 End
+0208 Return
+0209 
+0210 diff: Procedure
+0211 Parse Value arg(1) With n list
+0212 If n<2 Then Return 0
+0213 list=wordsort(list)
+0214 Return word(list,2)-word(list,1)
+0215 
+0216 wordsort: Procedure
+0217 /**********************************************************************
+0218 * Sort the list of words supplied as argument. Return the sorted list
+0219 **********************************************************************/
+0220 Parse Arg wl
+0221 wa.=''
+0222 wa.0=0
+0223 Do While wl<>''
+0224 Parse Var wl w wl
+0225 Do i=1 To wa.0
+0226 If wa.i>w Then Leave
+0227 End
+0228 If i<=wa.0 Then Do
+0229 Do j=wa.0 To i By -1
+0230 ii=j+1
+0231 wa.ii=wa.j
+0232 End
+0233 End
+0234 wa.i=w
+0235 wa.0=wa.0+1
+0236 End
+0237 swl=''
+0238 Do i=1 To wa.0
+0239 swl=swl wa.i
+0240 End
+0241 /* Say swl */
+0242 Return strip(swl)
+0243 
+0244 show_alloc: Procedure Expose matrix. rr cc demand_in. source_in.
+0245 Parse Arg header
+0246 If header='' Then
+0247 Return
+0248 Say ''
+0249 Say header
+0250 total=0
+0251 ol='    '
+0252 Do c=1 to cc
+0253 ol=ol format(demand_in.c,3)
+0254 End
+0255 Say ol
+0256 as=''
+0257 Do r=1 to rr
+0258 ol=format(source_in.r,4)
+0259 a=word(matrix.r.1,4)
+0260 If a=0.0000000001 Then a=0
+0261 If a>0 Then
+0262 ol=ol format(a,3)
+0263 Else
+0264 ol=ol ' - '
+0265 total=total+word(matrix.r.1,4)*word(matrix.r.1,3)
+0266 Do c=2 To cc
+0267 a=word(matrix.r.c,4)
+0268 If a=0.0000000001 Then a=0
+0269 If a>0 Then
+0270 ol=ol format(a,3)
+0271 Else
+0272 ol=ol ' - '
+0273 total=total+word(matrix.r.c,4)*word(matrix.r.c,3)
+0274 as=as a
+0275 End
+0276 Say ol
+0277 End
+0278 Say 'Total costs:' format(total,4,1)
+0279 Return
+0280 
+0281 
+0282 /**********************************************************************
+0283 * Subroutines for Optimization
+0284 **********************************************************************/
+0285 
+0286 steppingstone: Procedure Expose matrix. cost. rr cc matrix. demand_in.,
+0287 source_in. ms fid move cnt.
+0288 maxReduction=0
+0289 move=''
+0290 Call fixDegenerateCase
+0291 Do r=1 To rr
+0292 Do c=1 To cc
+0293 Parse Var matrix.r.c r c cost qrc
+0294 If qrc=0 Then Do
+0295 path=getclosedpath(r,c)
+0296 If pelems(path)<4 Then Do
+0297 Iterate
+0298 End
+0299 reduction = 0
+0300 lowestQuantity = 1e10
+0301 leavingCandidate = ''
+0302 plus=1
+0303 pathx=path
+0304 Do While pathx<>''
+0305 Parse Var pathx s '|' pathx
+0306 If plus Then
+0307 reduction=reduction+word(s,3)
+0308 Else Do
+0309 reduction=reduction-word(s,3)
+0310 If word(s,4)<lowestQuantity Then Do
+0311 leavingCandidate = s
+0312 lowestQuantity = word(s,4)
+0313 End
+0314 End
+0315 plus=\plus
+0316 End
+0317 If reduction < maxreduction Then Do
+0318 move=path
+0319 leaving=leavingCandidate
+0320 maxReduction = reduction
+0321 End
+0322 End
+0323 End
+0324 End
+0325 if move<>'' Then Do
+0326 quant=word(leaving,4)
+0327 If quant=0 Then Do
+0328 Call show_alloc 'Optimum'
+0329 Exit
+0330 End
+0331 plus=1
+0332 Do While move<>''
+0333 Parse Var move m '|' move
+0334 Parse Var m r c cpu qrc
+0335 Parse Var matrix.r.c vr vc vcost vquant
+0336 If plus Then
+0337 nquant=vquant+quant
+0338 Else
+0339 nquant=vquant-quant
+0340 matrix.r.c = vr vc vcost nquant
+0341 plus=\plus
+0342 End
+0343 move=''
+0344 Call steppingStone
+0345 End
+0346 Else
+0347 Call show_alloc 'Optimal Solution' fid
+0348 Return
+0349 
+0350 getclosedpath: Procedure Expose matrix. cost. rr cc matrix.
+0351 Parse Arg rd,cd
+0352 path=rd cd cost.rd.cd word(matrix.rd.cd,4)
+0353 do r=1 To rr
+0354 Do c=1 To cc
+0355 If word(matrix.r.c,4)>0 Then Do
+0356 path=path'|'r c cost.r.c word(matrix.r.c,4)
+0357 End
+0358 End
+0359 End
+0360 path=magic(path)
+0361 Return stones(path)
+0362 
+0363 magic: Procedure
+0364 Parse Arg list
+0365 Do Forever
+0366 list_1=remove_1(list)
+0367 If list_1=list Then Leave
+0368 list=list_1
+0369 End
+0370 Return list_1
+0371 
+0372 remove_1: Procedure
+0373 Parse Arg list
+0374 cntr.=0
+0375 cntc.=0
+0376 Do i=1 By 1 While list<>''
+0377 parse Var list e.i '|' list
+0378 Parse Var e.i r c .
+0379 cntr.r=cntr.r+1
+0380 cntc.c=cntc.c+1
+0381 End
+0382 n=i-1
+0383 keep.=1
+0384 Do i=1 To n
+0385 Parse Var e.i r c .
+0386 If cntr.r<2 |,
+0387 cntc.c<2 Then Do
+0388 keep.i=0
+0389 End
+0390 End
+0391 list=e.1
+0392 Do i=2 To n
+0393 If keep.i Then
+0394 list=list'|'e.i
+0395 End
+0396 Return list
+0397 
+0398 stones: Procedure
+0399 Parse Arg lst
+0400 tstc=lst
+0401 Do i=1 By 1 While tstc<>''
+0402 Parse Var tstc o.i '|' tstc
+0403 end
+0404 stones=lst
+0405 o.0=i-1
+0406 prev=o.1
+0407 Do i=1 To o.0
+0408 st.i=prev
+0409 k=i//2
+0410 nbrs=getNeighbors(prev,lst)
+0411 Parse Var nbrs n.1 '|' n.2
+0412 If k=0 Then
+0413 prev=n.2
+0414 Else
+0415 prev=n.1
+0416 End
+0417 stones=st.1
+0418 Do i=2 To o.0
+0419 stones=stones'|'st.i
+0420 End
+0421 Return stones
+0422 
+0423 getNeighbors: Procedure Expose o.
+0424 parse Arg s, lst
+0425 Do i=1 To 4
+0426 Parse Var lst o.i '|' lst
+0427 End
+0428 nbrs.=''
+0429 sr=word(s,1)
+0430 sc=word(s,2)
+0431 Do i=1 To o.0
+0432 If o.i<>s Then Do
+0433 or=word(o.i,1)
+0434 oc=word(o.i,2)
+0435 If or=sr & nbrs.0='' Then
+0436 nbrs.0 = o.i
+0437 else if oc=sc & nbrs.1='' Then
+0438 nbrs.1 = o.i
+0439 If nbrs.0<>'' & nbrs.1<>'' Then
+0440 Leave
+0441 End
+0442 End
+0443 return nbrs.0'|'nbrs.1
+0444 
+0445 m1: Procedure
+0446 Parse Arg z
+0447 Return z-1
+0448 
+0449 pelems: Procedure
+0450 Call Trace 'O'
+0451 Parse Arg p
+0452 n=0
+0453 Do While p<>''
+0454 Parse Var p x '|' p
+0455 If x<>'' Then n=n+1
+0456 End
+0457 Return n
+0458 
+0459 fixDegenerateCase: Procedure Expose matrix. rr cc ms
+0460 Call matrixtolist
+0461 If (rr+cc-1)<>ms Then Do
+0462 Do r=1 To rr
+0463 Do c=1 To cc
+0464 If word(matrix.r.c,4)=0 Then Do
+0465 matrix.r.c=subword(matrix.r.c,1,3) 1.e-10
+0466 Return
+0467 End
+0468 End
+0469 End
+0470 End
+0471 Return
+0472 
+0473 matrixtolist: Procedure Expose matrix. rr cc ms
+0474 ms=0
+0475 list=''
+0476 Do r=1 To rr
+0477 Do c=1 To cc
+0478 If word(matrix.r.c,4)>0 Then Do
+0479 list=list'|'matrix.r.c
+0480 ms=ms+1
+0481 End
+0482 End
+0483 End
+0484 Return strip(list,,'|')
+0485 
+0486 Novalue:
+0487 Say 'Novalue raised in line' sigl
+0488 Say sourceline(sigl)
+0489 Say 'Variable' condition('D')
+0490 Signal lookaround
+0491 
+0492 Syntax:
+0493 Say 'Syntax raised in line' sigl
+0494 Say sourceline(sigl)
+0495 Say 'rc='rc '('errortext(rc)')'
+0496 
+0497 halt:
+0498 lookaround:
+0499 If fore() Then Do
+0500 Say 'You can look around now.'
+0501 Trace ?R
+0502 Nop
+0503 End
+0504 Exit 12
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 p                454 454
+002 x                454
+003 n                455
+004 r                462 476
+005 c                463 477
+006 matrix.          465
+007 ms               474 480
+008 list             475 479
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

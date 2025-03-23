@@ -1,0 +1,71 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX pgm finds and displays bare language (<lang>) tags without a language specified. */
+0002 parse arg iFID .                                 /*obtain optional argument from the CL.*/
+0003 if iFID=='' | iFID=","  then iFID= 'BARELANG.HTM'  /*Not specified?  Then assume default*/
+0004 call lineout iFID                                /*close the file, just in case its open*/
+0005 call linein  ifid,1,0                            /*point to the first record.           */
+0006 noLa= 0;  bare= 0;  header=;  heads=             /*initialize various REXX variables.   */
+0007 !.= 0                                            /*sparse array to hold language headers*/
+0008 do recs=0  while lines(iFID)\==0     /*read all lines in the input file.    */
+0009 $= linein(iFID)                      /*read a line (record) from the input. */
+0010 $= space($)                          /*elide superfluous blanks from record.*/
+0011 if $==''  then iterate               /*if a blank line, then skip any tests.*/
+0012 call testHead                        /*process possible  ==((header|aaa}}== */
+0013 call testLang                        /*   "        "    <lang aaa> or <lang>*/
+0014 end   /*recs*/
+0015 
+0016 call lineout iFID                                /*close the file, just in case its open*/
+0017 say recs  ' records read from file: '  iFID; say /*show number of records read from file*/
+0018 if bare==0  then bare= 'no';    say right(bare, 9)   " bare language tags.";           say
+0019 
+0020 do #=1  for words(head);   _= word(head, #)   /*maybe show  <lang>  for language aaa */
+0021 if !._\==0  then say right(!._, 9)  ' in'  _  /*show the count for a particular lang.*/
+0022 end   /*#*/
+0023 
+0024 if noLa==0  then noLa= 'no';    say right(noLa, 9)   " in no specified language."
+0025 exit 0
+0026 /*--------------------------------------------------------------------------------------*/
+0027 testHead: @head= '=={{header|';      @foot= "}}=="               /*define two literals. */
+0028 hh= pos(@head, $     );    if hh==0  then return       /*get start of literal.*/
+0029 or= hh + length(@head) - 1                             /*get position of  |   */
+0030 hb= pos(@foot, $, or);     if hb==0  then return       /*get position of foot.*/
+0031 head= substr($, or+1, hb-or-1)                         /*get the language name*/
+0032 if head\==''  then header= head                        /*Header?  Then use it.*/
+0033 if wordpos(head, heads)==0  then heads= heads head     /*Is lang?  Add--? list*/
+0034 return
+0035 /*--------------------------------------------------------------------------------------*/
+0036 testLang: @lang= '<lang';            @back= ">"                  /*define two literals. */
+0037 s1= pos(@lang, $      );   if s1==0  then return       /*get start of literal.*/
+0038 gt= pos(@back, $, s1+1)                                /*get position of  <   */
+0039 lang= strip( substr($, gt-2, gt-length(@lang) -1 ) )   /*get the language name*/
+0040 if lang==''  then bare= bare + 1                       /*No lang?  Bump bares.*/
+0041 else @lang= lang                          /*Is lang?  Set lang.  */
+0042 if @lang\==''  &  header==''   then noLa= noLa + 1     /*bump  noLang counter.*/
+0043 if @lang\==''  &  header\==''  then !.head= !.head + 1 /*bump  a lang    "    */
+0044 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 noLa             6 24 42
+002 bare             6 18 40
+003 header           6 32
+004 heads            6 33
+005 recs             8
+006 hh               28
+007 or               29
+008 hb               30
+009 head             31
+010 s1               37
+011 gt               38
+012 lang             39
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @foot            -> newV1            27
+002 @back            -> newV2            36
+003 !.               -> newV3.           7 43
+004 $                -> newV4            9 10
+005 #                -> newV5            20
+006 _                -> newV6            20

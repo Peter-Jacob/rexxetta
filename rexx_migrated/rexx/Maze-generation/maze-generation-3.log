@@ -1,0 +1,181 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 04.09.2013 Walter Pachl
+0003 **********************************************************************/
+0004 Parse Arg imax jmax seed
+0005 If imax='' Then imax=10
+0006 If jmax='' Then jmax=15
+0007 If seed='' Then seed=4711
+0008 c='123456789'||,
+0009 'abcdefghijklmnopqrstuvwxyz'||,
+0010 translate('abcdefghijklmnopqrstuvwxyz')
+0011 c=copies(c,10)
+0012 call random 1,10,seed
+0013 id=2*imax+1                         /* vertical dimension of a.i.j   */
+0014 jd=2*jmax+1                         /* horizontal dimension of a.i.j */
+0015 a.=1                                   /* mark all borders present   */
+0016 p.='.'                                 /* Initialize all grid points */
+0017 pl.=0                                  /* path list                  */
+0018 ii=random(1,imax)                      /* find a start position      */
+0019 jj=random(1,jmax)
+0020 p=1                                    /* first position             */
+0021 na=1                                   /* number of points used      */
+0022 Do si=1 To 1000                        /* Do Forever - see Leave     */
+0023 /* Say 'loop' si na                     show progress              */
+0024 Call path ii,jj                /* compute a path starting at ii/jj */
+0025 If na=imax*jmax Then                 /* all points used            */
+0026 Leave                              /* we are done                */
+0027 Parse Value select_next() With ii jj /* get a new start from a path*/
+0028 End
+0029 
+0030 /***************
+0031 Do i=1 To imax
+0032 ol=''
+0033 Do j=1 To jmax
+0034 ol=ol||p.i.j
+0035 End
+0036 Say ol
+0037 End
+0038 Say ' '
+0039 ***************/
+0040 Call show
+0041 /***********************
+0042 Do pi=1 To imax*jmax
+0043 Say right(pi,3) pos.pi
+0044 End
+0045 ***********************/
+0046 Exit
+0047 
+0048 path: Procedure Expose p. np. p pl. c a. na imax jmax id jd pos.
+0049 /**********************************************************************
+0050 * compute a path starting from point (ii,jj)
+0051 **********************************************************************/
+0052 Parse Arg ii,jj
+0053 p.ii.jj='1'
+0054 pos.p=ii jj
+0055 Do pp=1 to 50                /* compute a path of maximum length 50*/
+0056 neighbors=neighbors(ii,jj)         /* number of free neighbors   */
+0057 Select
+0058 When neighbors=1 Then            /* just one                   */
+0059 Call advance 1,ii,jj           /* go for it                  */
+0060 When neighbors>0 Then Do         /* more Than 1                */
+0061 ch=random(1,neighbors)         /* choose one possibility     */
+0062 Call advance ch,ii,jj          /* and go for that            */
+0063 End
+0064 Otherwise                        /* none available             */
+0065 Leave
+0066 End
+0067 End
+0068 Return
+0069 
+0070 neighbors: Procedure Expose p. np.  imax jmax neighbors pl.
+0071 /**********************************************************************
+0072 * count the number of free neighbors of point (i,j)
+0073 **********************************************************************/
+0074 Parse Arg i,j
+0075 neighbors=0
+0076 in=i-1; If in>0     Then Call check in,j
+0077 in=i+1; If in<=imax Then Call check in,j
+0078 jn=j-1; If jn>0     Then Call check i,jn
+0079 jn=j+1; If jn<=jmax Then Call check i,jn
+0080 Return neighbors
+0081 
+0082 check: Procedure Expose p. imax jmax np. neighbors pl.
+0083 /**********************************************************************
+0084 * check if point (i,j) is free and note it as possible successor
+0085 **********************************************************************/
+0086 Parse Arg i,j
+0087 If p.i.j='.' Then Do                 /* point is free              */
+0088 neighbors=neighbors+1              /* number of free neighbors   */
+0089 np.neighbors=i j                   /* note it as possible choice */
+0090 End
+0091 Return
+0092 
+0093 advance: Procedure Expose p pos. np. p. c ii jj a. na pl. pos.
+0094 /**********************************************************************
+0095 * move to the next point of the current path
+0096 **********************************************************************/
+0097 Parse Arg ch,pii,pjj
+0098 Parse Var np.ch ii jj
+0099 p=p+1                                /* position number            */
+0100 pos.p=ii jj                          /* note its coordinates       */
+0101 p.ii.jj=substr(c,p,1)                /* mark the point as used     */
+0102 ai=pii+ii                            /* vertical border position   */
+0103 aj=pjj+jj                            /* horizontal border position */
+0104 a.ai.aj=0                            /* tear the border down       */
+0105 na=na+1                              /* number of used positions   */
+0106 z=pl.0+1                             /* add the point to the list  */
+0107 pl.z=ii jj                           /* of follow-up start pos.    */
+0108 pl.0=z
+0109 Return
+0110 
+0111 show: Procedure Expose id jd a.  na
+0112 /*********************************************************************
+0113 * Show the resulting maze
+0114 *********************************************************************/
+0115 say 'mgg 6 18 4711'
+0116 say 'show na='na
+0117 Do i=1 To id
+0118 ol=''
+0119 Do j=1 To jd
+0120 If i//2=1 Then Do                /* odd lines                 */
+0121 If a.i.j=1 Then Do             /* border to be drawn        */
+0122 If j//2=0 Then
+0123 ol=ol||'---'               /* draw the border           */
+0124 Else
+0125 ol=ol'+'
+0126 End
+0127 Else Do                        /* border was torn down      */
+0128 If j//2=0 Then
+0129 ol=ol||'   '               /* blanks instead of border  */
+0130 Else
+0131 ol=ol||'+'
+0132 End
+0133 End
+0134 Else Do                          /* even line                 */
+0135 If a.i.j=1 Then Do
+0136 If j//2=0 Then               /* even column               */
+0137 ol=ol||'   '               /* moving space              */
+0138 Else                         /* odd column                */
+0139 ol=ol||'|'                 /* draw the border           */
+0140 End
+0141 Else                           /* border was torn down      */
+0142 ol=ol||' '                   /* blank instead of border   */
+0143 End
+0144 End
+0145 Select
+0146 When i=6 Then ol=overlay('A',ol,11)
+0147 When i=8 Then ol=overlay('B',ol, 3)
+0148 Otherwise Nop
+0149 End
+0150 Say ol format(i,2)
+0151 End
+0152 Return
+0153 
+0154 select_next: Procedure Expose p. pl. imax jmax
+0155 /*********************************************************************
+0156 * look for a point to start the nnext path
+0157 *********************************************************************/
+0158 Do Until neighbors>0                 /* loop until one is found   */
+0159 n=pl.0                             /* number of points recorded */
+0160 s=random(1,n)                      /* pick a random index       */
+0161 Parse Var pl.s is js               /* its coordinates           */
+0162 neighbors=neighbors(is,js)         /* count free neighbors      */
+0163 If neighbors=0 Then Do             /* if there is none          */
+0164 pl.s=pl.n                        /* remove this point         */
+0165 pl.0=pl.0-1
+0166 End
+0167 End
+0168 Return is js                         /* return the new start point*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pl.              161 164 165
+002 is               161
+003 js               161
+004 neighbors        162
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

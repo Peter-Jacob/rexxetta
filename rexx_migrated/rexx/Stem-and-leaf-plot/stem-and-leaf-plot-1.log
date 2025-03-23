@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program displays a stem and leaf plot of any non-negative numbers [can include 0]*/
+0002 parse arg @                                      /* [↓]  Not specified? Then use default*/
+0003 if @=''  then @=12 127 28 42 39 113 42 18 44 118 44 37 113 124 37 48 127 36 29 31 125 139,
+0004 131 115 105 132 104 123 35 113 122 42 117 119 58 109 23 105 63 27 44 105 99 41 128 121,
+0005 116 125  32  61 37 127 29 113 121 58 114 126 53 114 96 25 109 7 31 141 46 13 27 43 117,
+0006 116  27 7 68 40 31 115 124 42 128 52 71 118 117 38 27 106 33 117 116 111 40 119 47 105,
+0007 57 122 109 124 115 43 120 43 27 27 18 28 48 125 107 114 34 133 45 120 30 127 31 116 146
+0008 #.=;                            bot=.;    top=.  /* [↑]  define all #. elements as null.*/
+0009 do j=1  for words(@);     y=word(@, j)      /*◄─── process each number in the list.*/
+0010 if \datatype(y,"N")  then do; say '***error*** item' j "isn't numeric:" y;  exit; end
+0011 if y<0               then do; say '***error*** item' j "is negative:"   y;  exit; end
+0012 n=format(y, , 0) / 1                        /*normalize the numbers (not malformed)*/
+0013 stem=word(left(n, length(n) -1)  0, 1)      /*obtain stem (1st digits) from number.*/
+0014 parse var  n '' -1 leaf;   _=stem * sign(n) /*   "   leaf (last digit)   "    "    */
+0015 if bot==.  then do;  bot=_;  top=_;  end    /*handle the first case for TOP and BOT*/
+0016 bot=min(bot, _);           top=max(top, _)  /*obtain the minimum and maximum so far*/
+0017 #.stem.leaf= #.stem.leaf   leaf             /*construct sorted stem-and-leaf entry.*/
+0018 end   /*j*/
+0019 
+0020 w=max(length(min), length(max) )    + 1          /*W:  used to right justify the output.*/
+0021 /* [↓]  display the stem-and-leaf plot.*/
+0022 do k=bot  to top;          $=               /*$:  is the output string, a plot line*/
+0023 do m=0  for 10;         $=$  #.k.m       /*build a line for the stem─&─leaf plot*/
+0024 end  /*m*/
+0025 say right(k, w)    '║'     space($)         /*display a line of stem─and─leaf plot.*/
+0026 end   /*k*/                                 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                14
+002 leaf             14
+003 bot              15 16
+004 top              15 16
+005 w                20
+006 k                22
+007 m                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #.               -> newV1.           8 17
+002 @                -> newV2            2 3
+003 _                -> newV3            14
+004 $                -> newV4            22 23

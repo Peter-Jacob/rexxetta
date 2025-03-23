@@ -1,0 +1,131 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:30
+-------------------------------------------------------------------------
+0001 /*REXX program  sorts  a  stemmed array  using the   quicksort  algorithm.              */
+0002 call gen@                                        /*generate the elements for the array. */
+0003 call show@   'before sort'                       /*show  the  before   array elements.  */
+0004 call qSort       #                               /*invoke the  quicksort  subroutine.   */
+0005 call show@   ' after sort'                       /*show  the   after   array elements.  */
+0006 exit                                             /*stick a fork in it,  we're all done. */
+0007 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0008 inOrder: parse arg n; do j=1  for n-1;  k= j+1;  if @.j>@.k  then return 0; end;  return 1
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 qSort: procedure expose @.; a.1=1; parse arg b.1;  $= 1 /*access @.; get @. size; pivot.*/
+0011 if inOrder(b.1)  then return                     /*Array already in order? Return*/
+0012 do  while  $\==0;   L= a.$;    t= b.$;    $= $ - 1;    if t<2  then iterate
+0013 H= L + t - 1;    ?= L  +  t % 2
+0014 if @.H<@.L  then if @.?<@.H  then do;  p= @.H;  @.H= @.L;  end
+0015 else if @.?>@.L  then     p= @.L
+0016 else do; p= @.?; @.?= @.L;  end
+0017 else if @.?<@.L  then p=@.L
+0018 else if @.?>@.H  then do; p= @.H; @.H= @.L;  end
+0019 else do; p= @.?; @.?= @.L;  end
+0020 j= L+1;                            k= h
+0021 do forever
+0022 do j=j         while j<=k & @.j<=p;  end    /*a teeny─tiny loop.*/
+0023 do k=k  by -1  while j< k & @.k>=p;  end    /*another   "    "  */
+0024 if j>=k  then leave                             /*segment finished? */
+0025 _= @.j;   @.j= @.k;   @.k= _                    /*swap J&K elements.*/
+0026 end   /*forever*/
+0027 $= $ + 1
+0028 k= j - 1;   @.L= @.k;   @.k= p
+0029 if j<=?  then do;  a.$= j;  b.$= H-j+1;  $= $+1;   a.$= L;   b.$= k-L;    end
+0030 else do;  a.$= L;  b.$= k-L;    $= $+1;   a.$= j;   b.$= H-j+1;  end
+0031 end          /*while $¬==0*/
+0032 return
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 show@: w= length(#);       do j=1  for #;  say 'element'  right(j,w)  arg(1)":"  @.j;  end
+0035 say copies('▒', maxL + w + 22)            /*display a separator (between outputs)*/
+0036 return
+0037 /*──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────*/
+0038 gen@:  @.=;   maxL=0                                    /*assign a default value for the array.*/
+0039 @.1  = " Rivers that form part of a (USA) state's border "                                   /*this value is adjusted later to include a prefix & suffix.*/
+0040 @.2  = '='                                                                                   /*this value is expanded later.  */
+0041 @.3  = "Perdido River                       Alabama, Florida"
+0042 @.4  = "Chattahoochee River                 Alabama, Georgia"
+0043 @.5  = "Tennessee River                     Alabama, Kentucky, Mississippi, Tennessee"
+0044 @.6  = "Colorado River                      Arizona, California, Nevada, Baja California (Mexico)"
+0045 @.7  = "Mississippi River                   Arkansas, Illinois, Iowa, Kentucky, Minnesota, Mississippi, Missouri, Tennessee, Louisiana, Wisconsin"
+0046 @.8  = "St. Francis River                   Arkansas, Missouri"
+0047 @.9  = "Poteau River                        Arkansas, Oklahoma"
+0048 @.10 = "Arkansas River                      Arkansas, Oklahoma"
+0049 @.11 = "Red River (Mississippi watershed)   Arkansas, Oklahoma, Texas"
+0050 @.12 = "Byram River                         Connecticut, New York"
+0051 @.13 = "Pawcatuck River                     Connecticut, Rhode Island and Providence Plantations"
+0052 @.14 = "Delaware River                      Delaware, New Jersey, New York, Pennsylvania"
+0053 @.15 = "Potomac River                       District of Columbia, Maryland, Virginia, West Virginia"
+0054 @.16 = "St. Marys River                     Florida, Georgia"
+0055 @.17 = "Chattooga River                     Georgia, South Carolina"
+0056 @.18 = "Tugaloo River                       Georgia, South Carolina"
+0057 @.19 = "Savannah River                      Georgia, South Carolina"
+0058 @.20 = "Snake River                         Idaho, Oregon, Washington"
+0059 @.21 = "Wabash River                        Illinois, Indiana"
+0060 @.22 = "Ohio River                          Illinois, Indiana, Kentucky, Ohio, West Virginia"
+0061 @.23 = "Great Miami River (mouth only)      Indiana, Ohio"
+0062 @.24 = "Des Moines River                    Iowa, Missouri"
+0063 @.25 = "Big Sioux River                     Iowa, South Dakota"
+0064 @.26 = "Missouri River                      Kansas, Iowa, Missouri, Nebraska, South Dakota"
+0065 @.27 = "Tug Fork River                      Kentucky, Virginia, West Virginia"
+0066 @.28 = "Big Sandy River                     Kentucky, West Virginia"
+0067 @.29 = "Pearl River                         Louisiana, Mississippi"
+0068 @.30 = "Sabine River                        Louisiana, Texas"
+0069 @.31 = "Monument Creek                      Maine, New Brunswick (Canada)"
+0070 @.32 = "St. Croix River                     Maine, New Brunswick (Canada)"
+0071 @.33 = "Piscataqua River                    Maine, New Hampshire"
+0072 @.34 = "St. Francis River                   Maine, Quebec (Canada)"
+0073 @.35 = "St. John River                      Maine, Quebec (Canada)"
+0074 @.36 = "Pocomoke River                      Maryland, Virginia"
+0075 @.37 = "Palmer River                        Massachusetts, Rhode Island and Providence Plantations"
+0076 @.38 = "Runnins River                       Massachusetts, Rhode Island and Providence Plantations"
+0077 @.39 = "Montreal River                      Michigan (upper peninsula), Wisconsin"
+0078 @.40 = "Detroit River                       Michigan, Ontario (Canada)"
+0079 @.41 = "St. Clair River                     Michigan, Ontario (Canada)"
+0080 @.42 = "St. Marys River                     Michigan, Ontario (Canada)"
+0081 @.43 = "Brule River                         Michigan, Wisconsin"
+0082 @.44 = "Menominee River                     Michigan, Wisconsin"
+0083 @.45 = "Red River of the North              Minnesota, North Dakota"
+0084 @.46 = "Bois de Sioux River                 Minnesota, North Dakota, South Dakota"
+0085 @.47 = "Pigeon River                        Minnesota, Ontario (Canada)"
+0086 @.48 = "Rainy River                         Minnesota, Ontario (Canada)"
+0087 @.49 = "St. Croix River                     Minnesota, Wisconsin"
+0088 @.50 = "St. Louis River                     Minnesota, Wisconsin"
+0089 @.51 = "Halls Stream                        New Hampshire, Canada"
+0090 @.52 = "Salmon Falls River                  New Hampshire, Maine"
+0091 @.53 = "Connecticut River                   New Hampshire, Vermont"
+0092 @.54 = "Arthur Kill                         New Jersey, New York (tidal strait)"
+0093 @.55 = "Kill Van Kull                       New Jersey, New York (tidal strait)"
+0094 @.56 = "Hudson River (lower part only)      New Jersey, New York"
+0095 @.57 = "Rio Grande                          New Mexico, Texas, Tamaulipas (Mexico), Nuevo Leon (Mexico), Coahuila de Zaragoza (Mexico), Chihuahua (Mexico)"
+0096 @.58 = "Niagara River                       New York, Ontario (Canada)"
+0097 @.59 = "St. Lawrence River                  New York, Ontario (Canada)"
+0098 @.60 = "Poultney River                      New York, Vermont"
+0099 @.61 = "Catawba River                       North Carolina, South Carolina"
+0100 @.62 = "Blackwater River                    North Carolina, Virginia"
+0101 @.63 = "Columbia River                      Oregon, Washington"
+0102 do #=1  until  @.#==''           /*find how many entries in array,  and */
+0103 maxL=max(maxL, length(@.#))      /*   also find the maximum width entry.*/
+0104 end   /*#*/;   #= #-1            /*adjust the highest element number.   */
+0105 @.1= center(@.1, maxL, '-')                      /*   "    "  header information.       */
+0106 @.2= copies(@.2, maxL)                           /*   "    "     "   separator.         */
+0107 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 b.               10 29 29 30 30
+002 while            12
+003 L                12
+004 t                12
+005 H                13
+006 p                14 16 18 19
+007 j                20 22 34
+008 k                20 23 28
+009 a.               29 29 30 30
+010 maxL             38 103
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           14 16 18 19 25 25 28 28 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 105 106
+002 $                -> newV2            10 12 27 29 30
+003 ?                -> newV3            13
+004 _                -> newV4            25
+005 #                -> newV5            102 104

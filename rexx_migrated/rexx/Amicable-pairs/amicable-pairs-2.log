@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program  calculates and displays all   amicable pairs   up to  a given number.   */
+0002 parse arg H .;  if H=='' | H==","  then H= 20000 /*get optional arguments  (high limit).*/
+0003 w= length(H) ;  low= 220                         /*W: used for columnar output alignment*/
+0004 @.=.                                             /* [↑]  LOW is lowest amicable number. */
+0005 do k=low  for H-low;     _= sigma(k)        /*generate sigma sums for a range of #s*/
+0006 if _>=low  then @.k= _                      /*only keep the pertinent sigma sums.  */
+0007 end   /*k*/                                 /* [↑]   process a range of integers.  */
+0008 #= 0                                             /*number of amicable pairs found so far*/
+0009 do   m=low  to  H;       n= @.m             /*start the search at the lowest number*/
+0010 if m==@.n  then do                          /*If equal, might be an amicable number*/
+0011 if m==n  then iterate       /*Is this a perfect number?  Then skip.*/
+0012 #= # + 1                    /*bump the  amicable pair  counter.    */
+0013 say right(m,w)    ' and '     right(n,w)     " are an amicable pair."
+0014 m= n                        /*start   M   (DO index)  from  N.     */
+0015 end
+0016 end    /*m*/
+0017 say
+0018 say #    ' amicable pairs found up to '     H    /*display count of the amicable pairs. */
+0019 exit                                             /*stick a fork in it,  we're all done. */
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 sigma: procedure; parse arg x;     od= x // 2    /*use either  EVEN  or  ODD  integers. */
+0022 s= 1                                      /*set initial sigma sum to unity.   ___*/
+0023 do j=2+od  by 1+od  while  j*j<x  /*divide by all integers up to the √ X */
+0024 if x//j==0  then  s= s + j + x%j  /*add the two divisors to the sum.     */
+0025 end   /*j*/                       /* [↑]  %  is REXX integer division.   */
+0026 /*                                 ___ */
+0027 if j*j==x  then  return s + j             /*Was  X  a square?   If so, add  √ X  */
+0028 return s                 /*return (sigma) sum of the divisors.  */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                21
+002 od               21
+003 s                22 24
+004 j                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           4 6
+002 _                -> newV2            5
+003 #                -> newV3            8 12

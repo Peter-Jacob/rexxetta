@@ -1,0 +1,101 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program finds the  persistence and multiplicative  digital root  of some numbers.*/
+0002 numeric digits 2000                              /*increase the number of decimal digits*/
+0003 parse arg target x                               /*obtain optional arguments from the CL*/
+0004 if \datatype(target, 'W')  then target=25        /*Not specified?  Then use the default.*/
+0005 if x='' | x=","  then x=123321 7739 893 899998   /* "      "         "   "   "      "   */
+0006 say center('number',8)  ' persistence   multiplicative digital root'
+0007 say copies('─'     ,8)  ' ───────────   ───────────────────────────'
+0008 /* [↑]  the title  and  the separator. */
+0009 do j=1  for words(x);  n= abs( word(x, j) )  /*process each number in the list.     */
+0010 parse value  MDR(n)   with   mp mdr          /*obtain the persistence and the MDR.  */
+0011 say right(n,8) center(mp,13) center(mdr,30)  /*display the number, persistence, MDR.*/
+0012 end   /*j*/                                  /* [↑] show MP and MDR for each number.*/
+0013 say copies('─'     ,8)  ' ───────────   ───────────────────────────'
+0014 say;      say                                    /* [↓] show a blank and the title line.*/
+0015 say 'MDR       first '  target  " numbers that have a matching MDR"
+0016 say '═══  ' copies("═",(target+(target+1)**2)%2) /*display a separator line (for title).*/
+0017 
+0018 do k=0  for 9;              hits= 0          /*show numbers that have an MDR of  K. */
+0019 _=
+0020 if k==7  then _= @7                          /*handle the special case of  seven.   */
+0021 else do m=k  until hits==target     /*find target numbers with an MDR of K.*/
+0022 parse var  m  ''  -1  ?        /*obtain the right─most digit of  M.   */
+0023 if k\==0  then if ?==0           then iterate
+0024 if k==5   then if ?//2==0        then iterate
+0025 if k==1   then m= copies(1, hits+1)
+0026 else if MDR(m, 1)\==k  then iterate
+0027 hits= hits + 1                            /*got a hit, add to the list*/
+0028 _= space(_ m)                             /*elide superfluous blanks. */
+0029 if k==3  then do;      o=strip(m, 'T', 1) /*strip trailing ones from M*/
+0030 if o==3  then m= copies(1, length(m))3  /*make a new  M.*/
+0031 else do;   t= pos(3, m) - 1    /*position of 3 */
+0032 m= overlay(3, translate(m, 1, 3), t)
+0033 end     /* [↑] shift the "3" 1 place left.*/
+0034 m= m - 1              /*adjust for  DO  index increment.*/
+0035 end                   /* [↑]  a shortcut to adj DO index*/
+0036 end   /*m*/                         /* [↑]  built a list of MDRs = K  */
+0037 
+0038 say " "k':    ['_"]"                         /*display the  K  (MDR)  and the list. */
+0039 if k==3  then @7= translate(_, 7, k)         /*save for later, a special  "7"  case.*/
+0040 end   /*k*/                                  /* [↑]  done with the  K  MDR list.    */
+0041 
+0042 @.=                                              /* [↓]  handle MDR of  "9"  special.   */
+0043 _=  translate(@7, 9, 7)                          /*translate string for MDR  of nine.   */
+0044 @9= translate(_, , ',')                          /*remove trailing commas from numbers. */
+0045 @3=                                              /*assign null string before building.  */
+0046 
+0047 do j=1  for words(@9)                         /*process each number for  MDR 9  case.*/
+0048 _= space( translate( word(@9, j), , 9),  0)   /*elide all  "9"s   using   SPACE(x,0).*/
+0049 L= length(_) + 1                              /*use a "fudged" length of the number. */
+0050 new=                                          /*these are the new numbers  (so far). */
+0051 
+0052 do k=0 for L;       q= insert(3, _, k)   /*insert the  1st  "3"  into the number*/
+0053 do i=k  to L;     z= insert(3, q, i)   /*   "    "   2nd  "3"    "   "     "  */
+0054 if @.z\==''  then iterate              /*if already define, ignore the number.*/
+0055 @.z= z;           new= z new           /*define it,  and then add to the list.*/
+0056 end   /*i*/                            /* [↑]  end of  2nd  insertion of  "3".*/
+0057 end     /*k*/                            /* [↑]   "  "   1st      "      "   "  */
+0058 
+0059 @3= space(@3 new)                             /*remove blanks,  then add to the list.*/
+0060 end          /*j*/                            /* [↑]  end of insertion of the  "3"s. */
+0061 @=                                               /* [↓]  merge two lists,  3s  and  9s. */
+0062 a1= @9;     a2= @3              /*define some strings for the merge.   */
+0063 do  while  a1\==''  &  a2\==''             /*process while the lists aren't empty.*/
+0064 x= word(a1, 1);  y= word(a2, 1)            /*obtain the 1st word in A1 & A2 lists.*/
+0065 if x=='' | y=='' then leave                /*are   X   or   Y   empty?            */
+0066 if x<y  then do;   @= @ x;   a1= delword(a1, 1, 1);   end  /*add  X  to the @ list*/
+0067 else do;   @= @ y;   a2= delword(a2, 1, 1);   end  /* "   Y   "  "  "   " */
+0068 end   /*while*/                            /* [↑]  only process just enough nums. */
+0069 
+0070 @= subword(@, 1, target)                         /*elide the last trailing comma in list*/
+0071 say " "9':     ['@"]"                            /*display the  "9" (MDR)  and the list.*/
+0072 say '═══  ' copies("═",(target+(target+1)**2)%2) /*display a separator line (for title).*/
+0073 exit                                             /*stick a fork in it,  we're all done. */
+0074 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0075 MDR: procedure; parse arg y,s;        y= abs(y)  /*get the number and determine the MDR.*/
+0076 do p=1      until  y<10;    parse var  y  r  2
+0077 do k=2  to length(y);   r= r * substr(y, k, 1)
+0078 end   /*k*/
+0079 y= r
+0080 end       /*p*/               /* [↑]  wash, rinse, and repeat ···    */
+0081 if s==1  then return r           /*return multiplicative digital root.  */
+0082 return p r                       /*return the persistence and the  MDR. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                76 79
+002 r                76 77
+003 k                77
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @7               -> newV1            39
+002 @.               -> newV2.           42 55
+003 @9               -> newV3            44
+004 @3               -> newV4            45 59
+005 _                -> newV5            19 20 28 43 48
+006 ?                -> newV6            22
+007 @                -> newV7            61 66 67 70

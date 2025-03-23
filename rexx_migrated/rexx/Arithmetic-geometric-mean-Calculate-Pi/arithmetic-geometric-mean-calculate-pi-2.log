@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program calculates the  AGM  (arithmetic─geometric mean)  of two (real) numbers. */
+0002 parse arg a b digs .                             /*obtain optional numbers from the C.L.*/
+0003 if digs=='' | digs==","  then digs= 100          /*No DIGS specified?  Then use default.*/
+0004 numeric digits digs                              /*REXX will use lots of decimal digits.*/
+0005 if a==''    | a==","     then a=1                /*No  A  specified?   Then use default.*/
+0006 if b==''    | b==","     then b=1 / sqrt(2)      /*No  B  specified?     "   "     "    */
+0007 call AGM a,b                                     /*invoke AGM  &  don't show A,B,result.*/
+0008 exit 0                                           /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 agm:  procedure: parse arg x,y;   if x=y  then return x       /*is it an equality case? */
+0011 if y=0  then return 0       /*is value of   Y   zero? */
+0012 if x=0  then return y / 2   /* "   "    "   X     "   */
+0013 d= digits();   numeric digits d+5          /*add 5 more digs to ensure convergence*/
+0014 tiny= '1e-'  ||  (digits() - 1)            /*construct a pretty tiny REXX number. */
+0015 ox= x + 1
+0016 do #=1  while ox\=x & abs(ox)>tiny; ox= x;          oy= y
+0017 x= (ox+oy)/2;   y= sqrt(ox*oy)
+0018 end   /*#*/
+0019 numeric digits d                           /*restore  numeric digits  to original.*/
+0020 /*this is the only output displayed ►─┐*/
+0021 say 'digits='right(d, 7)",  iterations=" right(#, 3)          /* ◄───────────────┘*/
+0022 return x/1                                 /*normalize    X    to the new digits. */
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 sqrt: procedure; parse arg x; if x=0  then return 0; d=digits(); m.=9; numeric form; h=d+6
+0025 numeric digits; parse value format(x,2,1,,0) 'E0'  with  g 'E' _ .;  g=g *.5'e'_ % 2
+0026 do j=0  while h>9;      m.j=h;               h=h % 2  + 1;  end /*j*/
+0027 do k=j+5  to 0  by -1;  numeric digits m.k;  g=(g+x/g)*.5;  end /*k*/;    return g
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                24
+002 d                24
+003 m.               24 26
+004 h                24 26
+005 ox               15 16
+006 oy               16
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                25 25 27
+024 j                26
+025 k                27
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            16
+002 _                -> newV2            25

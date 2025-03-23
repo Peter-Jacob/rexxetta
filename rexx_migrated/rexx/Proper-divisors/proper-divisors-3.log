@@ -1,0 +1,67 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX program finds proper divisors (and count) of integer ranges; finds the max count.*/
+0002 parse arg bot top inc range xtra                 /*obtain optional arguments from the CL*/
+0003 if   bot=='' |   bot==","  then    bot=     1    /*Not specified?  Then use the default.*/
+0004 if   top=='' |   top==","  then    top=    10    /* "      "         "   "   "     "    */
+0005 if   inc=='' |   inc==","  then    inc=     1    /* "      "         "   "   "     "    */
+0006 if range=='' | range==","  then  range= 20000    /* "      "         "   "   "     "    */
+0007 w= max( length(top), length(bot), length(range)) /*determine the biggest number of these*/
+0008 numeric digits max(9, w + 1)                     /*have enough digits for  //  operator.*/
+0009 @.= 'and'                                        /*a literal used to separate #s in list*/
+0010 do n=bot  to top  by inc                   /*process the first range specified.   */
+0011 q= Pdivs(n);    #= words(q)                /*get proper divs; get number of Pdivs.*/
+0012 if q=='∞'  then #= q                       /*adjust number of Pdivisors for zero. */
+0013 say right(n, max(20, w) )   'has'   center(#, 4)     "proper divisors: "    q
+0014 end   /*n*/
+0015 m= 0                                             /*M ≡ maximum number of Pdivs (so far).*/
+0016 do r=1  for range;    q= Pdivs(r)          /*process the second range specified.  */
+0017 #= words(q);          if #<m  then iterate /*get proper divs; get number of Pdivs.*/
+0018 if #<m  then iterate                       /*Less then max?   Then ignore this #. */
+0019 @.#= @.#  @.  r;      m=#                  /*add this Pdiv to max list; set new M.*/
+0020 end   /*r*/                                /* [↑]   process 2nd range of integers.*/
+0021 say
+0022 say m  ' is the highest number of proper divisors in range 1──►'range,
+0023 ", and it's for: "       subword(@.m, 3)
+0024 say                                              /* [↓]  handle any given extra numbers.*/
+0025 do i=1  for words(xtra);  n= word(xtra, i) /*obtain an extra number from XTRA list*/
+0026 w= max(w, 1 + length(n) )                  /*use maximum width for aligned output.*/
+0027 numeric digits max(9, 1 + length(n) )      /*have enough digits for  //  operator.*/
+0028 q= Pdivs(n);              #= words(q)      /*get proper divs; get number of Pdivs.*/
+0029 say  right(n, max(20, w) )     'has'     center(#, 4)      "proper divisors."
+0030 end   /*i*/                                /* [↑] support extra specified integers*/
+0031 exit 0                                           /*stick a fork in it,  we're all done. */
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 Pdivs: procedure; parse arg x 1 z,b;  x= abs(x);   if x==1  then return ''      /*unity?*/
+0034 odd= x // 2;                                if x==0  then return '∞'     /*zero ?*/
+0035 r= 0;         q= 1                        /* [↓] ══integer square root══     ___ */
+0036 do while q<=z; q=q*4; end            /*R:  an integer which will be    √ X  */
+0037 do while q>1;  q=q%4; _= z-r-q;  r=r%2;  if _>=0  then  do;  z=_;  r=r+q;  end
+0038 end   /*while q>1*/                  /* [↑]  compute the integer sqrt of  X.*/
+0039 a=1                                       /* [↓]  use all, or only odd #s.   ___ */
+0040 do j=2 +odd  by 1 +odd to r -(r*r==x) /*divide by some integers up to   √ X  */
+0041 if x//j==0  then do;  a=a j;  b=x%j b /*if ÷, add both divisors to α & ß.    */
+0042 end
+0043 end   /*j*/                           /* [↑]  %  is the REXX integer division*/
+0044 /* [↓]  adjust for a square.        ___*/
+0045 if j*j==x  then  return  a j b            /*Was  X  a square?    If so, add  √ X */
+0046 return  a   b            /*return the divisors  (both lists).   */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                33 33
+002 z                33 37
+003 b                33 41
+004 odd              34
+005 r                35 37 37
+006 q                35 36 37
+007 while            36
+008 a                39 41
+009 j                40
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           9 19
+002 #                -> newV2            11 12 17 28
+003 _                -> newV3            37

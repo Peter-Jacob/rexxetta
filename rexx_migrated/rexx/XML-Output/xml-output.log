@@ -1,0 +1,130 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:36
+-------------------------------------------------------------------------
+0001 /*REXX program creates an HTML (XML) list of character names and corresponding remarks. */
+0002 charname.  =
+0003 charname.1 = "April"
+0004 charname.2 = "Tam O'Shanter"
+0005 charname.3 = "Emily"
+0006 do i=1  while  charname.i\==''
+0007 say 'charname'   i   '='   charname.i
+0008 end   /*i*/;     say
+0009 remark.  =
+0010 remark.1 = "I'm > Tam and <= Emily"
+0011 remark.2 = "When chapman billies leave the street ..."
+0012 remark.3 = "Short & shift"
+0013 do k=1  while  remark.k\==''
+0014 say '  remark'   k   '='   remark.k
+0015 end   /*k*/;     say
+0016 items  = 0
+0017 header = 'CharacterRemarks'
+0018 header = header'>'
+0019 
+0020 do j=1  while  charname.j\==''
+0021 _=charname.j
+0022 if j==1  then call create '<'header
+0023 call create '    <Character name="'  ||,
+0024 char2xml(_)'">"'         ||,
+0025 char2xml(remark.j)'"</Character>'
+0026 end   /*j*/
+0027 
+0028 if create.0\==0  then call create '</'header
+0029 
+0030 do m=1  for create.0
+0031 say create.m                             /*display the  Mth  entry to terminal. */
+0032 end   /*m*/
+0033 exit                                             /*stick a fork in it,  we're all done. */
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 char2xml: procedure;  parse arg $
+0036 amper = pos('&', $)\==0                /*  &   has to be treated special.     */
+0037 semi  = pos(';', $)\==0                /*  ;    "   "  "    "       "         */
+0038 #=0                                    /* [↓]  find a free/unused character···*/
+0039 if amper  then do                      /*          ··· and translate freely.  */
+0040 do j=0  for 255;    ?=d2c(j);    if pos(?, $)==0   then leave
+0041 end   /*j*/
+0042 $=translate($, ?, "&");            #= j + 1
+0043 end
+0044 /* [↓]  find a free/unused character···*/
+0045 if semi   then do                      /*          ··· and translate freely.  */
+0046 do k=#  for 255;    ?=d2c(k);    if pos(?, $)==0  then leave
+0047 end   /*k*/
+0048 $=translate($, ?, ";")
+0049 end
+0050 
+0051 /*───── Following are most of the characters in the  DOS  (or DOS Windows)  codepage  437 ──────────*/
+0052 
+0053 $=XML_('â',"ETH")    ; $=XML_('ƒ',"fnof")  ; $=XML_('═',"boxH")      ; $=XML_('♥',"hearts")
+0054 $=XML_('â','#x00e2') ; $=XML_('á',"aacute"); $=XML_('╬',"boxVH")     ; $=XML_('♦',"diams")
+0055 $=XML_('â','#x00e9') ; $=XML_('á','#x00e1'); $=XML_('╧',"boxHu")     ; $=XML_('♣',"clubs")
+0056 $=XML_('ä',"auml")   ; $=XML_('í',"iacute"); $=XML_('╨',"boxhU")     ; $=XML_('♠',"spades")
+0057 $=XML_('ä','#x00e4') ; $=XML_('í','#x00ed'); $=XML_('╤',"boxHd")     ; $=XML_('♂',"male")
+0058 $=XML_('à',"agrave") ; $=XML_('ó',"oacute"); $=XML_('╥',"boxhD")     ; $=XML_('♀',"female")
+0059 $=XML_('à','#x00e0') ; $=XML_('ó','#x00f3'); $=XML_('╙',"boxUr")     ; $=XML_('☼',"#x263c")
+0060 $=XML_('å',"aring")  ; $=XML_('ú',"uacute"); $=XML_('╘',"boxuR")     ; $=XML_('↕',"UpDownArrow")
+0061 $=XML_('å','#x00e5') ; $=XML_('ú','#x00fa'); $=XML_('╒',"boxdR")     ; $=XML_('¶',"para")
+0062 $=XML_('ç',"ccedil") ; $=XML_('ñ',"ntilde"); $=XML_('╓',"boxDr")     ; $=XML_('§',"sect")
+0063 $=XML_('ç','#x00e7') ; $=XML_('ñ','#x00f1'); $=XML_('╫',"boxVh")     ; $=XML_('↑',"uarr")
+0064 $=XML_('ê',"ecirc")  ; $=XML_('Ñ',"Ntilde"); $=XML_('╪',"boxvH")     ; $=XML_('↑',"uparrow")
+0065 $=XML_('ê','#x00ea') ; $=XML_('Ñ','#x00d1'); $=XML_('┘',"boxul")     ; $=XML_('↑',"ShortUpArrow")
+0066 $=XML_('ë',"euml")   ; $=XML_('¿',"iquest"); $=XML_('┌',"boxdr")     ; $=XML_('↓',"darr")
+0067 $=XML_('ë','#x00eb') ; $=XML_('⌐',"bnot")  ; $=XML_('█',"block")     ; $=XML_('↓',"downarrow")
+0068 $=XML_('è',"egrave") ; $=XML_('¬',"not")   ; $=XML_('▄',"lhblk")     ; $=XML_('↓',"ShortDownArrow")
+0069 $=XML_('è','#x00e8') ; $=XML_('½',"frac12"); $=XML_('▀',"uhblk")     ; $=XML_('←',"larr")
+0070 $=XML_('ï',"iuml")   ; $=XML_('½',"half")  ; $=XML_('α',"alpha")     ; $=XML_('←',"leftarrow")
+0071 $=XML_('ï','#x00ef') ; $=XML_('¼',"frac14"); $=XML_('ß',"beta")      ; $=XML_('←',"ShortLeftArrow")
+0072 $=XML_('î',"icirc")  ; $=XML_('¡',"iexcl") ; $=XML_('ß',"szlig")     ; $=XML_('1c'x,"rarr")
+0073 $=XML_('î','#x00ee') ; $=XML_('«',"laqru") ; $=XML_('ß','#x00df')    ; $=XML_('1c'x,"rightarrow")
+0074 $=XML_('ì',"igrave") ; $=XML_('»',"raqru") ; $=XML_('Γ',"Gamma")     ; $=XML_('1c'x,"ShortRightArrow")
+0075 $=XML_('ì','#x00ec') ; $=XML_('░',"blk12") ; $=XML_('π',"pi")        ; $=XML_('!',"excl")
+0076 $=XML_('Ä',"Auml")   ; $=XML_('▒',"blk14") ; $=XML_('Σ',"Sigma")     ; $=XML_('"',"apos")
+0077 $=XML_('Ä','#x00c4') ; $=XML_('▓',"blk34") ; $=XML_('σ',"sigma")     ; $=XML_('$',"dollar")
+0078 $=XML_('Å',"Aring")  ; $=XML_('│',"boxv")  ; $=XML_('µ',"mu")        ; $=XML_("'","quot")
+0079 $=XML_('Å','#x00c5') ; $=XML_('┤',"boxvl") ; $=XML_('τ',"tau")       ; $=XML_('*',"ast")
+0080 $=XML_('É',"Eacute") ; $=XML_('╡',"boxvL") ; $=XML_('Φ',"phi")       ; $=XML_('/',"sol")
+0081 $=XML_('É','#x00c9') ; $=XML_('╢',"boxVl") ; $=XML_('Θ',"Theta")     ; $=XML_(':',"colon")
+0082 $=XML_('æ',"aelig")  ; $=XML_('╖',"boxDl") ; $=XML_('δ',"delta")     ; $=XML_('<',"lt")
+0083 $=XML_('æ','#x00e6') ; $=XML_('╕',"boxdL") ; $=XML_('∞',"infin")     ; $=XML_('=',"equals")
+0084 $=XML_('Æ',"AElig")  ; $=XML_('╣',"boxVL") ; $=XML_('φ',"Phi")       ; $=XML_('>',"gt")
+0085 $=XML_('Æ','#x00c6') ; $=XML_('║',"boxV")  ; $=XML_('ε',"epsilon")   ; $=XML_('?',"quest")
+0086 $=XML_('ô',"ocirc")  ; $=XML_('╗',"boxDL") ; $=XML_('∩',"cap")       ; $=XML_('_',"commat")
+0087 $=XML_('ô','#x00f4') ; $=XML_('╝',"boxUL") ; $=XML_('≡',"equiv")     ; $=XML_('[',"lbrack")
+0088 $=XML_('ö',"ouml")   ; $=XML_('╜',"boxUl") ; $=XML_('±',"plusmn")    ; $=XML_('\',"bsol")
+0089 $=XML_('ö','#x00f6') ; $=XML_('╛',"boxuL") ; $=XML_('±',"pm")        ; $=XML_(']',"rbrack")
+0090 $=XML_('ò',"ograve") ; $=XML_('┐',"boxdl") ; $=XML_('±',"PlusMinus") ; $=XML_('^',"Hat")
+0091 $=XML_('ò','#x00f2') ; $=XML_('└',"boxur") ; $=XML_('≥',"ge")        ; $=XML_('`',"grave")
+0092 $=XML_('û',"ucirc")  ; $=XML_('┴',"bottom"); $=XML_('≤',"le")        ; $=XML_('{',"lbrace")
+0093 $=XML_('û','#x00fb') ; $=XML_('┴',"boxhu") ; $=XML_('÷',"div")       ; $=XML_('{',"lcub")
+0094 $=XML_('ù',"ugrave") ; $=XML_('┬',"boxhd") ; $=XML_('÷',"divide")    ; $=XML_('|',"vert")
+0095 $=XML_('ù','#x00f9') ; $=XML_('├',"boxvr") ; $=XML_('≈',"approx")    ; $=XML_('|',"verbar")
+0096 $=XML_('ÿ',"yuml")   ; $=XML_('─',"boxh")  ; $=XML_('∙',"bull")      ; $=XML_('}',"rbrace")
+0097 $=XML_('ÿ','#x00ff') ; $=XML_('┼',"boxvh") ; $=XML_('°',"deg")       ; $=XML_('}',"rcub")
+0098 $=XML_('Ö',"Ouml")   ; $=XML_('╞',"boxvR") ; $=XML_('·',"middot")    ; $=XML_('Ç',"Ccedil")
+0099 $=XML_('Ö','#x00d6') ; $=XML_('╟',"boxVr") ; $=XML_('·',"middledot") ; $=XML_('Ç','#x00c7')
+0100 $=XML_('Ü',"Uuml")   ; $=XML_('╚',"boxUR") ; $=XML_('·',"centerdot") ; $=XML_('ü',"uuml")
+0101 $=XML_('Ü','#x00dc') ; $=XML_('╔',"boxDR") ; $=XML_('·',"CenterDot") ; $=XML_('ü','#x00fc')
+0102 $=XML_('¢',"cent")   ; $=XML_('╩',"boxHU") ; $=XML_('√',"radic")     ; $=XML_('é',"eacute")
+0103 $=XML_('£',"pound")  ; $=XML_('╦',"boxHD") ; $=XML_('²',"sup2")      ; $=XML_('é','#x00e9')
+0104 $=XML_('¥',"yen")    ; $=XML_('╠',"boxVR") ; $=XML_('■',"square ")   ; $=XML_('â',"acirc")
+0105 
+0106 if amper  then $=xml_(?,  "amp")       /*Was there an ampersand?  Translate it*/
+0107 if semi   then $=xml_(??, "semi")      /* "   "     " semicolon?      "      "*/
+0108 return $
+0109 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0110 create:          items= items + 1                /*bump the count of items in the list. */
+0111 create.items= arg(1)                   /*add item to the  CREATE  list.       */
+0112 create.0    = items                    /*indicate how many items in the list. */
+0113 return
+0114 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0115 xml_:     parse arg _                            /*make an XML entity    (&xxxx;)       */
+0116 if pos(_, $)\==0  then return changestr(_, $, "&"arg(2)";")
+0117 return $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            21 115
+002 $                -> newV2            35 42 48 53 53 53 53 54 54 54 54 55 55 55 55 56 56 56 56 57 57 57 57 58 58 58 58 59 59 59 59 60 60 60 60 61 61 61 61 62 62 62 62 63 63 63 63 64 64 64 64 65 65 65 65 66 66 66 66 67 67 67 67 68 68 68 68 69 69 69 69 70 70 70 70 71 71 71 71 72 72 72 72 73 73 73 73 74 74 74 74 75 75 75 75 76 76 76 76 77 77 77 77 78 78 78 78 79 79 79 79 80 80 80 80 81 81 81 81 82 82 82 82 83 83 83 83 84 84 84 84 85 85 85 85 86 86 86 86 87 87 87 87 88 88 88 88 89 89 89 89 90 90 90 90 91 91 91 91 92 92 92 92 93 93 93 93 94 94 94 94 95 95 95 95 96 96 96 96 97 97 97 97 98 98 98 98 99 99 99 99 100 100 100 100 101 101 101 101 102 102 102 102 103 103 103 103 104 104 104 104 106 107
+003 #                -> newV3            38 42
+004 ?                -> newV4            40 46

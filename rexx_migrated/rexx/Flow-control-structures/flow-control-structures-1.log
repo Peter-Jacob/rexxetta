@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 call  routineName                      /*no arguments passed to routine.*/
+0002 call  routineName  50                  /*one argument (fifty) passed.   */
+0003 call  routineName  50,60               /*two arguments        passed.   */
+0004 call  routineName  50, 60              /*(same as above)                */
+0005 call  routineName  50 ,60              /*(same as above)                */
+0006 call  routineName  10*5 , 8**4 - 4     /*(same as above)                */
+0007 call  routineName  50 , , , 70         /*4 args passed, 2nd&3rd omitted.*/
+0008 /*omitted args are   NOT  null.  */
+0009 call  routineName  ,,,,,,,,,,,,,,,,800 /*17 args passed, 16 omitted.    */
+0010 call   date                            /*looks for DATE internally first*/
+0011 call  'DATE'                           /*  "    "    "  BIF | externally*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

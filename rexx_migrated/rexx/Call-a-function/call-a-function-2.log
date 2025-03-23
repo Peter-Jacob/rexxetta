@@ -1,0 +1,39 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*╔════════════════════════════════════════════════════════════════════╗
+0002 ║ Calling a function with a fixed number of arguments.               ║
+0003 ║                                                                    ║
+0004 ║ I take this to mean that the function requires a fixed number of   ║
+0005 ║ arguments.   As above, REXX doesn't enforce calling (or invoking)  ║
+0006 ║ a (any) function with a certain number of arguments,  but the      ║
+0007 ║ programmer can check if the correct number of arguments have been  ║
+0008 ║ specified (or not).                                                ║
+0009 ║ In some languages, these are known as  "generic"  functions.       ║
+0010 ╚════════════════════════════════════════════════════════════════════╝*/
+0011 
+0012 ggg= FourFunc(12, abc, 6+q, zz%2, 'da 5th disagreement')
+0013 say 'ggg squared='  ggg**2
+0014 exit                                             /*stick a fork in it,  we're all done. */
+0015 
+0016 FourFunc: procedure; parse arg a1,a2,a3          /*obtain the first  three  arguments.  */
+0017 a4= arg(4)                             /*another way to obtain the  4th  arg. */
+0018 errmsg= '***error***'                  /*an error message eyecatcher string.  */
+0019 if arg() \== 4  then do
+0020 say err  "FourFunc function requires 4 arguments,"
+0021 say err  "but instead it found" arg() 'arguments.'
+0022 exit 13                   /*exit function with a RC of 13*/
+0023 end
+0024 
+0025 return a1 + a2 + a3 + a4
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a1               16
+002 a2               16
+003 a3               16
+004 a4               17
+005 errmsg           18
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

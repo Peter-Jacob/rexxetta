@@ -1,0 +1,74 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX pgm converts an integer (or a range) ──► a Van der Corput number,  in base 2, or */
+0002 /*────────────────────────────── optionally, any other base up to and including base 90.*/
+0003 numeric digits 1000                              /*handle almost anything the user wants*/
+0004 parse arg a b r .                                /*obtain optional arguments from the CL*/
+0005 if a=='' | a=="," then parse value 0 10 with a b /*Not specified?  Then use the defaults*/
+0006 if b=='' | b=="," then b= a                      /* "      "         "   "   "      "   */
+0007 if r=='' | r=="," then r= 2                      /* "      "         "   "   "      "   */
+0008 z=                                               /*a placeholder for a list of numbers. */
+0009 do j=a  to b                     /*traipse through the range of integers*/
+0010 _= VdC( abs(j), abs(r) )         /*convert the ABSolute value of integer*/
+0011 _= substr('-',  2 + sign(j) )_   /*if needed, keep the leading  -  sign.*/
+0012 if r>0  then say _               /*if positive base, then just show it. */
+0013 else z=z _               /*     ··· else append (build) a list. */
+0014 end   /*j*/
+0015 
+0016 if z\==''  then say strip(z)                     /*if a list is wanted, then display it.*/
+0017 exit                                             /*stick a fork in it,  we're all done. */
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 base: procedure; parse arg x, toB, inB           /*get a number,  toBase,  and  inBase. */
+0020 /*╔══════════════════════════════════════════════════════════════════════════════════╗
+0021 ║ Input to this function:    x       (X   is required  and it must be an integer). ║
+0022 ║                          toBase    the base to convert   X   to    (default=10). ║
+0023 ║                          inBase    the base  X  is expressed in    (default=10). ║
+0024 ║                                                                                  ║
+0025 ║                                    toBase & inBase  have a limit of:   2 ──► 90  ║
+0026 ╚══════════════════════════════════════════════════════════════════════════════════╝*/
+0027 @abc= 'abcdefghijklmnopqrstuvwxyz'         /*the lowercase Latin alphabet letters.*/
+0028 @abcU= @abc;         upper @abcU           /*go whole hog & extend with uppercase.*/
+0029 @@@= 0123456789 || @abc || @abcU           /*prefix them with the decimal digits. */
+0030 @@@= @@@'<>[]{}()?~!@#$%^&*_+-=|\/;:`'     /*add some special characters as well, */
+0031 /*──those chars should all be viewable.*/
+0032 numeric digits 1000                        /*what the hey, support bigun' numbers.*/
+0033 maxB= length(@@@)                          /*maximum base (radix) supported here. */
+0034 if toB==''  then toB= 10                   /*if omitted,  then assume default (10)*/
+0035 if inB==''  then inB= 10                   /* "    "        "     "      "      " */
+0036 #=0                                        /* [↓] convert base inB  X  ──► base 10*/
+0037 do j=1  for length(x)               /*process each "numeral" in the string.*/
+0038 _= substr(x, j, 1)                  /*pick off a "digit" (numeral) from  X.*/
+0039 v= pos(_, @@@)                      /*get the value of this "digit"/numeral*/
+0040 if v==0 | v>inB  then call erd      /*is it an illegal "digit" (numeral) ? */
+0041 #= # * inB    + v  - 1              /*construct new number, digit by digit.*/
+0042 end   /*j*/
+0043 y=                                         /* [↓] convert base 10  # ──► base toB.*/
+0044 do  while  #>=toB                   /*deconstruct the  new   number (#).   */
+0045 y= substr(@@@, # // toB  + 1,  1)y  /*  construct the output number,  ···  */
+0046 #= # % toB                          /*  ···  and also whittle down  #.     */
+0047 end   /*while*/
+0048 
+0049 return substr(@@@,  # + 1,  1)y            /*return a constructed "numeric" string*/
+0050 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0051 erd:  say 'the character '   v    " isn't a legal numeral for base "    inB'.';    exit 13
+0052 VdC:  return '.'reverse( base( arg(1), arg(2) )) /*convert the #, reverse the #, append.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                19
+002 toB              19 34
+003 inB              19 35
+004 maxB             33
+005 j                37
+006 v                39
+007 y                43 45
+008 while            44
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @abcU            -> newV1            28
+002 @abc             -> newV2            27
+003 @@@              -> newV3            29 30
+004 _                -> newV4            10 11 38
+005 #                -> newV5            36 41 46

@@ -1,0 +1,135 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX*/
+0002 Parse Value '1 2 3' With n.1 n.2 n.3
+0003 Parse Value '3 3 3' With p.1 p.2 p.3
+0004 Parse Value '0 2 4' With a.1 a.2 a.3
+0005 Parse Value '3 2 1' With v.1 v.2 v.3
+0006 
+0007 a=n.1
+0008 b=n.2
+0009 c=n.3
+0010 d=n.1*p.1+n.2*p.2+n.3*p.3  /* Parameter form of the plane */
+0011 Select
+0012 When a=0 Then
+0013 pd=''
+0014 When a=1 Then
+0015 pd='x'
+0016 When a=-1 Then
+0017 pd='-x'
+0018 Otherwise
+0019 pd=a'*x'
+0020 End
+0021 pd=pd
+0022 yy=mk2('y',b)
+0023 Select
+0024 When left(yy,1)='-' Then
+0025 pd=pd '-' substr(yy,2)
+0026 When left(yy,1)='0' Then
+0027 Nop
+0028 Otherwise
+0029 pd=pd '+' yy
+0030 End
+0031 zz=mk2('z',c)
+0032 Select
+0033 When left(zz,1)='-' Then
+0034 pd=pd '-' substr(zz,2)
+0035 When left(zz,1)='0' Then
+0036 Nop
+0037 Otherwise
+0038 pd=pd '+' zz
+0039 End
+0040 pd=pd '=' d
+0041 
+0042 Say 'Plane definition:' pd
+0043 
+0044 ip=0
+0045 Do i=1 To 3
+0046 ip=ip+n.i*v.i
+0047 dd=n.1*a.1+n.2*a.2+n.3*a.3
+0048 End
+0049 If ip=0 Then Do
+0050 If dd=d Then
+0051 Say 'Line is part of the plane'
+0052 Else
+0053 Say 'Line is parallel to the plane'
+0054 Exit
+0055 End
+0056 
+0057 t=(d-(a*a.1+b*a.2+c*a.3))/(a*v.1+b*v.2+c*v.3)
+0058 
+0059 x=a.1+t*v.1
+0060 y=a.2+t*v.2
+0061 z=a.3+t*v.3
+0062 
+0063 ld=mk('x',a.1,v.1) ';' mk('y',a.2,v.2) ';' mk('z',a.3,v.3)
+0064 Say 'Line definition:' ld
+0065 
+0066 Say 'Intersection: P('||x','y','z')'
+0067 Exit
+0068 
+0069 Mk: Procedure
+0070 /*---------------------------------------------------------------------
+0071 * build part of line definition
+0072 *--------------------------------------------------------------------*/
+0073 Parse Arg v,aa,vv
+0074 If aa<>0 Then
+0075 res=v'='aa
+0076 Else
+0077 res=v'='
+0078 Select
+0079 When vv=0 Then
+0080 res=res||'0'
+0081 When vv=-1 Then
+0082 res=res||'-t'
+0083 When vv<0 Then
+0084 res=res||vv'*t'
+0085 Otherwise Do
+0086 If res=v'=' Then Do
+0087 If vv=1 Then
+0088 res=res||'t'
+0089 Else
+0090 res=res||vv'*t'
+0091 End
+0092 Else Do
+0093 If vv=1 Then
+0094 res=res||'+t'
+0095 Else
+0096 res=res||'+'vv'*t'
+0097 End
+0098 End
+0099 End
+0100 Return res
+0101 
+0102 mk2: Procedure
+0103 /*---------------------------------------------------------------------
+0104 * build part of plane definition
+0105 *--------------------------------------------------------------------*/
+0106 Parse Arg v,u
+0107 Select
+0108 When u=0 Then
+0109 res=''
+0110 When u=1 Then
+0111 res=v
+0112 When u=-1 Then
+0113 res='-'v
+0114 When u<0 Then
+0115 res=u'*'v
+0116 Otherwise Do
+0117 If pd<>'' Then
+0118 res='+'u'*'v
+0119 Else
+0120 res=u'*'v
+0121 End
+0122 End
+0123 Return res
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 v                106
+002 u                106
+003 res              109 111 113 115 118 120
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

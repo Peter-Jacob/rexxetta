@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates a  method  of  handling events  (this is a time─driven pgm).*/
+0002 signal on halt                                   /*allow user to  HALT  (Break) the pgm.*/
+0003 parse arg timeEvent                              /*allow the  "event"  to be specified. */
+0004 if timeEvent=''  then timeEvent= 5               /*Not specified?  Then use the default.*/
+0005 
+0006 event?:  do forever                              /*determine if an event has occurred.  */
+0007 theEvent= right(time(), 1)              /*maybe it's an event, ─or─  maybe not.*/
+0008 if pos(theEvent, timeEvent)>0  then  signal happening
+0009 end   /*forever*/
+0010 
+0011 say 'Control should never get here!'             /*This is a logic  can─never─happen !  */
+0012 halt: say '════════════ program halted.'; exit 0 /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 happening: say 'an event occurred at'  time()", the event is:"   theEvent
+0015 do while theEvent==right(time(), 1) /*spin until a tic (a second) changes. */
+0016 nop                                 /*replace NOP  with the "process" code.*/
+0017 end   /*while*/                     /*NOP is a REXX statement, does nothing*/
+0018 signal event?                         /*see if another event has happened.   */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 timeEvent        3 4
+002 theEvent         7
+003 while            15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

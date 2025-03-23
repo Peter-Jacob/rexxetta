@@ -1,0 +1,72 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program illustrates a method of  enumeration  of  constants via  stemmed arrays. */
+0002 fruit.=0                              /*the default for all possible "FRUITS."  (zero). */
+0003 fruit.apple      =   65
+0004 fruit.cherry     =    4
+0005 fruit.kiwi       =   12
+0006 fruit.peach      =   48
+0007 fruit.plum       =   50
+0008 fruit.raspberry  =   17
+0009 fruit.tomato     = 8000
+0010 fruit.ugli       =    2
+0011 fruit.watermelon =    0.5  /*◄─────────── could also be specified as:   1/2  */
+0012 
+0013 /*A method of using a list (of some fruits).*/
+0014 @fruits= 'apple apricot avocado banana bilberry blackberry blackcurrant blueberry baobab',
+0015 'boysenberry breadfruit cantaloupe cherry chilli chokecherry citron coconut',
+0016 'cranberry cucumber currant date dragonfruit durian eggplant elderberry fig',
+0017 'feijoa gac gooseberry grape grapefruit guava honeydew huckleberry jackfruit',
+0018 'jambul juneberry kiwi kumquat lemon lime lingenberry loquat lychee mandarin',
+0019 'mango mangosteen nectarine orange papaya passionfruit peach pear persimmon',
+0020 'physalis pineapple pitaya pomegranate pomelo plum pumpkin rambutan raspberry',
+0021 'redcurrant satsuma squash strawberry tangerine tomato ugli watermelon zucchini'
+0022 
+0023 /*╔════════════════════════════════════════════════════════════════════════════════════╗
+0024 ║Parental warning: sex is discussed below: PG─13.  Most berries don't have "berry" in║
+0025 ║their name.  A  berry  is a  simple fruit  produced from a single ovary.  Some true ║
+0026 ║berries are: pomegranate, guava, eggplant, tomato, chilli, pumpkin, cucumber, melon,║
+0027 ║and citruses.  Blueberry  is a  false  berry;  blackberry is an  aggregate  fruit;  ║
+0028 ║and strawberry is an  accessory  fruit.  Most nuts are fruits.  The following aren't║
+0029 ║true nuts: almond, cashew, coconut, macadamia, peanut, pecan, pistachio, and walnut.║
+0030 ╚════════════════════════════════════════════════════════════════════════════════════╝*/
+0031 
+0032 /*  ┌─◄── due to a Central America blight in 1922; it was*/
+0033 /*  ↓     called the Panama disease (a soil─borne fungus)*/
+0034 if fruit.banana=0  then say "Yes!  We have no bananas today."               /* (sic) */
+0035 if fruit.kiwi \=0  then say "We gots "   fruit.kiwi    ' hairy fruit.'      /*   "   */
+0036 if fruit.peach\=0  then say "We gots "   fruit.peach   ' fuzzy fruit.'      /*   "   */
+0037 
+0038 maxL=length('  fruit   ')                        /*ensure this header title can be shown*/
+0039 maxQ=length(' quantity ')                        /*   "     "    "      "    "   "   "  */
+0040 say
+0041 do p    =0  for 2                           /*the first pass finds the maximums.   */
+0042 do j=1  for words(@fruits)              /*process each of the names of fruits. */
+0043 @=word(@fruits, j)                      /*obtain a fruit name from the list.   */
+0044 #=value('FRUIT.'@)                      /*   "   the quantity of a fruit.      */
+0045 if \p  then do                          /*is this the first pass through ?     */
+0046 maxL=max(maxL, length(@))   /*the longest (widest) name of a fruit.*/
+0047 maxQ=max(maxQ, length(#))   /*the widest width quantity of fruit.  */
+0048 iterate  /*j*/              /*now, go get another name of a fruit. */
+0049 end
+0050 if j==1  then say center('fruit', maxL)    center("quantity", maxQ)
+0051 if j==1  then say copies('─'    , maxL)    copies("─"       , maxQ)
+0052 if #\=0  then say  right( @     , maxL)     right( #        , maxQ)
+0053 end   /*j*/
+0054 end       /*p*/
+0055 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 fruit.           2 3 4 5 6 7 8 9 10 11
+002 maxL             38 46
+003 maxQ             39 47
+004 p                41
+005 j                42
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @fruits          -> newV1            14
+002 @                -> newV2            43
+003 #                -> newV3            44

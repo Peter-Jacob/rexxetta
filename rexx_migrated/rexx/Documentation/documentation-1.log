@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program illustrates how to display embedded documentation (help) within REXX code*/
+0002 parse arg doc                                    /*obtain (all) the arguments from C.L. */
+0003 if doc='?'  then call help                       /*show documentation if arg=a single ? */
+0004 /*■■■■■■■■■regular■■■■■■■■■■■■■■■■■■■■■■■■■*/
+0005 /*■■■■■■■■■■■■■■■■■mainline■■■■■■■■■■■■■■■■*/
+0006 /*■■■■■■■■■■■■■■■■■■■■■■■■■■code■■■■■■■■■■■*/
+0007 /*■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■here.■■■■■*/
+0008 exit                                             /*stick a fork in it,  we're all done. */
+0009 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0010 help: ?=0;    do j=1  for sourceline();  _=sourceline(j)         /*get a line of source.*/
+0011 if _='<help>'   then do;  ?=1;  iterate;  end      /*search for  <help>   */
+0012 if _='</help>'  then leave                         /*   "    "   </help>  */
+0013 if ?            then say _
+0014 end   /*j*/
+0015 exit                                       /*stick a fork in it,  we're all done. */
+0016 /*══════════════════════════════════start of the in═line documentation AFTER the  <help>
+0017 <help>
+0018 To use the  YYYY  program, enter one of:
+0019 
+0020 YYYY  numberOfItems
+0021 YYYY                            (no arguments uses the default)
+0022 YYYY  ?                         (to see this documentation)
+0023 
+0024 
+0025 ─── where:  numberOfItems             is the number of items to be used.
+0026 
+0027 If no  "numberOfItems"  are entered, the default of  100  is used.
+0028 </help>
+0029 ════════════════════════════════════end of the in═line documentation BEFORE the </help> */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 doc              2
+002 j                10
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            10
+002 ?                -> newV2            11

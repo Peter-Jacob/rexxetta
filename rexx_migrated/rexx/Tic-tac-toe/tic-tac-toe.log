@@ -1,0 +1,162 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX program plays  (with a human)  the     tic─tac─toe     game  on an   NxN   grid. */
+0002 $= copies('─', 9)                                /*eyecatcher for error messages, prompt*/
+0003 oops   = $  '***error*** '                       /*literal for when an error happens.   */
+0004 single = '│─┼';    jam= "║";    bar= '═';     junc= "╬";         dbl=jam || bar || junc
+0005 sw     = linesize() - 1                          /*obtain width of the terminal (less 1)*/
+0006 parse arg N hm cm .,@.                           /*obtain optional arguments from the CL*/
+0007 if N=='' | N==","  then N=3;   oN=N              /*N  not specified?   Then use default.*/
+0008 N = abs(N)                                  /*if N < 0.  then computer goes first. */
+0009 NN = N*N                                     /*calculate the   square of  N.        */
+0010 middle = NN % 2   +   N % 2                      /*    "      "    middle  "  the grid. */
+0011 if N<2  then do;  say oops  'tic─tac─toe grid is too small: '    N;     exit 13;    end
+0012 pad= left('', sw % NN)                           /*display padding:  6x6  in 80 columns.*/
+0013 if hm==''  then hm= "X";                         /*define the marker for  a   human.    */
+0014 if cm==''  then cm= "O"                          /*   "    "     "    "  the  computer. */
+0015 hm= aChar(hm, 'human')           /*determine if the marker is legitimate*/
+0016 cm= aChar(cm, 'computer')        /*    "      "  "     "    "      "    */
+0017 parse upper value  hm  cm     with     uh  uc    /*use uppercase values is markers:  X x*/
+0018 if uh==uc  then cm= word('O X', 1 + (uh=="O") )  /*The human wants Hal's marker?  Swap. */
+0019 if oN<0  then call Hmove middle                  /*Hal moves first? Then choose middling*/
+0020 else call showGrid                      /*showGrid also checks for wins & draws*/
+0021 
+0022 /*tic─tac─toe game───►*/     do  forever         /*'til the cows come home  (or  QUIT). */
+0023 /*tic─tac─toe game───►*/     call CBLF           /*process carbon─based lifeform's move.*/
+0024 /*tic─tac─toe game───►*/     call Hal            /*determine Hal's  (the computer) move.*/
+0025 /*tic─tac─toe game───►*/     end   /*forever*/   /*showGrid subroutine does wins & draws*/
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 aChar: parse arg x,whoseX;  L=length(x)                               /*process markers.*/
+0028 if L==1                        then return testB(     x  )     /*1 char,  as is. */
+0029 if L==2 & datatype(x, 'X')     then return testB( x2c(x) )     /*2 chars, hex.   */
+0030 if L==3 & datatype(x, 'W') & ,                                 /*3 chars, decimal*/
+0031 x>=0 & x<256                then return testB( d2c(x) )     /*···and in range.*/
+0032 say oops  'illegal character or character code for'    whoseX    "marker: "    x
+0033 exit 13                                   /*stick a fork in it,  we're all done. */
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 CBLF:  prompt='Please enter a cell number to place your next marker ['hm"]     (or Quit):"
+0036 
+0037 do forever;                 say $ prompt
+0038 parse pull  x 1 ux 1 ox;    upper ux    /*get versions of answer;  uppercase ux*/
+0039 if datatype(ox, 'W')  then ox=ox / 1    /*normalize cell number:  +0007 ───► 7 */
+0040 /*(division by unity normalizes a num.)*/
+0041 select                                /*perform some validations of X (cell#)*/
+0042 when abbrev('QUIT',ux,1)  then call tell 'quitting.'
+0043 when x=''                 then iterate                    /*Nada?  Try again.*/
+0044 when words(x)\==1         then say oops "too many" cell#  'specified:'   x
+0045 when \datatype(x, 'N')    then say oops "cell number isn't numeric: "        x
+0046 when \datatype(x, 'W')    then say oops "cell number isn't an integer: "     x
+0047 when x=0                  then say oops "cell number can't be zero: "        x
+0048 when x<0                  then say oops "cell number can't be negative: "    x
+0049 when x>NN                 then say oops "cell number can't exceed "          NN
+0050 when @.ox\==''            then say oops "cell number is already occupied: "  x
+0051 otherwise                 leave  /*forever*/
+0052 end   /*select*/
+0053 
+0054 end     /*forever*/
+0055 /* [↓]  OX is a normalized version of X*/
+0056 @.ox= hm                                  /*place a marker for the human (CLBF). */
+0057 call showGrid                             /*and display the  tic─tac─toe  grid.  */
+0058 return
+0059 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0060 Hal:           select                                        /*Hal tries various moves. */
+0061 when win(cm, N-1)   then call Hmove , ec      /*is this the winning move?*/
+0062 when win(hm, N-1)   then call Hmove , ec      /* "   "   a blocking   "  */
+0063 when @.middle== ''  then call Hmove middle    /*pick the  center  cell.  */
+0064 when @.N.N  ==  ''  then call Hmove , N N     /*bottom right corner cell.*/
+0065 when @.N.1  ==  ''  then call Hmove , N 1     /*   "    left    "     "  */
+0066 when @.1.N  ==  ''  then call Hmove , 1 N     /*  top  right    "     "  */
+0067 when @.1.1  ==  ''  then call Hmove , 1 1     /*   "    left    "     "  */
+0068 otherwise                call Hmove , ac      /*pick a blank cell in grid*/
+0069 end   /*select*/
+0070 return
+0071 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0072 Hmove: parse arg Hplace,dr dc;     if Hplace==''  then Hplace = (dr - 1)*N    +  dc
+0073 @.Hplace= cm                                          /*place computer's marker. */
+0074 say;  say  $   'computer places a marker  ['cm"]  at cell number  "    Hplace
+0075 call showGrid
+0076 return
+0077 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0078 showGrid: _= 0;              cW= 5;     cH= 3;       open= 0 /*cell width,  cell height.*/
+0079 do   r=1  for N                                   /*construct array of cells.*/
+0080 do c=1  for N;  _= _ + 1;  @.r.c= @._;  open= open  |  @._==''
+0081 end   /*c*/
+0082 end     /*r*/                                     /* [↑]  OPEN≡a cell is open*/
+0083 say                                                   /* [↑]  create grid coörds.*/
+0084 z= 0;         do     j=1  for  N                      /* [↓]  show grids&markers.*/
+0085 do   t=1  for cH;    _=;  __=         /*MK is a marker in a cell.*/
+0086 do k=1  for  N;    if t==2  then z= z + 1;        mk=;     c#=
+0087 if t==2  then do;  mk= @.z;      c#= z      /*c# is cell number*/
+0088 end
+0089 _= _   ||  jam  ||  center(mk, cW)
+0090 __= __  ||  jam  ||  center(c#, cW)
+0091 end   /*k*/
+0092 say pad  substr(_, 2)  pad  translate( substr(__, 2),  single, dbl)
+0093 end     /*t*/                                 /* [↑]  show a line*/
+0094 if j==N  then leave
+0095 _=
+0096 do b=1  for  N;       _= _  ||  junc  ||  copies(bar, cW)
+0097 end   /*b*/                                  /* [↑]  a grid part*/
+0098 say   pad  substr(_, 2)  pad  translate( substr(_,  2),  single, dbl)
+0099 end        /*j*/
+0100 say
+0101 if win(hm)  then  call tell  'You  ('hm")  won"copies('!',random(1, 5) )
+0102 if win(cm)  then  call tell  'The computer  ('cm")  won."
+0103 if \open    then  call tell  'This tic─tac─toe game is a draw   (a cat scratch).'
+0104 return
+0105 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0106 tell:  do 4; say; end;     say center(' 'arg(1)" ", sw, '─');      do 5; say; end;    exit
+0107 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0108 testB: parse arg bx; if bx\==' '  then return bx /*test if the  marker  isn't  a  blank.*/
+0109 say oops   'character code for'      whoseX      "marker can't be a blank."
+0110 exit 13                                   /*stick a fork in it,  we're all done. */
+0111 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0112 win:   parse arg wm,w;        if w==''  then w= N        /* [↓]  see if there is a win. */
+0113 ac=                                               /* [↓]  EC ≡ means Empty Cell. */
+0114 do   r=1  for N;  _= 0;  ec=                 /*see if any  rows are a winner*/
+0115 do c=1  for N;  _= _ + (@.r.c==wm)         /*count the # of markers in col*/
+0116 if @.r.c==''              then ec= r c     /*Cell empty?  Then remember it*/
+0117 end   /*c*/                                /* [↓]  AC≡means available cell*/
+0118 if ec\==''                  then ac=ec       /*Found an empty?  Then use it.*/
+0119 if _==N | (_>=w & ec\=='')  then return 1==1 /*a winner has been determined.*/
+0120 end     /*r*/                                /*w=N-1?  Checking for near win*/
+0121 
+0122 do   c=1  for N;  _= 0;  ec=                 /*see if any  cols are a winner*/
+0123 do r=1  for N;  _= _ + (@.r.c==wm)         /*count the # of markers in row*/
+0124 if @.r.c==''              then ec= r c     /*Cell empty?  Then remember it*/
+0125 end   /*r*/
+0126 if ec\==''                  then ac= ec      /*Found an empty? Then remember*/
+0127 if _==N | (_>=w & ec\=='')  then return 1==1 /*a winner has been determined.*/
+0128 end     /*c*/
+0129 _= 0;  ec=                 /*EC≡location of an empty cell.*/
+0130 do d=1  for N;    _= _ + (@.d.d==wm)         /*A winning descending diag. ? */
+0131 if @.d.d==''                then ec= d d     /*Empty cell?  Then note cell #*/
+0132 end     /*d*/
+0133 
+0134 if _==N  |  (_>=w  &  ec\=='')   then return 1==1 /*a winner has been determined.*/
+0135 _= 0;  r= 1
+0136 do c=N  for N  by -1;   _=_ + (@.r.c==wm)    /*A winning ascending diagonal?*/
+0137 if @.r.c==''                then ec= r c     /*Empty cell?  Then note cell #*/
+0138 r= r + 1                                     /*bump the counter for the rows*/
+0139 end     /*c*/
+0140 
+0141 if _==N  |  (_>=w  &  ec\=='')   then return 1==1 /*a winner has been determined.*/
+0142 return 0==1                                       /*no winner "    "       "     */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 wm               112
+002 w                112 112
+003 ac               113 118 126
+004 r                114 123 135 138
+005 ec               114 116 122 124 129 131 137
+006 c                115 122 136
+007 d                130
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           6 56 73 80
+002 __               -> newV2            85 90
+003 $                -> newV3            2
+004 _                -> newV4            80 85 89 95 96 114 115 122 123 129 130 135 136

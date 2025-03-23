@@ -1,0 +1,62 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program finds the  roots  (which may be complex)  of a quadratic function.       */
+0002 parse arg  a b c .                               /*obtain the specified arguments: A B C*/
+0003 call quad  a,b,c                                 /*solve quadratic function via the sub.*/
+0004 r1= r1/1;  r2= r2/1;   a= a/1;  b= b/1;  c= c/1  /*normalize numbers to a new precision.*/
+0005 if r1j\=0  then r1=r1||left('+',r1j>0)(r1j/1)"i" /*Imaginary part? Handle complex number*/
+0006 if r2j\=0  then r2=r2||left('+',r2j>0)(r2j/1)"i" /*   "        "      "       "      "  */
+0007 say '    a ='   a                  /*display the normalized value of   A. */
+0008 say '    b ='   b                  /*   "     "       "       "    "   B. */
+0009 say '    c ='   c                  /*   "     "       "       "    "   C. */
+0010 say;    say 'root1 ='   r1                 /*   "     "       "       "   1st root*/
+0011 say 'root2 ='   r2                 /*   "     "       "       "   2nd root*/
+0012 exit 0                                           /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 quad: parse arg aa,bb,cc;     numeric digits 200 /*obtain 3 args; use enough dec. digits*/
+0015 $= sqrt(bb**2-4*aa*cc);       L= length($) /*compute  SQRT (which may be complex).*/
+0016 r= 1 /(aa+aa);   ?= right($, 1)=='i'       /*compute reciprocal of 2*aa;  Complex?*/
+0017 if ?  then do;  r1= -bb   *r;   r2=r1;          r1j= left($,L-1)*r;   r2j=-r1j;  end
+0018 else do;  r1=(-bb+$)*r;   r2=(-bb-$)*r;   r1j= 0;               r2j= 0;    end
+0019 return
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 sqrt: procedure; parse arg x 1 ox; if x=0  then return 0; d= digits(); m.= 9; numeric form
+0022 numeric digits 9; h= d+6; x=abs(x); parse value format(x,2,1,,0) 'E0' with g 'E' _ .
+0023 g=g*.5'e'_%2;   do j=0  while h>9;      m.j=h;              h=h%2+1;       end /*j*/
+0024 do k=j+5  to 0  by -1;  numeric digits m.k; g=(g+x/g)*.5;  end /*k*/
+0025 numeric digits d;         return (g/1)left('i', ox<0)     /*make complex if OX<0. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                21 22
+002 ox               21
+003 d                21
+004 m.               21 23
+005 h                22 23
+006 r1               17 18
+007 r2               17 18
+008 r1j              17 18
+009 r2j              17 18
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                22 23 24
+024 j                23
+025 k                24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            15
+002 ?                -> newV2            16
+003 _                -> newV3            22

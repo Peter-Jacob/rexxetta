@@ -1,0 +1,21 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates removal of  1st/last/1st-and-last  characters from a string.*/
+0002 @ = 'abcdefghijk'
+0003 say '                  the original string ='  @
+0004 say 'string first        character removed ='  substr(@, 2)
+0005 say 'string         last character removed ='  left(@, length(@) -1)
+0006 say 'string first & last character removed ='  substr(@, 2, length(@) -2)
+0007 /*stick a fork in it,  we're all done. */
+0008 /* ╔═══════════════════════════════════════════════════════════════════════════════╗
+0009 ║  However, the original string may be null or exactly one byte in length which ║
+0010 ║  will cause the  BIFs to fail because of  either zero  or  a negative length. ║
+0011 ╚═══════════════════════════════════════════════════════════════════════════════╝ */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            2

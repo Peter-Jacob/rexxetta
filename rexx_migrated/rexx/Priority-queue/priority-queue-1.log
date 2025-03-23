@@ -1,0 +1,39 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX program implements a  priority queue   with  insert/display/delete  the top task.*/
+0002 #=0;   @.=                                       /*0 tasks;  nullify the priority queue.*/
+0003 say '══════ inserting tasks.';     call .ins  3  "Clear drains"
+0004 call .ins  4  "Feed cat"
+0005 call .ins  5  "Make tea"
+0006 call .ins  1  "Solve RC tasks"
+0007 call .ins  2  "Tax return"
+0008 call .ins  6  "Relax"
+0009 call .ins  6  "Enjoy"
+0010 say '══════ showing tasks.';       call .show
+0011 say '══════ deletes top task.';    say .del()    /*delete the top task.                 */
+0012 exit                                             /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 .del:  procedure expose @. #; arg p;  if p=''  then p=.top();    y=@.p;   @.p=;   return y
+0015 .ins:  procedure expose @. #; #=#+1;  @.#=arg(1);    return #          /*entry, P, task.*/
+0016 .show: procedure expose @. #; do j=1  for #;  _=@.j;  if _\==''  then say _;  end;  return
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 .top:  procedure expose @. #;      top=;              top#=
+0019 do j=1  for #;  _=word(@.j, 1);    if _==''  then iterate
+0020 if top=='' | _>top  then do;    top=_;    top#=j;    end
+0021 end   /*j*/
+0022 return top#
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 p                14
+002 y                14
+003 j                16 19
+004 top              18 20
+005 top#             18 20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 14 15
+002 #                -> newV2            2 15
+003 _                -> newV3            16 19

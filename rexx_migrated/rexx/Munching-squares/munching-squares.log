@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program renders a  graphical pattern  by  coloring  each pixel   with   x XOR y  */
+0002 /*─────────────────────────────────────────  from an arbitrary constructed color table. */
+0003 rows= 2                                          /*the number of rows in the color table*/
+0004 cols= 5                                          /* "     "    " cols  "  "    "     "  */
+0005 do row  =0  for rows*3                   /*construct a color table, size  25x50.*/
+0006 do col=0  for cols*3
+0007 $= (row+col) // 255
+0008 @.row.col= x2b( d2x($+0, 2) )  ||,     /*ensure $ is converted──►2 hex nibbles*/
+0009 x2b( d2x($+1, 2) )  ||,
+0010 x2b( d2x($+2, 2) )
+0011 end   /*col*/                          /* [↑]  construct a three-byte pixel.  */
+0012 end     /*row*/
+0013 
+0014 do   x=0  for cols                       /*create a graphical pattern with XORs.*/
+0015 do y=0  for rows
+0016 @.x.y= bitxor(@.x, @.y)                /*renders 3 bytes (a pixel) at a time. */
+0017 end   /*y*/
+0018 end     /*x*/                            /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 rows             3
+002 cols             4
+003 row              5
+004 col              6
+005 x                14
+006 y                15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           8 16
+002 $                -> newV2            7

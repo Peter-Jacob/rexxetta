@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program  sums  the squares of the numbers  in a (numeric)  vector of 15 numbers. */
+0002 numeric digits 100                               /*allow 100─digit numbers; default is 9*/
+0003 parse arg v                                      /*get optional numbers from the C.L.   */
+0004 if v=''  then v= -100 9 8 7 6 0 3 4 5 2 1 .5 10 11 12      /*Not specified?  Use default*/
+0005 #=words(v)                                                 /*obtain number of words in V*/
+0006 say 'The vector of '    #     " elements is: "   space(v)  /*display the vector numbers.*/
+0007 $= 0                                             /*initialize the  sum  ($)  to zero.   */
+0008 do  until v=='';   parse var v x v  /*process each number in the V vector. */
+0009 $=$ + x**2                          /*add a squared element to the ($) sum.*/
+0010 end   /*until*/                     /* [↑]  if vector is empty, then sum=0.*/
+0011 say                                              /*stick a fork in it,  we're all done. */
+0012 say 'The sum of '       #     " squared elements for the  V  vector is: "      $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 v                8 8
+002 x                8
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            5
+002 $                -> newV2            7 9

@@ -1,0 +1,22 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program finds the recursion limit:   a subroutine that repeatably calls itself.  */
+0002 parse version x;     say x;     say             /*display which REXX is being used.     */
+0003 #=0                                             /*initialize the numbers of invokes to 0*/
+0004 call self                                       /*invoke the  SELF  subroutine.         */
+0005 /* [↓]  this will never be executed.    */
+0006 exit                                            /*stick a fork in it,  we're all done.  */
+0007 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0008 self:  #=#+1                                    /*bump number of times SELF is invoked. */
+0009 say #                                    /*display the number of invocations.    */
+0010 call self                                /*invoke ourselves recursively.         */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 version          2
+002 x                2
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            3

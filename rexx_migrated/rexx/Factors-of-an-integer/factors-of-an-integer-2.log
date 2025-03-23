@@ -1,0 +1,52 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Program to calculate and show divisors of positive integer(s).
+0003 * 03.08.2012 Walter Pachl  simplified the above somewhat
+0004 *            in particular I see no benefit from divAdd procedure
+0005 * 04.08.2012 the reference to 'above' is no longer valid since that
+0006 *            was meanwhile changed for the better.
+0007 * 04.08.2012 took over some improvements from new above
+0008 **********************************************************************/
+0009 Parse arg low high .
+0010 Select
+0011 When low=''  Then Parse Value '1 200' with low high
+0012 When high='' Then high=low
+0013 Otherwise Nop
+0014 End
+0015 do j=low to high
+0016 say '   n = ' right(j,6) "   divisors = " divs(j)
+0017 end
+0018 exit
+0019 
+0020 divs: procedure; parse arg x
+0021 if x==1 then return 1               /*handle special case of 1     */
+0022 Parse Value '1' x With lo hi        /*initialize lists: lo=1 hi=x  */
+0023 odd=x//2                            /* 1 if x is odd               */
+0024 Do j=2+odd By 1+odd While j*j<x     /*divide by numbers<sqrt(x)    */
+0025 if x//j==0 then Do                /*Divisible?  Add two divisors:*/
+0026 lo=lo j                         /* list low divisors           */
+0027 hi=x%j hi                       /* list high divisors          */
+0028 End
+0029 End
+0030 If j*j=x Then                       /*for a square number as input */
+0031 lo=lo j                           /* add its square root         */
+0032 return lo hi                        /* return both lists           */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                20
+002 high             9 11
+003 NORMAL.3         
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 j                15 24
+008 NORMAL.8         
+009 lo               22 26 31
+010 hi               22 27
+011 odd              23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

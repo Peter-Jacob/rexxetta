@@ -1,0 +1,68 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX program  generates   pseudo─random numbers   using the  split mix 64 bit  method.*/
+0002 numeric digits 200                               /*ensure enough decimal digs for mult. */
+0003 parse arg n reps pick seed1 seed2 .              /*obtain optional arguments from the CL*/
+0004 if     n=='' |     n==","  then    n=          5 /*Not specified?  Then use the default.*/
+0005 if  reps=='' |  reps==","  then reps=     100000 /* "      "         "   "   "     "    */
+0006 if  pick=='' |  pick==","  then pick=          5 /* "      "         "   "   "     "    */
+0007 if seed1=='' | seed1==","  then seed1=   1234567 /* "      "         "   "   "     "    */
+0008 if seed2=='' | seed2==","  then seed2= 987654321 /* "      "         "   "   "     "    */
+0009 const.1= x2d( 9e3779b97f4a7c15 )                 /*initialize 1st constant to be used.  */
+0010 const.2= x2d('bf58476d1ce4e5b9')                 /*    "      2nd     "     "  "   "    */
+0011 const.3= x2d( 94d049bb133111eb )                 /*    "      3rd     "     "  "   "    */
+0012 o.30= copies(0, 30)                              /*construct  30  bits of zeros.        */
+0013 o.27= copies(0, 27)                              /*     "     27    "   "   "           */
+0014 o.31= copies(0, 31)                              /*     "     31    "   "   "           */
+0015 w= max(3, length(n) )                            /*for aligning the left side of output.*/
+0016 state= seed1                                     /*     "     the   state  to seed #1.  */
+0017 do j=1  for n
+0018 if j==1  then do;   say center('n', w)     "     pseudo─random number   "
+0019 say copies('═', w)     " ════════════════════════════"
+0020 end
+0021 say right(j':', w)" "  right(commas(next()), 27)  /*display a random number*/
+0022 end   /*j*/
+0023 say
+0024 if reps==0  then exit 0                          /*stick a fork in it,  we're all done. */
+0025 say center('#', w)   "   count of pseudo─random #"
+0026 say copies('═', w)   " ════════════════════════════"
+0027 state= seed2                                     /*     "     the   state  to seed #2.  */
+0028 @.= 0;                         div= pick / 2**64 /*convert division to inverse multiply.*/
+0029 do k=1  for reps
+0030 parse value next()*div  with  _ '.' /*get random #, floor of a "division". */
+0031 @._= @._ + 1                        /*bump the counter for this random num.*/
+0032 end   /*k*/
+0033 
+0034 do #=0  for pick
+0035 say right(#':', w)" "  right(commas(@.#), 15) /*show count of a random num.*/
+0036 end   /*#*/
+0037 exit 0                                           /*stick a fork in it,  we're all done. */
+0038 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0039 commas: parse arg _;   do ?=length(_)-3  to 1  by -3; _= insert(',', _, ?); end;  return _
+0040 b2d:    parse arg ?; return        x2d( b2x(?) )             /*convert bin──►decimal.   */
+0041 d2b:    parse arg ?; return right( x2b( d2x(?) ),  64, 0)    /*convert dec──►64 bit bin.*/
+0042 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0043 next: procedure expose state const. o.
+0044 state= state + const.1        ; z= d2b(state)          /*add const1──►STATE; conv.*/
+0045 z= xor(z, left(o.30 || z, 64)); z= d2b(b2d(z)*const.2) /*shiftR 30 bits & XOR;  " */
+0046 z= xor(z, left(o.27 || z, 64)); z= d2b(b2d(z)*const.3) /*   "   27  "   "  "    " */
+0047 z= xor(z, left(o.31 || z, 64));        return b2d(z)   /*   "   31  "   "  "    " */
+0048 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0049 xor:  parse arg a, b;                    $=                  /*perform a bit─wise  XOR. */
+0050 do !=1  for length(a);   $= $  ||  (substr(a,!,1)  &&  substr(b,!,1) )
+0051 end   /*!*/;      return $
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                49
+002 b                49
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           28 31
+002 _                -> newV2            30 39 39
+003 #                -> newV3            34
+004 ?                -> newV4            39 40 41
+005 $                -> newV5            49 50
+006 !                -> newV6            50

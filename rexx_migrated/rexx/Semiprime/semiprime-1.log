@@ -1,0 +1,70 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 20.02.2014 Walter Pachl  relying on 'prime decomposition'
+0003 * 21.02.2014 WP Clarification: I copied the algorithm created by
+0004 *            Gerard Schildberger under the task referred to above
+0005 * 21.02.2014 WP Make sure that factr is not called illegally
+0006 *--------------------------------------------------------------------*/
+0007 Call test 4
+0008 Call test 9
+0009 Call test 10
+0010 Call test 12
+0011 Call test 1679
+0012 Exit
+0013 
+0014 test:
+0015 Parse Arg z
+0016 If is_semiprime(z) Then Say z 'is semiprime' fl
+0017 Else Say z 'is NOT semiprime' fl
+0018 Return
+0019 
+0020 is_semiprime:
+0021 Parse Arg z
+0022 If z<1 | datatype(z,'W')=0 Then Do
+0023 Say 'Argument ('z') must be a natural number (1, 2, 3, ...)'
+0024 fl=''
+0025 End
+0026 Else
+0027 fl=factr(z)
+0028 Return words(fl)=2
+0029 
+0030 /*----------------------------------FACTR subroutine-----------------*/
+0031 factr: procedure; parse arg x 1 z,list /*sets X&Z to arg1, LIST=''.  */
+0032 if x==1  then return ''             /*handle the special case of X=1.*/
+0033 j=2;     call .factr                /*factor for the only even prime.*/
+0034 j=3;     call .factr                /*factor for the 1st  odd  prime.*/
+0035 j=5;     call .factr                /*factor for the 2nd  odd  prime.*/
+0036 j=7;     call .factr                /*factor for the 3rd  odd  prime.*/
+0037 j=11;    call .factr                /*factor for the 4th  odd  prime.*/
+0038 j=13;    call .factr                /*factor for the 5th  odd  prime.*/
+0039 j=17;    call .factr                /*factor for the 6th  odd  prime.*/
+0040 /* [?]   could be optimized more.*/
+0041 /* [?]   J in loop starts at 17+2*/
+0042 do y=0  by 2;     j=j+2+y//4   /*insure J isn't divisible by 3. */
+0043 if right(j,1)==5  then iterate /*fast check for divisible by 5. */
+0044 if j*j>z          then leave   /*are we higher than the v of Z ?*/
+0045 if j>Z            then leave   /*are we higher than value of Z ?*/
+0046 call .factr                    /*invoke .FACTR for some factors.*/
+0047 end   /*y*/                    /* [?]  only tests up to the v X.*/
+0048 /* [?]  LIST has a leading blank.*/
+0049 if z==1  then return list           /*if residual=unity, don't append*/
+0050 return list z         /*return list,  append residual. */
+0051 /*-------------------------------.FACTR internal subroutine----------*/
+0052 .factr:  do  while z//j==0          /*keep dividing until we can't.  */
+0053 list=list j                /*add number to the list  (J).   */
+0054 z=z%j                      /*% (percent)  is integer divide.*/
+0055 end   /*while z··· */      /*  //   ?---remainder integer ÷.*/
+0056 return                              /*finished, now return to invoker*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                31
+002 z                31 54
+003 list             31 53
+004 j                33 34 35 36 37 38 39 42
+005 y                42
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

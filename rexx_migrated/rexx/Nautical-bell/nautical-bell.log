@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program sounds "ship's bells"  (using PC speaker)  when executing  (perpetually).*/
+0002 echo= ( arg()\==0 )                              /*echo time and bells if any arguments.*/
+0003 signal on halt                                   /*allow a clean way to stop the program*/
+0004 t.1=  '00:30   01:00   01:30   02:00   02:30   03:00   03:30   04:00'
+0005 t.2=  '04:30   05:00   05:30   06:00   06:30   07:00   07:30   08:00'
+0006 t.3=  '08:30   09:00   09:30   10:00   10:30   11:00   11:30   12:00'
+0007 
+0008 do forever;  t=time();   ss=right(t, 2);   mn=substr(t, 4, 2)  /*the current time.*/
+0009 ct=time('C')                               /*[↓]  maybe add leading zero to time. */
+0010 hhmmc=left( right( ct, 7, 0),  5)          /*HH:MM   (maybe with a leading zero). */
+0011 if echo  then say center(arg(1) ct, 79)    /*echo the 1st argument with the time? */
+0012 if ss\==00 & mn\==00 & mn\==30  then do;  call delay  60-ss;   iterate
+0013 end   /* [↑]  delay for fraction of a minute.*/
+0014 /* [↓]  the number of bells to peel {$}*/
+0015 do j=1  for 3  until $\==0;   $=wordpos(hhmmc, t.j)
+0016 end   /*j*/
+0017 
+0018 if $\==0 & echo  then say center($ "bells", 79)       /*echo the number of bells? */
+0019 
+0020 do k=1 for $;  call sound 650,1;  call delay 1 + (k//2==0)
+0021 end   /*k*/                 /*[↑]  peel, and then pause for effect.*/
+0022 call delay 60;       if rc\==0  then leave /*ensure we don't re─peel.             */
+0023 end   /*forever*/
+0024 halt:                                            /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 echo             2
+002 t.               4 5 6
+003 t                8
+004 ss               8
+005 mn               8
+006 ct               9
+007 hhmmc            10
+008 j                15
+009 k                20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            15

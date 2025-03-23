@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program (when using criteria) locates values (indices)  from an associate array. */
+0002 $="Lagos=21,  Cairo=15.2,  Kinshasa-Brazzaville=11.3, Greater Johannesburg=7.55, Mogadishu=5.85,",
+0003 "Khartoum-Omdurman=4.98, Dar Es Salaam=4.7,  Alexandria=4.58,   Abidjan=4.4,  Casablanca=3.98"
+0004 @.= '(city not found)';    city.= "(no city)"       /*city search results for not found.*/
+0005 /* [↓]  construct associate arrays. */
+0006 do #=0  while $\='';  parse var $ c '=' p "," $;  c=space(c);  parse var c a 2;  @.c=#
+0007 city.#=c;  pop.#=p;  pop.c=#;  if @.a==@.  then @.a=c;  /*assign city, pop, indices.*/
+0008 end   /*#*/                                     /* [↑]  city array starts at 0 index*/
+0009 /*▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ task 1:  show the  INDEX  of a city.*/
+0010 town= 'Dar Es Salaam'                               /*the name of a city for the search.*/
+0011 say 'The city of ' town " has an index of: " @.town /*show (zero─based) index of a city.*/
+0012 say                     /*▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ task 2:  show 1st city whose pop<5 M*/
+0013 many=5                                              /*size of a city's pop in millions. */
+0014 do k=0  for #  until pop.k<many; end          /*find a city's pop from an index.  */
+0015 say '1st city that has a population less than '     many     " million is: "    city.k
+0016 say                     /*▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ task 3:  show 1st city with A* name.*/
+0017 c1= 'A'                                             /*1st character of a city for search*/
+0018 say '1st city that starts with the letter' c1 "is: " @.c1 /*stick a fork in it, all done*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 c                6
+002 a                6
+003 city.            7
+004 pop.             7 7
+005 town             10
+006 many             13
+007 k                14
+008 c1               17
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           4 6 7
+002 $                -> newV2            2 6 6
+003 #                -> newV3            6

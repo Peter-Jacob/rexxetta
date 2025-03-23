@@ -1,0 +1,645 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program can re-define most keys (including  F  keys)  on a PC keyboard.*/
+0002 trace off
+0003 parse arg !
+0004 if !all(arg())  then exit
+0005 if !cms  then address ''
+0006 
+0007 signal on halt
+0008 signal on noValue
+0009 signal on syntax
+0010 
+0011 /*if not DOS, issue error. */
+0012 if \!dos     then call er 23,', DOS[environment]'
+0013 
+0014 /*if not PC/REXX, issue err*/
+0015 if \!pcrexx  then call er 23,', PC/REXX[interpreter]'
+0016 
+0017 /*if Windows/NT, issue err.*/
+0018 if !nt       then call er 23,!fn 'Windows/95/98/2000 REXX-program'
+0019 
+0020 /* This program requires  ANSI.SYS  if any keys are set or (re─)defined.*/
+0021 /* ANSI.SYS won't function correctly under Windows/NT (XP, Vista, 7, 8).*/
+0022 
+0023 call homeDrive                                     /*get the homeDrive envVar.*/
+0024 
+0025 $home=p(!var('$HOME') homeDrive)                   /*get homeDrive of \$\ dir.*/
+0026 $home=appenda($home,':')                           /*make the drive ──► drive:*/
+0027 $path=p(!var('$PATH') '\$')                        /*get path name of \$  dir.*/
+0028 $path=prefixa($PATH,'\')                           /*make the path  ──► \dir  */
+0029 $path=appenda($path,'\')                           /*make the path  ──► dir\  */
+0030 
+0031 if \hasCol($path)  then $path=$home || $path       /*prefix with  $HOME  ?    */
+0032 
+0033 @DOSKEY    = 'DOSKEY'                              /*point to the DOSKEY   cmd*/
+0034 @ECHO      = 'ECHO'                                /*point to the ECHO     cmd*/
+0035 @TYPE      = 'TYPE'                                /*point to the TYPE     cmd*/
+0036 defFid     = #path'LOGS\'!fn".LOG"
+0037 oldFid     = #path'LOGS\'!fn".OLD"
+0038 tops       = '.BOX= .C=blue .H=darkcyan .E=1'
+0039 fops       = '.EF='defFid
+0040 functionKey= 0
+0041 autoEnter  =
+0042 useAuto    = 0
+0043 @offon     = 'OFF ON ,'
+0044 @warns     = 'WARNIFOFF WARNIFON ,'
+0045 sepLine    = copies('═',5)  copies('═',73)
+0046 y          = space(!!)
+0047 
+0048 do  forever                                      /*process any & all options*/
+0049 parse var y k1 2 1 k y
+0050 uk=k; upper uk
+0051 
+0052 if uk=='[ENTER]'    then do
+0053 useAuto=1
+0054 autoEnter=13
+0055 iterate
+0056 end
+0057 
+0058 if uk=='[NOENTER]'  then do
+0059 useAuto=1
+0060 autoEnter=
+0061 iterate
+0062 end
+0063 
+0064 if k1\=='.'         then leave
+0065 tops=tops k
+0066 fops=fops k
+0067 end   /*forever*/
+0068 
+0069 tops=space(tops)
+0070 fops=space(fops)
+0071 origk=space(k)
+0072 upper k
+0073 
+0074 if k=='??'  |,
+0075 k=="???" |,
+0076 k=="????"  then do
+0077 !cls
+0078 if y==''      then y=defFid
+0079 @type y
+0080 say sepLine
+0081 if k=="???"   then call $defkey "ALLLOCKS , WARNIFON"
+0082 
+0083 if k=="????"  then do
+0084 call $t ".P=1 .C=blue" centre('DOSKEY macros',79,"─")
+0085 @doskey '/macro'
+0086 call $t ".C=blue" copies('─',79)
+0087 end
+0088 exit rc
+0089 end
+0090 
+0091 if k=='CLEARLOG' then do
+0092 lFID=defFid
+0093 
+0094 if lFID==defFid  then do
+0095 call dosdel oldFid
+0096 call dosrename defFid,oldFid
+0097 end
+0098 else call dosdel lFID
+0099 
+0100 call whenstamp lFID,'log file was cleared by' !fn"."
+0101 _='ECHO' sepLine">>"lFID
+0102 _
+0103 'ECHO  key         new value>>'lFID
+0104 _
+0105 exit
+0106 end
+0107 
+0108 shiftkeys='NUMLOCK CAPSLOCK SCROLLLOCK ALLLOCKS'
+0109 
+0110 if abbrev('BLINKLOCKKEYS',k,5)  then
+0111 do
+0112 parse var o . k times secs _
+0113 if _\==''                            then call er 59
+0114 if k=='' | k==","                    then k="ALLLOCKS"
+0115 if wordpos(k,shiftkeys)==0           then call er 50,'shiftlock-key' origk
+0116 if times=='' | times==','            then times="ANYKEY"
+0117 if times\=='ANYKEY' & \isint(times)  then call er 53,times 'times'
+0118 if secs=='' | secs==','              then secs=.1
+0119 if \isNum(secs)                      then call er 53,times "seconds-delay-time"
+0120 secs=secs/1
+0121 if secs<.1 | secs>99                 then call er 81,.1 99 secs 'seconds-delay-time'
+0122 dids=0
+0123 
+0124 do forever
+0125 
+0126 do j=1  for 3
+0127 
+0128 do jo=2  to 1  by -1
+0129 dakey=word(shiftkeys,j)
+0130 if k=='ALLLOCKS' | k==dakey then call "$DEFKEY" dakey word(@offon,jo)
+0131 if secs\==0                 then call delay secs
+0132 end   /*jo*/
+0133 
+0134 end     /*j*/
+0135 
+0136 dids=dids+1
+0137 if times\=='ANYKEY' & dids>=times  then exit
+0138 else if inkey("NOWAIT")\=='' then exit
+0139 end   /*forever*/
+0140 end
+0141 
+0142 if wordpos(k,shiftkeys)\==0  then
+0143 do
+0144 _=words(y)
+0145 if _>2  then call er 59
+0146 onoff=
+0147 warnif=0
+0148 iswas='is'
+0149 if y==','  then y=
+0150 
+0151 if y\==''  then do
+0152 
+0153 if _==2 then do
+0154 _=word(y,2)
+0155 warnif=wordpos(translate(_),@warns)
+0156 if warnif==0 then call er 55,_ k 'WARN'
+0157 if warnif==3 then warnif=0
+0158 y=subword(y,1,1)
+0159 end
+0160 
+0161 onoff=wordpos(translate(y),@offon)
+0162 if onoff==0 then call er 50,'ON-or-OFF' y
+0163 if onoff\==3 then iswas='was'
+0164 end
+0165 
+0166 if y==','  then y=
+0167 
+0168 do j=1  for 3
+0169 dakey=word(shiftkeys,j)
+0170 if warnif\==0  then if shiftstate(dakey)+1==warnif then call $t ".J=r" tops dakey iswas'('word(@offon,warnif)")"
+0171 
+0172 if k=="ALLLOCKS" | k==dakey  then
+0173 do
+0174 if y\=='' &,
+0175 onoff\==3  then call shiftstate dakey,onoff-1
+0176 else if warnif==0 then call $t ".I=25" tops dakey 'is ('word(@offon,shiftstate(dakey)+1)")"
+0177 end
+0178 
+0179 end   /*j*/
+0180 
+0181 exit
+0182 end
+0183 
+0184 if y==''  then call er 54
+0185 cod=
+0186 codz='Z'
+0187 
+0188 if pos('-',k)\==0  then do
+0189 parse var k cod '-' k
+0190 _='S SHIFT C CTRL CONTROL A ALT ALTERNATE'
+0191 if cod=='' | wordpos(cod,_)==0  then call er 50,"key" origk
+0192 cod=left(cod,1)
+0193 codl=lower(cod)
+0194 codz=cod
+0195 if k==''  then call er 50,"key" origk
+0196 end
+0197 
+0198 if abbrev('APOSTROPHE',k,5)               then k = "'"
+0199 if k=='ASTERISKKEYPAD' | k=='STARKEYPAD'  then k = "*KEYPAD"
+0200 if k=='BACKSLASH'                         then k = "\"
+0201 if k=='COMMA'                             then k = ","
+0202 if k=='DEL'                               then k = "DELETE"
+0203 if k=='DELKEYPAD'                         then k = "DELETEKEYPAD"
+0204 if k=='ENT'                               then k = "ENTER"
+0205 if k=='ENTKEYPAD'                         then k = "ENTERKEYPAD"
+0206 if k=='EQUAL'                             then k = "="
+0207 if k=='FIVEKEYPAD'                        then k = "5KEYPAD"
+0208 if k=="GRAVEACCENT" | k=='GRAVE'          then k = "`"
+0209 if k=='INSKEYPAD'                         then k = "INSKEYPAD"
+0210 if k=='LEFTBRACKET'                       then k = "["
+0211 if k=='MINUS'                             then k = "-"
+0212 if k=='MINUSKEYPAD'                       then k = "-KEYPAD"
+0213 if k=="PAUSE" | k=='BREAK'                then k = "PAUSEBREAK"
+0214 if k=='PGDN'                              then k = "PAGEDOWN"
+0215 if k=='PGDNKEYPAD'                        then k = "PAGEDOWNKEYPAD"
+0216 if k=='PGUP'                              then k = "PAGEUP"
+0217 if k=='PGUPKEYPAD'                        then k = "PAGEUPKEYPAD"
+0218 if k=='PLUSKEYPAD'                        then k = "+KEYPAD"
+0219 if k=='PRINTSCRN'                         then k = "PRINTSCREEN"
+0220 if k=='RIGHTBRACKET'                      then k = "]"
+0221 if k=='SEMICOLON'                         then k = ";"
+0222 if k=='SPACE' | k=="SPACEBAR"             then k = 'BLANK'
+0223 
+0224 if wordpos(k,'PERIOD DOT DECIMAL DECIMALPOINT')\==0                       then k="."
+0225 if wordpos(k,'SLASH SOLIDUS VIRGULE OBELUS')\==0                          then k="/"
+0226 if wordpos(k,'SLASHKEYPAD SOLIDUSKEYPAD VIRGULEKEYPAD OBELUSKEYPAD')\==0  then k="/KEYPAD"
+0227 base=
+0228 
+0229 do 1                     /*the "1" enables the use of the LEAVE instruction.*/
+0230 len1=(length(k)==1)
+0231 uppc=isUpp(k)
+0232 numb=isint(k)
+0233 
+0234 if len1 then do
+0235 dkey=c2d(k)
+0236 if uppc then do
+0237 if cod=='A' then do
+0238 _='30 48 46 32 18 33 34 35 23 36 37 38 50 49 24 25 16 19 31 20 22 47 17 45 21 44'
+0239 base='0;'word(_,dkey-96)
+0240 end
+0241 d.z=21
+0242 d.s=0
+0243 d.c=-64
+0244 base=d.codz+dkey
+0245 end
+0246 
+0247 if numb then do
+0248 dakey=dkey-47
+0249 if cod=''   then base=dkey
+0250 if cod=='S' then base=word("41 33 64 35 36 37 94 38 42 49",dakey)
+0251 
+0252 if cod=='A' then if k<3 then base="0;"word(129 120,dakey)
+0253 else base="0;"119+dakey
+0254 
+0255 if cod=='C' then do
+0256 if k==2 then base=0
+0257 if k==6 then base=30
+0258 end
+0259 end
+0260 
+0261 if base\==''  then leave
+0262 call er 50,'key' origk
+0263 end
+0264 
+0265 ik=wordpos(k,'DELETE DOWNARROW END HOME INSERT LEFTARROW PAGEDOWN PAGEUP RIGHTARROW UPARROW')
+0266 
+0267 select
+0268 when left(k,1)=='F' then do
+0269 functionKey=1
+0270 fn=substr(k,2)
+0271 if \isint(fn) | fn<1 | fn>12  then call er 81,1 12 k "FunctionKey"
+0272 d.z=58
+0273 d.s=83
+0274 d.c=93
+0275 d.a=103
+0276 if fn<11  then base='0;' || (d.codz+fn)
+0277 else do
+0278 d.z=133-11
+0279 d.s=135-11
+0280 d.c=137-11
+0281 d.a=139-11
+0282 base='0;' || (d.codz+fn)
+0283 end
+0284 end
+0285 
+0286 when ik\==0  then do
+0287 d.z='83 80 79 71 82 75 81 73 77 72'
+0288 d.s=d.z
+0289 d.c='147 145 117 119 146 115 118 132 116 141'
+0290 d.a='163 154 159 151 162 155 161 153 157 152'
+0291 base='224;'word(d.codz,ik)
+0292 end
+0293 
+0294 when k=='PRINTSCREEN' & cod="C"  then base='0;114'
+0295 when k=='PAUSEBREAK'  & cod="C"  then base='0;0'
+0296 when k=='NULL'        & cod==''  then base="0;3"
+0297 
+0298 when k=='BACKSPACE'  then do
+0299 d.z=8
+0300 d.s=8
+0301 d.c=127
+0302 d.a=0
+0303 base=d.codz
+0304 end
+0305 
+0306 when k=='TAB'   then do
+0307 d.z=9
+0308 d.s='0;15'
+0309 d.c='0;148'
+0310 d.z='0;165'
+0311 base=d.codz
+0312 end
+0313 
+0314 when k=='BLANK' then do
+0315 d.z=92
+0316 d.s=124
+0317 d.c=28
+0318 d.a='0;43'
+0319 base=d.codz
+0320 end
+0321 
+0322 when k=='ENTER' then do
+0323 d.z=13
+0324 d.s=
+0325 d.c=10
+0326 d.a='0;28'
+0327 base=d.codz
+0328 end
+0329 
+0330 when k=='-'  then do
+0331 d.z=45
+0332 d.s=95
+0333 d.c=31
+0334 d.a='0;130'
+0335 base=d.codz
+0336 end
+0337 
+0338 when k=='='  then do
+0339 d.z=61
+0340 d.s=43
+0341 d.c=
+0342 d.a='0;131'
+0343 base=d.codz
+0344 end
+0345 
+0346 when k=='['  then do
+0347 d.z=91
+0348 d.s=123
+0349 d.c=27
+0350 d.a='0;26'
+0351 base=d.codz
+0352 end
+0353 
+0354 when k==']'  then do
+0355 d.z=93
+0356 d.s=125
+0357 d.c=29
+0358 d.a='0;27'
+0359 base=d.codz
+0360 end
+0361 
+0362 when k=='\'  then do
+0363 d.z=92
+0364 d.s=124
+0365 d.c=28
+0366 d.a='0;43'
+0367 base=d.codz
+0368 end
+0369 
+0370 when k==';'  then do
+0371 d.z=59
+0372 d.s=58
+0373 d.c=
+0374 d.a='0;39'
+0375 base=d.codz
+0376 end
+0377 
+0378 when k=="'"  then do
+0379 d.z=39
+0380 d.s=34
+0381 d.c=
+0382 d.a='0;40'
+0383 base=d.codz
+0384 end
+0385 
+0386 when k==','  then do
+0387 d.z=44
+0388 d.s=60
+0389 d.c=
+0390 d.a='0;51'
+0391 base=d.codz
+0392 end
+0393 
+0394 when k=='.'  then do
+0395 d.z=46
+0396 d.s=62
+0397 d.c=
+0398 d.a='0;52'
+0399 base=d.codz
+0400 end
+0401 
+0402 when k=='/'  then do
+0403 d.z=47
+0404 d.s=63
+0405 d.c=
+0406 d.a='0;53'
+0407 base=d.codz
+0408 end
+0409 
+0410 when k=='`'  then do
+0411 d.z=96
+0412 d.s=126
+0413 d.c=
+0414 d.a='0;41'
+0415 base=d.codz
+0416 end
+0417 
+0418 when k=='HOMEKEYPAD'  then do
+0419 d.z='0;71'
+0420 d.s=55
+0421 d.c='0;119'
+0422 base=d.codz
+0423 end
+0424 
+0425 when k=='UPARROWKEYPAD'  then do
+0426 d.z='0;72'
+0427 d.s=55
+0428 d.c='0;141'
+0429 base=d.codz
+0430 end
+0431 
+0432 when k=='PAGEUPKEYPAD'  then do
+0433 d.z='0;73'
+0434 d.s=57
+0435 d.c='0;132'
+0436 base=d.codz
+0437 end
+0438 
+0439 when k=='LEFTARROWKEYPAD'  then do
+0440 d.z='0;75'
+0441 d.s=52
+0442 d.c='0;115'
+0443 base=d.codz
+0444 end
+0445 
+0446 when k=='5KEYPAD'  then do
+0447 d.z='0;76'
+0448 d.s=53
+0449 d.c='0;143'
+0450 base=d.codz
+0451 end
+0452 
+0453 when k=='RIGHTARROWKEYPAD'  then do
+0454 d.z='0;77'
+0455 d.s=54
+0456 d.c='0;116'
+0457 base=d.codz
+0458 end
+0459 
+0460 when k=='ENDKEYPAD'  then do
+0461 d.z='0;79'
+0462 d.s=49
+0463 d.c='0;117'
+0464 base=d.codz
+0465 end
+0466 
+0467 when k=='DOWNARROWKEYPAD'  then do
+0468 d.z='0;80'
+0469 d.s=50
+0470 d.c='0;145'
+0471 base=d.codz
+0472 end
+0473 
+0474 when k=='PAGEDOWNKEYPAD'  then do
+0475 d.z='0;81'
+0476 d.s=51
+0477 d.c='0;118'
+0478 base=d.codz
+0479 end
+0480 
+0481 when k=='INSERTKEYPAD'  then do
+0482 d.z='0;82'
+0483 d.s=48
+0484 d.c='0;146'
+0485 base=d.codz
+0486 end
+0487 
+0488 when k=='DELETEKEYPAD'  then do
+0489 d.z='0;83'
+0490 d.s=46
+0491 d.c='0;147'
+0492 base=d.codz
+0493 end
+0494 
+0495 when k=='ENTERKEYPAD'  then do
+0496 d.z=13
+0497 d.c=10
+0498 d.a='0;166'
+0499 base=d.codz
+0500 end
+0501 
+0502 when k=='/KEYPAD'  then do
+0503 d.z=47
+0504 d.s=d.z
+0505 d.c='0;142'
+0506 d.a='0;74'
+0507 base=d.codz
+0508 end
+0509 
+0510 when k=='*KEYPAD'  then do
+0511 d.z=42
+0512 d.s='o;144'
+0513 d.c='0;78'
+0514 base=d.codz
+0515 end
+0516 
+0517 when k=='-KEYPAD'  then do
+0518 d.z=45
+0519 d.s=d.z
+0520 d.c='0;149'
+0521 d.a='0;164'
+0522 base=d.codz
+0523 end
+0524 
+0525 when k=='+KEYPAD'  then do
+0526 d.z=43
+0527 d.s=d.z
+0528 d.c='0;150'
+0529 d.a='0;55'
+0530 base=d.codz
+0531 end
+0532 otherwise  nop
+0533 end   /*select*/
+0534 
+0535 if base\==''  then leave
+0536 call er 50,'key' origk
+0537 end    /*do 1*/
+0538 
+0539 jy=words(y)
+0540 yy=
+0541 
+0542 do j=1  for jy
+0543 w=word(y,j)
+0544 lw=length(w)
+0545 lc=left(w,1)
+0546 rc2=right(w,2);  upper rc2
+0547 
+0548 if ((lc=='"' & rc2=='"X') | (lc=="'" & rc2=="'X")) & lw>3  then
+0549 do
+0550 if (lw-3)//2\==0  then call er 56,w 'hexdigits for the hexstring' w
+0551 wm=substr(w,2,lw-3)
+0552 if \isHex(wm)     then call er 40,w
+0553 w=x2c(wm)
+0554 end
+0555 
+0556 yy=yy w
+0557 end   /*j*/
+0558 /*if useAuto=1, then use AUTOENTER as is.*/
+0559 /*if useAuto=0 & funcKey, then use ENTER.*/
+0560 if \useAuto & functionKey  then autoEnter=13
+0561 yy=substr(yy,2)
+0562 !!='1b'x"["                          /* ESC[s  ───►  save    cursor position. */
+0563 /* ESC[u  ───►  restore cursor position. */
+0564 /* ESC[1A ───►  move    cursor up 1 line.*/
+0565 
+0566 @echo !!"s"!! || base';"'yy'";'autoEnter'p'!!"u"!!'1A'     /*issue the define.*/
+0567 nk=k
+0568 if cod\==''  then nk=codl"-"k
+0569 
+0570 call $t '.Q=1' fops right(nk,max(length(nk),5)) "──►" yy
+0571 exit                                   /*stick a fork in it,  we're all done. */
+0572 
+0573 /*═════════════════════════════one─liner subroutines══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════*/
+0574 !all:  !!=!;!=space(!);upper !;call !FID;!nt=right(!var('OS'),2)=="NT";!cls=word('CLS VMFCLEAR CLRSCREEN',1+!cms+!tso*2);if arg(1)\==1 then return 0;if wordpos(!,"? ?SAMPLES ?AUTHOR ?FLOW")==0 then return 0;!call=']$H';call '$H' !fn !;!call=;return 1
+0575 !cal:  if symbol('!CALL')\=="VAR"  then !call=; return !call
+0576 !env:  !env='ENVIRONMENT';  if !sys=='MSDOS' | !brexx | !r4 | !roo  then !env='SYSTEM';  if !os2  then !env='OS2'!env;  !ebcdic=1=='f0'x;   return
+0577 !FID:  parse upper source !sys !fun !FID . 1 . . !fn !ft !fm .; call !sys; if !dos  then do; _=lastpos('\',!fn); !fm=left(!fn,_); !fn=substr(!fn,_+1); parse var !fn !fn '.' !ft; end; return word(0 !fn !ft !fm,1+("0"arg(1)))
+0578 !rex:  parse upper version !ver !vernum !verdate .;  !brexx='BY'==!vernum;  !kexx='KEXX'==!ver;  !pcrexx='REXX/PERSONAL'==!ver | 'REXX/PC'==!ver;  !r4='REXX-R4'==!ver;  !regina='REXX-REGINA'==left(!ver,11);  !roo='REXX-ROO'==!ver;  call !env;  return
+0579 !sys:  !cms=!sys=='CMS';  !os2=!sys=="OS2";  !tso=!sys=='TSO' | !sys=="MVS";  !vse=!sys=='VSE';  !dos=pos("DOS",!sys)\==0 | pos('WIN',!sys)\==0 | !sys=="CMD";  call !rex;    return
+0580 !var:  call !FID;  if !kexx  then return space(dosenv(arg(1)));   return space(value(arg(1),,!env))
+0581 
+0582 $defkey:   !call=']$DEFKEY';  call "$DEFKEY" arg(1);  !call=;     return result
+0583 $t:        !call=']$T';       call "$T" arg(1);       !call=;     return result
+0584 appenda:   procedure;  parse arg x,_;  if right(x,length(_))\==_  then x=x || _;            return x
+0585 er:        parse arg _1,_2;  call '$ERR' "14"p(_1) p(word(_1,2) !FID(1)) _2;  if _1<0  then return _1;    exit result
+0586 halt:      call er .1
+0587 hasCol:    return pos(':',arg(1))\==0
+0588 homeDrive: if symbol('HOMEDRIVE')\=="VAR"  then homeDrive=p(!var('HOMEDRIVE') 'C:');   return homeDrive
+0589 isHex:     return datatype(arg(1),'X')
+0590 isint:     return datatype(arg(1),'W')
+0591 isNum:     return datatype(arg(1),'N')
+0592 isUpp:     return datatype(arg(1),'U')
+0593 it:        "ARG"(1);if rc==0  then return;  call er 68,rc arg(1)
+0594 noValue:   !sigl=sigl;  call er 17,!FID(2) !FID(3) !sigl condition('D') sourceline(!sigl)
+0595 p:         return word(arg(1),1)
+0596 prefixa:   procedure;  parse arg x,_;  if left(x,length(_))\==_  then x=_ || x;   return x
+0597 squish:    return space(translate(arg(1),,word(arg(2) ',',1)),0)
+0598 syntax:    !sigl=sigl;  call er 13,!FID(2) !FID(3) !sigl !cal() condition('D') sourceline(!sigl)
+0599 whenstamp: arg whenFID;  call lineout whenFID,strip(left(date('U'),6)left(date("S"),4) time() arg(2));  call lineout whenFID,' ';  call lineout whenFID;   return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                596 596
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !verdate         -> newV1            578
+002 @DOSKEY          -> newV2            33
+003 !ebcdic          -> newV3            576
+004 !vernum          -> newV4            578
+005 !pcrexx          -> newV5            578
+006 !regina          -> newV6            578
+007 @offon           -> newV7            43
+008 @warns           -> newV8            44
+009 !brexx           -> newV9            578
+010 $home            -> newV10           25 26
+011 $path            -> newV11           27 28 29 31
+012 @ECHO            -> newV12           34
+013 @TYPE            -> newV13           35
+014 !call            -> newV14           574 574 582 583
+015 !kexx            -> newV15           578
+016 !cls             -> newV16           574
+017 !env             -> newV17           576 576
+018 !sys             -> newV18           577
+019 !fun             -> newV19           577
+020 !FID             -> newV20           577
+021 !ver             -> newV21           578
+022 !roo             -> newV22           578
+023 !os2             -> newV23           579
+024 !tso             -> newV24           579
+025 !vse             -> newV25           579
+026 !dos             -> newV26           579
+027 !nt              -> newV27           574
+028 !fn              -> newV28           577 577 577 577
+029 !ft              -> newV29           577 577
+030 !fm              -> newV30           577 577
+031 !r4              -> newV31           578
+032 !!               -> newV32           562
+033 _1               -> newV33           585
+034 _2               -> newV34           585
+035 !                -> newV35           3 574
+036 _                -> newV36           101 112 144 154 190 238 577 584 596

@@ -1,0 +1,89 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program finds words  (within an identified dict.)  to solve a word ladder puzzle.*/
+0002 parse arg base targ iFID .                       /*obtain optional arguments from the CL*/
+0003 if base=='' | base=="," then base= 'boy'         /*Not specified?  Then use the default.*/
+0004 if targ=='' | targ=="," then targ= 'man'         /* "      "         "   "   "     "    */
+0005 if iFID=='' | iFID=="," then iFID='unixdict.txt' /* "      "         "   "   "     "    */
+0006 abc=  'abcdefghijklmnopqrstuvwxyz'               /*the lowercase (Latin) alphabet.      */
+0007 abcU= abc;    upper abcU                         /* "  uppercase    "        "          */
+0008 base= lower(base);           targ= lower(targ)   /*lowercase the BASE and also the TARG.*/
+0009 L= length(base)                               /*length of the BASE  (in characters). */
+0010 if L<2  then call err 'base word is too small or missing'              /*oops, too small*/
+0011 if length(targ)\==L  then call msg , "target word isn't the same length as the base word"
+0012 call letters                                     /*assign letters,  faster than SUBSTR. */
+0013 #= 0                                             /*# of words whose length matches BASE.*/
+0014 @.=                                              /*default value of any dictionary word.*/
+0015 do recs=0  while lines(iFID)\==0        /*read each word in the file  (word=X).*/
+0016 x= lower(strip( linein( iFID) ) )       /*pick off a word from the input line. */
+0017 if length(x)\==L  then iterate          /*Word not correct length?  Then skip. */
+0018 #= # + 1;         @.x= 1                /*bump # words with length L; semaphore*/
+0019 end   /*recs*/                          /* [↑]   semaphore name is uppercased. */
+0020 !.= 0
+0021 say copies('─', 30)     recs       "words in the dictionary file: "       iFID
+0022 say copies('─', 30)       #        "words in the dictionary file of length: "  L
+0023 say copies('─', 30)   ' base  word is: '  base
+0024 say copies('─', 30)   'target word is: '  targ
+0025 rung= targ
+0026 $= base
+0027 do f=1  for m;    call look;  if result\==''  then leave      /*Found?  Quit.*/
+0028 end   /*f*/
+0029 say
+0030 if f>m  then call msg  'no word ladder solution possible for '   base   " ──► "   targ
+0031 
+0032 do f-2;       $= base;    !.= 0   /*process all the rungs that were found*/
+0033 do forever; call look;  if result\==''  then leave      /*Found?  Quit.*/
+0034 end   /*forever*/
+0035 end     /*f-2*/
+0036 call show words(rung)
+0037 exit 0                                           /*stick a fork in it,  we're all done. */
+0038 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0039 msg:  say;   if arg()==2  then say '***error*** ' arg(2);  else say arg(1);  say;  exit 13
+0040 show: say 'a solution: ' base; do j=1 to arg(1); say left('',12) word(rung,j); end; return
+0041 letters:     do m=1  for length(abc);         a.m= substr(abc, m, 1);         end;  return
+0042 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0043 look: procedure expose @. !. a. $ abc base L rung targ search;        rungs= word(rung, 1)
+0044 $$=;                                                            rung#= words(rungs)
+0045 do i=1  for words($);                  y= word($, i);     !.y= 1
+0046 do k=1  for L
+0047 do n=1  for 26;  z= overlay(a.n, y, k)             /*change a letter*/
+0048 if @.z==''  then iterate       /*Is this not a word?  Then skip it. */
+0049 if !.z      then iterate       /* "   "   a  repeat?    "    "   "  */
+0050 if z==rungs then rung= y rung  /*prepend a word to the rung list.   */
+0051 if z==rungs & rung#>1  then return z               /*short─circuit. */
+0052 if z==targ  then return z
+0053 $$= $$ z                       /*append a possible ladder word to $$*/
+0054 end   /*n*/
+0055 end      /*k*/
+0056 end         /*i*/
+0057 $= $$;                         return ''
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 base             2 3 8
+002 targ             2 4 8
+003 abc              6
+004 abcU             7
+005 L                9
+006 recs             15
+007 x                16
+008 rung             25 50
+009 f                27
+010 j                40
+011 a.               41
+012 rungs            43
+013 rung#            44
+014 i                45
+015 y                45
+016 k                46
+017 n                47
+018 z                47
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           14 18
+002 !.               -> newV2.           20 32 45
+003 $$               -> newV3            44 53
+004 #                -> newV4            13 18
+005 $                -> newV5            26 32 57

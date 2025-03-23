@@ -1,0 +1,22 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program finds the  greatest element  in a list (of the first 25 reversed primes).*/
+0002 $ = reverse(2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97)
+0003 say 'list of numbers = '  $                      /*show the original list of numbers.   */
+0004 big=word($, 1)                                   /*choose an initial biggest number.    */
+0005 # = words($);        do j=2  to #                /*traipse through the list,  find max. */
+0006 big=max(big, word($, j) )   /*use the  MAX  BIF to find the biggie.*/
+0007 end   /*j*/
+0008 say                                              /*stick a fork in it,  we're all done. */
+0009 say 'the biggest value in a list of '     #      " numbers is: "     big
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 big              4 6
+002 j                5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            2
+002 #                -> newV2            5

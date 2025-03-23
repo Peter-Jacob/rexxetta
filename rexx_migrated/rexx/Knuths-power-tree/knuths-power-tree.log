@@ -1,0 +1,94 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program produces & displays a  power tree  for P,  and calculates & displays X^P.*/
+0002 numeric digits 1000                              /*be able to handle some large numbers.*/
+0003 parse arg XP                                     /*get sets:   X, low power, high power.*/
+0004 if XP=''  then XP='2 -4 17   3 191 191   1.1 81' /*Not specified?  Then use the default.*/
+0005 /*────── X LP HP   X  LP  HP    X  LP  ◄── X, low power, high power ··· repeat*/
+0006 do  until XP=''
+0007 parse var XP    x pL pH   XP;    x= x / 1   /*get X, lowP, highP; and normalize X. */
+0008 if pH=''  then pH= pL                       /*No highPower?  Then assume lowPower. */
+0009 
+0010 do e=pL  to pH;           p= abs(e) / 1   /*use a range of powers;   use  │E│    */
+0011 $= powerTree(p);          w= length(pH)   /*construct the power tree, (pow list).*/
+0012 /* [↑]  W≡length for an aligned display*/
+0013 do i=1  for words($);  @.i= word($, i) /*build a fast Knuth's power tree array*/
+0014 end   /*i*/
+0015 
+0016 if p==0  then do;  z= 1;  call show;  iterate;  end  /*handle case of zero power.*/
+0017 !.= .;   z= x;     !.1= z;     prv= z     /*define/construct the first power of X*/
+0018 
+0019 do k=2  to words($);       n= @.k     /*obtain the power (number) to be used.*/
+0020 prev= k - 1;     diff= n - @.prev     /*these are used for the odd powers.   */
+0021 if n//2==0  then z= prv ** 2          /*Even power?   Then square the number.*/
+0022 else z= z * !.diff        /* Odd   "        "  mult. by pow diff.*/
+0023 !.n= z                                /*remember for other multiplications.  */
+0024 prv= z                                /*remember for squaring the numbers.   */
+0025 end   /*k*/
+0026 call show                                 /*display the expression and its value.*/
+0027 end       /*e*/
+0028 end         /*until XP ···*/
+0029 exit 0                                           /*stick a fork in it,  we're all done. */
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 powerTree: arg y 1 oy;   $=                      /*Z is the result; $ is the power tree.*/
+0032 if y=0 | y=1  then return y           /*handle special cases for zero & unity*/
+0033 #.= 0;   @.= 0;    #.0= 1             /*define default & initial array values*/
+0034 /* [↓]  add blank "flag" thingy──►list.*/
+0035 do  while \(y//2);  $= $ ' '  /*reduce "front" even power #s to odd #*/
+0036 if y\==oy  then $= y $        /*(only)  ignore the first power number*/
+0037 y= y % 2                      /*integer divide the power (it's even).*/
+0038 end   /*while*/
+0039 
+0040 if $\==''  then $= y $                /*re─introduce the last power number.  */
+0041 $= $ oy                               /*insert last power number 1st in list.*/
+0042 if y>1  then do      while  @.y==0;            n= #.0;        m= 0
+0043 do    while  n\==0;             q= 0;          s= n
+0044 do  while  s\==0;             _= n + s
+0045 if @._==0  then do;  if q==0  then m_= _;
+0046 #._= q;  @._= n;        q= _
+0047 end
+0048 s= @.s
+0049 end   /*while s¬==0*/
+0050 if q\==0  then do;   #.m= q;   m= m_;   end
+0051 n= #.n
+0052 end     /*while n¬==0*/
+0053 #.m= 0
+0054 end       /*while @.y==0*/
+0055 z= @.y
+0056 do  while z\==0;   $= z $;   z= @.z;  end /*build power list*/
+0057 return space($)                                            /*del extra blanks*/
+0058 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0059 show: if e<0  then z=format(1/z, , 40)/1;     _=right(e, w)           /*use reciprocal? */
+0060 say left('power tree for '  _  " is: "  $,60)  '═══'  x"^"_  ' is: '  z;      return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 XP               7 7
+002 x                7 7
+003 pL               7
+004 pH               7 8
+005 e                10
+006 p                10
+007 w                11
+008 i                13
+009 z                16 17 21 55 56
+010 prv              17 24
+011 k                19
+012 n                19 42 51
+013 prev             20
+014 diff             20
+015 y                37
+016 while            42 43 44 56
+017 m                42 50
+018 q                43 46
+019 s                43 48
+020 m_               45
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           13 33 46
+002 !.               -> newV2.           17 17 23
+003 #.               -> newV3.           33 33 46 50 53
+004 $                -> newV4            11 31 35 36 40 41 56
+005 _                -> newV5            44 59

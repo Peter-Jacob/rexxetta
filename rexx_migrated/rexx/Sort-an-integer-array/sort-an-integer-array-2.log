@@ -1,0 +1,52 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program sorts  (using E─sort)  and displays a list of some interesting integers. */
+0002 Bell=  1 1 2 5 15 52 203 877 4140 21147 115975           /*a few  Bell          "     */
+0003 Bern= '1 -1 1 0 -1 0 1 0 -1 0 5 0 -691 0 7 0 -3617'      /*"  "   Bernoulli     "     */
+0004 Perrin=  3 0 2 3 2 5 5 7 10 12 17 22 29 39 51 68 90        /*"  "   Perrin        "     */
+0005 list= Bell  Bern  Perrin                                 /*throw them all ───► a pot. */
+0006 say 'unsorted =' list                                      /*display what's being shown.*/
+0007 #= words(list)                                             /*nice to have # of elements.*/
+0008 do j=1  for #                /*build an array, a single   */
+0009 @.j=word(list, j)            /*     ··· element at a time.*/
+0010 end    /*j*/
+0011 call eSort #                                               /*sort the collection of #s. */
+0012 $=;                           do k=1  for #;   $= $ @.k    /*build a list from the array*/
+0013 end    /*k*/
+0014 say '  sorted =' space($)                                  /*display the sorted list.   */
+0015 exit                                              /*stick a fork in it,  we're all done.*/
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 eSort: procedure expose @.;   parse arg N;       h= N                /*an eXchange sort.*/
+0018 do  while h>1;                     h= h % 2            /*define a segment.*/
+0019 do i=1  for N-h;                 j= i;      k= h + i /*sort top segment.*/
+0020 do  while  @.k<@.j                                 /*see if need swap.*/
+0021 parse value  @.j  @.k   with   @.k  @.j            /*swap two elements*/
+0022 if h>=j  then leave;           j= j - h;  k= k - h /*this part sorted?*/
+0023 end   /*while @.k<@.j*/
+0024 end     /*i*/
+0025 end       /*while h>1*/
+0026 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                17
+002 h                17 18
+003 i                19
+004 j                19 22
+005 k                19 22
+006 k                12
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           9 21 21
+002 #                -> newV2            7
+003 $                -> newV3            12 12

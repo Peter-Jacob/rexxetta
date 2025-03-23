@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 Parse Value '0 0 1' With n.1 n.2 n.3   /* Normal Vector of the plane */
+0003 Parse Value '0 0 5' With p.1 p.2 p.3   /* Point in the plane         */
+0004 Parse Value '0 0 10' With a.1 a.2 a.3  /* Point of the line          */
+0005 Parse Value '0 -1 -1' With v.1 v.2 v.3 /* Vector of the line         */
+0006 
+0007 a=n.1
+0008 b=n.2
+0009 c=n.3
+0010 d=n.1*p.1+n.2*p.2+n.3*p.3  /* Parameter form of the plane */
+0011 Say a'*x +' b'*y +' c'*z =' d
+0012 
+0013 t=(d-(a*a.1+b*a.2+c*a.3))/(a*v.1+b*v.2+c*v.3)
+0014 
+0015 x=a.1+t*v.1
+0016 y=a.2+t*v.2
+0017 z=a.3+t*v.3
+0018 
+0019 Say 'Intersection: P('||x','y','z')'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 NORMAL.1         
+002 NORMAL.2         
+003 NORMAL.3         
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 v.               5 5 5
+008 a                7
+009 b                8
+010 c                9
+011 d                10
+012 t                13
+013 x                15
+014 y                16
+015 z                17
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

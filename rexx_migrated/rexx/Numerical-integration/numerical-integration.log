@@ -1,0 +1,64 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX pgm performs numerical integration using 5 different algorithms and show results.*/
+0002 numeric digits 20                                /*use twenty decimal digits precision. */
+0003 
+0004 do test=1  for 4;             say           /*perform the 4 different test suites. */
+0005 if test==1  then do;    L= 0;     H=    1;     i=     100;     end
+0006 if test==2  then do;    L= 1;     H=  100;     i=    1000;     end
+0007 if test==3  then do;    L= 0;     H= 5000;     i= 5000000;     end
+0008 if test==4  then do;    L= 0;     H= 6000;     i= 6000000;     end
+0009 say center('test' test, 79, "═")            /*display a header for the test suite. */
+0010 say '           left rectangular('L", "H', 'i")  ──► "         left_rect(L, H, i)
+0011 say '       midpoint rectangular('L", "H', 'i")  ──► "     midpoint_rect(L, H, i)
+0012 say '          right rectangular('L", "H', 'i")  ──► "        right_rect(L, H, i)
+0013 say '                    Simpson('L", "H', 'i")  ──► "           Simpson(L, H, i)
+0014 say '                  trapezium('L", "H', 'i")  ──► "         trapezium(L, H, i)
+0015 end   /*test*/
+0016 exit                                             /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 f:   parse arg y;  if test>2   then return y     /*choose the   "as─is"   function.     */
+0019 if test==1  then return y**3  /*   "    "     cube     function.     */
+0020 return 1/y   /*   "    "  reciprocal     "          */
+0021 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0022 left_rect:     procedure expose test; parse arg a,b,#;     $= 0;                h= (b-a)/#
+0023 do x=a      by h  for #;      $= $ + f(x)
+0024 end   /*x*/
+0025 return $*h/1
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 midpoint_rect: procedure expose test; parse arg a,b,#;     $= 0;                h= (b-a)/#
+0028 do x=a+h/2  by h  for #;      $= $ + f(x)
+0029 end   /*x*/
+0030 return $*h/1
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 right_rect:    procedure expose test; parse arg a,b,#;     $= 0;                h= (b-a)/#
+0033 do x=a+h    by h  for #;      $= $ + f(x)
+0034 end   /*x*/
+0035 return $*h/1
+0036 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0037 Simpson:       procedure expose test; parse arg a,b,#;                          h= (b-a)/#
+0038 hh= h/2;                                    $= f(a + hh)
+0039 @= 0;         do x=1  for #-1; hx=h*x + a;  @= @ + f(hx)
+0040 $= $ + f(hx + hh)
+0041 end   /*x*/
+0042 
+0043 return h * (f(a) + f(b) + 4*$ + 2*@)  /  6
+0044 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0045 trapezium:     procedure expose test; parse arg a,b,#;     $= 0;                h= (b-a)/#
+0046 do x=a  by h  for #;          $= $ + (f(x) + f(x+h))
+0047 end   /*x*/
+0048 return $*h/2
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                45
+002 b                45
+003 h                45
+004 x                46
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            22 27 32 37 45
+002 $                -> newV2            22 23 27 28 32 33 38 40 45 46
+003 @                -> newV3            39 39

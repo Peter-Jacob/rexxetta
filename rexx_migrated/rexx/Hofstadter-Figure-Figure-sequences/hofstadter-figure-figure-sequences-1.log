@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /*REXX program  calculates and verifies  the  Hofstadter Figure─Figure sequences.       */
+0002 parse arg x top bot .                            /*obtain optional arguments from the CL*/
+0003 if   x=='' |   x==","  then   x=  10             /*Not specified?  Then use the default.*/
+0004 if top=='' | top==","  then top=1000             /* "      "         "   "   "      "   */
+0005 if bot=='' | bot==","  then bot=  40             /* "      "         "   "   "      "   */
+0006 low=1;         if x<0  then low=abs(x)           /*only display a  single   │X│  value? */
+0007 r.=0;  r.1=1;  rr.=r.;  rr.1=1;   s.=r.;  s.1=2  /*initialize the  R, RR, and S  arrays.*/
+0008 errs=0                                           /*the number of errors found  (so far).*/
+0009 do i=low  to abs(x)                 /*display the 1st  X  values of  R & S.*/
+0010 say right('R('i") =",20) right(FFR(i),7) right('S('i") =",20) right(FFS(i),7)
+0011 end   /*i*/
+0012 /* [↑]  list the 1st X Fig─Fig numbers.*/
+0013 if x<1  then exit                                /*if X isn't positive, then we're done.*/
+0014 $.=0                                             /*initialize the memoization ($) array.*/
+0015 do m=1  for  bot;  r=FFR(m);  $.r=1 /*calculate the first forty  R  values.*/
+0016 end   /*m*/                         /* [↑]  ($.)  is used for memoization. */
+0017 /* [↓]  check for duplicate #s in R & S*/
+0018 do n=1  for top-bot;     s=FFS(n)   /*calculate the value of  FFS(n).      */
+0019 if $.s  then call ser 'duplicate number in R and S lists:' s;   $.s=1
+0020 end   /*n*/                         /* [↑]  calculate the 1st 960 S values.*/
+0021 /* [↓]  check for missing values in R│S*/
+0022 do v=1  for top;  if \$.v  then  call ser     'missing R │ S:'    v
+0023 end   /*v*/                         /* [↑]  are all 1≤ numbers ≤1k present?*/
+0024 say
+0025 if errs==0  then say 'verification completed for all numbers from  1 ──►' top "  [inclusive]."
+0026 else say 'verification failed with'      errs      "errors."
+0027 exit                                             /*stick a fork in it,  we're all done. */
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 FFR: procedure expose r. rr. s.; parse arg n     /*obtain the number from the arguments.*/
+0030 if r.n\==0  then return r.n                 /*R.n  defined?  Then return the value.*/
+0031 _=FFR(n-1) + FFS(n-1)                       /*calculate the  FFR  and  FFS  values.*/
+0032 r.n=_;       rr._=1;        return _        /*assign the value to R & RR;   return.*/
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 FFS: procedure expose r. s. rr.; parse arg n     /*search for not null  R or S  number. */
+0035 if s.n==0  then do k=1  for n               /* [↓]  1st  IF  is a  SHORT CIRCUIT.  */
+0036 if s.k\==0  then if r.k\==0  then iterate       /*are both defined?*/
+0037 call FFR k                  /*define  R.k  via the  FFR  subroutine*/
+0038 km=k-1;     _=s.km+1        /*calc. the next  S  number,  possibly.*/
+0039 _=_+rr._;   s.k=_           /*define an element of  the  S  array. */
+0040 end   /*k*/
+0041 return s.n                                  /*return   S.n   value to the invoker. */
+0042 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0043 ser: errs=errs+1;    say  '***error***'  arg(1);                  return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                34
+002 k                35
+003 km               38
+004 s.               39
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $.               -> newV1.           14 15 19
+002 _                -> newV2            31 38 39

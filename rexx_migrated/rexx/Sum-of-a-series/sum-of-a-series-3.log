@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program sums the first    N    terms of     1/(k**2),          k=1 ──►  N.       */
+0002 parse arg N D .                                  /*obtain optional arguments from the CL*/
+0003 if N=='' | N==","  then N=1000                   /*Not specified?  Then use the default.*/
+0004 if D=='' | D==","  then D=  60                   /* "      "         "   "   "     "    */
+0005 numeric digits D                                 /*use D digits (9 is the REXX default).*/
+0006 w=length(N)                                      /*W   is used for aligning the output. */
+0007 $=0                                              /*initialize the sum to zero.          */
+0008 old=1                                            /*the new sum to compared to the old.  */
+0009 p=0                                              /*significant decimal precision so far.*/
+0010 do k=1  for N                               /* [↓]  compute for   N   terms.       */
+0011 $=$  +  1/k**2                              /*add a squared reciprocal to the sum. */
+0012 c=compare($,old)                            /*see how we're doing with precision.  */
+0013 if c>p  then do                             /*Got another significant decimal dig? */
+0014 say 'The significant sum of'  right(k,w)      "terms is:"      left($,c)
+0015 p=c                            /*use the new significant precision.   */
+0016 end                            /* [↑]  display significant part of sum*/
+0017 old=$                                       /*use "old" sum for the next compare.  */
+0018 end   /*k*/
+0019 say                                              /*display blank line for the separator.*/
+0020 say 'The sum of'   right(N,w)    "terms is:"     /*display the  sum's  preamble line.   */
+0021 say $                                            /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                2 3
+002 D                2 4
+003 w                6
+004 old              8 17
+005 p                9 15
+006 k                10
+007 c                12
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            7 11

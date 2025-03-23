@@ -1,0 +1,18 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /* Check if a file already exists */
+0002 filename='file.txt'
+0003 IF ~Openfile(filename) THEN CALL Openfile(':'filename)
+0004 EXIT 0
+0005 Openfile:
+0006 IF ~Exists(filename) THEN RETURN 0
+0007 CALL Open(filehandle,filename,'APPEND')
+0008 RETURN 1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 filename         2
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

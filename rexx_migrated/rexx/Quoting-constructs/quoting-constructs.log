@@ -1,0 +1,82 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates various ways to express a string of characters  or  numbers.*/
+0002 a= 'This is one method of including a '' (an apostrophe) within a string.'
+0003 b= "This is one method of including a ' (an apostrophe) within a string."
+0004 
+0005 /*sometimes,  an apostrophe is called  */
+0006 /*a quote.                             */
+0007 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0008 c= "This is one method of including a "" (a double quote) within a string."
+0009 d= 'This is one method of including a " (a double quote) within a string.'
+0010 
+0011 /*sometimes,  a double quote is also   */
+0012 /*called a quote,  which can make for  */
+0013 /*some confusion and bewilderment.     */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 f= 'This is one method of expressing a long literal by concatenations,  the '     ||  ,
+0016 'trailing character of the above clause must contain a trailing '              ||  ,
+0017 'comma (,)  === note the embedded trailing blank in the above 2 statements.'
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 g= 'This is another method of expressing a long literal by '         ,
+0020 "abutments,  the trailing character of the above clause must "    ,
+0021 'contain a trailing comma (,)'
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 h= 'This is another method of expressing a long literal by '       ,  /*still continued.*/
+0024 "abutments,  the trailing character of the above clause must "                  ,
+0025 'contain a trailing comma (,)  ---  in this case, the comment  /* ... */  is '   ,
+0026 'essentially is not considered to be "part of" the REXX clause.'
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 i= 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97 101 103 107 109
+0029 
+0030 /*This is one way to express a list of */
+0031 /*numbers that don't have a sign.      */
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 j= 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97 101 103 107 109,
+0034 71 73 79 83 89 97 101 103 107 109 113 127 131 137 139 149 151 157 163 167 173 179 181
+0035 
+0036 /*This is one way to express a long    */
+0037 /*list of numbers that don't have a    */
+0038 /*sign.                                */
+0039 /*Note that this form of continuation  */
+0040 /*implies a blank is abutted to first  */
+0041 /*part of the REXX statement.          */
+0042 /*Also note that some REXXs have a     */
+0043 /*maximum clause length.               */
+0044 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0045 k= 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97 101 103 107 109,
+0046 71 73   79 83 89 97 101 103 107 109 113 127 131 137 139 149 151 157 163 167 173 179 181
+0047 
+0048 /*The  J  and  K  values are identical,*/
+0049 /*superfluous and extraneous blanks are*/
+0050 /*ignored.                             */
+0051 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0052 l= '-2 3 +5 7 -11 13 17 19 -23 29 -31 37 -41 43 47 -53 59 -61 67 -71 73 79 -83 89 97 -101'
+0053 
+0054 /*This is one way to express a list of */
+0055 /*numbers that have a sign.            */
+0056 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0057 m= a b c d f g h i j k l                         /*this will create a list of all the   */
+0058 /*listed strings used  (so far)  into  */
+0059 /*the variable     L      (with an     */
+0060 /*intervening blank between each       */
+0061 /*variable's value.                    */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                2
+002 b                3
+003 c                8
+004 d                9
+005 f                15
+006 g                19
+007 h                23
+008 i                28
+009 j                33
+010 k                45
+011 l                52
+012 m                57
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

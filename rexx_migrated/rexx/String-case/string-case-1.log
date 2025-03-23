@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 abc  = "abcdefghijklmnopqrstuvwxyz"              /*define all  lowercase  Latin letters.*/
+0002 abcU = translate(abc)                            /*   "    "   uppercase    "      "    */
+0003 
+0004 x = 'alphaBETA'                                  /*define a string to a REXX variable.  */
+0005 y = translate(x)                                 /*uppercase  X  and store it ───►  Y   */
+0006 z = translate(x, abc, abcU)                      /*translate uppercase──►lowercase chars*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 abc              1
+002 abcU             2
+003 x                4
+004 y                5
+005 z                6
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

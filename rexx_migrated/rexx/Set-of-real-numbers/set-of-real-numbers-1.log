@@ -1,0 +1,60 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates  a way to  represent any set of real numbers  and  usage.  */
+0002 call quertySet 1, 3,  '[1,2)'
+0003 call quertySet ,   ,  '[0,2)   union   (1,3)'
+0004 call quertySet ,   ,  '[0,1)   union   (2,3]'
+0005 call quertySet ,   ,  '[0,2]   inter   (1,3)'
+0006 call quertySet ,   ,  '(1,2)     ∩     (2,3]'
+0007 call quertySet ,   ,  '[0,2)     \     (1,3)'
+0008 say;                                      say center(' start of required tasks ', 40, "═")
+0009 call quertySet ,   ,  '(0,1]   union   [0,2)'
+0010 call quertySet ,   ,  '[0,2)     ∩     (1,3)'
+0011 call quertySet ,   ,  '[0,3]     -     (0,1)'
+0012 call quertySet ,   ,  '[0,3]     -     [0,1]'
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 emptySet:  parse arg _;               nam= valSet(_, 00);              return @.3>@.4
+0016 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0017 isInSet:   parse arg #,x;             call valSet x
+0018 if \datatype(#, 'N')       then call set_bad "number isn't not numeric:" #
+0019 if (@.1=='(' &  #<=@.2) |,
+0020 (@.1=='[' &  #< @.2) |,
+0021 (@.4==')' &  #>=@.3) |,
+0022 (@.4==']' &  #> @.3)    then return 0
+0023 return 1
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 quertySet: parse arg lv,hv,s1 oop s2 .;  op=oop;   upper op;      cop=
+0026 if lv==''  then lv=0;      if hv==""  then hv= 2;      if op==''  then cop=  0
+0027 if wordpos(op, '| or UNION')                 \==0                 then cop= "|"
+0028 if wordpos(op, '& ∩ AND INTER INTERSECTION') \==0                 then cop= "&"
+0029 if wordpos(op, '\ - DIF DIFF DIFFERENCE')    \==0                 then cop= "\"
+0030 say
+0031 do i=lv  to hv;  b = isInSet(i, s1)
+0032 if cop\==0  then do
+0033 b2= isInSet(i, s2)
+0034 if cop=='&'  then b= b & b2
+0035 if cop=='|'  then b= b | b2
+0036 if cop=='\'  then b= b & \b2
+0037 end
+0038 express = s1 center(oop, max(5, length(oop) ) )    s2
+0039 say right(i, 5)    ' is in set'     express": "   word('no yes', b+1)
+0040 end   /*i*/
+0041 return
+0042 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0043 valSet:    parse arg q;   q=space(q, 0);    L=length(q);     @.0= ',';     @.4= right(q,1)
+0044 parse var q    @.1  2  @.2  ','  @.3  (@.4)
+0045 if @.2>@.3  then parse var L   . @.0  @.2  @.3
+0046 return space(@.1 @.2 @.0 @.3 @.4, 0)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 L                45
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 (@.              -> newV1.           20 21 22 44
+002 @.               -> newV2.           43 43 44 44 44 45 45 45
+003 _                -> newV3            15
+004 #                -> newV4            17

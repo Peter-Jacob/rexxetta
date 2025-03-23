@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX pgm gens X & Y coördinates for a scatter plot to be used to show a Barnsley fern.*/
+0002 parse arg N FID seed .                           /*obtain optional arguments from the CL*/
+0003 if   N=='' |   N==","  then   N= 100000          /*Not specified?   Then use the default*/
+0004 if FID=='' | FID==","  then FID= 'BARNSLEY.DAT'  /* "      "          "   "   "     "   */
+0005 if datatype(seed,'W')  then call random ,,seed   /*if specified, then use random seed.  */
+0006 call lineout FID, , 1                            /*just set the file ptr to the 1st line*/
+0007 x=0                                              /*set the initial value for  X  coörd. */
+0008 y=0                                              /* "   "     "      "    "   Y    "    */
+0009 do #=1  for N                                /*generate   N   number of plot points.*/
+0010 ?=random(, 100)                              /*generate a random number: 0 ≤ ? ≤ 100*/
+0011 select
+0012 when ?==0  then do;   xx=   0           ;    yy=            .16*y         ;     end
+0013 when ?< 8  then do;   xx=  .2 *x - .26*y;    yy=  .23*x  +  .22*y  +  1.6 ;     end
+0014 when ?<15  then do;   xx= -.15*x + .28*y;    yy=  .26*x  +  .24*y  +   .44;     end
+0015 otherwise             xx=  .85*x + .04*y;    yy= -.04*x  +  .85*y  +  1.6
+0016 end   /*select*/
+0017 x=xx;                     y=yy
+0018 if #==1  then  do;    minx= x;  maxx= x;        miny= y;  maxy= y
+0019 end
+0020 minx= min(minx, x);       miny= min(miny, y)
+0021 maxx= max(maxx, x);       maxy= max(maxy, y)
+0022 call lineout FID, x","y
+0023 end      /*#*/                               /* [↓]  close the file (safe practice).*/
+0024 call lineout FID                                 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                2 3
+002 FID              2 4
+003 seed             2
+004 x                7 17
+005 y                8 17
+006 xx               12 13 14
+007 yy               12 13 14 15
+008 minx             18 20
+009 maxx             18 21
+010 miny             18 20
+011 maxy             18 21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            9
+002 ?                -> newV2            10

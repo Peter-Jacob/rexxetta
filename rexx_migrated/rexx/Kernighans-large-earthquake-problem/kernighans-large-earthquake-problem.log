@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program to read a file containing a list of earthquakes:   date, site, magnitude.*/
+0002 parse arg iFID mMag .                            /*obtain optional arguments from the CL*/
+0003 if iFID=='' | iFID==","  then iFID= 'earthquakes.dat' /*Not specified?  Then use default*/
+0004 if mMag=='' | mMag==","  then mMag= 6                 /* "      "         "   "     "   */
+0005 #=0                                              /*# of earthquakes that meet criteria. */
+0006 do j=0  while lines(iFID)\==0                 /*read all lines in the input file.    */
+0007 if j==0  then say 'Reading from file: ' iFID  /*show the name of the file being read.*/
+0008 parse value linein(iFID) with date site mag . /*parse three words from an input line.*/
+0009 if mag<=mMag  then iterate                    /*Is the quake too small?  Then skip it*/
+0010 #= # + 1;     if j==0  then say               /*bump the number of qualifying quakes.*/
+0011 if #==1  then say center('date', 20, "═")     '=magnitude='     center("site", 20, '═')
+0012 say               center(date, 20)      center(mag/1, 11)   '  '        site
+0013 end   /*j*/                                   /*stick a fork in it,  we're all done. */
+0014 say
+0015 say
+0016 if j\==0  then say j  'records read from file: ' iFID
+0017 say
+0018 if j==0  then say er 'file    '          iFID           "   is empty or not found."
+0019 else say #  ' earthquakes listed whose magnitude is  ≥ ' mMag
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 mMag             4
+002 j                6
+003 NORMAL.3         
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 date             8
+021 site             8
+022 mag              8
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            5 10

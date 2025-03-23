@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*REXX program computes  Hamming numbers:  1 ──► 20,  # 1691,  and  the  one millionth. */
+0002 numeric digits 100                               /*ensure enough decimal digits.        */
+0003 call hamming       1, 20                         /*show the 1st ──► twentieth Hamming #s*/
+0004 call hamming    1691                             /*show the 1,691st Hamming number.     */
+0005 call hamming 1000000                             /*show the  1 millionth Hamming number.*/
+0006 exit                                             /*stick a fork in it,  we're all done. */
+0007 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0008 hamming: procedure; parse arg x,y;         if y==''  then y= x;       w= length(y)
+0009 #2= 1;     #3= 1;      #5= 1;      @.= 0;        @.1= 1
+0010 do n=2  for y-1
+0011 @.n= min(2*@.#2,  3*@.#3,  5*@.#5)   /*pick the minimum of 3 Hamming numbers*/
+0012 if 2*@.#2 == @.n   then #2= #2 + 1   /*number already defined?  Use next #. */
+0013 if 3*@.#3 == @.n   then #3= #3 + 1   /*   "      "       "       "    "  "  */
+0014 if 5*@.#5 == @.n   then #5= #5 + 1   /*   "      "       "       "    "  "  */
+0015 end   /*n*/                          /* [↑]  maybe assign next 3 Hamming#s. */
+0016 do j=x  to y;     say  'Hamming('right(j, w)") ="    @.j
+0017 end   /*j*/
+0018 
+0019 say right( 'length of last Hamming number ='     length(@.y), 70);        say
+0020 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                8
+002 y                8 8
+003 w                8
+004 n                10
+005 j                16
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #2               -> newV1            9 12
+002 #3               -> newV2            9 13
+003 #5               -> newV3            9 14
+004 @.               -> newV4.           9 9 11

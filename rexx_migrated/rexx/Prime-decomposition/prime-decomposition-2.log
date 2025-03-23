@@ -1,0 +1,66 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX pgm does prime decomposition of a range of positive integers (with a prime count)*/
+0002 numeric digits 1000                              /*handle thousand digits for the powers*/
+0003 parse arg  bot  top  step   base  add            /*get optional arguments from the C.L. */
+0004 if  bot==''   then do;  bot=1;  top=100;  end    /*no  BOT given?  Then use the default.*/
+0005 if  top==''   then              top=bot          /* "  TOP?  "       "   "   "     "    */
+0006 if step==''   then step=  1                      /* " STEP?  "       "   "   "     "    */
+0007 if add ==''   then  add= -1                      /* "  ADD?  "       "   "   "     "    */
+0008 tell= top>0;       top=abs(top)                  /*if TOP is negative, suppress displays*/
+0009 w=length(top)                                    /*get maximum width for aligned display*/
+0010 if base\==''  then w=length(base**top)           /*will be testing powers of two later? */
+0011 @.=left('', 7);   @.0="{unity}";   @.1='[prime]' /*some literals:  pad;  prime (or not).*/
+0012 numeric digits max(9, w+1)                       /*maybe increase the digits precision. */
+0013 #=0                                              /*#:    is the number of primes found. */
+0014 do n=bot  to top  by step                /*process a single number  or  a range.*/
+0015 ?=n;  if base\==''  then ?=base**n + add /*should we perform a "Mercenne" test? */
+0016 pf=factr(?);      f=words(pf)            /*get prime factors; number of factors.*/
+0017 if f==1  then #=#+1                      /*Is N prime?  Then bump prime counter.*/
+0018 if tell  then say right(?,w)   right('('f")",9)   'prime factors: '     @.f     pf
+0019 end   /*n*/
+0020 say
+0021 ps= 'primes';    if p==1  then ps= "prime"       /*setup for proper English in sentence.*/
+0022 say right(#, w+9+1)       ps       'found.'      /*display the number of primes found.  */
+0023 exit                                             /*stick a fork in it,  we're all done. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 factr: procedure;  parse arg x 1 d,$             /*set X, D  to argument 1;  $  to null.*/
+0026 if x==1  then return ''                          /*handle the special case of   X = 1.  */
+0027 do  while x// 2==0;  $=$  2;  x=x%2;  end /*append all the  2  factors of new  X.*/
+0028 do  while x// 3==0;  $=$  3;  x=x%3;  end /*   "    "   "   3     "     "  "   " */
+0029 do  while x// 5==0;  $=$  5;  x=x%5;  end /*   "    "   "   5     "     "  "   " */
+0030 do  while x// 7==0;  $=$  7;  x=x%7;  end /*   "    "   "   7     "     "  "   " */
+0031 do  while x//11==0;  $=$ 11;  x=x%11; end /*   "    "   "  11     "     "  "   " */    /* ◄■■■■ added.*/
+0032 do  while x//13==0;  $=$ 13;  x=x%13; end /*   "    "   "  13     "     "  "   " */    /* ◄■■■■ added.*/
+0033 do  while x//17==0;  $=$ 17;  x=x%17; end /*   "    "   "  17     "     "  "   " */    /* ◄■■■■ added.*/
+0034 do  while x//19==0;  $=$ 19;  x=x%19; end /*   "    "   "  19     "     "  "   " */    /* ◄■■■■ added.*/
+0035 do  while x//23==0;  $=$ 23;  x=x%23; end /*   "    "   "  23     "     "  "   " */    /* ◄■■■■ added.*/
+0036 /*                                  ___*/
+0037 q=1;   do  while q<=x;  q=q*4;  end              /*these two lines compute integer  √ X */
+0038 r=0;   do  while q>1;   q=q%4;  _=d-r-q;  r=r%2;   if _>=0  then do; d=_; r=r+q; end;  end
+0039 
+0040 do j=29  by 6  to r                       /*insure that  J  isn't divisible by 3.*/    /* ◄■■■■ changed.*/
+0041 parse var j  ''  -1  _                    /*obtain the last decimal digit of  J. */
+0042 if _\==5  then  do  while x//j==0;  $=$ j;  x=x%j;  end     /*maybe reduce by J. */
+0043 if _ ==3  then iterate                    /*Is next  Y  is divisible by 5?  Skip.*/
+0044 y=j+2;          do  while x//y==0;  $=$ y;  x=x%y;  end     /*maybe reduce by J. */
+0045 end   /*j*/
+0046 /* [↓]  The $ list has a leading blank.*/
+0047 if x==1  then return $                           /*Is residual=unity? Then don't append.*/
+0048 return $ x                         /*return   $   with appended residual. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                41
+002 while            42 44
+003 x                42 44
+004 y                44
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           11 11 11
+002 #                -> newV2            13 17
+003 ?                -> newV3            15 15
+004 $                -> newV4            25 27 28 29 30 31 32 33 34 35 42 44
+005 _                -> newV5            38 41

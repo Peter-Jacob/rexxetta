@@ -1,0 +1,67 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program analyzes an  N─card  poker hand,  and displays  what  the poker hand is. */
+0002 parse arg iFID .;       if iFID=='' | iFID==","  then iFID= 'POKERHAN.DAT'
+0003 /* [↓] read  the poker hands dealt.    */
+0004 do  while lines(iFID)\==0;      ox= linein(iFID);       if ox=''  then iterate
+0005 say right(ox, max(30, length(ox) ) )       ' ◄─── '       analyze(ox)
+0006 end   /*while*/                            /* [↑]  analyze/validate the poker hand*/
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 analyze: procedure; arg x ';',mc;      hand= translate(x, '♥♦♣♠1', "HDCSA,");    flush= 0
+0010 kinds= 0;    suit.= 0;    pairs= 0;    @.= 0;         run= copies(0, 13);        pips= run
+0011 if mc==''  then mc= 5;    n= words(hand);  if n\==mc  then  return  'invalid'
+0012 /* [↓]  PIP can be  1 or 2  characters.*/
+0013 do j=1  for n;      _= word(hand, j)          /*obtain a card from the dealt hand.   */
+0014 pip= left(_, length(_) - 1);  ws= right(_, 1) /*obtain the card's pip;  and the suit.*/
+0015 if pip==10  then pip= 'T'                     /*allow an alternate form for a "TEN". */
+0016 @._= @._ + 1                                  /*bump the card counter for this hand. */
+0017 #= pos(pip, 123456789TJQK)                    /*obtain the pip index for the card.   */
+0018 if pos(ws, "♥♣♦♠")==0  then return 'invalid suit in card:'     _
+0019 if #==0                then return 'invalid pip in card:'      _
+0020 if @._\==1             then return 'invalid, duplicate card:'  _
+0021 suit.ws= suit.ws + 1                          /*count the suits for a possible flush.*/
+0022 flush= max(flush, suit.ws)                  /*count number of cards in the suits.  */
+0023 run= overlay(., run, #)                   /*convert runs to a series of periods. */
+0024 _= substr(pips, #, 1) + 1               /*obtain the number of the pip in hand.*/
+0025 pips= overlay(_, pips, #)                  /*convert the pip to legitimate number.*/
+0026 kinds= max(kinds, _)                        /*convert certain pips to their number.*/
+0027 end   /*i*/                                   /* [↑]  keep track of  N─of─a─kind.    */
+0028 
+0029 run= run || left(run, 1)                    /*An  ace  can be  high  ─or─  low.    */
+0030 pairs= countstr(2, pips)                      /*count number of pairs  (2s  in PIPS).*/
+0031 straight= pos(....., run || left(run, 1) ) \== 0 /*does the  RUN  contains a straight?  */
+0032 if flush==5 & straight  then return  'straight-flush'
+0033 if kinds==4             then return  'four-of-a-kind'
+0034 if kinds==3 & pairs==1  then return  'full-house'
+0035 if flush==5             then return  'flush'
+0036 if            straight  then return  'straight'
+0037 if kinds==3             then return  'three-of-a-kind'
+0038 if kinds==2 & pairs==2  then return  'two-pair'
+0039 if kinds==2             then return  'one-pair'
+0040 return  'high-card'
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 while            4
+002 ox               4
+003 hand             9
+004 flush            9 22
+005 kinds            10 26
+006 suit.            10 21
+007 pairs            10 30
+008 run              10 23 29
+009 pips             10 25
+010 mc               11
+011 n                11
+012 j                13
+013 pip              14 15
+014 ws               14
+015 straight         31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           10 16
+002 _                -> newV2            13 24
+003 #                -> newV3            17

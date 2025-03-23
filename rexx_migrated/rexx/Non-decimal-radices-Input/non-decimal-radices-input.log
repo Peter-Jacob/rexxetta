@@ -1,0 +1,129 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates REXX's ability to handle non-decimal radices*/
+0002 a=123                        /*all of these assignments are identical:  */
+0003 b='123'
+0004 c='1' || "2" || '3'
+0005 d= 1  ||  2  ||  3
+0006 e= 12        ||  3
+0007 f=120 + 3
+0008 g=substr(9912388,3,3)
+0009 h=left(123456,3)
+0010 i=right(777.123,3)
+0011 j=120 + '     3   '
+0012 k=0000000123.0000/1          /*division "normalizes the number (──► 123)*/
+0013 
+0014 /*parsing of a  decimal number  is no      */
+0015 /*different then parsing a character string*/
+0016 /*because decimal numbers  ARE  character  */
+0017 /*strings.    As such, numbers may have    */
+0018 /*leading and/or trailing blanks, and in   */
+0019 /*some cases, imbedded blanks (after any   */
+0020 /*leading sign).                           */
+0021 
+0022 aa=' 123 '                   /*AA's  exact value is different the  A,   */
+0023 /*but it's   numerically equal    to  A.   */
+0024 bb=123.                      /*the same can be said for the rest of 'em.*/
+0025 cc=+123
+0026 dd=' +  123'
+0027 ee=0000123
+0028 ff=1.23e+2
+0029 gg=001.23E0002
+0030 hh=1230e-1
+0031 ii=122.999999999999999999999999999999999    /*assuming NUMERIC DIGITS 9 */
+0032 jj= +++123
+0033 kk= - -123
+0034 
+0035 bingoA='10101'b               /*stores a binary value. */
+0036 bingoB='10101'B               /*  B  can be uppercase. */
+0037 bingoC='1 0101'b              /*apostrophes may be used*/
+0038 bingoD="1 0101"b              /*quotes may be used.    */
+0039 
+0040 hyoidA='deadbeaf'x            /*stores a hexadecimal value.*/
+0041 hyoidB="deadbeaf"X
+0042 hyoidC='dead beaf'X
+0043 hyoidD='de ad be af'X
+0044 hyoidE='dead be af'X
+0045 hyoidF='7abc'x
+0046 /*REXX has several built-in functions     */
+0047 /*(BIFs) to handle conversions of the     */
+0048 /*above-mentioned "number" formats.       */
+0049 
+0050 cyanA=d2x(a)                  /*converts a decimal string to hexadecimal*/
+0051 cyanB=d2x(5612)               /*converts a decimal string to hexadecimal*/
+0052 
+0053 cyanD=b2x(101101)             /*converts a binary  string to hexadecimal*/
+0054 
+0055 cyanE=b2c(101101)             /*some REXXes support this, others don't. */
+0056 cyanF=c2b('copernicium')      /*some REXXes support this, others don't. */
+0057 
+0058 cyanG=c2d('nilla')            /*converts a character string to decimal. */
+0059 cyanH=d2c(251)                /*converts a decimal number to character. */
+0060 
+0061 cyanI=x2d(fab)                /*converts a hexadecimal string to decimal*/
+0062 cyanJ=x2c(fab)                /*converts a hexadecimal string to chars. */
+0063 cyanK=x2b(fab)                /*converts a hexadecimal string to binary.*/
+0064 
+0065 befog=d2b(144)                /*there's no dec──►binary,  but see below.*/
+0066 unfog=b2d(101)                /*there's no bin──►decimal, but see below.*/
+0067 
+0068 do j=0  to 27               /*show some simple low-value conversions. */
+0069 say right(j,2) 'in decimal is' d2b(j) "in binary and" d2x(j) 'in hex.'
+0070 end   /*j*/
+0071 exit                                   /*stick a fork in it, we're done.*/
+0072 /*────────────────────────────add these subroutines to end─of─program.  */
+0073 d2b: return word(strip(x2b(d2x(arg(1))),'L',0) 0,1)  /*convert dec──►bin*/
+0074 b2d: return x2d(b2x(arg(1)))                         /*convert bin──►dec*/
+0075 b2c: return x2c(b2x(arg(1)))                         /*convert bin──►chr*/
+0076 c2b: return word(strip(x2b(c2x(arg(1))),'L',0) 0,1)  /*convert chr──►bin*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 a                2
+002 b                3
+003 c                4
+004 d                5
+005 e                6
+006 f                7
+007 g                8
+008 h                9
+009 i                10
+010 j                11 68
+011 k                12
+012 aa               22
+013 bb               24
+014 cc               25
+015 dd               26
+016 ee               27
+017 ff               28
+018 gg               29
+019 hh               30
+020 ii               31
+021 jj               32
+022 kk               33
+023 bingoA           35
+024 bingoB           36
+025 bingoC           37
+026 bingoD           38
+027 hyoidA           40
+028 hyoidB           41
+029 hyoidC           42
+030 hyoidD           43
+031 hyoidE           44
+032 hyoidF           45
+033 cyanA            50
+034 cyanB            51
+035 cyanD            53
+036 cyanE            55
+037 cyanF            56
+038 cyanG            58
+039 cyanH            59
+040 cyanI            61
+041 cyanJ            62
+042 cyanK            63
+043 befog            65
+044 unfog            66
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

@@ -1,0 +1,61 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates how to process/display                     */
+0002 /*                                a simple  RGB  raster graphics image.*/
+0003 red   = 'ff 00 00'x             /*a method to define a   red   value.  */
+0004 blue  = '00 00 ff'x             /*'    '    '    '   '   blue    '     */
+0005 pixel=''                        /*define entire  pixel. array to nulls.*/
+0006 outFN = 'image'                 /*the filename of the output image PPM */
+0007 sWidth = 500; sHeight= 500      /*the screen width and height in pixels*/
+0008 Call RGBfill red                /*set the entire   image   to red.     */
+0009 x=10; y=40                      /*set pixel's coördinates.             */
+0010 Call RGBset x,y,blue            /*set a pixel (at  10,40)  to blue.    */
+0011 color = RGBget(x,y)             /*get the color of a pixel.            */
+0012 hexV  = c2x(color)              /*get hex    value of pixel's color.   */
+0013 binV  = x2b(hexV)               /* "  binary   "    "    "      "      */
+0014 bin3V = left(binV,8) substr(binV,9,8) right(binV,8)
+0015 hex3V = left(hexV,2) substr(hexV,3,2) right(hexV,2)
+0016 xy= '('||x','y')'               /*create a handy-dandy literal for SAY.*/
+0017 Say xy ' pixel in binary: ' binV   /*show the binary value of  20,50   */
+0018 Say xy ' pixel in binary: ' bin3V  /*show again,but with spaces.       */
+0019 Say                                /*show a blank between bin & hex.   */
+0020 Say xy ' pixel in hex:    ' hexV   /*show again,but in hexadecimal.    */
+0021 Say xy ' pixel in hex:    ' hex3V  /*show again,but with spaces.       */
+0022 Call PPMwrite outFN,sWidth,sHeight /*create a PPM (output) file        */
+0023 /* ?¦¦¦¦¦¦¦¦ not part of this task.*/
+0024 Say                                      /*show a blank.               */
+0025 Say 'The file ' outFN'.PPM was created.' /*inform user                 */
+0026 Exit                             /*stick a fork in it, we're all done. */
+0027 /*---------------------------------------------------------------------*/
+0028 RGBfill: pixel.=arg(1);   Return             /*fill image with a color.*/
+0029 RGBget:  Parse arg px,py; Return pixel.px.py /*get a pixel's color.    */
+0030 RGBset:  Parse arg px,py,psep; pixel.px.py=psep; Return /*set a pixel  */
+0031 /*---------------------------------------------------------------------*/
+0032 PPMwrite: Parse arg oFN,width,height
+0033 oFID= oFN'.PPM'               /* fileID                              */
+0034 sep='9'x;                     /* separator                           */
+0035 maxcol=255                    /* max color value.                    */
+0036 Call charout oFID,,1          /*set the position of the file's output*/
+0037 Call charout oFID,'P6'width||sep||height||sep||maxcol||sep /* header */
+0038 Do i=1 To width
+0039 Do j=1 To height;
+0040 Call charout oFID,pixel.i.j
+0041 End
+0042 End
+0043 Call charout oFID           /* close the output file just to be safe */
+0044 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 oFN              32
+002 width            32
+003 height           32
+004 oFID             33
+005 sep              34
+006 maxcol           35
+007 i                38
+008 j                39
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

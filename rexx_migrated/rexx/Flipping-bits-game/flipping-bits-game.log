@@ -1,0 +1,92 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX program presents a  "flipping bit"  puzzle.  The user can solve via it via  C.L. */
+0002 parse arg  N u seed .                            /*get optional arguments from the C.L. */
+0003 if N==''  |  N==","     then N=3                 /*Size given?   Then use default of  3.*/
+0004 if u==''  |  u==","     then u=N                 /*the number of bits initialized to ON.*/
+0005 if datatype(seed, 'W')  then call random ,,seed  /*is there a seed (for repeatability?) */
+0006 col@= 'a b c d e f g h i j k l m n o p q r s t u v w x y z'     /*literal for column id.*/
+0007 cols=space(col@, 0);        upper cols           /*letters to be used for the columns.  */
+0008 @.=0;  !.=0                                      /*set both arrays to  "off" characters.*/
+0009 tries=0                                          /*number of player's attempts (so far).*/
+0010 do  while  show(0) < u                  /* [↓]   turn  "on"  U  number of bits.*/
+0011 r=random(1, N);      c=random(1, N)     /*get a random  row  and  column.      */
+0012 @.r.c=1       ;      !.r.c=1            /*set (both)  row and column  to ON.   */
+0013 end   /*while*/                         /* [↑]  keep going 'til   U   bits set.*/
+0014 oz=z                                             /*save the original array string.      */
+0015 call show 1, '   ◄═══target═══╣', , 1            /*display the target for user to attain*/
+0016 do random(1,2); call flip 'R',random(1,N) /*flip a   row    of  bits.            */
+0017 call flip 'C',random(1,N) /*  "  "  column   "    "              */
+0018 end   /*random*/                          /* [↑]  just perform  1  or  2  times. */
+0019 if z==oz  then call flip 'R', random(1, N)       /*ensure it's not target we're flipping*/
+0020 do  until  z==oz;      call prompt        /*prompt until they get it right.      */
+0021 call flip left(?, 1),  substr(?, 2)       /*flip a user selected row or column.  */
+0022 call show 0                               /*get image (Z) of the updated array.  */
+0023 end   /*until*/
+0024 call show 1, '   ◄───your array'                 /*display the array to the terminal.   */
+0025 say '─────────Congrats!    You did it in'     tries     "tries."
+0026 exit tries                                       /*stick a fork in it,  we're all done. */
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 halt:  say 'program was halted by user.';  exit  /*the REXX program was halted by user. */
+0029 hdr:   aaa=arg(1);  if oo==1  then aaa=translate(aaa, "╔═║", '┌─│');    say aaa;    return
+0030 isInt: return datatype( arg(1), 'W')             /*returns   1   if  arg  is an integer.*/
+0031 isLet: return datatype( arg(1), 'M')             /*returns   1   if  arg  is a letter.  */
+0032 terr:  if ok  then say  '───────── ***error***:  illegal'  arg(1);        ok=0;     return
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 flip: arg x,#;   do c=1  for N  while x=='R';  @.#.c = \@.#.c;  end  /*c*/
+0035 do r=1  for N  while x=='C';  @.r.# = \@.r.#;  end  /*r*/;         return
+0036 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0037 prompt: if tries\==0  then  say '─────────bit array after play: '         tries
+0038 signal on halt                           /*another method for the player to quit*/
+0039 !='─────────Please enter a    row number    or a    column letter,      or  Quit:'
+0040 call show 1, '   ◄───your array'         /*display the array to the terminal.   */
+0041 do forever  until ok;       ok=1;     say;     say !;     pull ?  _  .  1  aa
+0042 if abbrev('QUIT', ?, 1)     then do;  say '─────────quitting···';  exit 0;  end
+0043 if ?==''                    then do;  call show 1,"   ◄═══target═══╣",.,1; ok=0
+0044 call show 1,"   ◄───your array"
+0045 end                       /* [↑] reshow targ*/
+0046 if _ \== ''                 then call terr 'too many args entered:'   aa
+0047 if \isInt(?) & \isLet(?)    then call terr 'row/column: '             ?
+0048 if  isLet(?)                then a=pos(?, cols)
+0049 if  isLet(?) & (a<1 | a>N | length(?)>1)  then call terr 'column: '   ?
+0050 if  isLet(?)                then ?='C'pos(?, cols)
+0051 if  isInt(?) & (?<1 | ?>N)  then call terr 'row: '                    ?
+0052 if  isInt(?)                then ?='R' || (?/1)            /*normalize number*/
+0053 end   /*forever*/                                          /*end of da checks*/
+0054 tries= tries + 1                                              /*bump da counter.*/
+0055 return ?                                                      /*return response.*/
+0056 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0057 show: $=0;              _=;            parse arg tell,tx,o,oo         /*$≡num of ON bits*/
+0058 if tell  then do; say;     say '     '   subword(col@, 1, N)   "  column letter"
+0059 call hdr 'row ┌'copies('─', N+N+1)            /*prepend col hdrs*/
+0060 end                                               /* [↑]  grid hdrs.*/
+0061 z=                                                              /* [↓] build grid.*/
+0062 do   r=1  for N                                               /*show  grid rows.*/
+0063 do c=1  for N;  if o==.  then do;  z=z || !.r.c;  _=_ !.r.c;  $=$ + !.r.c;   end
+0064 else do;  z=z || @.r.c;  _=_ @.r.c;  $=$ + @.r.c;   end
+0065 end   /*c*/                                                 /*··· and sum ONs.*/
+0066 if tx\==''  then tar.r=_ tx                                   /*build da target?*/
+0067 if tell     then call hdr right(r, 2)   ' │'_   tx; _=        /*show the grid?  */
+0068 end     /*r*/                                                 /*show a grid row.*/
+0069 if tell  then say;                     return $                 /*show blank line?*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 tell             57
+002 tx               57
+003 o                57
+004 oo               57
+005 z                61 63 64
+006 r                62
+007 c                63
+008 tar.             66
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           8 12 34 35
+002 !.               -> newV2.           8 12
+003 !                -> newV3            39
+004 ?                -> newV4            50 52
+005 _                -> newV5            57 63 64 67
+006 $                -> newV6            63 64

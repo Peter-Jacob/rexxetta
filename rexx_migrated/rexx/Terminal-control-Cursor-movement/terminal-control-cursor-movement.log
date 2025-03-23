@@ -1,0 +1,53 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX pgm demonstrates how to achieve movement of the terminal cursor. */
+0002 
+0003 parse value scrsize() with sd sw       /*find the display screen size.  */
+0004 parse value cursor() with row col      /*find where the cursor is now.  */
+0005 
+0006 colL=col-1;  if colL==0 then colL=sw   /*prepare to move cursor to left.*/
+0007 call cursor row,colL                   /*move cursor to the left (wrap).*/
+0008 
+0009 colR=col+1;  if colR>sw then colL=1    /*prepare to move cursor to right*/
+0010 call cursor row,colR                   /*move cursor to the right (wrap)*/
+0011 
+0012 rowU=row-1;  if rowU==0 then rowU=sd   /*prepare to move cursor up.     */
+0013 call cursor rowU,col                   /*move cursor  up  (with wrap).  */
+0014 
+0015 rowD=row+1;  if rowD>sd then rowD=1    /*prepare to move cursor down.   */
+0016 call cursor rowD,col                   /*move cursor down (with wrap).  */
+0017 
+0018 call cursor row,1                      /*move cursor to beginning of row*/
+0019 call cursor row,sw                     /*move cursor to    end    of row*/
+0020 call cursor 1,1                        /*move cursor to top left corner.*/
+0021 call cursor sd,sw                      /*move cursor to bot right corner*/
+0022 
+0023 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 NORMAL.1         
+002 NORMAL.2         
+003 NORMAL.3         
+004 NORMAL.4         
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 row              4
+017 col              4
+018 colL             6 6 9
+019 colR             9
+020 rowU             12 12
+021 rowD             15 15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

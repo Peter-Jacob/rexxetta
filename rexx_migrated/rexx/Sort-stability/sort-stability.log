@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program  sorts  a (stemmed)  array  using a  (stable)   bubble─sort   algorithm. */
+0002 call gen@                                        /*generate the array elements (strings)*/
+0003 call show  'before sort'                         /*show the  before array  elements.    */
+0004 say copies('▒', 50)                         /*show a separator line between shows. */
+0005 call bubbleSort   #                              /*invoke the bubble sort.              */
+0006 call show  ' after sort'                         /*show the   after array  elements.    */
+0007 exit 0                                           /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 bubbleSort: procedure expose @.; parse arg n;    m= n-1 /*N:  number of array elements. */
+0010 do m=m  for m  by -1  until ok;    ok= 1  /*keep sorting array until done.*/
+0011 do j=1  for m;  k= j+1;  if @.j<=@.k  then iterate /*Not out─of─order?*/
+0012 _= @.j;  @.j= @.k;   @.k= _    ok= 0  /*swap 2 elements; flag as ¬done*/
+0013 end   /*j*/
+0014 end       /*m*/;       return
+0015 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0016 gen@: @.=;                  @.1 = 'UK  London'
+0017 @.2 = 'US  New York'
+0018 @.3 = 'US  Birmingham'
+0019 @.4 = 'UK  Birmingham'
+0020 do #=1  while @.#\==''              /*determine how many entries in list. */
+0021 end   /*#*/;    #= # - 1;   return  /*adjust for the DO loop index; return*/
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 show: do j=1  for #;  say '      element' right(j,length(#)) arg(1)":"  @.j;  end;  return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                9
+002 m                9 10
+003 ok               10
+004 j                11
+005 k                11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           12 12 16 17 18 19
+002 _                -> newV2            12
+003 #                -> newV3            20 21

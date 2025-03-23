@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX pgm generates and displays primes via a wheeled sieve of Eratosthenes algorithm. */
+0002 parse arg H .;  if H=='' | H==","  then H= 200   /*obtain the optional argument from CL.*/
+0003 w= length(H);       @prime= right('prime', 20)   /*w:  is used for aligning the output. */
+0004 if 2<=H  then  say  @prime  right(1, w)       " ───► "       right(2, w)
+0005 #= 2<=H                                          /*the number of primes found  (so far).*/
+0006 @.=.                                             /*assume all the numbers are  prime.   */
+0007 !=0;  do j=3  by 2  for (H-2)%2                  /*the odd integers up to  H  inclusive.*/
+0008 if @.j==''  then iterate                   /*Is composite?  Then skip this number.*/
+0009 #= # + 1                                   /*bump the prime number counter.       */
+0010 say  @prime right(#,w) " ───► " right(j,w) /*display the prime to the terminal.   */
+0011 if !        then iterate                   /*skip the top part of loop?       ___ */
+0012 if j*j>H     then !=1                      /*indicate skip top part  if  J > √ H  */
+0013 do m=j*j  to H  by j+j;   @.m=;   end  /*strike odd multiples as  not  prime. */
+0014 end   /*j*/                                /*       ───                           */
+0015 say                                              /*stick a fork in it,  we're all done. */
+0016 say right(#,  1 + w + length(@prime) )    'primes found up to and including '    H
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 H                2 2
+002 w                3
+003 j                7
+004 m                13
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @prime           -> newV1            3
+002 @.               -> newV2.           6 13
+003 #                -> newV3            5 9
+004 !                -> newV4            7 12

@@ -1,0 +1,90 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:22
+-------------------------------------------------------------------------
+0001 /*REXX pgm converts numbers (with commas) with suffix multipliers──►pure decimal numbers*/
+0002 numeric digits 2000                              /*allow the usage of ginormous numbers.*/
+0003 @.=; @.1= '2greatGRo   24Gros  288Doz  1,728pairs  172.8SCOre'
+0004 @.2= '1,567      +1.567k    0.1567e-2m'
+0005 @.3= '25.123kK    25.123m   2.5123e-00002G'
+0006 @.4= '25.123kiKI  25.123Mi  2.5123e-00002Gi  +.25123E-7Ei'
+0007 @.5= '-.25123e-34Vikki      2e-77gooGols'
+0008 @.6=  9!   9!!   9!!!   9!!!!   9!!!!!   9!!!!!!   9!!!!!!!   9!!!!!!!!   9!!!!!!!!!
+0009 
+0010 parse arg x                                      /*obtain optional arguments from the CL*/
+0011 if x\==''  then do;    @.2=;     @.1=x           /*use the number(s) specified on the CL*/
+0012 end                              /*allow user to specify their own list.*/
+0013 /* [↓]  handle a list or multiple lists*/
+0014 do  n=1  while @.n\=='';     $=              /*process each of the numbers in lists.*/
+0015 say 'numbers= '      @.n                     /*echo the original arg to the terminal*/
+0016 
+0017 do j=1  for words(@.n);  y= word(@.n, j) /*obtain a single number from the input*/
+0018 $= $  ' 'commas( num(y) )                /*process a number; add result to list.*/
+0019 end   /*j*/                              /* [↑]  add commas to number if needed.*/
+0020 /* [↑]  add extra blank betweenst nums.*/
+0021 say ' result= '      strip($);   say         /*echo the result(s) to the terminal.  */
+0022 end       /*n*/                              /* [↑]  elide the  pre-pended  blank.  */
+0023 exit                                             /*stick a fork in it,  we're all done. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 isInt:  return datatype( arg(1), 'Whole')        /*return 1 if arg is an integer,  or 0 */
+0026 isNum:  return datatype( arg(1), 'Number')       /*   "   "  "  "   " a  number.    " " */
+0027 p:      return word( arg(1), 1)                  /*pick 1st argument  or  2nd argument. */
+0028 ser:    say;   say '***error*** '  arg(1);           say;            exit 13
+0029 shorten:procedure; parse arg a,n;      return left(a,  max(0, length(a) - p(n 1) ) )
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 $fact!: procedure; parse arg x _ .;    L= length(x);    n= L - length(strip(x, 'T', "!") )
+0032 if n<=-n | _\=='' | arg()\==1  then return x;   z= left(x, L - n)
+0033 if z<0 | \isInt(z)             then return x;   return $fact(z, n)
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 $fact:  procedure; parse arg x _ .;  arg ,n ! .;     n= p(n 1);    if \isInt(n)  then n= 0
+0036 if x<-n | \isInt(x) |n<1 | _||!\=='' |arg()>2  then return x||copies("!",max(1,n))
+0037 s= x // n;   if s==0  then s= n          /*compute where to start multiplying.  */
+0038 != 1                                     /*the initial factorial product so far.*/
+0039 do j=s  to x  by n;   != !*j  /*perform the actual factorial product.*/
+0040 end   /*j*/                   /*{operator  //  is REXX's ÷ remainder}*/
+0041 return !                                 /* [↑]  handles any level of factorial.*/
+0042 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0043 $sfxa:  parse arg u,s 1 c,m;   upper u c         /*get original version & upper version.*/
+0044 if pos( left(s, 2), u)\==0  then do j=length(s)   to compare(s, c)-1   by -1
+0045 if right(u, j) \== left(c, j)  then iterate
+0046 _= left(u, length(u) - j)        /*get the num.*/
+0047 if isNum(_)  then return m * _   /*good suffix.*/
+0048 leave                            /*return as is*/
+0049 end
+0050 return arg(1)                            /* [↑]  handles an alphabetic suffixes.*/
+0051 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0052 $sfx!:  parse arg y;                     if right(y, 1)=='!'  then y= $fact!(y)
+0053 if \isNum(y)  then y=$sfxz();    if isNum(y)  then return y;       return $sfxm(y)
+0054 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0055 $sfxm:  parse arg z 1 w;     upper w;    @= 'KMGTPEZYXWVU';                       b= 1000
+0056 if right(w, 1)=='I'  then do;    z= shorten(z);      w= z;    upper w;    b= 1024
+0057 end
+0058 _= pos( right(w, 1), @);         if _==0      then return arg(1)
+0059 n= shorten(z);  r= num(n, , 1);  if isNum(r)  then return r * b**_
+0060 return arg(1)                            /* [↑]  handles metric or binary suffix*/
+0061 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0062 $sfxz:  return $sfxa( $sfxa( $sfxa( $sfxa( $sfxa( $sfxa(y, 'PAIRs', 2),   'DOZens', 12), ,
+0063 'SCores', 20),   'GREATGRoss',  1728),     'GRoss', 144),     'GOOGOLs', 1e100)
+0064 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0065 commas: procedure;  parse arg _;    n= _'.9';      #= 123456789;      b= verify(n, #, "M")
+0066 e= verify(n, #'0', ,   verify(n, #"0.", 'M') )  -  4         /* [↑]  add commas.*/
+0067 do j=e  to b  by -3;   _= insert(',', _, j);     end  /*j*/;           return _
+0068 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0069 num:    procedure; parse arg x .,,q;         if x==''  then return x
+0070 if  isNum(x)  then return  x/1;      x= space( translate(x, , ','), 0)
+0071 if \isNum(x)  then x= $sfx!(x);      if isNum(x)  then return x/1
+0072 if q==1  then return x
+0073 if q==''  then call ser "argument isn't numeric or doesn't have a legal suffix:" x
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                69 70 71
+002 q                69
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           3 3 4 5 6 7 8 11 11
+002 $                -> newV2            14 18
+003 _                -> newV3            31 35 46 58 65 67
+004 !                -> newV4            38 39
+005 @                -> newV5            55
+006 #                -> newV6            65

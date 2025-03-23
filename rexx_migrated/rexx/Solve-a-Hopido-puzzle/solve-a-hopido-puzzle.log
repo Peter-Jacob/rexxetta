@@ -1,0 +1,94 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program solves a Hopido puzzle,  it also displays the puzzle  and  the solution. */
+0002 call time 'Reset'                                /*reset the REXX elapsed timer to zero.*/
+0003 maxR=0;    maxC=0;    maxX=0;     minR=9e9;      minC=9e9;    minX=9e9;    cells=0;    @.=
+0004 parse arg xxx                                    /*get the cell definitions from the CL.*/
+0005 xxx=translate(xxx, , "/\;:_", ',')               /*also allow other characters as comma.*/
+0006 
+0007 do  while xxx\='';       parse var  xxx    r  c  marks  ','  xxx
+0008 do  while marks\='';               _=@.r.c
+0009 parse var  marks  x  marks
+0010 if datatype(x,'N')   then  x=x/1                   /*normalize   X.  */
+0011 minR=min(minR,r); maxR=max(maxR,r);  minC=min(minC,c); maxC=max(maxC,c)
+0012 if x==1   then do;  !r=r;  !c=c;  end              /*the START cell. */
+0013 if _\=='' then call err "cell at"  r  c  'is already occupied with:' _
+0014 @.r.c=x;   c=c+1;    cells=cells+1                 /*assign a mark.  */
+0015 if x==.              then iterate                  /*is a hole?  Skip*/
+0016 if \datatype(x,'W')  then call err 'illegal marker specified:' x
+0017 minX=min(minX,x);    maxX=max(maxX,x)              /*min and max  X. */
+0018 end   /*while marks¬='' */
+0019 end       /*while xxx  ¬='' */
+0020 call show                                        /* [↓]  is used for making fast moves. */
+0021 Nr = '0  3   0  -3    -2   2   2  -2'            /*possible  row     for the next move. */
+0022 Nc = '3  0  -3   0     2  -2   2  -2'            /*   "      column   "   "    "    "   */
+0023 pMoves=words(Nr)                                 /*the number of possible moves.  */
+0024 do i=1  for pMoves;   Nr.i=word(Nr, i);   Nc.i=word(Nc,i);   end  /*i*/
+0025 if \next(2,!r,!c)  then call err  'No solution possible for this Hopido puzzle.'
+0026 say 'A solution for the Hopido exists.';      say;               call show
+0027 etime= format(time('Elapsed'), , 2)              /*obtain the elapsed time (in seconds).*/
+0028 if etime<.1  then say 'and took less than  1/10  of a second.'
+0029 else say 'and took'       etime         "seconds."
+0030 exit                                             /*stick a fork in it,  we're all done. */
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 err:  say;      say '***error*** (from Hopido): '  arg(1);          say;           exit 13
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 next: procedure expose @. Nr. Nc. cells pMoves;  parse arg #,r,c;   ##=#+1
+0035 do t=1  for pMoves                                   /* [↓]  try some moves. */
+0036 parse value  r+Nr.t c+Nc.t  with nr nc  /*next move coördinates*/
+0037 if @.nr.nc==.  then do;                @.nr.nc=#     /*let's try this move.  */
+0038 if #==cells        then leave    /*is this the last move?*/
+0039 if next(##,nr,nc)  then return 1
+0040 @.nr.nc=.                        /*undo the above move.  */
+0041 iterate                          /*go & try another move.*/
+0042 end
+0043 if @.nr.nc==#  then do                               /*this a fill-in move ? */
+0044 if #==cells        then return 1 /*this is the last move.*/
+0045 if next(##,nr,nc)  then return 1 /*a fill-in move.       */
+0046 end
+0047 end   /*t*/
+0048 return 0                                                        /*This ain't working.   */
+0049 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0050 show: if maxR<1 | maxC<1  then call err  'no legal cell was specified.'
+0051 if minX<1           then call err  'no  1  was specified for the puzzle start'
+0052 w=max(2,length(cells));  do    r=maxR  to minR  by -1; _=
+0053 do c=minC  to maxC;        _=_ right(@.r.c,w); end /*c*/
+0054 say _
+0055 end   /*r*/
+0056 say;    return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 r                34 52
+002 c                34 53
+003 t                35
+004 maxR             11
+005 minC             11
+006 maxC             11
+007 c                14
+008 cells            14
+009 minX             17
+010 maxX             17
+011 Nr               21
+012 Nc               22
+013 pMoves           23
+014 i                24
+015 Nr.              24
+016 Nc.              24
+017 etime            27
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 nr               36
+022 nc               36
+023 w                52
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           3 14 37 40
+002 !r               -> newV2            12
+003 !c               -> newV3            12
+004 ##               -> newV4            34
+005 _                -> newV5            8 52 53
+006 #                -> newV6            34

@@ -1,0 +1,70 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program displays  N  vampire numbers,  or  verifies  if  a number is vampiric.   */
+0002 parse arg N .                                    /*obtain optional argument from the CL.*/
+0003 if N=='' | N==","  then N= 25                    /*Not specified?  Then use the default.*/
+0004 !.0= 1260;   !.1= 11453481;   !.2= 115672;   !.3= 124483;   !.4= 105264  /*lowest #, dig*/
+0005 !.5= 1395;   !.6=   126846;   !.7=   1827;   !.8= 110758;   !.9= 156289  /*   "   "   " */
+0006 L= length(N);                aN= abs(N)          /*L:  length of N;  aN:  absolute value*/
+0007 numeric digits max(9, length(aN) )               /*be able to handle ginormus numbers.  */
+0008 # = 0                                            /*#:  count of vampire numbers (so far)*/
+0009 if N>0 then do j=1260  until  # >= N             /*search until N vampire numbers found.*/
+0010 if length(j) // 2  then do;  j= j*10 - 1;  iterate   /*bump J to even length*/
+0011 end                          /* [↑]  check if odd.  */
+0012 parse var  j  ''  -1  _              /*obtain the last decimal digit of  J. */
+0013 if j<!._  then iterate               /*is number tenable based on last dig? */
+0014 f= vampire(j)                        /*obtain the  fangs  of  J.            */
+0015 if f==''  then iterate               /*Are fangs null?   Yes, not vampire.  */
+0016 #= # + 1                             /*bump the vampire count, Vlad.        */
+0017 say right('vampire number', 20)  right(#, L)  "is: "  right(j, 9)',  fangs=' f
+0018 end   /*j*/                          /* [↑]  process a range of numbers.    */
+0019 else do;  f= vampire(aN)                  /* [↓]  process a number; obtain fangs.*/
+0020 if f==''  then say       aN      " isn't a vampire number."
+0021 else say       aN      " is a vampire number, fangs="     f
+0022 end
+0023 exit 0                                           /*stick a fork in it,  we're all done. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 vampire: procedure; parse arg x,, $. a bot;   L= length(x)  /*get arg;  compute len of X*/
+0026 if L//2  then return ''                            /*is L odd?   Then ¬vampire.*/
+0027 do k=1  for L;    _= substr(x, k, 1);         $._= $._  ||  _
+0028 end   /*k*/
+0029 w= L % 2                                           /*%:   is REXX's integer  ÷ */
+0030 do m=0  for 10;   bot= bot || $.m
+0031 end   /*m*/
+0032 top= left( reverse(bot), w)
+0033 bot= left(bot, w)                                  /*determine limits of search*/
+0034 inc= x // 2    +    1                              /*X is odd? INC=2. No? INC=1*/
+0035 beg= max(bot, 10 ** (w-1)  )                       /*calculate where  to begin.*/
+0036 if inc==2  then  if  beg//2==0   then beg= beg + 1 /*possibly adjust the begin.*/
+0037 /* [↑]  odd  BEG  if odd INC*/
+0038 do d=beg  to  min(top, 10**w - 1)  by inc /*use smart  BEG, END, INC. */
+0039 if x // d \==0          then iterate      /*X  not ÷ by D?  Then skip,*/
+0040 q= x % d;     if d>q    then iterate      /*is   D > Q        "    "  */
+0041 if length(q) \== w      then iterate      /*Len of Q ¬= W?  Then skip.*/
+0042 if q*d//9 \== (q+d)//9  then iterate      /*modulo 9 congruence test. */
+0043 parse var  q  ''  -1  _                   /*get last decimal dig. of Q*/
+0044 if _== 0                then if right(d, 1) == 0  then iterate
+0045 dq= d  ||  q
+0046 t= x;             do i=1  for  L;           p= pos( substr(dq, i, 1), t)
+0047 if p==0  then iterate d;  t= delstr(t, p, 1)
+0048 end   /*i*/
+0049 a= a  '['d"∙"q'] '                        /*construct formatted fangs.*/
+0050 end   /*d*/                               /* [↑]  ∙  is a round bullet*/
+0051 return a                                           /*return    formatted fangs.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 q                43
+002 dq               45
+003 t                46 47
+004 i                46
+005 p                46
+006 a                49
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           4 4 4 4 4 5 5 5 5 5
+002 $.               -> newV2.           25 27
+003 #                -> newV3            8 16
+004 _                -> newV4            12 27 43

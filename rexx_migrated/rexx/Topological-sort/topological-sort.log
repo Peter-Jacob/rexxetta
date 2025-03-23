@@ -1,0 +1,74 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:33
+-------------------------------------------------------------------------
+0001 /*REXX pgm does a topological sort (orders such that no item precedes a dependent item).*/
+0002 iDep.=  0;      iPos.=  0;         iOrd.=  0     /*initialize some stemmed arrays to  0.*/
+0003 nL= 15;         nd= 44;            nc= 69     /*     "       "  "parms"  and indices.*/
+0004 label= 'DES_SYSTEM_LIB   DW01     DW02    DW03   DW04   DW05   DW06   DW07'  ,
+0005 'DWARE    GTECH   RAMLIB   STD_CELL_LIB   SYNOPSYS      STD    IEEE'
+0006 iCode= 1 14 13 12 1 3 2 11 15 0 2 15 2 9 10 0 3 15 3 9 0 4 14 213 9 4 3 2 15 10 0 5 5 15 ,
+0007 2 9 10 0 6 6 15 9 0 7 7 15 9 0 8 15 9 0 39 15 9 0 10 15 10 0 11 14 15 0 12 15 12 0 0
+0008 j= 0
+0009 do i=1
+0010 iL= word(iCode, i);          if iL==0  then leave
+0011 do forever;               i= i+1
+0012 iR= word(iCode, i);       if iR==0  then leave
+0013 j= j+1;                   iDep.j.1= iL
+0014 iDep.j.2= iR
+0015 end   /*forever*/
+0016 end      /*i*/
+0017 call tSort
+0018 say '═══compile order═══'
+0019 @=  'libraries found.)'
+0020 #=0;                            do o=nO  by -1  for nO;   #= #+1;  say word(label, iOrd.o)
+0021 end   /*o*/;              if #==0  then #= 'no'
+0022 say '   ('#   @;        say
+0023 say '═══unordered libraries═══'
+0024 #=0;                            do u=nO+1  to nL;         #= #+1;  say word(label, iOrd.u)
+0025 end   /*u*/;              if #==0  then #= 'no'
+0026 say '   ('#   "unordered"  @
+0027 exit                                             /*stick a fork in it,  we're all done. */
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 tSort: procedure expose iDep. iOrd. iPos. nd nL nO
+0030 do i=1  for nL;  iOrd.i= i;  iPos.i= i
+0031 end   /*i*/
+0032 k= 1
+0033 do  until k<=j;              j  = k;            k= nL+1
+0034 do i=1  for nd;          iL = iDep.i.1;    iR= iPos.iL
+0035 ipL= iPos.iL;            ipR= iPos.iR
+0036 if iL==iR | ipL>.k | ipL<j | ipR<j  then iterate
+0037 k= k-1
+0038 _= iOrd.k;               iPos._ = ipL
+0039 iPos.iL= k
+0040 iOrd.ipL= iOrd.k;        iOrd.k = iL
+0041 end   /*i*/
+0042 end       /*until*/
+0043 nO= j-1;     return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 iDep.            2 13 14
+002 iPos.            2 30 38 39
+003 iOrd.            2 30 40 40
+004 nL               3
+005 nd               3
+006 nc               3
+007 label            4
+008 iCode            6
+009 j                8 13 33
+010 i                9 11 30 34
+011 iL               10 34
+012 iR               12 34
+013 o                20
+014 u                24
+015 k                32 33 37
+016 until            33
+017 ipL              35
+018 ipR              35
+019 nO               43
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            19
+002 #                -> newV2            20 20 21 24 24 25
+003 _                -> newV3            38

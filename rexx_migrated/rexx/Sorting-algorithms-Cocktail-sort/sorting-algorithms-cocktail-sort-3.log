@@ -1,0 +1,53 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 cocktailSort2: procedure expose items.
+0002 nn = items.0 - 1  /*N:  the number of items in items.*/
+0003 do until done
+0004 done = 1
+0005 do j = 1 for nn
+0006 jp = j + 1        /* Rexx doesn't allow "items.(j+1)", so use this instead. */
+0007 if items.j > items.jp  then ,
+0008 			    parse value 0 items.j items.jp with done items.jp items.j /* swap items.j and items.jp, and set done to 0 */
+0009 end /*j*/
+0010 if done then leave                /*Did swaps?   Then we're done.*/
+0011 do k = nn for nn by -1
+0012 kp = k + 1        /* Rexx doesn't allow "items.(k+1)", so use this instead. */
+0013 if items.k > items.kp  then ,
+0014 			    parse value 0 items.k items.kp with done items.kp items.k /* swap items.k and items.kp, and set done to 0 */
+0015 end /*k*/
+0016 end /*until*/
+0017 
+0018 	return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 nn               2
+002 done             4 8 14
+003 j                5
+004 jp               6
+005 NORMAL.5         
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 NORMAL.23        
+024 NORMAL.24        
+025 NORMAL.25        
+026 items.           14 14
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

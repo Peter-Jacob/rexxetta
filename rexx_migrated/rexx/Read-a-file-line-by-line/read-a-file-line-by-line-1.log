@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX program   reads  and  displays  (with a count)  a file,  one line at a time.     */
+0002 parse arg fID .                                  /*obtain optional argument from the CL.*/
+0003 if fID==''  then exit 8                          /*Was no fileID specified?  Then quit. */
+0004 say center(' displaying file: ' fID" ", 79, '═') /*show the name of the file being read.*/
+0005 call linein fID, 1, 0                            /*see the comment in the section header*/
+0006 say                                              /* [↓]  show a file's contents (lines).*/
+0007 do #=1  while lines(fID)\==0                /*loop whilst there are lines in file. */
+0008 y= linein(fID)                              /*read a line and assign contents to Y.*/
+0009 say y                                       /*show the content of the line (record)*/
+0010 end   /*#*/
+0011 say                                              /*stick a fork in it,  we're all done. */
+0012 say center(' file '   fID   " has "   #-1   ' records.', 79, '═')     /*show rec count. */
+0013 call lineout  fID                                /*close the input file  (most REXXes). */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 fID              2
+002 y                8
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            7

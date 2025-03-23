@@ -1,0 +1,59 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program proves  Euler's  identity by showing that:      e^(i pi) + 1  ≡     0    */
+0002 numeric digits length( pi() )  -  length(.)      /*define pi;  set # dec. digs precision*/
+0003 cosPI= fmt( cos(pi) )                    /*calculate the value of   cos(pi).    */
+0004 sinPI= fmt( sin(pi) )                    /*    "      "    "    "   sin(pi).    */
+0005 say  '         cos(pi) = '  cosPI                /*display    "    "    "   cos(Pi).    */
+0006 say  '         sin(pi) = '  sinPI                /*   "       "    "    "   sin(Pi).    */
+0007 say                                              /*separate the wheat from the chaff.   */
+0008 $= cosPI  +  mult( sqrt(-1), sinPI )  +  1  /*calc. product of sin(x) and sqrt(-1).*/
+0009 say  '    e^(i pi) + 1 = '  fmt($)    '    ' word("unproven proven",  ($=0)  +  1)
+0010 exit                                             /*stick a fork in it,  we're all done. */
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 fmt:   procedure; parse arg x; x= format(x, , digits() %2, 0);   return left('', x>=0)x /1
+0013 mult:  procedure; parse arg a,b;       if a=0  | b=0  then return 0;            return a*b
+0014 pi:    pi= 3.1415926535897932384626433832795028841971693993751058209749445923;  return pi
+0015 cos:   procedure; parse arg x;  z= 1;  _= 1;   q= x*x;  i= -1;            return .sinCos()
+0016 sin:   procedure; parse arg x 1 z 1 _;         q= x*x;  i=  1;            return .sinCos()
+0017 .sinCos:   do k=2  by 2  until p=z;  p=z;  _= -_ * q/(k*(k+i));  z= z+_;  end;    return z
+0018 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0019 sqrt:  procedure; parse arg x;  if x=0  then return 0;  d=digits(); i=;             h= d+6
+0020 numeric digits;  numeric form;   if x<0  then  do;  x= -x;   i= 'i';  end;   m.= 9
+0021 parse value format(x, 2, 1, , 0)  'E0'   with   g  'E'  _  .;     g= g * .5'e'_ % 2
+0022 do j=0  while h>9;      m.j= h;              h= h % 2   + 1;  end
+0023 do k=j+5  to 0  by -1;  numeric digits m.k;  g= (g+x/g) *.5;  end;  return g || i
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                19 20
+002 d                19
+003 i                19 20
+004 h                19 22
+005 m.               20 22
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                21 21 23
+024 j                22
+025 k                23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            8
+002 _                -> newV2            15 16 17 21

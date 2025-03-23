@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX program calculates and displays  Catalan numbers  using  four different methods. */
+0002 parse arg LO HI .                                /*obtain optional arguments from the CL*/
+0003 if LO=='' | LO==","  then do;  HI=15; LO=0;  end /*No args? Then use a range of 0 ──► 15*/
+0004 if HI=='' | HI==","  then      HI=LO             /*No HI?   Then use  LO for the default*/
+0005 numeric digits max(20, 5*HI)                     /*this allows gihugic Catalan numbers. */
+0006 w=length(HI)                                     /*W:  is used for aligning the output. */
+0007 call hdr 1A;  do j=LO  to HI;  say '     Catalan'     right(j, w)": "      Cat1A(j);   end
+0008 call hdr 1B;  do j=LO  to HI;  say '     Catalan'     right(j, w)": "      Cat1B(j);   end
+0009 call hdr 2 ;  do j=LO  to HI;  say '     Catalan'     right(j, w)": "      Cat2(j) ;   end
+0010 call hdr 3 ;  do j=LO  to HI;  say '     Catalan'     right(j, w)": "      Cat3(j) ;   end
+0011 exit                                             /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 !:     arg z; if !.z\==. then return !.z; !=1;  do k=2  to z; !=!*k; end;  !.z=!; return !
+0014 Cat1A: procedure expose !.;  parse arg n;     return comb(n+n, n)    %  (n+1)
+0015 Cat1B: procedure expose !.;  parse arg n;     return !(n+n) % ((n+1) * !(n)**2)
+0016 Cat3:  procedure expose c.;  arg n; if c.n==. then c.n=(4*n-2)*cat3(n-1)%(n+1); return c.n
+0017 comb:  procedure;            parse arg x,y;   return pFact(x-y+1, x) % pFact(2, y)
+0018 hdr:   !.=.; c.=.; c.0=1; say; say center('Catalan numbers, method' arg(1),79,'─'); return
+0019 pFact: procedure;            !=1;      do k=arg(1)  to arg(2);  !=!*k;  end;    return !
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 Cat2:  procedure expose c.;  parse arg n;  $=0;         if c.n\==.  then return c.n
+0022 do k=0  for n;   $=$ + Cat2(k) * Cat2(n-k-1);   end
+0023 c.n=$;           return $    /*use a memoization technique.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                21
+002 k                22
+003 c.               23
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           13
+002 !                -> newV2            13 13 19 19
+003 $                -> newV3            21 22

@@ -1,0 +1,18 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 call value 'CAT', "When the cat's away, the mice will play."
+0002 /*assigns a literal ───►  CAT    */
+0003 yyy='CA'
+0004 call value yyy'T', "Honest as the Cat when the meat's out of reach."
+0005 /*assigns a literal ───►  CAT    */
+0006 yyy = 'CA'
+0007 call value yyy || 'T', "Honest as the Cat when the meat's out of reach."
+0008 /*assigns a literal ───►  CAT    */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 yyy              3 6
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

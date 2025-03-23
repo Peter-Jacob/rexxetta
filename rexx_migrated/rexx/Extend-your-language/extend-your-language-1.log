@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 if2(  some-expression-that-results-in-a-boolean-value,   some-other-expression-that-results-in-a-boolean-value)
+0002 
+0003 
+0004 /*this part is a REXX comment*/         /*could be a DO structure.*/
+0005 select      /*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/         /*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
+0006 
+0007 when if.11  /*{condition 1 & 2  are true}*/   then    perform-a-REXX-statement
+0008 when if.10  /*{condition 1       is true}*/   then       "    "   "      "
+0009 when if.01  /*{condition 2       is true}*/   then       "    "   "      "
+0010 when if.00  /*{no condition      is true}*/   then       "    "   "      "
+0011 
+0012 end
+0013 
+0014 /*an example of a  DO  structure for the first clause: */
+0015 
+0016 when if.11  /*{condition 1 & 2  are true}*/   then do;  x=12;  y=length(y);  end
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                16
+002 y                16
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

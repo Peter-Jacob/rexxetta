@@ -1,0 +1,87 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program  finds and displays   unprimeable   numbers  (non─negative integers).    */
+0002 parse arg n x hp .                               /*obtain optional arguments from the CL*/
+0003 if  n=='' |  n==","  then  n=       35           /*Not specified?  Then use the default.*/
+0004 if  x=='' |  x==","  then  x=      600           /* "      "         "   "   "     "    */
+0005 if hp=='' | hp==","  then hp= 10000000           /* "      "         "   "   "     "    */
+0006 u= 0                                             /*number of unprimeable numbers so far.*/
+0007 eds=4;     ed.1= 1;  ed.2= 3;  ed.3= 7;  ed.4= 9 /*"end" digits which are prime; prime>9*/
+0008 call genP hp                                     /*generate primes up to & including HP.*/
+0009 $$=;                       $.=.                  /*a list  "      "         "     "  "  */
+0010 do j=100;            if !.j  then iterate  /*Prime?  Unprimeable must be composite*/
+0011 Lm= length(j)                              /*obtain the length-1 of the number J. */
+0012 meat= left(j, Lm)                          /*obtain the first  Lm   digits of  J. */
+0013 /* [↑]  examine the "end" digit of  J. */
+0014 do e_=1  for eds;  new= meat || ed.e_    /*obtain a different number  (than  J).*/
+0015 if new==j  then iterate                  /*Is it the original number? Then skip.*/
+0016 if !.new   then iterate j                /*This new number a prime?     "    "  */
+0017 end  /*e_*/
+0018 /* [↑]  examine a new 1st digit of  J. */
+0019 do f_=0  for 10;   new= (f_||meat) + 0   /*obtain a different number  (than  J).*/
+0020 if new==j  then iterate                  /*Is it the original number? Then skip.*/
+0021 if !.new   then iterate j                /*This new number a prime?     "    "  */
+0022 end  /*f_*/                              /* [↑]  examine the front digit of  J. */
+0023 do a_= 2  for Lm-1           /*traipse through the middle digits.   */
+0024 meat=   left(j, a_ - 1)      /*use a number of left─most dec. digits*/
+0025 rest= substr(j, a_ + 1)      /* "  "    "    " right─most "     "   */
+0026 do n_=0  for 10           /*traipse through all 1─digit numbers. */
+0027 new= meat || n_ || rest   /*construct new number, like a phoenix.*/
+0028 if new==j  then iterate   /*Is it the original number? Then skip.*/
+0029 if !.new   then iterate j /*This new number a prime?     "    "  */
+0030 end   /*n_*/
+0031 end      /*a_*/
+0032 u= u + 1                                   /*bump the count of unprimeable numbers*/
+0033 if u<=n    then $$= $$ commas(j)           /*maybe add unprimeable # to  $$  list.*/
+0034 if u==x    then $.ox=  commas(j)           /*assign the   Xth  unprimeable number.*/
+0035 parse var   j     ''  -1  _                /*obtain the right─most dec digit of J.*/
+0036 if $._==.  then $._= j                     /*the 1st unprimeable # that ends in _.*/
+0037 if $.3==.  then iterate;  if $.7==.  then iterate    /*test if specific #'s found.*/
+0038 if $.1==.  then iterate;  if $.9==.  then iterate    /*  "   "     "     "    "   */
+0039 leave                                                /*if here,  then we're done. */
+0040 end   /*j*/
+0041 
+0042 if n>0  then do;  say center(' first '       n       "unprimeable numbers ", 139, '═')
+0043 say strip($$);    say
+0044 end
+0045 if x>0  then say '     the '     th(x)       " unprimeable number is: "       $.ox
+0046 say
+0047 do o=0  for 10;      if length($.o)==0  then iterate
+0048 say '     the first unprimeable number that ends in '  o  " is:"right(commas($.o),11)
+0049 end   /*o*/
+0050 exit                                             /*stick a fork in it,  we're all done. */
+0051 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0052 commas:  parse arg ?;  do c=length(?)-3  to 1  by -3; ?=insert(',', ?, c); end;   return ?
+0053 th:procedure;parse arg x;return x||word('th st nd rd',1+(x//10)*(x//100%10\==1)*(x//10<4))
+0054 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0055 genP: @.1=2; @.2=3; @.3=5; @.4=7; @.5=11; @.6=13; @.7=17; @.8=19; @.9=23; @.10=29; @.11=31
+0056 !.=0; !.2=1; !.3=1; !.5=1; !.7=1; !.11=1; !.13=1; !.17=1; !.19=1; !.23=1; !.29=1
+0057 #= 11;  sq.#= @.# **2
+0058 do lim=100  until lim*lim>=hp /*only keep primes up to the sqrt(hp). */
+0059 end   /*lim*/                 /* [↑]  find limit for storing primes. */
+0060 do j=@.#+2  by 2  to hp;  parse var j '' -1 _;  if _==5  then iterate   /*÷ by 5?*/
+0061 if j// 3==0  then iterate;   if j// 7==0  then iterate;   if j//11==0  then iterate
+0062 if j//13==0  then iterate;   if j//17==0  then iterate;   if j//19==0  then iterate
+0063 if j//23==0  then iterate;   if j//29==0  then iterate
+0064 do k=11  while sq.k<=j                 /*divide by some generated odd primes. */
+0065 if j//@.k==0  then iterate j           /*Is J divisible by  P?  Then not prime*/
+0066 end   /*k*/                            /* [↓]  a prime  (J)  has been found.  */
+0067 #= #+1;   if #<=lim  then @.#=j;   !.j=1  /*bump prime count; assign prime to @. */
+0068 sq.#= j*j                       /*calculate square of J for fast WHILE.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                60
+002 k                64
+003 sq.              68
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $$               -> newV1            9 33
+002 $.               -> newV2.           9 34 36
+003 @.               -> newV3.           55 55 55 55 55 55 55 55 55 55 67
+004 !.               -> newV4.           56 56 56 56 56 56 56 56 56 56 56 67
+005 _                -> newV5            35 60
+006 ?                -> newV6            52 52
+007 #                -> newV7            57 67

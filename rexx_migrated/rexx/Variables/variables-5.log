@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX pgm shows different scopes of a variable: "global"  and  "local".*/
+0002 q = 55          ;    say ' 1st q='  q  /*assign a value ───►  "main"  Q.*/
+0003 call sub        ;    say ' 2nd q='  q  /*call a procedure subroutine.   */
+0004 call gyro       ;    say ' 3rd q='  q  /*call a procedure with EXPOSE.  */
+0005 call sand       ;    say ' 4th q='  q  /*call a subroutine or function. */
+0006 exit                                   /*stick a fork in it, we're done.*/
+0007 /*──────────────────────────────────SUB subroutine──────────────────────*/
+0008 sub:  procedure                        /*use PROCEDURE to use local vars*/
+0009 q = -777        ;    say ' sub q='  q  /*assign a value ───► "local" Q. */
+0010 return
+0011 /*──────────────────────────────────GYRO subroutine─────────────────────*/
+0012 gyro: procedure expose q               /*use EXPOSE to use global var Q.*/
+0013 q = "yuppers"   ;    say 'gyro q='  q  /*assign a value ───► "exposed" Q*/
+0014 return
+0015 /*──────────────────────────────────SAND subroutine─────────────────────*/
+0016 sand:                                  /*all REXX variables are exposed.*/
+0017 q = "Monty"     ;    say 'sand q='  q  /*assign a value ───► "global"  Q*/
+0018 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 q                2 9 13 17
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

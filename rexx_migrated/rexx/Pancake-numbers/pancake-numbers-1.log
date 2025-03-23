@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX program calculates/displays 20 pancake numbers (from 1 to 20,inclusive). */
+0002 /* Gerard Schildberger's code reformatted and refurbished                       */
+0003 pad=copies(' ',10)                                               /*indentation. */
+0004 Say pad center('pancakes',10    ) center('pancake flips',15)     /*show the hdr.*/
+0005 Say pad center(''        ,10,"-") center('',15,"-")              /*  "   "  sep.*/
+0006 Do pcn=1 To 20
+0007 Say pad center(pcn,10) center(pancake(pcn),15)                 /*index,flips. */
+0008 End
+0009 Exit                                      /*stick a fork in it, we're all done. */
+0010 /*------------------------------------------------------------------------------*/
+0011 pancake: Procedure
+0012 Parse Arg n                            /* obtain  N                           */
+0013 gap= 2                                 /* initialize the GAP.                 */
+0014 sum= 2                                 /* initialize the SUM.                 */
+0015 Do adj=0 While sum <n                  /* perform while  SUM is less than  N. */
+0016 gap= gap*2 - 1                       /* calculate the GAP.                  */
+0017 sum= sum + gap                       /* add the  GAP  to the  SUM.          */
+0018 End   /*adj*/
+0019 Return n +adj -1                       /* return an adjusted adjustment sum.  */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                12
+002 gap              13 16
+003 sum              14 17
+004 adj              15
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

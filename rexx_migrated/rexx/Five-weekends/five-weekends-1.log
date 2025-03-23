@@ -1,0 +1,69 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX program  finds  months  that contain  five weekends   (given a date range).      */
+0002 month. =31;  month.2=0                           /*month days;   February is skipped.   */
+0003 month.4=30;  month.6=30; month.9=30; month.11=30 /*all the  months with  thirty-days.   */
+0004 parse arg yStart yStop .                         /*get the  "start"  and  "stop"  years.*/
+0005 if yStart=='' | yStart==","  then yStart= 1900   /*Not specified?  Then use the default.*/
+0006 if yStop =='' | yStop ==","  then yStop = 2100   /* "      "         "   "   "     "    */
+0007 years=yStop - yStart + 1                         /*calculate the number of yrs in range.*/
+0008 haps=0                                           /*number of five weekends happenings.  */
+0009 !.=0;                 @5w= 'five-weekend months' /*flag if a year has any five-weekends.*/
+0010 do y=yStart to yStop                      /*process the years specified.         */
+0011 do m=1  for 12;    wd.=0              /*process each month and also each year*/
+0012 do d=1  for month.m;  dat_= y"-"right(m,2,0)'-'right(d,2,0)
+0013 parse  upper  value   date('W', dat_, "I")    with    ? 3
+0014 wd.?=wd.?+1                     /*?  is the first two chars of weekday.*/
+0015 end   /*d*/                     /*WD.su = number of Sundays in a month.*/
+0016 if wd.su\==5 | wd.fr\==5 | wd.sa\==5 then iterate           /*five weekends ?*/
+0017 say 'There are five weekends in'   y   date('M', dat_, "I")
+0018 haps=haps+1;   !.y=1                  /*bump counter; indicate yr has 5 WE's.*/
+0019 end         /*m*/
+0020 end             /*y*/
+0021 say
+0022 say "There were "  haps ' occurrence's(haps) "of"  @5w 'in year's(years)  yStart"──►"yStop
+0023 say; #=0
+0024 do y=yStart  to yStop;   if !.y  then iterate                    /*skip if OK.*/
+0025 #=#+1;        say  'Year '    y    " doesn't have any" @5wem'.'
+0026 end   /*y*/
+0027 say
+0028 say  "There are "  # ' year's(#) "that haven't any" @5w 'in year's(years) yStart'──►'yStop
+0029 exit                                             /*stick a fork in it,  we're all done. */
+0030 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0031 s: if arg(1)==1  then return arg(3);      return word(arg(2) 's',1)        /*pluralizer.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 yStart           4 5
+002 yStop            4 6
+003 years            7
+004 haps             8 18
+005 y                10 24
+006 m                11
+007 wd.              11 14
+008 d                12
+009 dat_             12
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 NORMAL.23        
+024 NORMAL.24        
+025 NORMAL.25        
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @5w              -> newV1            9
+002 !.               -> newV2.           9 18
+003 ?                -> newV3            13
+004 #                -> newV4            23 25

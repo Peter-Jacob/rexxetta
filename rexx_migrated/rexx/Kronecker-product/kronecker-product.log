@@ -1,0 +1,93 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program calculates the Kronecker product of two matrices.      */
+0002 w=0                              /* W: max width of any matrix element*/
+0003 amat=2x2 1 2 3 4                 /* define A matrix size and elements */
+0004 bmat=2x2 0 5 6 7                 /* "      B    "     "   "     "     */
+0005 Call makeMat 'A',amat            /* construct A matrix from elements  */
+0006 Call makeMat 'B',bmat            /* "         B    "     "     "      */
+0007 Call KronMat 'Kronecker product' /* calculate the Kronecker  product  */
+0008 Call showMat what,arows*brows||'X'||arows*bcols
+0009 Say ''
+0010 Say copies('|',55)
+0011 Say ''
+0012 w=0                              /* W: max width of any matrix element*/
+0013 amat=3x3 0 1 0 1 1 1 0 1 0       /* define A matrix size and elements */
+0014 bmat=3x4 1 1 1 1 1 0 0 1 1 1 1 1 /* "      B    "     "   "     "     */
+0015 Call makeMat 'A',amat            /* construct A matrix from elements  */
+0016 Call makeMat 'B',bmat            /* "         B    "     "     "      */
+0017 Call KronMat 'Kronecker product' /* calculate the Kronecker  product  */
+0018 Call showMat what,arows*brows||'X'||arows*bcols
+0019 Exit                             /* stick a fork in it, we're all done*/
+0020 /*--------------------------------------------------------------------*/
+0021 makemat:
+0022 Parse Arg what,size elements   /*elements: e.1.1 e.1.2 - e.rows cols*/
+0023 Parse Var size rows 'X' cols
+0024 x.what.shape=rows cols
+0025 n=0
+0026 Do r=1 To rows
+0027 Do c=1 To cols
+0028 n=n+1
+0029 element=word(elements,n)
+0030 w=max(w,length(element))
+0031 x.what.r.c=element
+0032 End
+0033 End
+0034 Call showMat what,size
+0035 Return
+0036 /*--------------------------------------------------------------------*/
+0037 kronmat:                         /* compute the Kronecker Product     */
+0038 Parse Arg what
+0039 Parse Var x.a.shape arows acols
+0040 Parse Var x.b.shape brows bcols
+0041 rp=0                           /* row of product                    */
+0042 Do ra=1 To arows
+0043 Do rb=1 To brows
+0044 rp=rp+1                    /* row of product                    */
+0045 cp=0                       /* column of product                 */
+0046 Do ca=1 To acols
+0047 x=x.a.ra.ca
+0048 Do cb=1 To bcols
+0049 y=x.b.rb.cb
+0050 cp=cp+1                /* column of product                 */
+0051 xy=x*y
+0052 x.what.rp.cp=xy        /* element of product                */
+0053 w=max(w,length(xy))
+0054 End /* cB */
+0055 End /* cA */
+0056 End /* rB */
+0057 End /* rA */
+0058 Return
+0059 /*--------------------------------------------------------------------*/
+0060 showmat:
+0061 Parse Arg what,size .
+0062 Parse Var size rows 'X' cols
+0063 z='+'
+0064 b6=left('',6)
+0065 Say ''
+0066 Say b6 copies('-',7) 'matrix' what copies('-',7)
+0067 Say b6 b6 '+'copies('-',cols*(w+1)+1)'+'
+0068 Do r=1 To rows
+0069 line='|' right(x.what.r.1,w)    /* element of first column        */                       /* start with long vertical bar   */
+0070 Do c=2 To cols                  /* loop for other columns         */
+0071 line=line right(x.what.r.c,w) /* append the elements            */
+0072 End /* c */
+0073 Say b6 b6 line '|'              /* append a long vertical bar.    */
+0074 End /* r */
+0075 Say b6 b6 '+'copies('-',cols*(w+1)+1)'+'
+0076 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 size             62
+002 rows             62
+003 cols             62
+004 z                63
+005 b6               64
+006 r                68
+007 line             69 71
+008 c                70
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

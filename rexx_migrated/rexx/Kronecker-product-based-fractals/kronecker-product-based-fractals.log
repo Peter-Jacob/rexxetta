@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:18
+-------------------------------------------------------------------------
+0001 /*REXX program calculates the   Kronecker product   of   two arbitrary size   matrices. */
+0002 parse arg pGlyph .                               /*obtain optional argument from the CL.*/
+0003 if pGlyph=='' | pGlyph==","  then pGlyph= '█'    /*Not specified?  Then use the default.*/
+0004 if length(pGlyph)==2  then pGlyph= x2c(pGlyph)   /*Plot glyph is 2 chars?   Hexadecimal.*/
+0005 if length(pGlyph)==3  then pGlyph= d2c(pGlyph)   /*  "    "    " 3   "      Decimal.    */
+0006 aMat= 3x3  0 1 0 1 1 1 0 1 0              /*define  A  matrix size  and elements.*/
+0007 bMat= 3x3  1 1 1 1 0 1 1 1 1              /*   "    B     "     "    "     "     */
+0008 call makeMat 'A', aMat                           /*construct   A   matrix from elements.*/
+0009 call makeMat 'B', bMat                           /*    "       B      "     "     "     */
+0010 call KronMat 'Kronecker product'                 /*calculate the  Kronecker  product.   */
+0011 call showMat 'Kronecker product', result         /*display   the  Kronecker  product.   */
+0012 exit                                             /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 KronMat: parse arg what;              #= 0;           parse var  @.a.shape  aRows  aCols
+0015 parse var  @.b.shape  bRows  bCols
+0016 do       rA=1  for aRows
+0017 do     rB=1  for bRows;  #= # + 1;       ##= 0;         _=
+0018 do   cA=1  for aCols;  x= @.a.rA.cA
+0019 do cB=1  for bCols;  y= @.b.rB.cB;   ##= ## + 1;   xy= x * y;     _= _ xy
+0020 @.what.#.##= xy
+0021 end   /*cB*/
+0022 end     /*cA*/
+0023 end       /*rB*/
+0024 end         /*rA*/;        return aRows * aRows   ||   'X'   ||   bRows * bRows
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 makeMat: parse arg what, size elements;   arg , row 'X' col .;      @.what.shape= row  col
+0027 #=0;    do   r=1  for row               /* [↓]  bump item#; get item; max width*/
+0028 do c=1  for col;   #= # + 1;        @.what.r.c= word(elements, #)
+0029 end   /*c*/                   /* [↑] define an element of WHAT matrix*/
+0030 end     /*r*/;           return
+0031 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0032 showMat: parse arg what, size .;   parse var size  row  'X'  col   /*obtain mat name, sz*/
+0033 do    r=1  for row;    $=                     /*build row by row.  */
+0034 do c=1  for col;    $= $ || @.what.r.c     /*  "   col  " col.  */
+0035 end   /*c*/
+0036 $= translate($, pGlyph, 10)                   /*change──►plot glyph*/
+0037 say strip($, 'T')                             /*display line──►term*/
+0038 end     /*r*/;       return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 size             32
+002 row              32
+003 col              32
+004 r                33
+005 c                34
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           14 15 20 26 28
+002 ##               -> newV2            17 19
+003 #                -> newV3            14 17 27 28
+004 _                -> newV4            17 19
+005 $                -> newV5            33 34 36

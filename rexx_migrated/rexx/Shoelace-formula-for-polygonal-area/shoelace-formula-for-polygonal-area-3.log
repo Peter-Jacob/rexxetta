@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program uses a  Shoelace  formula to calculate the area of an  N-sided  polygon. */
+0002 parse arg pts                                    /*obtain optional arguments from the CL*/
+0003 if pts='' then pts= '(3,4),(5,11),(12,8),(9,5),(5,6)'   /*Not specified?   Use default. */
+0004 pts=space(pts,0); z=pts                                 /*elide extra blanks;  save pts.*/
+0005 do n=1 until z=''                                       /*perform destructive parse on z*/
+0006 parse var z '(' x.n ',' y.n ')' ',' z                 /*obtain X and Y coördinates    */
+0007 end
+0008 z=n+1; y.z=y.1                                          /* take care of end points      */
+0009 y.0=y.n
+0010 A=0                                                     /*initialize the  area  to zero.*/
+0011 do j=1 for n;
+0012 jp=j+1;
+0013 jm=j-1;
+0014 A=A+x.j*(y.jp-y.jm)                                   /*compute a part of the area.   */
+0015 end
+0016 A=abs(A/2)                                              /*obtain half of the  ¦ A ¦  sum*/
+0017 say 'polygon area of' n 'points:' pts 'is --->' A
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                6 6 8
+002 x.               6
+003 y.               6 8 9
+004 A                10 14 16
+005 j                11
+006 jp               12
+007 jm               13
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

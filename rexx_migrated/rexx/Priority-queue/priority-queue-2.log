@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX pgm implements a priority queue; with insert/show/delete top task*/
+0002 n=0
+0003 task.=0 /* for the sake of task.0done.* */
+0004 say '------ inserting tasks.';     call ins_task 3 'Clear drains'
+0005 call ins_task 4 'Feed cat'
+0006 call ins_task 5 'Make tea'
+0007 call ins_task 1 'Solve RC tasks'
+0008 call ins_task 2 'Tax return'
+0009 call ins_task 6 'Relax'
+0010 call ins_task 6 'Enjoy'
+0011 say '------ Showing tasks.';       call show_tasks
+0012 say '------ Show and delete top task.'
+0013 todo=n  /* tasks to be done             */
+0014 do While todo>0
+0015 Say top()
+0016 End
+0017 exit
+0018 
+0019 ins_task: procedure expose n task.
+0020 n=n+1
+0021 Parse Arg task.0pri.n task.0txt.n
+0022 Return
+0023 
+0024 show_tasks: procedure expose task. n
+0025 do i=1 To n
+0026 Say task.0pri.i task.0txt.i
+0027 End
+0028 Return
+0029 
+0030 top: procedure expose n task. todo /* get top task and mark it 'done' */
+0031 high=0
+0032 Do i=1 To n
+0033 If task.0pri.i>high &,
+0034 task.0done.i=0 Then Do
+0035 j=i
+0036 high=task.0pri.i
+0037 End
+0038 End
+0039 res=task.0pri.j task.0txt.j
+0040 task.0done.j=1
+0041 todo=todo-1
+0042 return res
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 task.            21 21 34 40
+002 i                25 32
+003 high             31 36
+004 j                35
+005 res              39
+006 todo             41
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

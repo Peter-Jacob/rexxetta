@@ -1,0 +1,56 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program sorts an array (using E─sort), in this case, the array contains integers.*/
+0002 numeric digits 30                                /*enables handling larger Euler numbers*/
+0003 @.  =              0;            @.1 =               1
+0004 @.3 =             -1;            @.5 =               5
+0005 @.7 =            -61;            @.9 =            1385
+0006 @.11=         -50521;            @.13=         2702765
+0007 @.15=     -199360981;            @.17=     19391512145
+0008 @.19= -2404879675441;            @.21= 370371188237525
+0009 #= 21                                            /*indicate there're  21 Euler  numbers.*/
+0010 call tell  'unsorted'                            /*display the array before the  eSort. */
+0011 call eSort     #                                 /*sort the array of some Euler numbers.*/
+0012 call tell  '  sorted'                            /*display the array  after  the eSort. */
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 eSort: procedure expose @.;   parse arg N;     h=N                   /*an eXchange sort.*/
+0016 do  while h>1;                   h= h%2                /*define a segment.*/
+0017 do i=1  for N-h;              j=i;     k= h+i       /*sort top segment.*/
+0018 do  while  @.k<@.j                               /*see if need swap.*/
+0019 parse value  @.j @.k   with   @.k @.j        /*swap two elements*/
+0020 if h>=j  then leave;   j= j-h;   k= k-h      /*this part sorted?*/
+0021 end   /*while @.k<@.j*/
+0022 end       /*i*/
+0023 end             /*while h>1*/
+0024 return
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 tell:  say copies('─', 65);       _= left('',9);                       w= length(#)
+0027 do j=1  for #;  say _ arg(1)  'array element'   right(j, w)"="right(@.j, 20)
+0028 end   /*j*/
+0029 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                15
+002 h                15 16
+003 i                17
+004 j                17 20 27
+005 k                17 20
+006 NORMAL.6         
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 w                26
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           3 3 4 4 5 5 6 6 7 7 8 8 19 19
+002 #                -> newV2            9
+003 _                -> newV3            26

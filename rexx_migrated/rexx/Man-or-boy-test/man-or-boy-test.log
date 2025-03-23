@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program performs the  "man or boy"  test as far as possible for  N.              */
+0002 do n=0                                      /*increment  N  from  zero  forever.   */
+0003 say 'n='n   a(N,x1,x2,x3,x4,x5)             /*display the result to the terminal.  */
+0004 end  /*n*/                                  /* [↑]  do until something breaks.     */
+0005 exit                                             /*stick a fork in it,  we're all done. */
+0006 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0007 a:   procedure; parse arg k, x1, x2, x3, x4, x5
+0008 if k<=0  then return f(x4) + f(x5)
+0009 else return f(b)
+0010 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0011 b:   k=k-1;                            return  a(k, b, x1, x2, x3, x4)
+0012 f:   interpret  'v='  arg(1)"()";      return  v
+0013 x1:  procedure;                        return  1
+0014 x2:  procedure;                        return -1
+0015 x3:  procedure;                        return -1
+0016 x4:  procedure;                        return  1
+0017 x5:  procedure;                        return  0
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 k                7
+002 x1               7
+003 x2               7
+004 x3               7
+005 x4               7
+006 x5               7
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

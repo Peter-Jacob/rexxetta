@@ -1,0 +1,93 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Merge 1.txt ... n.txt into all.txt
+0003 * 1.txt 2.txt 3.txt 4.txt
+0004 * 1     19    1999  2e3
+0005 * 17    33    2999  3000
+0006 * 8     500   3999              RC task STREAM MERGE
+0007 **********************************************************************/
+0008 done.=0                         /* done.i=1 indicates file exhausted */
+0009 p.=''                                  /* for test of sort error     */
+0010 Do i=1 By 1                            /* check files for existence  */
+0011 f.i=i'.txt'
+0012 If lines(f.i)=0 Then Leave
+0013 Call get i                           /* and read first line of each*/
+0014 End
+0015 n=i-1                                  /* we have n input files      */
+0016 done.0=n                               /* and all must be used       */
+0017 say n 'Input files'
+0018 oid='all.txt'
+0019 If lines(oid)>0 Then Do                /* output file exists         */
+0020 Call lineout oid
+0021 Do Until wordpos(answer,'Y N')>0
+0022 Say 'file' oid 'exists. May it be replaced?'
+0023 Pull answer
+0024 End
+0025 If answer='Y' Then
+0026 'erase' oid
+0027 Else Do
+0028 Say 'Ok, we give up'
+0029 Exit
+0030 End
+0031 End
+0032 say oid 'is the output file'           /* we'll create it now        */
+0033 Do Until done.0=0
+0034 imin=0                               /* index of next source       */
+0035 Do i=1 To n
+0036 If done.i=0 Then Do                /* file i still in use        */
+0037 If imin=0 Then Do                /* it's the first in this loop*/
+0038 imin=i                         /* next source                */
+0039 min=x.i                        /* element to be used         */
+0040 End
+0041 Else Do                          /* not the first              */
+0042 If x.i<<min Then Do            /* avoid numerical comparison */
+0043 imin=i                       /* next source                */
+0044 min=x.i                      /* element to be used         */
+0045 End
+0046 End
+0047 End
+0048 End
+0049 If imin<>0 Then Do                   /* found next source          */
+0050 Call o x.imin                      /* use its element            */
+0051 Call get imin                      /* get next element           */
+0052 /* or set done.imin           */
+0053 End
+0054 Else                                 /* no more elements           */
+0055 Call lineout oid                   /* close output file          */
+0056 End
+0057 'type' oid
+0058 Exit
+0059 
+0060 get: Procedure Expose f. x. p. done.
+0061 /*********************************************************************
+0062 * Get next element from file ii or set done.ii=1 if file is exhausted
+0063 *********************************************************************/
+0064 Parse Arg ii
+0065 If lines(f.ii)=0 Then Do             /* file ii is exhausted      */
+0066 done.ii=1                          /* mark it as done           */
+0067 done.0=done.0-1                    /* reduce number of files tbd*/
+0068 End
+0069 Else Do                              /* there's more in file ii   */
+0070 x.ii=linein(f.ii)                  /* get next element (line)   */
+0071 If x.ii<<p.ii Then Do              /* smaller than previous     */
+0072 Say 'Input file' f.ii 'is not sorted ascendingly'
+0073 Say p.ii 'precedes' x.ii         /* tell the user             */
+0074 Exit                             /* and give up               */
+0075 End
+0076 p.ii=x.ii                          /* remember the element      */
+0077 End
+0078 Return
+0079 
+0080 o: Return lineout(oid,arg(1))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 ii               64
+002 done.            66 67
+003 x.               70
+004 p.               76
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

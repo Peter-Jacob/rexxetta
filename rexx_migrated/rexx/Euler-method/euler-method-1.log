@@ -1,0 +1,88 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 24.05.2013 Walter Pachl  translated from PL/I
+0003 **********************************************************************/
+0004 Numeric Digits 100
+0005 T0=100
+0006 Tr=20
+0007 k=0.07
+0008 
+0009 h=2
+0010 x=t0
+0011 Call head
+0012 do t=0 to 100 by 2
+0013 Select
+0014 When t<=4 | t>=96 Then
+0015 call o x
+0016 When t=8 Then
+0017 Say '...'
+0018 Otherwise
+0019 Nop
+0020 End
+0021 x=x+h*f(x)
+0022 end
+0023 
+0024 h=5
+0025 y=t0
+0026 Call head
+0027 do t=0 to 100 by 5
+0028 call o y
+0029 y=y+h*f(y)
+0030 end
+0031 
+0032 h=10
+0033 z=t0
+0034 Call head
+0035 do t=0 to 100 by 10
+0036 call o z
+0037 z=z+h*f(z)
+0038 end
+0039 Exit
+0040 
+0041 f: procedure Expose k Tr
+0042 Parse Arg t
+0043 return -k*(T-Tr)
+0044 
+0045 head:
+0046 Say 'h='h
+0047 Say '  t    By formula       By Euler'
+0048 Return
+0049 
+0050 o:
+0051 Parse Arg v
+0052 Say right(t,3) format(Tr+(T0-Tr)/exp(k*t),5,10) format(v,5,10)
+0053 Return
+0054 
+0055 exp: Procedure
+0056 Parse Arg x,prec
+0057 If prec<9 Then prec=9
+0058 Numeric Digits (2*prec)
+0059 Numeric Fuzz   3
+0060 o=1
+0061 u=1
+0062 r=1
+0063 Do i=1 By 1
+0064 ra=r
+0065 o=o*x
+0066 u=u*i
+0067 r=r+(o/u)
+0068 If r=ra Then Leave
+0069 End
+0070 Numeric Digits (prec)
+0071 r=r+0
+0072 Return r
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                56
+002 prec             56 57
+003 o                60 65
+004 u                61 66
+005 r                62 67 71
+006 i                63
+007 ra               64
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

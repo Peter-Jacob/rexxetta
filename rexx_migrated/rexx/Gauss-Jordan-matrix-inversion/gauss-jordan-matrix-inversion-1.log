@@ -1,0 +1,289 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 Parse Arg seed nn
+0003 If seed='' Then
+0004 seed=23345
+0005 If nn='' Then nn=5
+0006 If seed='?' Then Do
+0007 Say 'rexx gjmi seed n computes a random matrix with n rows and columns'
+0008 Say 'Default is 23345 5'
+0009 Exit
+0010 End
+0011 Numeric Digits 50
+0012 Call random 1,2,seed
+0013 a=''
+0014 Do i=1 To nn**2
+0015 a=a random(9)+1
+0016 End
+0017 n2=words(a)
+0018 Do n=2 To n2/2
+0019 If n**2=n2 Then
+0020 Leave
+0021 End
+0022 If n>n2/2 Then
+0023 Call exit 'Not a square matrix:' a '('n2 'elements).'
+0024 det=determinante(a,n)
+0025 If det=0 Then
+0026 Call exit 'Determinant is 0'
+0027 Do j=1 To n
+0028 Do i=1 To n
+0029 Parse Var A a.i.j a
+0030 aa.i.j=a.i.j
+0031 End
+0032 Do ii=1 To n
+0033 z=(ii=j)
+0034 iii=ii+n
+0035 a.iii.j=z
+0036 End
+0037 End
+0038 Call show 1,'The given matrix'
+0039 Do m=1 To n-1
+0040 If a.m.m=0 Then Do
+0041 Do j=m+1 To n
+0042 If a.m.j<>0 Then Leave
+0043 End
+0044 If j>n Then Do
+0045 Say 'No pivot>0 found in column' m
+0046 Exit
+0047 End
+0048 Do i=1 To n*2
+0049 temp=a.i.m
+0050 a.i.m=a.i.j
+0051 a.i.j=temp
+0052 End
+0053 End
+0054 Do j=m+1 To n
+0055 If a.m.j<>0 Then Do
+0056 jj=m
+0057 fact=divide(a.m.m,a.m.j)
+0058 Do i=1 To n*2
+0059 a.i.j=subtract(multiply(a.i.j,fact),a.i.jj)
+0060 End
+0061 End
+0062 End
+0063 Call show 2 m
+0064 End
+0065 Say 'Lower part has all zeros'
+0066 Say ''
+0067 
+0068 Do j=1 To n
+0069 If denom(a.j.j)<0 Then Do
+0070 Do i=1 To 2*n
+0071 a.i.j=subtract(0,a.i.j)
+0072 End
+0073 End
+0074 End
+0075 Call show 3
+0076 
+0077 Do m=n To 2 By -1
+0078 Do j=1 To m-1
+0079 jj=m
+0080 fact=divide(a.m.j,a.m.jj)
+0081 Do i=1 To n*2
+0082 a.i.j=subtract(a.i.j,multiply(a.i.jj,fact))
+0083 End
+0084 End
+0085 Call show 4 m
+0086 End
+0087 Say 'Upper half has all zeros'
+0088 Say ''
+0089 Do j=1 To n
+0090 If decimal(a.j.j)<>1 Then Do
+0091 z=a.j.j
+0092 Do i=1 To 2*n
+0093 a.i.j=divide(a.i.j,z)
+0094 End
+0095 End
+0096 End
+0097 Call show 5
+0098 Say 'Main diagonal has all ones'
+0099 Say ''
+0100 
+0101 Do j=1 To n
+0102 Do i=1 To n
+0103 z=i+n
+0104 a.i.j=a.z.j
+0105 End
+0106 End
+0107 Call show 6,'The inverse matrix'
+0108 
+0109 do i = 1 to n
+0110 do j = 1 to n
+0111 sum=0
+0112 Do k=1 To n
+0113 sum=add(sum,multiply(aa.i.k,a.k.j))
+0114 End
+0115 c.i.j = sum
+0116 end
+0117 End
+0118 Call showc 7,'The product of input and inverse matrix'
+0119 Exit
+0120 
+0121 show:
+0122 Parse Arg num,text
+0123 Say 'show' arg(1) text
+0124 If arg(1)<>6 Then rows=n*2
+0125 Else rows=n
+0126 len=0
+0127 Do j=1 To n
+0128 Do i=1 To rows
+0129 len=max(len,length(a.i.j))
+0130 End
+0131 End
+0132 Do j=1 To n
+0133 ol=''
+0134 Do i=1 To rows
+0135 ol=ol||right(a.i.j,len+1)
+0136 End
+0137 Say ol
+0138 End
+0139 Say ''
+0140 Return
+0141 
+0142 showc:
+0143 Parse Arg num,text
+0144 Say text
+0145 clen=0
+0146 Do j=1 To n
+0147 Do i=1 To n
+0148 clen=max(clen,length(c.i.j))
+0149 End
+0150 End
+0151 Do j=1 To n
+0152 ol=''
+0153 Do i=1 To n
+0154 ol=ol||right(c.i.j,clen+1)
+0155 End
+0156 Say ol
+0157 End
+0158 Say ''
+0159 Return
+0160 
+0161 denom: Procedure
+0162 /* Return the denominator */
+0163 Parse Arg d '/' n
+0164 Return d
+0165 
+0166 decimal: Procedure
+0167 /* compute the fraction's value */
+0168 Parse Arg a
+0169 If pos('/',a)=0 Then a=a'/1'; Parse Var a ad '/' an
+0170 Return ad/an
+0171 
+0172 gcd: procedure
+0173 /**********************************************************************
+0174 * Greatest commn divisor
+0175 **********************************************************************/
+0176 Parse Arg a,b
+0177 If b = 0 Then Return abs(a)
+0178 Return gcd(b,a//b)
+0179 
+0180 add: Procedure
+0181 Parse Arg a,b
+0182 If pos('/',a)=0 Then a=a'/1'; Parse Var a ad '/' an
+0183 If pos('/',b)=0 Then b=b'/1'; Parse Var b bd '/' bn
+0184 sum=divide(ad*bn+bd*an,an*bn)
+0185 Return sum
+0186 
+0187 multiply: Procedure
+0188 Parse Arg a,b
+0189 If pos('/',a)=0 Then a=a'/1'; Parse Var a ad '/' an
+0190 If pos('/',b)=0 Then b=b'/1'; Parse Var b bd '/' bn
+0191 prd=divide(ad*bd,an*bn)
+0192 Return prd
+0193 
+0194 subtract: Procedure
+0195 Parse Arg a,b
+0196 If pos('/',a)=0 Then a=a'/1'; Parse Var a ad '/' an
+0197 If pos('/',b)=0 Then b=b'/1'; Parse Var b bd '/' bn
+0198 div=divide(ad*bn-bd*an,an*bn)
+0199 Return div
+0200 
+0201 divide: Procedure
+0202 Parse Arg a,b
+0203 If pos('/',a)=0 Then a=a'/1'; Parse Var a ad '/' an
+0204 If pos('/',b)=0 Then b=b'/1'; Parse Var b bd '/' bn
+0205 sd=ad*bn
+0206 sn=an*bd
+0207 g=gcd(sd,sn)
+0208 Select
+0209 When sd=0 Then res='0'
+0210 When abs(sn/g)=1 Then res=(sd/g)*sign(sn/g)
+0211 Otherwise Do
+0212 den=sd/g
+0213 nom=sn/g
+0214 If nom<0 Then Do
+0215 If den<0 Then den=abs(den)
+0216 Else den=-den
+0217 nom=abs(nom)
+0218 End
+0219 res=den'/'nom
+0220 End
+0221 End
+0222 Return res
+0223 
+0224 determinante: Procedure
+0225 /* REXX ***************************************************************
+0226 * determinant.rex
+0227 * compute the determinant of the given square matrix
+0228 * Input: as: the representation of the matrix as vector (n**2 elements)
+0229 * 21.05.2013 Walter Pachl
+0230 **********************************************************************/
+0231 Parse Arg as,n
+0232 Do i=1 To n
+0233 Do j=1 To n
+0234 Parse Var as a.i.j as
+0235 End
+0236 End
+0237 Select
+0238 When n=2 Then det=subtract(multiply(a.1.1,a.2.2),multiply(a.1.2,a.2.1))
+0239 When n=3 Then Do
+0240 det=multiply(multiply(a.1.1,a.2.2),a.3.3)
+0241 det=add(det,multiply(multiply(a.1.2,a.2.3),a.3.1))
+0242 det=add(det,multiply(multiply(a.1.3,a.2.1),a.3.2))
+0243 det=subtract(det,multiply(multiply(a.1.3,a.2.2),a.3.1))
+0244 det=subtract(det,multiply(multiply(a.1.2,a.2.1),a.3.3))
+0245 det=subtract(det,multiply(multiply(a.1.1,a.2.3),a.3.2))
+0246 End
+0247 Otherwise Do
+0248 det=0
+0249 Do k=1 To n
+0250 sign=((-1)**(k+1))
+0251 If sign=1 Then
+0252 det=add(det,multiply(a.1.k,determinante(subm(k),n-1)))
+0253 Else
+0254 det=subtract(det,multiply(a.1.k,determinante(subm(k),n-1)))
+0255 End
+0256 End
+0257 End
+0258 Return det
+0259 
+0260 subm: Procedure Expose a. n
+0261 /**********************************************************************
+0262 * compute the submatrix resulting when row 1 and column k are removed
+0263 * Input: a.*.*, k
+0264 * Output: bs the representation of the submatrix as vector
+0265 **********************************************************************/
+0266 Parse Arg k
+0267 bs=''
+0268 do i=2 To n
+0269 Do j=1 To n
+0270 If j=k Then Iterate
+0271 bs=bs a.i.j
+0272 End
+0273 End
+0274 Return bs
+0275 
+0276 Exit: Say arg(1)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 k                266
+002 bs               267 271
+003 i                268
+004 j                269
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

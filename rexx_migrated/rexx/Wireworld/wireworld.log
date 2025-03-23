@@ -1,0 +1,84 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /*REXX program  displays a   wire world   Cartesian grid   of  four─state  cells.       */
+0002 parse arg  iFID .  '('  generations  rows  cols  bare  head  tail  wire  clearScreen  reps
+0003 if iFID==''  then iFID= "WIREWORLD.TXT"          /*should default input file  be used?  */
+0004 bla = 'BLANK'                            /*the "name" for a blank.              */
+0005 generations = p(generations     100   )          /*number generations that are allowed. */
+0006 rows = p(rows            3     )          /*the number of cell  rows.            */
+0007 cols = p(cols            3     )          /* "     "    "   "   columns.         */
+0008 bare = pickChar(bare     bla   )          /*character used to show an empty cell.*/
+0009 clearScreen = p(clearScreen     0     )          /*1    means to clear the screen.      */
+0010 head = pickChar(head     'H'   )          /*pick the character for the  head.    */
+0011 tail = pickChar(tail     't'   )          /*  "   "      "      "   "   tail.    */
+0012 wire = pickChar(wire     .     )          /*  "   "      "      "   "   wire.    */
+0013 reps = p(reps            2     )          /*stop program  if there are 2 repeats.*/
+0014 fents= max(cols, linesize() - 1)                 /*the fence width used after displaying*/
+0015 #reps= 0;     $.= bare;   gens= abs(generations) /*at start, universe is new and barren.*/
+0016 /* [↓]     read the input file.        */
+0017 do r=1  while lines(iFID)\==0             /*keep reading until the  End─Of─File. */
+0018 q= strip( linein(iFID), 'T')              /*get a line from input file.          */
+0019 L= length(q);      cols= max(cols, L)     /*calculate maximum number of columns. */
+0020 do c=1  for L;  $.r.c= substr(q, c, 1) /*assign the cells for the   R   row.  */
+0021 end   /*c*/
+0022 end      /*r*/
+0023 !.= 0;                      signal on halt       /*initial state of cells;  handle halt.*/
+0024 rows= r - 1;   life= 0;     call showCells       /*display initial state of the cells.  */
+0025 /*watch cells evolve, 4 possible states*/
+0026 do   life=1  for gens;    @.= bare             /*perform for the number of generations*/
+0027 do   r=1  for rows                          /*process each of the rows.            */
+0028 do c=1  for cols;    ?= $.r.c;    ??= ?   /*   "      "   "  "  columns.         */
+0029 select                          /*determine the type of cell.          */
+0030 when ?==head  then ??= tail
+0031 when ?==tail  then ??= wire
+0032 when ?==wire  then do;  #= hood();   if #==1 | #==2  then ??= head;   end
+0033 otherwise     nop
+0034 end   /*select*/
+0035 @.r.c= ??                                 /*possible assign a  cell  a new state.*/
+0036 end             /*c*/
+0037 end               /*r*/
+0038 
+0039 call assign$                                   /*assign alternate cells ──► real world*/
+0040 if generations>0 | life==gens  then call showCells
+0041 end   /*life*/
+0042 /*stop watching the universe (or life).*/
+0043 halt: if life-1\==gens  then say 'The  ───Wireworld───  program was interrupted by user.'
+0044 done: exit 0                                     /*stick a fork in it,  we are all done.*/
+0045 /*───────────────────────────────────────────────────────────────────────────────────────────────────────────────────*/
+0046 $:         parse arg _row,_col;                  return  $._row._col==head
+0047 assign$:   do r=1  for rows;   do c=1  for cols;   $.r.c= @.r.c;   end;   end;      return
+0048 hood:      return  $(r-1,c-1)  + $(r-1,c)  + $(r-1,c+1)  + $(r,c-1)  + $(r,c+1)  + $(r+1,c-1)  + $(r+1,c)  + $(r+1,c+1)
+0049 p:         return word(arg(1), 1)                           /*pick the 1st word in list.*/
+0050 pickChar:  parse arg _ .;arg U .;L=length(_);if U==bla then _=' '; if L==3 then _=d2c(_);if L==2 then _=x2c(_);return _
+0051 showRows:  _=;  do r=1  for rows; z=;  do c=1 for cols; z= z||$.r.c; end;  z= strip(z,'T'); say z; _= _||z; end; return
+0052 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0053 showCells: if clearScreen  then 'CLS'                       /*◄──change CLS for the host*/
+0054 call showRows                                    /*show rows in proper order.*/
+0055 say right( copies('═', fents)life, fents)        /*display a title for cells.*/
+0056 if _==''                   then signal done      /*No life?   Then stop run. */
+0057 if !._                     then #reps= #reps + 1 /*detected repeated pattern.*/
+0058 !._= 1                                           /*it is now an extant state.*/
+0059 if reps\==0 & #reps<=reps  then return           /*so far, so good,  no reps.*/
+0060 say '"Wireworld" repeated itself'    reps    "times,  the program is stopping."
+0061 signal done                                      /*jump to this pgm's "exit".*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 L                50
+002 r                51
+003 z                51 51 51
+004 c                51
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #reps            -> newV1            15 57
+002 _row             -> newV2            46
+003 _col             -> newV3            46
+004 $.               -> newV4.           15 20 47
+005 !.               -> newV5.           23 58
+006 @.               -> newV6.           26 35
+007 ??               -> newV7            28 32
+008 ?                -> newV8            28
+009 #                -> newV9            32
+010 _                -> newV10           50 50 50 50 51

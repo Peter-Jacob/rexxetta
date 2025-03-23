@@ -1,0 +1,43 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /*REXX program solves  Josephus problem:   N  men standing in a circle,  every Kth kilt.*/
+0002 parse arg N K Z R .                              /*obtain optional arguments from the CL*/
+0003 if N=='' | N==","   then  N= 41                  /*    men  not specified?  Use default.*/
+0004 if K=='' | K==","   then  K=  3                  /*   kilt   "      "        "     "    */
+0005 if Z=='' | Z==","   then  Z=  0                  /*  start   "      "        "     "    */
+0006 if R=='' | R==","   then  R=  1                  /*remaining "      "        "     "    */
+0007 $=;       do i=Z  for N;  $= $ i;  end  /*i*/    /*populate prisoner's circle (with a #)*/
+0008 x=                                               /*the list of prisoners to be removed. */
+0009 do c=k  by k;         p= words($)          /*keep removing until  R  are remaining*/
+0010 if c>p then do                             /*   [↓] remove (kill) some prisoner(s)*/
+0011 do j=1  for words(x);      $= delword($, word(x, j) + 1 - j,   1)
+0012 if words($)==R  then leave c /*The slaying finished? (R people left)*/
+0013 end   /*j*/
+0014 c= (c//p) // words($);   x=    /*adjust prisoner count-off and circle.*/
+0015 end
+0016 if c\==0  then x=x c                       /*the list of prisoners to be removed. */
+0017 end   /*c*/                                /*remove 'til   R   prisoners are left.*/
+0018 
+0019 say 'removing every '   th(K)   " prisoner out of "    N    ' (starting at'   Z")  with ",
+0020 R    ' survivor's(R)",  leaving prisoner"s(R)':'   $
+0021 exit                                             /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 s:  if arg(1)==1  then return arg(3);            return word( arg(2) 's', 1)   /*plurals*/
+0024 th: y= arg(1);   return y || word('th st nd rd', 1+ y // 10 * (y//100%10\==1) * (y//10<4))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 N                2 3
+002 K                2 4
+003 Z                2 5
+004 R                2 6
+005 i                7
+006 x                8 14 16
+007 c                9 14
+008 p                9
+009 j                11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            7 7 11

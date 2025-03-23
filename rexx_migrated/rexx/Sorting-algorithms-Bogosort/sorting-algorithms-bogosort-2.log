@@ -1,0 +1,69 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program performs a type of  bogo sort  on numbers in an array.   */
+0002 @.1 =   0  ;     @.11=    -64  ;     @.21=     4096  ;    @.31=    6291456
+0003 @.2 =   0  ;     @.12=     64  ;     @.22=    40960  ;    @.32=    5242880
+0004 @.3 =   1  ;     @.13=    256  ;     @.23=    16384  ;    @.33=  -15728640
+0005 @.4 =   2  ;     @.14=      0  ;     @.24=  -114688  ;    @.34=  -27262976
+0006 @.5 =   0  ;     @.15=   -768  ;     @.25=  -131072  ;    @.35=   29360128
+0007 @.6 =  -4  ;     @.16=   -512  ;     @.26=   262144  ;    @.36=  104857600
+0008 @.7 =   0  ;     @.17=   2048  ;     @.27=   589824  ;    @.37=  -16777216
+0009 @.8 =  16  ;     @.18=   3072  ;     @.28=  -393216  ;    @.38= -335544320
+0010 @.9 =  16  ;     @.19=  -4096  ;     @.29= -2097152  ;    @.39= -184549376
+0011 @.10= -32  ;     @.20= -12288  ;     @.30=  -262144  ;    @.40=  905969664
+0012 /* [↑]   @.1  is really the 0th Berstel number*/
+0013 #=40                      /*we have a list of two score Berstel numbers.*/
+0014 call tell 'before bogo sort'
+0015 
+0016 do bogo=1
+0017 
+0018 do j=1  for #;   ?=@.j             /*?  is the next number in array.*/
+0019 
+0020 do k=j+1  to #
+0021 if @.k>=?  then iterate          /*is this # in order?  Get next. */
+0022 /*get 2 unique random #s for swap*/
+0023 do  until a\==b;  a=random(j, k);     b=random(j, k);    end
+0024 
+0025 parse value @.a @.b  with  @.b @.a    /*swap 2 random #s in array.*/
+0026 iterate bogo                     /*go and try another bogo sort.  */
+0027 end   /*k*/
+0028 end     /*j*/
+0029 
+0030 leave                                /*we're finished with bogo sort. */
+0031 end       /*bogo*/                   /* [↓]  show the # of bogo sorts.*/
+0032 
+0033 say 'number of bogo sorts performed =' bogo
+0034 call tell ' after bogo sort'
+0035 exit                                   /*stick a fork in it, we're done.*/
+0036 /*──────────────────────────────────TELL subroutine─────────────────────*/
+0037 tell:  say;  say center(arg(1), 50, '─')
+0038 do t=1  for #
+0039 say arg(1)  'element'right(t, length(#))'='right(@.t, 18)
+0040 end   /*t*/
+0041 say
+0042 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 bogo             16
+002 j                18
+003 k                20
+004 until            23
+005 a                23
+006 b                23
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 t                38
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 2 2 2 3 3 3 3 4 4 4 4 5 5 5 5 6 6 6 6 7 7 7 7 8 8 8 8 9 9 9 9 10 10 10 10 11 11 11 11 25 25
+002 #                -> newV2            13
+003 ?                -> newV3            18

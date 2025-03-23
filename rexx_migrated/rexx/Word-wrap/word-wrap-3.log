@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * 20.08.2013 Walter Pachl  "my way"
+0003 * 23.08.2013 Walter Pachl changed to use lastpos bif
+0004 **********************************************************************/
+0005 Parse Arg w
+0006 oid=w'.xxx'; 'erase' oid
+0007 Call o left(copies('123456789.',20),w)
+0008 s='She should have died hereafter;' ,
+0009 'There would have been a time for such a word.' ,
+0010 'Tomorrow, and tomorrow, and tomorrow, and so on'
+0011 Call ow s
+0012 Exit
+0013 ow:
+0014 Parse Arg s
+0015 s=s' '
+0016 Do While length(s)>w
+0017 i=lastpos(' ',s,w+1) /* instead of loop */
+0018 If i=0 Then
+0019 p=pos(' ',s)
+0020 Else
+0021 p=i
+0022 Call o left(s,p)
+0023 s=substr(s,p+1)
+0024 End
+0025 If s>'' Then
+0026 Call o s
+0027 Return
+0028 o:Return lineout(oid,arg(1))
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                14 15 23
+002 i                17
+003 p                19 21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

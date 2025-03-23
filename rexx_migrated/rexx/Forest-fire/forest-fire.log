@@ -1,0 +1,82 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX program grows and displays a forest (with growth  and fires caused by lightning).*/
+0002 parse value scrSize()  with  sd sw .             /*the size of the terminal display.    */
+0003 parse arg generations birth lightning rSeed .    /*obtain the optional arguments from CL*/
+0004 if datatype(rSeed,'W')  then call random ,,rSeed /*do we want  RANDOM BIF repeatability?*/
+0005 generations = p(generations  100)                /*maybe use  one hundred  generations. */
+0006 birth = p(strip(birth    , ,'%') 50 ) *100 /*calculate the percentage for births. */
+0007 lightning = p(strip(lightning, ,'%') 1/8) *100 /*    "      "       "      " lightning*/
+0008 bare! = ' '                                /*the glyph used to show a bare place. */
+0009 fire! = '▒'                                /*glyph is close to a conflagration.   */
+0010 tree! = '↑'                                /*this is an up─arrow [↑] glyph (tree).*/
+0011 rows = max(12, sd-2)                      /*shrink the usable screen rows by two.*/
+0012 cols = max(79, sw-1)                      /*   "    "     "      "   cols  " one.*/
+0013 every = 999999999                          /*shows a snapshot every Nth generation*/
+0014 field = min(100000, rows*cols)             /*the size of the forest area (field). */
+0015 $.=bare!                                         /*forest:  it is now a treeless field. */
+0016 @.=$.                                            /*ditto,   for the  "shadow"   forest. */
+0017 gens=abs(generations)                            /*use this for convenience.            */
+0018 signal on halt                                   /*handle any forest life interruptus.  */
+0019 /*▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒observe the forest grow and/or burn. */
+0020 do  life=1  for gens                           /*simulate a forest's life cycle.      */
+0021 do   r=1  for rows;     rank=bare!           /*start a forest rank as being bare.   */
+0022 do c=2  for cols;     ?=substr($.r, c, 1);              ??=?
+0023 select                                   /*select the most likeliest choice 1st.*/
+0024 when ?==tree!  then  if ignite?()                then ??=fire!     /*on fire ?  */
+0025 when ?==bare!  then  if random(1, field)<=birth  then ??=tree!     /*new growth.*/
+0026 otherwise                                             ??=bare!     /*it's barren*/
+0027 end   /*select*/                         /* [↑]  when (↑)  if  ≡  short circuit.*/
+0028 rank=rank || ??                            /*build rank:  1 forest "row" at a time*/
+0029 end     /*c*/                              /*ignore column one, start with col two*/
+0030 @.r=rank                                     /*and assign rank to alternate forest. */
+0031 end       /*r*/                              /* [↓]  ··· and, later, yet back again.*/
+0032 
+0033 do r=1  for rows;   $.r=@.r;   end  /*r*/  /*assign alternate cells ──► real cells*/
+0034 if \(life//every==0 | generations>0 | life==gens)   then iterate
+0035 'CLS'                                          /* ◄─── change this command for your OS*/
+0036 do r=rows  by -1  for rows;   say strip(substr($.r, 2), 'T')    /*a row of trees*/
+0037 end   /*r*/                              /* [↑]  display forest to the terminal.*/
+0038 say right(copies('▒', cols)life, cols)         /*show and tell for a stand of trees.  */
+0039 end         /*life*/
+0040 /*▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒stop observing the forest evolve.    */
+0041 halt: if life-1\==gens  then say 'Forest simulation interrupted.' /*was this pgm HALTed?*/
+0042 exit                                             /*stick a fork in it,  we're all done. */
+0043 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0044 ignite?:           if substr($.r, c+1, 1) == fire!  then return 1   /*is  east on fire? */
+0045 cm=c-1;   if substr($.r, cm , 1) == fire!  then return 1   /* "  west  "   "   */
+0046 rm=r-1;            rp=r+1           /*test north & south*/
+0047 if pos(fire!, substr($.rm, cm, 3)substr($.rp, cm, 3)) \== 0   then return 1
+0048 return  random(1, field) <= lightning                      /*lightning ignition*/
+0049 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0050 p:       return word(arg(1), 1)                  /*pick─a─word:  first  or  second word.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 generations      3 5
+002 birth            3 6
+003 lightning        3 7
+004 rSeed            3
+005 bare!            8
+006 fire!            9
+007 tree!            10
+008 rows             11
+009 cols             12
+010 every            13
+011 field            14
+012 gens             17
+013 life             20
+014 r                21 33 36
+015 rank             21 28
+016 c                22
+017 cm               45
+018 rm               46
+019 rp               46
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $.               -> newV1.           15 33
+002 @.               -> newV2.           16 30
+003 ??               -> newV3            22
+004 ?                -> newV4            22

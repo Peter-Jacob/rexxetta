@@ -1,0 +1,19 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates the showing of  reverse  video  to the display terminal.    */
+0002 @day   = 'day'
+0003 @night = 'night'
+0004 
+0005 call scrwrite , 1, @day, , , 7                   /*display to terminal:  white on black.*/
+0006 call scrwrite , 1+length(@day), @night, , , 112  /*   "     "     "      black  " white.*/
+0007 
+0008 exit 0                                           /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @night           -> newV1            3
+002 @day             -> newV2            2

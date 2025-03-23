@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program writes a  PPM  formatted image file, also known as a  P6  (binary) file. */
+0002 green  = 00ff00                                  /*define a pixel with the color green. */
+0003 parse arg oFN width height color .               /*obtain optional arguments from the CL*/
+0004 if    oFN=='' |    oFN==","  then    oFN='IMAGE' /*Not specified?  Then use the default.*/
+0005 if  width=='' |  width==","  then  width=   20   /* "      "         "   "   "     "    */
+0006 if height=='' | height==","  then height=   20   /* "      "         "   "   "     "    */
+0007 if  color=='' |  color==","  then  color= green  /* "      "         "   "   "     "    */
+0008 oFID= oFN'.PPM'                                  /*define  oFID  by adding an extension.*/
+0009 @. = x2c(color)                                 /*set all pixels of image a hex color. */
+0010 $  = '9'x                                       /*define the separator (in the header).*/
+0011 #  = 255                                        /*  "     "  max value for all colors. */
+0012 call charout oFID, ,  1                          /*set the position of the file's output*/
+0013 call charout oFID,'P6'width || $ || height || $ || # || $     /*write file header info. */
+0014 _=
+0015 do j     =1  for width
+0016 do k=1  for height;  _= _ || @.j.k   /*write the PPM file, 1 pixel at a time*/
+0017 end   /*k*/                          /* ↑    a pixel contains three bytes,  */
+0018 end        /*j*/                          /* └────which defines the pixel's color*/
+0019 call charout oFID, _                             /*write the image's raster to the file.*/
+0020 call charout oFID                                /*close the output file just to be safe*/
+0021 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 oFN              3 4
+002 width            3 5
+003 height           3 6
+004 color            3 7
+005 oFID             8
+006 j                15
+007 k                16
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           9
+002 $                -> newV2            10
+003 #                -> newV3            11
+004 _                -> newV4            14 16

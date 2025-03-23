@@ -1,0 +1,49 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates  (with displays)  a method of   parametric polymorphism.   */
+0002 call newRoot  1.00, 3                            /*new root,  and also indicate 3 stems.*/
+0003 /* [↓]  no need to label the stems.    */
+0004 call addStem  1.10                               /*a new stem  and  its initial value.  */
+0005 call addStem  1.11                               /*"  "    "    "    "     "      "     */
+0006 call addStem  1.12                               /*"  "    "    "    "     "      "     */
+0007 call addStem  1.20                               /*"  "    "    "    "     "      "     */
+0008 call addStem  1.21                               /*"  "    "    "    "     "      "     */
+0009 call addStem  1.22                               /*"  "    "    "    "     "      "     */
+0010 call sayNodes             /*display some nicely formatted values.*/
+0011 call modRoot  50                                 /*modRoot will add fifty to all stems. */
+0012 call sayNodes             /*display some nicely formatted values.*/
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 addStem:  nodes= nodes + 1;   do j=1  for stems;   root.nodes.j= arg(1);   end;     return
+0016 newRoot:  parse arg @,stems; nodes= -1; call addStem copies('═',9); call addStem @; return
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 modRoot:  arg #;  do    j=1  for nodes           /*traipse through all the defined nodes*/
+0019 do k=1  for stems           /*add bias ──►───────────────────────┐ */
+0020 if datatype(root.j.k, 'N')  then root.j.k= root.j.k + #   /* ◄───┘ */
+0021 end   /*k*/                 /* [↑]  add  if  stem value is numeric.*/
+0022 end      /*j*/
+0023 return
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 sayNodes: w= 9;   do    j=0  to  nodes;  _=      /*ensure each of the nodes gets shown. */
+0026 do k=1  for stems;  _= _ center(root.j.k, w)  /*concatenate a node.*/
+0027 end   /*k*/
+0028 $= word('node='j,  1 + (j<1) ) /*define a label for this line's output*/
+0029 say center($, w)  substr(_, 2) /*ignore 1st (leading) blank which was */
+0030 end      /*j*/                 /* [↑]         caused by concatenation.*/
+0031 say                                    /*show a blank line to separate outputs*/
+0032 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 stems            16
+002 nodes            16
+003 j                18 25
+004 k                19 26
+005 root.            20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            16
+002 _                -> newV2            25 26
+003 $                -> newV3            28

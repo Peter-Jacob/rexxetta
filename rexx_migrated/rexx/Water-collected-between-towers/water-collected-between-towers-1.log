@@ -1,0 +1,85 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:35
+-------------------------------------------------------------------------
+0001 /* REXX */
+0002 Call bars '1 5 3 7 2'
+0003 Call bars '5 3 7 2 6 4 5 9 1 2'
+0004 Call bars '2 6 3 5 2 8 1 4 2 2 5 3 5 7 4 1'
+0005 Call bars '5 5 5 5'
+0006 Call bars '5 6 7 8'
+0007 Call bars '8 7 7 6'
+0008 Call bars '6 7 10 7 6'
+0009 Exit
+0010 bars:
+0011 Parse Arg bars
+0012 bar.0=words(bars)
+0013 high=0
+0014 box.=' '
+0015 Do i=1 To words(bars)
+0016 bar.i=word(bars,i)
+0017 high=max(high,bar.i)
+0018 Do j=1 To bar.i
+0019 box.i.j='x'
+0020 End
+0021 End
+0022 m=1
+0023 w=0
+0024 Do Forever
+0025 Do i=m+1 To bar.0
+0026 If bar.i>bar.m Then
+0027 Leave
+0028 End
+0029 If i>bar.0 Then Leave
+0030 n=i
+0031 Do i=m+1 To n-1
+0032 w=w+bar.m-bar.i
+0033 Do j=bar.i+1 To bar.m
+0034 box.i.j='*'
+0035 End
+0036 End
+0037 m=n
+0038 End
+0039 m=bar.0
+0040 Do Forever
+0041 Do i=bar.0 To 1 By -1
+0042 If bar.i>bar.m Then
+0043 Leave
+0044 End
+0045 If i<1 Then Leave
+0046 n=i
+0047 Do i=m-1 To n+1 By -1
+0048 w=w+bar.m-bar.i
+0049 Do j=bar.i+1 To bar.m
+0050 box.i.j='*'
+0051 End
+0052 End
+0053 m=n
+0054 End
+0055 Say bars '->' w
+0056 Call show
+0057 Return
+0058 show:
+0059 Do j=high To 1 By -1
+0060 ol=''
+0061 Do i=1 To bar.0
+0062 ol=ol box.i.j
+0063 End
+0064 Say ol
+0065 End
+0066 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 bars             11
+002 bar.             12 16
+003 high             13 17
+004 box.             14 19 34 50
+005 i                15 25 31 41 47 61
+006 j                18 33 49 59
+007 m                22 37 39 53
+008 w                23 32 48
+009 n                30 46
+010 ol               60 62
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

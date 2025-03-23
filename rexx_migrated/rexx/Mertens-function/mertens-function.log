@@ -1,0 +1,79 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX pgm computes & shows a value grid of the Mertens function for a range of integers*/
+0002 parse arg LO HI grp eqZ xZ .                     /*obtain optional arguments from the CL*/
+0003 if  LO=='' |  LO==","  then  LO=    0            /*Not specified?  Then use the default.*/
+0004 if  HI=='' |  HI==","  then  HI=  199            /* "      "         "   "   "     "    */
+0005 if grp=='' | grp==","  then grp=   20            /* "      "         "   "   "     "    */
+0006 if eqZ=='' | eqZ==","  then eqZ= 1000            /* "      "         "   "   "     "    */
+0007 if  xZ=='' |  xZ==","  then  xZ= 1000            /* "      "         "   "   "     "    */
+0008 call genP                                        /*generate primes up to max  √  HIHI   */
+0009 call Franz LO, HI
+0010 if eqZ>0  then call Franz 1, -eqZ
+0011 if  xZ>0  then call Franz -1, xZ
+0012 exit 0                                           /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 Franz: parse arg a 1 oa,b 1 ob;        @Mertens= ' The Mertens sequence from '
+0015 a= abs(a);   b= abs(b);    grid= oa>=0 & ob>=0   /*semaphore used to show a grid title. */
+0016 if grid  then say center(@Mertens LO " ──► " HI" ", max(50, grp*3), '═')    /*show title*/
+0017 else say
+0018 zeros= 0                                         /*# of  0's found for Mertens function.*/
+0019 Xzero= 0                                         /*number of times that zero was crossed*/
+0020 $=;                 prev=                        /*$  holds output grid of GRP numbers. */
+0021 do j=a  to b;     _= Mertens(j)               /*process some numbers from  LO ──► HI.*/
+0022 if _==0  then zeros= zeros + 1                /*Is Zero?  Then bump the zeros counter*/
+0023 if _==0  then if prev\==0 then Xzero= Xzero+1 /*prev ¬=0?   "   "    "  Xzero    "   */
+0024 prev= _
+0025 if grid  then $= $ right(_, 2)                /*build grid if A & B are non─negative.*/
+0026 if words($)==grp  then do;  say substr($, 2);  $=    /*show grid if fully populated, */
+0027 end                           /*  and nullify it for more #s. */
+0028 end   /*j*/                                   /*for small grids, using wordCnt is OK.*/
+0029 
+0030 if $\==''  then say substr($, 2)                 /*handle any residual numbers not shown*/
+0031 if oa<0  then say @Mertens   a    " to "    b   ' has crossed zero '    Xzero    " times."
+0032 if ob<0  then say @Mertens   a    " to "    b   ' has '                 zeros    " zeros."
+0033 return
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 Mertens: procedure expose @. !!. M.;  parse arg n; if M.n\==.  then return M.n
+0036 if n<1  then return '∙'; m= 0           /*handle special cases of non─positive#*/
+0037 do k=1  for n;   m= m + mobius(k)  /*sum the  MU's  up to  N.             */
+0038 end   /*k*/                        /* [↑] mobius function uses memoization*/
+0039 M.n= m;          return m               /*return the sum of all the  MU's.     */
+0040 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0041 mobius: procedure expose @. !!.;  parse arg x 1 ox  /*get integer to be tested for  mu  */
+0042 if !!.x\==.  then return !!.x            /*X computed before?  Return that value*/
+0043 if x<1  then return '∙';      mu= 0      /*handle special case of non-positive #*/
+0044 do k=1;  p= @.k; if p>x  then leave       /* (P)    > X?   Then we're done.*/
+0045 if p*p>x    then do; mu= mu+1; leave; end /* (P**2) > X?   Bump # and leave*/
+0046 if x//p==0  then do; mu= mu+1       /*X divisible by P?   Bump  mu  number.*/
+0047 x= x % p       /*                    Divide by prime. */
+0048 if x//p==0  then return 0  /*X÷by P?  Then return zero*/
+0049 end
+0050 end   /*k*/                         /*MU (below) is almost always small, <9*/
+0051 !!.ox=  -1 ** mu;         return !!.ox   /*raise -1 to the mu power, memoize it.*/
+0052 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0053 genP: @.1=2; @.2=3; @.3=5; @.4=7; @.5=11; @.6=13 /*initialize some low primes; # primes.*/
+0054 !!.=.;  M.=!!.;      #= 6;  sq.#= @.6**2   /*     "     2 arrays for memoization. */
+0055 do j=@.#+4  by 2  to max(HI, eqZ, xZ); parse var j '' -1 _   /*odd Ps from now on*/
+0056 if _==5 then iterate; if j//3==0 then iterate; if j//7==0  then iterate /*÷ 5 3 7*/
+0057 do k=7  while sq.k<=j                  /*divide by some generated odd primes. */
+0058 if j//@.k==0  then iterate j           /*Is J divisible by  P?  Then not prime*/
+0059 end   /*k*/                            /* [↓]  a prime  (J)  has been found.  */
+0060 #= #+1;          @.#=j;  sq.j= j*j        /*bump P count;  P──►@.;  compute  J**2*/
+0061 end      /*j*/;                    return /*calculate the squares of some primes.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                55
+002 k                57
+003 sq.              60
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @Mertens         -> newV1            14
+002 !!.              -> newV2.           51 54
+003 @.               -> newV3.           53 53 53 53 53 60
+004 $                -> newV4            20 25 26
+005 _                -> newV5            21 55
+006 #                -> newV6            54 60

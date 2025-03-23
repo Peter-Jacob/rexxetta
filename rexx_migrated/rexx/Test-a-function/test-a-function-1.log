@@ -1,0 +1,29 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /*REXX program stresses various REXX functions (BIFs), many BIFs are used as variables. */
+0002 signal=(interpret=value); value=(interpret<parse); do upper=value to value; end
+0003 exit=upper*upper*upper*upper-value-upper; say=' '; return=say say say; with.=signal
+0004 do then=value to exit; pull=''; do otherwise= upper to then-,
+0005 value; select=otherwise-value; if.otherwise=with.otherwise+with.select; end
+0006 if.value=value; if.then=value; do otherwise=value to exit-then; pull=pull,
+0007 say''say; end; do otherwise=value to then; pull=pull center(if.otherwise,,
+0008 length(return)); end; say pull; do otherwise=value to exit; with.otherwise=,
+0009 if.otherwise; end; end; exit 0                   /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 signal           2
+002 value            2
+003 upper            2
+004 exit             3
+005 say              3
+006 return           3
+007 with.            3 8
+008 then             4
+009 pull             4 6 7
+010 otherwise        4 6 7 8
+011 select           5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

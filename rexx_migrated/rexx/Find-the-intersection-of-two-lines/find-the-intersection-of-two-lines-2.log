@@ -1,0 +1,98 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 say ggx1('4.0 0.0 6.0 10.0 0.0 3.0 10.0 7.0')
+0002 say ggx1('0.0 0.0 0.0 10.0 0.0 3.0 10.0 7.0')
+0003 say ggx1('0.0 0.0 0.0 10.0 0.0 3.0 10.0 7.0')
+0004 say ggx1('0.0 0.0 0.0  1.0 1.0 0.0  1.0 7.0')
+0005 say ggx1('0.0 0.0 0.0  0.0 0.0 3.0 10.0 7.0')
+0006 say ggx1('0.0 0.0 3.0  3.0 0.0 0.0  6.0 6.0')
+0007 say ggx1('0.0 0.0 3.0  3.0 0.0 1.0  6.0 7.0')
+0008 Exit
+0009 
+0010 ggx1: Procedure
+0011 /*---------------------------------------------------------------------
+0012 * find the intersection of the lines AB and CD
+0013 *--------------------------------------------------------------------*/
+0014 Parse Arg xa  ya  xb  yb   xc  yc  xd   yd
+0015 Say 'A=('xa'/'ya') B=('||xb'/'yb') C=('||xc'/'yc') D=('||xd'/'yd')'
+0016 res=''
+0017 If xa=xb Then Do                    /* AB is a vertical line         */
+0018 k1='*'                            /* slope is infinite             */
+0019 x1=xa                             /* intersection's x is xa        */
+0020 If ya=yb Then                     /* coordinates are equal         */
+0021 res='Points A and B are identical' /* special case               */
+0022 End
+0023 Else Do                             /* AB is not a vertical line     */
+0024 k1=(yb-ya)/(xb-xa)                /* compute the slope of AB       */
+0025 d1=ya-k1*xa                /* and its intersection with the y-axis */
+0026 End
+0027 If xc=xd Then Do                    /* CD is a vertical line         */
+0028 k2='*'                            /* slope is infinite             */
+0029 x2=xc                             /* intersection's x is xc        */
+0030 If yc=yd Then                     /* coordinates are equal         */
+0031 res='Points C and D are identical' /* special case               */
+0032 End
+0033 Else Do                             /* CD is not a vertical line     */
+0034 k2=(yd-yc)/(xd-xc)                /* compute the slope of CD       */
+0035 d2=yc-k2*xc                /* and its intersection with the y-axis */
+0036 End
+0037 
+0038 If res='' Then Do                   /* no special case so far        */
+0039 If k1='*' Then Do                 /* AB is vertical                */
+0040 If k2='*' Then Do               /* CD is vertical                */
+0041 If x1=x2 Then                 /* and they are identical        */
+0042 res='Lines AB and CD are identical'
+0043 Else                          /* not identical                 */
+0044 res='Lines AB and CD are parallel'
+0045 End
+0046 Else Do
+0047 x=x1                          /* x is taken from AB            */
+0048 y=k2*x+d2                     /* y is computed from CD         */
+0049 End
+0050 End
+0051 Else Do                           /* AB is not verical             */
+0052 If k2='*' Then Do               /* CD is vertical                */
+0053 x=x2                          /* x is taken from CD            */
+0054 y=k1*x+d1                     /* y is computed from AB         */
+0055 End
+0056 Else Do                         /* AB and CD are not vertical    */
+0057 If k1=k2 Then Do              /* identical slope               */
+0058 If d1=d2 Then               /* same intersection with x=0    */
+0059 res='Lines AB and CD are identical'
+0060 Else                        /* otherwise                     */
+0061 res='Lines AB and CD are parallel'
+0062 End
+0063 Else Do                       /* finally the normal case       */
+0064 x=(d2-d1)/(k1-k2)           /* compute x                     */
+0065 y=k1*x+d1                   /* and y                         */
+0066 End
+0067 End
+0068 End
+0069 End
+0070 If res='' Then                    /* not any special case          */
+0071 res='Intersection is ('||x'/'y')'  /* that's the result          */
+0072 Return '  -->' res
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 xa               14
+002 ya               14
+003 xb               14
+004 yb               14
+005 xc               14
+006 yc               14
+007 xd               14
+008 yd               14
+009 res              16 21 31 42 44 59 61 71
+010 k1               18 24
+011 x1               19
+012 d1               25
+013 k2               28 34
+014 x2               29
+015 d2               35
+016 x                47 53 64
+017 y                48 54 65
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

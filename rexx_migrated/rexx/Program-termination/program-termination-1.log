@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:25
+-------------------------------------------------------------------------
+0001 /*REXX program showing five ways to perform a REXX program termination. */
+0002 
+0003 /*─────1st way────────────────────────────────────────────────────────*/
+0004 exit
+0005 
+0006 
+0007 /*─────2nd way────────────────────────────────────────────────────────*/
+0008 exit  (expression)     /*Note: the "expression" doesn't need parentheses*/
+0009 /*"expression"  is any REXX expression.          */
+0010 
+0011 
+0012 /*─────3rd way────────────────────────────────────────────────────────*/
+0013 return                 /*which returns to this program's invoker.  If   */
+0014 /*this is the main body  (and not a subroutine), */
+0015 /*the REXX interpreter terminates the program.   */
+0016 
+0017 
+0018 /*─────4th way────────────────────────────────────────────────────────*/
+0019 return (expression)    /* [See the note above concerning parentheses.]  */
+0020 
+0021 
+0022 /*─────5th way────────────────────────────────────────────────────────*/
+0023 /*control*/
+0024 /*   │   */        /*if there is no EXIT and program control "falls */
+0025 /*   │   */        /*through" to the "bottom" (end) of the program, */
+0026 /*   │   */        /*an   EXIT   is simulated and the program is    */
+0027 /*   │   */        /*terminated.                                    */
+0028 /*   ↓   */
+0029 /* e-o-f */        /* e-o-f   =   end-of-file.                      */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

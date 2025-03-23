@@ -1,0 +1,55 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX program runs  FRACTRAN  for a given set of  fractions  and  from a specified  N. */
+0002 numeric digits 999;  d= digits();   w= length(d) /*be able to handle gihugeic numbers.  */
+0003 parse arg N terms fracs                          /*obtain optional arguments from the CL*/
+0004 if     N=='' |     N==","  then     N=   2       /*Not specified?  Then use the default.*/
+0005 if terms=='' | terms==","  then terms= 100       /* "      "         "   "   "      "   */
+0006 if fracs=''                then fracs= "17/91, 78/85, 19/51, 23/38, 29/33, 77/29, 95/23,",
+0007 '77/19, 1/17, 11/13, 13/11, 15/14, 15/2, 55/1'
+0008 /* [↑]  The default for the fractions. */
+0009 f= space(fracs, 0)                               /*remove all blanks from the FRACS list*/
+0010 do #=1  while f\=='';    parse var  f    n.#   "/"   d.#   ','   f
+0011 end   /*#*/                  /* [↑]  parse all the fractions in list*/
+0012 #= # - 1                                         /*adjust the number of fractions found.*/
+0013 tell= terms>0                                    /*flag:  show number  or  a power of 2.*/
+0014 !.= 0;                              _= 1         /*the default value  for powers of  2. */
+0015 if \tell  then do p=1  until length(_)>d;                 _= _ + _;              !._= 1
+0016 if p==1  then @._= left('', w + 9)        "2**"left(p, w)    ' '
+0017 else @._= '(prime' right(p, w)")  2**"left(p, w)    ' '
+0018 end   /*p*/                       /* [↑]  build   powers of 2   tables.  */
+0019 L= length(N)                                     /*length in decimal digits of integer N*/
+0020 say #  'fractions:'  fracs                       /*display number and actual fractions. */
+0021 say 'N  is starting at '  N                      /*display the starting number   N.     */
+0022 if tell  then say terms  ' terms are being shown:'                     /*display header.*/
+0023 else say 'only powers of two are being shown:'                /*   "       "   */
+0024 @a= '(max digits used:'                          /*a literal used in the   SAY   below. */
+0025 
+0026 do j=1  for  abs(terms)                        /*perform DO loop once for each  term. */
+0027 do k=1  for  #                              /*   "     "   "    "   "    " fraction*/
+0028 if N // d.k \== 0  then iterate             /*Not an integer?  Then ignore it.     */
+0029 cN= commas(N);                 cj=commas(j) /*maybe insert commas into  N.         */
+0030 if tell  then say right('term' cj, 44)   "──► "   cN      /*display Nth term and N.*/
+0031 else if !.N  then say right('term' cj,15)  "──►"  @.N @a  right(L,w)")  " cN
+0032 N= N  %  d.k  *  n.k                        /*calculate next term (use %≡integer ÷)*/
+0033 L= max(L, length(N) )                       /*the maximum number of decimal digits.*/
+0034 leave                                       /*go start calculating the next term.  */
+0035 end   /*k*/                                 /* [↑]  if an integer, we found a new N*/
+0036 end      /*j*/
+0037 exit 0                                           /*stick a fork in it,  we're all done. */
+0038 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0039 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 jc               39
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !.               -> newV1.           14 15
+002 @.               -> newV2.           16
+003 @a               -> newV3            24
+004 #                -> newV4            10 12
+005 _                -> newV5            14 15
+006 ?                -> newV6            39 39

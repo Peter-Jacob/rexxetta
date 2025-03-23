@@ -1,0 +1,64 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX program displays combination sets for X things taken Y at a time.         */
+0002 Parse Arg things size characters
+0003 If things='?' Then Do
+0004 Say 'rexx combi2 things size characters'
+0005 Say ' defaults:  5      3    123456789...'
+0006 Say 'example rexx combi2 , , xyzuvw'
+0007 Say 'size<0 shows only the number of possible combinations'
+0008 Exit
+0009 End
+0010 If things==''|things=="," Then things=5  /* No things specified? Then use default*/
+0011 If size==''  |size==","   Then size=3    /* No size   specified? Then use default*/
+0012 Numeric Digits 20
+0013 show=sign(size)
+0014 size=abs(size)
+0015 If things<size Then
+0016 Call exit 'Not enough things ('things') for size ('size').'    Say '----------' things 'things taken' size 'at a time:'
+0017 n=2**things-1
+0018 nc=0
+0019 Do u=1 to n
+0020 nc=nc+combinations(u)
+0021 End
+0022 Say '------------' nc 'combinations.'
+0023 Exit
+0024 combinations: Procedure Expose things size characters show
+0025 Parse Arg u
+0026 nc=0
+0027 bu=x2b(d2x(u))
+0028 bu1=space(translate(bu,' ',0),0)
+0029 If length(bu1)=size Then Do
+0030 ub=reverse(bu)
+0031 res=''
+0032 Do i=1 To things
+0033 If characters<>'' then
+0034 c=substr(characters,i,1)
+0035 Else
+0036 c=i
+0037 If substr(ub,i,1)=1 Then res=res c
+0038 End
+0039 If show=1 then
+0040 Say res
+0041 Return 1
+0042 End
+0043 Else
+0044 Return 0
+0045 exit:
+0046 Say '*****error*****' arg(1)
+0047 Exit 13
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 u                25
+002 nc               26
+003 bu               27
+004 bu1              28
+005 ub               30
+006 res              31 37
+007 i                32
+008 c                34 36
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

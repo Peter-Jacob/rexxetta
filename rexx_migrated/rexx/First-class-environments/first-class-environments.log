@@ -1,0 +1,47 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:13
+-------------------------------------------------------------------------
+0001 /*REXX pgm illustrates  N  1st─class environments  (using numbers from a hailstone seq).*/
+0002 parse arg n .                                    /*obtain optional argument from the CL.*/
+0003 if n=='' | n==","  then n= 12                    /*Was N defined?  No, then use default.*/
+0004 @.=                                              /*initialize the array   @.  to  nulls.*/
+0005 do i=1  for n;    @.i= i      /*    "      environments to an index. */
+0006 end   /*i*/
+0007 w= length(n)                                     /*width  (so far)  for columnar output.*/
+0008 
+0009 do forever  until @.0;  @.0= 1          /* ◄─── process all the environments.  */
+0010 do k=1  for n;       x= hailstone(k) /*obtain next hailstone number in seq. */
+0011 w= max(w, length(x))                 /*determine the maximum width needed.  */
+0012 @.k= @.k  x                          /* ◄─── where the rubber meets the road*/
+0013 end   /*k*/
+0014 end      /*forever*/
+0015 #= 0                                             /* [↓]   display the tabular results.  */
+0016 do lines=-1  until _='';     _=            /*process a line for each environment. */
+0017 do j=1  for n                          /*process each of the environments.    */
+0018 select                             /*determine how to process the line.   */
+0019 when #== 1      then _= _ right(words(@.j) - 1, w)    /*environment count.*/
+0020 when lines==-1  then _= _ right(j,  w)                /*the title (header)*/
+0021 when lines== 0  then _= _ right('', w, "─")           /*the separator line*/
+0022 otherwise            _= _ right(word(@.j, lines), w)
+0023 end   /*select*/
+0024 end       /*j*/
+0025 
+0026 if #==1   then #= 2                                           /*separator line?   */
+0027 if _=''   then #= # + 1                                       /*Null?  Bump the #.*/
+0028 if #==1   then _= copies(" "left('', w, "═"), N)              /*the foot separator*/
+0029 if _\=''  then say strip( substr(_, 2), "T")                  /*display the counts*/
+0030 end   /*lines*/
+0031 exit                                             /*stick a fork in it,  we're all done. */
+0032 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0033 hailstone: procedure expose @.; parse arg y;       _= word(@.y, words(@.y) )
+0034 if _==1  then return '';   @.0= 0;   if _//2  then return _*3 + 1;   return _%2
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                33
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           4 5 9 12 34
+002 #                -> newV2            15 26 27
+003 _                -> newV3            16 28 33

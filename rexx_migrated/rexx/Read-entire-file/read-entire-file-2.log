@@ -1,0 +1,29 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:26
+-------------------------------------------------------------------------
+0001 /*REXX program reads a file and stores it as a continuous character str.*/
+0002 Parse Version v
+0003 iFID = 'st.in'                         /*name of the input file.        */
+0004 If left(v,11)='REXX-Regina' |,
+0005 left(v,11)='REXX-ooRexx' Then Do
+0006 len=chars(iFid)                      /*size of the file               */
+0007 v = charin(iFid,,len)                /*read entire file               */
+0008 End
+0009 Else Do                                /* for other Rexx Interpreters   */
+0010 v=''
+0011 Do while chars(iFid)>0               /* read the file chunk by chunk  */
+0012 v=v||charin(iFid,,500)
+0013 End
+0014 End
+0015 say 'v='v
+0016 say 'length(v)='length(v)
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 Version          2
+002 v                2 7 10 12
+003 left(v,11)       5
+004 len              6
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

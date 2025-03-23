@@ -1,0 +1,85 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:15
+-------------------------------------------------------------------------
+0001 /*---------------------------------------------------------------
+0002 * Compute the 960 possible solutions
+0003 * There must be at least one field between the rooks
+0004 * The king is positioned on any field between the rooks
+0005 * The queen is placed on any unoccupied field
+0006 * bishops are placed so that they are on different colored fields
+0007 * what remains are the kNights...
+0008 *--------------------------------------------------------------*/
+0009 cnt.=0
+0010 Call time 'R'
+0011 Do r1=1 To 6
+0012 Do r2=r1+1 To 8
+0013 Do kk=r1+1 To r2-1
+0014 poss=space(translate('12345678',' ',r1||kk||r2),0)
+0015 Call rest
+0016 End
+0017 
+0018 End
+0019 End
+0020 say cnt.1 'solutions'
+0021 Say time('E')
+0022 Exit
+0023 
+0024 rest:
+0025 Do i=1 To 5
+0026 q=substr(poss,i,1)
+0027 br=space(translate(poss,' ',q),0)
+0028 Do b1i=1 To 3
+0029 Do b2i=b1i+1 To 4
+0030 Call finish
+0031 End
+0032 End
+0033 End
+0034 Return
+0035 
+0036 finish:
+0037 b1=substr(br,b1i,1)
+0038 b2=substr(br,b2i,1)
+0039 If (b1+b2)//2>0 Then
+0040 Call out
+0041 Return
+0042 
+0043 out:
+0044 pos.='N'
+0045 pos.r1='R'
+0046 pos.r2='R'
+0047 pos.kk='K'
+0048 pos.q='Q'
+0049 pos.b1='B'
+0050 pos.b2='B'
+0051 ol=''
+0052 Do k=1 To 8
+0053 ol=ol||pos.k
+0054 End
+0055 cnt.1=cnt.1+1
+0056 If cnt.1<4 |,
+0057 cnt.1>957 Then
+0058 Say format(cnt.1,3) poss r1 kk r2  ol
+0059 If cnt.1=4 Then
+0060 Say '    ...'
+0061 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 cnt.             9 55
+002 r1               11
+003 r2               12
+004 kk               13
+005 poss             14
+006 i                25
+007 q                26
+008 br               27
+009 b1i              28
+010 b2i              29
+011 b1               37
+012 b2               38
+013 pos.             44 45 46 47 48 49 50
+014 ol               51 53
+015 k                52
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

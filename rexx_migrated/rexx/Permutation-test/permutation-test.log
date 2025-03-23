@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program  performs a    permutation test   on     N + M   subjects  (volunteers): */
+0002 /*     ↑   ↑                           */
+0003 /*     │   │                           */
+0004 /*     │   └─────control  population.  */
+0005 /*     └────────treatment population.  */
+0006 n= 9                                             /*define the number of the control pop.*/
+0007 data= 85 88 75 66 25 29 83 39 97         68 41 10 49 16 65 32 92 28 98
+0008 w= words(data);      m= w - n                    /*w:  volunteers  +  control population*/
+0009 L= length(w)                                     /*L:  used to align some output numbers*/
+0010 say '# of volunteers & control population: '             w
+0011 say 'volunteer population given treatment: '             right(n, L)
+0012 say ' control  population given a placebo: '             right(m, L)
+0013 say
+0014 say 'treatment population efficacy % (percentages): '    subword(data, 1, n)
+0015 say ' control  population placebo  % (percentages): '    subword(data, n+1 )
+0016 say
+0017 do v=  0  for w         ;           #.v= word(data, v+1) ;       end
+0018 treat= 0;            do i=  0  to n-1        ;           treat= treat + #.i   ;       end
+0019 tot= 1;            do j=  w  to m+1  by -1 ;           tot= tot * j         ;       end
+0020 do k=w%2  to  1   by -1 ;           tot= tot / k         ;       end
+0021 
+0022 GT= picker(n+m, n, 0)                            /*compute the GT value from PICKER func*/
+0023 LE= tot - GT                                     /*   "     "  LE   "   via subtraction.*/
+0024 say "<= "  format(100 * LE / tot, ,3)'%'   LE    /*display number with 3 decimal places.*/
+0025 say " > "  format(100 * GT / tot, ,3)'%'   GT    /*   "       "     "  "    "       "   */
+0026 exit                                             /*stick a fork in it,  we're all done. */
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 picker:  procedure expose #. treat;        parse arg it,rest,eff    /*get the arguments.*/
+0029 if rest==0  then return   eff > treat                      /*is REST = to zero?*/
+0030 if it>rest  then q= picker(it-1, rest, eff)                /*maybe recurse.    */
+0031 else q= 0
+0032 itP= it - 1                                                /*set temporary var.*/
+0033 return picker(itP,  rest - 1,  eff + #.itP)  +  q          /*recurse.          */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 it               28
+002 rest             28
+003 eff              28
+004 q                30
+005 itP              32
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #.               -> newV1.           17

@@ -1,0 +1,21 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:19
+-------------------------------------------------------------------------
+0001 /*REXX program  illustrates  an example of a   DO   loop with an  ITERATE  (continue).  */
+0002 
+0003 do j=1  for 10                                 /*this is equivalent to:  DO J=1 TO 10 */
+0004 call charout ,  j                              /*write the integer to the terminal.   */
+0005 if j//5\==0  then do                           /*Not a multiple of five?   Then ···   */
+0006 call charout , ", "          /*  write a comma to the terminal, ··· */
+0007 iterate                      /* ··· & then go back for next integer.*/
+0008 end
+0009 say                                            /*force REXX to display on next line.  */
+0010 end   /*j*/
+0011 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                3
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

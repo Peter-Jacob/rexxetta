@@ -1,0 +1,161 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program  finds and displays  "sets" (solutions)  for the   SET  puzzle   (game). */
+0002 parse arg game seed .                            /*get optional # cards to deal and seed*/
+0003 if game=='' | game==","  then game=  9           /*Not specified?  Then use the default.*/
+0004 if seed=='' | seed==","  then seed= 77           /* "      "         "   "   "      "   */
+0005 call aGame 0                                     /*with tell=0:    suppress the output. */
+0006 call aGame 1                                     /*with tell=1:    display   "     "    */
+0007 exit sets                                        /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 aGame: parse arg tell;         good= game % 2    /*enable/disable the showing of output.*/
+0010 /* [↑]  the GOOD var is the right #sets*/
+0011 do seed=seed  until good==sets  /*generate deals until good  # of sets.*/
+0012 call random ,,seed              /*repeatability for the RANDOM invokes.*/
+0013 call genFeatures                /*generate various card game features. */
+0014 call genDeck                    /*    "    a deck  (with  81  "cards").*/
+0015 call dealer   game              /*deal a number of cards for the game. */
+0016 call findSets game%2            /*find # of sets from the dealt cards. */
+0017 end   /*until*/                 /* [↓]   when leaving, SETS is right #.*/
+0018 return                                    /*return to invoker of this subroutine.*/
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 dealer: call sey  'dealing'  game  "cards:", , . /*shuffle and deal the cards.          */
+0021 
+0022 do cards=1  until cards==game         /*keep dealing until finished.         */
+0023 _= random(1, words(##) )              /*pick   a card.                       */
+0024 ##= delword(##, _, 1)                 /*delete "   "                         */
+0025 @.cards= deck._                       /*add the card to the tableau.         */
+0026 call sey right('card' cards, 30) " " @.cards    /*display a card to terminal.*/
+0027 
+0028 do j=1  for words(@.cards)        /* [↓]  define cells for cards.        */
+0029 @.cards.j= word(@.cards, j)       /*define  a  cell for  a card.         */
+0030 end   /*j*/
+0031 end       /*cards*/
+0032 
+0033 return
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 defFeatures: parse arg what,v;   _= words(v)     /*obtain what is to be defined.        */
+0036 
+0037 if _\==values  then do;  call sey 'error,'  what  "features ¬=" values, ., .
+0038 exit -1
+0039 end             /* [↑]  check for typos and/or errors. */
+0040 
+0041 do k=1  for words(values)         /*define all the possible values.      */
+0042 call value what'.'k,  word(values, k)         /*define  a  card feature. */
+0043 end   /*k*/
+0044 
+0045 return
+0046 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0047 findSets: parse arg n;   call genPoss            /*N:  the number of sets to be found.  */
+0048 call sey                               /*find any sets that were generated [↑]*/
+0049 
+0050 do         j=1  for p              /*P:  is the number of possible sets.  */
+0051 do     f=1  for features
+0052 do g=1  for groups;     !!.j.f.g= word(!.j.f, g)
+0053 end   /*g*/
+0054 end       /*f*/
+0055 
+0056 ok= 1                              /*everything is peachy─kean (OK) so far*/
+0057 
+0058 do g=1  for groups
+0059 _= !!.j.1.g                    /*build strings to hold possibilities. */
+0060 equ= 1                         /* [↓]  handles all the equal features.*/
+0061 
+0062 do f=2  to features  while equ;     equ= equ  &  _==!!.j.f.g
+0063 end   /*f*/
+0064 
+0065 dif= 1
+0066 __= !!.j.1.g                   /* [↓]  handles all  unequal  features.*/
+0067 do f=2  to  features  while  \equ
+0068 dif= dif &  (wordpos(!!.j.f.g, __)==0)
+0069 __= __  !!.j.f.g  /*append to string for next test*/
+0070 end   /*f*/
+0071 
+0072 ok=ok & (equ | dif)            /*now, see if all are equal or unequal.*/
+0073 end   /*g*/
+0074 
+0075 if \ok  then iterate               /*Is this set OK?   Nope, then skip it.*/
+0076 sets= sets + 1                     /*bump the number of the sets found.   */
+0077 call sey  right('set'  sets":  ", 15)    !.j.1    sep   !.j.2    sep   !.j.3
+0078 end   /*j*/
+0079 
+0080 call sey  sets   'sets found.', .
+0081 return
+0082 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0083 genDeck: #= 0;   ##=                             /*#:  cards in deck;  ##:  shuffle aid.*/
+0084 
+0085 do         num=1  for values;         xnum = word(numbers,  num)
+0086 do      col=1  for values;         xcol = word(colors,   col)
+0087 do   sym=1  for values;         xsym = word(symbols,  sym)
+0088 do sha=1  for values;         xsha = word(shadings, sha)
+0089 #= # + 1;  ##= ## #;
+0090 deck.#= xnum  xcol  xsym  xsha          /*create a card. */
+0091 end   /*sha*/
+0092 end      /*num*/
+0093 end        /*sym*/
+0094 end           /*col*/
+0095 
+0096 return                                  /*#:  the number of cards in the deck. */
+0097 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0098 genFeatures: features= 3;  groups= 4;  values= 3 /*define # features, groups, values.   */
+0099 numbers = 'one two three'           ;    call defFeatures 'number',  numbers
+0100 colors  = 'red green purple'        ;    call defFeatures 'color',   colors
+0101 symbols = 'oval squiggle diamond'   ;    call defFeatures 'symbol',  symbols
+0102 shadings= 'solid open striped'      ;    call defFeatures 'shading', shadings
+0103 return
+0104 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0105 genPoss: p= 0;   sets= 0;   sep=' ───── '        /*define some REXX variables.          */
+0106 !.=
+0107 do       i=1    for game     /* [↓]  the  IFs  eliminate duplicates.*/
+0108 do    j=i+1  to  game
+0109 do k=j+1  to  game
+0110 p= p + 1;          !.p.1= @.i;       !.p.2= @.j;      !.p.3= @.k
+0111 end   /*k*/
+0112 end      /*j*/
+0113 end         /*i*/            /* [↑]  generate the permutation list. */
+0114 
+0115 return
+0116 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0117 sey:  if \tell  then  return                     /*¬ tell?    Then suppress the output. */
+0118 if arg(2)==.  then say;      say arg(1);      if arg(3)==.  then say;         return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                47
+002 j                50 108
+003 f                51 62 67
+004 g                52 58
+005 ok               56 72
+006 equ              60 62
+007 dif              65 68
+008 sets             76 105
+009 num              85
+010 xnum             85
+011 col              86
+012 xcol             86
+013 sym              87
+014 xsym             87
+015 sha              88
+016 xsha             88
+017 deck.            90
+018 groups           98
+019 values           98
+020 numbers          99
+021 colors           100
+022 symbols          101
+023 shadings         102
+024 sep              105
+025 i                107
+026 k                109
+027 p                110
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 !!.              -> newV1.           52
+002 ##               -> newV2            24 83 89
+003 @.               -> newV3.           25 29
+004 __               -> newV4            66 69
+005 !.               -> newV5.           106 110 110 110
+006 _                -> newV6            23 35 59
+007 #                -> newV7            89

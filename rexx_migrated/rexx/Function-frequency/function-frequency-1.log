@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 fid='pgm.rex'
+0002 cnt.=0
+0003 funl=''
+0004 Do While lines(fid)>0
+0005 l=linein(fid)
+0006 Do Until p=0
+0007 p=pos('(',l)
+0008 If p>0 Then Do
+0009 do i=p-1 To 1 By -1 While is_tc(substr(l,i,1))
+0010 End
+0011 fn=substr(l,i+1,p-i-1)
+0012 If fn<>'' Then
+0013 Call store fn
+0014 l=substr(l,p+1)
+0015 End
+0016 End
+0017 End
+0018 Do While funl<>''
+0019 Parse Var funl fn funl
+0020 Say right(cnt.fn,3) fn
+0021 End
+0022 Exit
+0023 x=a(3)+bbbbb(5,c(555))
+0024 special=date('S') 'DATE'() "date"()
+0025 is_tc:
+0026 abc='abcdefghijklmnopqrstuvwxyz'
+0027 Return pos(arg(1),abc||translate(abc)'1234567890_''"')>0
+0028 
+0029 store:
+0030 Parse Arg fun
+0031 cnt.fun=cnt.fun+1
+0032 If cnt.fun=1 Then
+0033 funl=funl fun
+0034 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 fun              30
+002 cnt.             31
+003 funl             33
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

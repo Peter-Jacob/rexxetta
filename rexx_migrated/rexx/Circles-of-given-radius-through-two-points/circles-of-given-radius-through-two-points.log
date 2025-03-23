@@ -1,0 +1,66 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX pgm finds 2 circles with a specific radius given 2 (X1,Y1) and (X2,Y2) ctr points*/
+0002 @.=; @.1= 0.1234   0.9876    0.8765    0.2345    2
+0003 @.2= 0        2         0         0         1
+0004 @.3= 0.1234   0.9876    0.1234    0.9876    2
+0005 @.4= 0.1234   0.9876    0.8765    0.2345    0.5
+0006 @.5= 0.1234   0.9876    0.1234    0.9876    0
+0007 say '     x1        y1        x2        y2     radius          circle1x  circle1y  circle2x  circle2y'
+0008 say '  ════════  ════════  ════════  ════════  ══════          ════════  ════════  ════════  ════════'
+0009 do  j=1  while  @.j\=='';  parse var @.j  p1 p2 p3 p4 r           /*points, radii*/
+0010 say fmt(p1)  fmt(p2)  fmt(p3)  fmt(p4)    center(r/1, 9)    "───► "      2circ(@.j)
+0011 end   /*j*/
+0012 exit 0                                           /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 2circ: procedure; parse arg px py qx qy r .;     x= (qx-px)/2;          y= (qy-py)/2
+0015 bx= px + x;            by= py + y
+0016 pb= sqrt(x**2 + y**2)
+0017 if r = 0  then return  'radius of zero yields no circles.'
+0018 if pb==0  then return  'coincident points give infinite circles.'
+0019 if pb >r  then return  'points are too far apart for the specified radius.'
+0020 cb= sqrt(r**2 - pb**2);     x1= y * cb / pb;                       y1= x * cb / pb
+0021 return  fmt(bx-x1)   fmt(by+y1)   fmt(bx+x1)   fmt(by-y1)
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 fmt:   arg f;   f= right( format(f, , 4), 9);         _= f  /*format # with 4 dec digits*/
+0024 if pos(.,f)>0 & pos('E',f)=0  then f= strip(f,'T',0) /*strip trailing 0s if .& ¬E*/
+0025 return left( strip(f, 'T', .), length(_) )           /*strip trailing dec point. */
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 sqrt:  procedure; arg x; if x=0  then return 0;  d=digits(); numeric digits;  h=d+6;  m.=9
+0028 numeric form;  parse value format(x,2,1,,0) 'E0'  with  g "E" _ .;  g=g *.5'e'_ % 2
+0029 do j=0  while h>9;      m.j=h;               h=h%2+1;       end  /*j*/
+0030 do k=j+5  to 0  by -1;  numeric digits m.k;  g=(g+x/g)*.5;  end  /*k*/;  return g
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 px               14
+002 py               14
+003 qx               14
+004 qy               14
+005 r                14
+006 x                14
+007 y                14
+008 bx               15
+009 by               15
+010 pb               16
+011 cb               20
+012 x1               20
+013 y1               20
+014 f                23 24
+015 d                27
+016 h                27 29
+017 m.               27 29
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 g                28 28 30
+024 j                29
+025 k                30
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 2 3 4 5 6 9
+002 _                -> newV2            23 28

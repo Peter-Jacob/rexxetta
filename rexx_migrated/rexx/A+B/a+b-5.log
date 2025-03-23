@@ -1,0 +1,19 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program obtains some numbers from the input stream (the console), shows their sum*/
+0002 numeric digits 1000                              /*just in case the user gets  ka-razy. */
+0003 say 'enter some numbers to be summed:'           /*display a prompt message to terminal.*/
+0004 parse pull y                                     /*obtain all numbers from input stream.*/
+0005 y=space(y)
+0006 y=translate(y,'+',' ')
+0007 Interpret 's='y
+0008 say 'sum of '  many  " numbers = " s/1           /*display normalized sum s to terminal.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             4
+002 y                4 5 6
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

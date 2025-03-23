@@ -1,0 +1,22 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:05
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates  array usage  (with elements out-of-range).*/
+0002 array. = 'out of range'                /*define  ALL  elements to this. */
+0003 
+0004 do j=-3000  to 3000      /*start at -3k,  going up to +3k.*/
+0005 array.j=j**2             /*define element as its square.  */
+0006 end   /*j*/              /* [↑]   defines 6,001 elements. */
+0007 g=-7
+0008 say g      "squared is:"   array.g
+0009 say 7000   "squared is:"   array.7000
+0010 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 array.           2 5
+002 j                4
+003 g                7
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

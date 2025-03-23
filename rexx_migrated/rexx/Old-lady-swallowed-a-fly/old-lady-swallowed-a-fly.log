@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:23
+-------------------------------------------------------------------------
+0001 /*REXX program displays  song lyrics  for:   "I Know an Old Lady who Swallowed a Fly".  */
+0002 sw= 79                                           /*the width of the terminal screen, -1.*/
+0003 @.=;            @.1 = "I don't know why she swallowed a fly,"
+0004 @.2 = "That wriggled and jiggled and tickled inside her.";    @.2.0=.
+0005 @.3 = "How absurd to swallow a bird!"
+0006 @.4 = "Imagine that, to swallow a cat!"
+0007 @.5 = "My, what a hog, to swallow a dog!"
+0008 @.6 = "Just opened her throat and swallowed a goat!"
+0009 @.7 = "I wonder how she swallowed a cow?!"
+0010 @.8 = "She's dead, of course!!"
+0011 $ = 'fly spider bird cat dog goat cow horse'
+0012 #= words($)                                      /*#:  number of animals to be swallowed*/
+0013 
+0014 do j=1  for #;        say
+0015 say center('I know an old lady who swallowed a'     word($, j)",",  sw)
+0016 if j\==1  then  say center(@.j, sw)
+0017 if j ==#  then leave                           /*Is this the last verse?   We're done.*/
+0018 do k=j  to 2  by -1;      km= k-1;              ??= word($, km)','
+0019 say center('She swallowed the'   word($,k)  "to catch the"   ??, sw)
+0020 if @.km.0\==''  then say center(@.km, sw)
+0021 end   /*k*/                /* [↑]  display the lyrics of the song.*/
+0022 say center(@.1, sw)
+0023 say center("I guess she'll die.", sw)
+0024 end   /*j*/                                    /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 sw               2
+002 j                14
+003 k                18
+004 km               18
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           3 3 4 4 5 6 7 8 9 10
+002 ??               -> newV2            18
+003 $                -> newV3            11
+004 #                -> newV4            12

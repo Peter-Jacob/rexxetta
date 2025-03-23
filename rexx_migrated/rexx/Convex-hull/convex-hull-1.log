@@ -1,0 +1,490 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * Compute the Convex Hull for a set of points
+0003 * Format of the input file:
+0004 * (16,3) (12,17) (0,6) (-4,-6) (16,6) (16,-7) (16,-3) (17,-4) (5,19)
+0005 * (19,-8) (3,16) (12,13) (3,-4) (17,5) (-3,15) (-3,-9) (0,11) (-9,-3)
+0006 * (-4,-2)
+0007 *--------------------------------------------------------------------*/
+0008 Signal On Novalue
+0009 Signal On Syntax
+0010 Parse Arg fid
+0011 If fid='' Then Do
+0012 fid='chullmin.in'                 /* miscellaneous test data       */
+0013 fid='chullx.in'
+0014 fid='chullt.in'
+0015 fid='chulla.in'
+0016 fid='chullxx.in'
+0017 fid='sq.in'
+0018 fid='tri.in'
+0019 fid='line.in'
+0020 fid='point.in'
+0021 fid='chull.in'                    /* data from task description    */
+0022 End
+0023 g.0debug=''
+0024 g.0oid=fn(fid)'.txt'; 'erase' g.0oid
+0025 x.=0
+0026 yl.=''
+0027 Parse Value '1000 -1000' With g.0xmin g.0xmax
+0028 Parse Value '1000 -1000' With g.0ymin g.0ymax
+0029 /*---------------------------------------------------------------------
+0030 * First read the input and store the points' coordinates
+0031 * x.0 contains the number of points, x.i contains the x.coordinate
+0032 * yl.x contains the y.coordinate(s) of points (x/y)
+0033 *--------------------------------------------------------------------*/
+0034 Do while lines(fid)>0
+0035 l=linein(fid)
+0036 Do While l<>''
+0037 Parse Var l '(' x ',' y ')' l
+0038 Call store x,y
+0039 End
+0040 End
+0041 Call lineout fid
+0042 Do i=1 To x.0                       /* loop over points              */
+0043 x=x.i
+0044 yl.x=sortv(yl.x)                  /* sort y-coordinates            */
+0045 End
+0046 Call sho
+0047 
+0048 /*---------------------------------------------------------------------
+0049 * Now we look for special border points:
+0050 * lefthigh and leftlow: leftmost points with higheste and lowest y
+0051 * ritehigh and ritelow: rightmost points with higheste and lowest y
+0052 * yl.x contains the y.coordinate(s) of points (x/y)
+0053 *--------------------------------------------------------------------*/
+0054 leftlow=0
+0055 lefthigh=0
+0056 Do i=1 To x.0
+0057 x=x.i
+0058 If maxv(yl.x)=g.0ymax Then Do
+0059 If lefthigh=0 Then lefthigh=x'/'g.0ymax
+0060 ritehigh=x'/'g.0ymax
+0061 End
+0062 If minv(yl.x)=g.0ymin Then Do
+0063 ritelow=x'/'g.0ymin
+0064 If leftlow=0 Then leftlow=x'/'g.0ymin
+0065 End
+0066 End
+0067 Call o 'lefthigh='lefthigh
+0068 Call o 'ritehigh='ritehigh
+0069 Call o 'ritelow ='ritelow
+0070 Call o 'leftlow ='leftlow
+0071 /*---------------------------------------------------------------------
+0072 * Now we look for special border points:
+0073 * leftmost_n and leftmost_s: points with lowest x and highest/lowest y
+0074 * ritemost_n and ritemost_s: points with largest x and highest/lowest y
+0075 * n and s stand foNorth and South, respectively
+0076 *--------------------------------------------------------------------*/
+0077 x=g.0xmi; leftmost_n=x'/'maxv(yl.x)
+0078 x=g.0xmi; leftmost_s=x'/'minv(yl.x)
+0079 x=g.0xma; ritemost_n=x'/'maxv(yl.x)
+0080 x=g.0xma; ritemost_s=x'/'minv(yl.x)
+0081 
+0082 /*---------------------------------------------------------------------
+0083 * Now we compute the paths from ritehigh to ritelow (n_end)
+0084 * and leftlow to lefthigh (s_end), respectively
+0085 *--------------------------------------------------------------------*/
+0086 x=g.0xma
+0087 n_end=''
+0088 Do i=words(yl.x) To 1 By -1
+0089 n_end=n_end x'/'word(yl.x,i)
+0090 End
+0091 Call o 'n_end='n_end
+0092 x=g.0xmi
+0093 s_end=''
+0094 Do i=1 To words(yl.x)
+0095 s_end=s_end x'/'word(yl.x,i)
+0096 End
+0097 Call o 's_end='s_end
+0098 
+0099 n_high=''
+0100 s_low=''
+0101 /*---------------------------------------------------------------------
+0102 * Now we compute the upper part of the convex hull (nhull)
+0103 *--------------------------------------------------------------------*/
+0104 Call o 'leftmost_n='leftmost_n
+0105 Call o 'lefthigh  ='lefthigh
+0106 nhull=leftmost_n
+0107 res=mk_nhull(leftmost_n,lefthigh);
+0108 nhull=nhull res
+0109 Call o 'A nhull='nhull
+0110 Do While res<>lefthigh
+0111 res=mk_nhull(res,lefthigh); nhull=nhull res
+0112 Call o 'B nhull='nhull
+0113 End
+0114 res=mk_nhull(lefthigh,ritemost_n); nhull=nhull res
+0115 Call o 'C nhull='nhull
+0116 Do While res<>ritemost_n
+0117 res=mk_nhull(res,ritemost_n); nhull=nhull res
+0118 Call o 'D nhull='nhull
+0119 End
+0120 
+0121 nhull=nhull n_end                /* attach the right vertical border */
+0122 
+0123 /*---------------------------------------------------------------------
+0124 * Now we compute the lower part of the convex hull (shull)
+0125 *--------------------------------------------------------------------*/
+0126 res=mk_shull(ritemost_s,ritelow);
+0127 shull=ritemost_s res
+0128 Call o 'A shull='shull
+0129 Do While res<>ritelow
+0130 res=mk_shull(res,ritelow)
+0131 shull=shull res
+0132 Call o 'B shull='shull
+0133 End
+0134 res=mk_shull(ritelow,leftmost_s)
+0135 shull=shull res
+0136 Call o 'C shull='shull
+0137 Do While res<>leftmost_s
+0138 res=mk_shull(res,leftmost_s);
+0139 shull=shull res
+0140 Call o 'D shull='shull
+0141 End
+0142 
+0143 shull=shull s_end
+0144 
+0145 chull=nhull shull                 /* concatenate upper and lower part */
+0146 /* eliminate duplicates             */
+0147 /* too lazy to take care before :-) */
+0148 Parse Var chull chullx chull
+0149 have.=0
+0150 have.chullx=1
+0151 Do i=1 By 1 While chull>''
+0152 Parse Var chull xy chull
+0153 If have.xy=0 Then Do
+0154 chullx=chullx xy
+0155 have.xy=1
+0156 End
+0157 End
+0158 /* show the result                */
+0159 Say 'Points of convex hull in clockwise order:'
+0160 Say    chullx
+0161 /**********************************************************************
+0162 * steps that were necessary in previous attempts
+0163 /*---------------------------------------------------------------------
+0164 * Final polish: Insert points that are not yet in chullx but should be
+0165 * First on the upper hull going from left to right
+0166 *--------------------------------------------------------------------*/
+0167 i=1
+0168 Do While i<words(chullx)
+0169 xya=word(chullx,i)  ; Parse Var xya xa '/' ya
+0170 If xa=g.0xmax Then Leave
+0171 xyb=word(chullx,i+1); Parse Var xyb xb '/' yb
+0172 Do j=1 To x.0
+0173 If x.j>xa Then Do
+0174 If x.j<xb Then Do
+0175 xx=x.j
+0176 parse Value kdx(xya,xyb) With k d x
+0177 If (k*xx+d)=maxv(yl.xx) Then Do
+0178 chullx=subword(chullx,1,i) xx'/'maxv(yl.xx),
+0179 subword(chullx,i+1)
+0180 i=i+1
+0181 End
+0182 End
+0183 End
+0184 Else
+0185 i=i+1
+0186 End
+0187 End
+0188 
+0189 Say    chullx
+0190 
+0191 /*---------------------------------------------------------------------
+0192 * Final polish: Insert points that are not yet in chullx but should be
+0193 * Then on the lower hull going from right to left
+0194 *--------------------------------------------------------------------*/
+0195 i=wordpos(ritemost_s,chullx)
+0196 Do While i<words(chullx)
+0197 xya=word(chullx,i)  ; Parse Var xya xa '/' ya
+0198 If xa=g.0xmin Then Leave
+0199 xyb=word(chullx,i+1); Parse Var xyb xb '/' yb
+0200 Do j=x.0 To 1 By -1
+0201 If x.j<xa Then Do
+0202 If x.j>xb Then Do
+0203 xx=x.j
+0204 parse Value kdx(xya,xyb) With k d x
+0205 If (k*xx+d)=minv(yl.xx) Then Do
+0206 chullx=subword(chullx,1,i) xx'/'minv(yl.xx),
+0207 subword(chullx,i+1)
+0208 i=i+1
+0209 End
+0210 End
+0211 End
+0212 Else
+0213 i=i+1
+0214 End
+0215 End
+0216 Say chullx
+0217 **********************************************************************/
+0218 Call lineout g.0oid
+0219 
+0220 Exit
+0221 
+0222 store: Procedure Expose x. yl. g.
+0223 /*---------------------------------------------------------------------
+0224 * arrange the points in ascending order of x (in x.) and,
+0225 * for each x in ascending order of y (in yl.x)
+0226 * g.0xmin is the smallest x-value, etc.
+0227 * g.0xmi  is the x-coordinate
+0228 * g.0ymin is the smallest y-value, etc.
+0229 * g.0ymi  is the x-coordinate of such a point
+0230 *--------------------------------------------------------------------*/
+0231 Parse Arg x,y
+0232 Call o 'store' x y
+0233 If x<g.0xmin Then Do; g.0xmin=x; g.0xmi=x; End
+0234 If x>g.0xmax Then Do; g.0xmax=x; g.0xma=x; End
+0235 If y<g.0ymin Then Do; g.0ymin=y; g.0ymi=x; End
+0236 If y>g.0ymax Then Do; g.0ymax=y; g.0yma=x; End
+0237 Do i=1 To x.0
+0238 Select
+0239 When x.i>x Then
+0240 Leave
+0241 When x.i=x Then Do
+0242 yl.x=yl.x y
+0243 Return
+0244 End
+0245 Otherwise
+0246 Nop
+0247 End
+0248 End
+0249 Do j=x.0 To i By -1
+0250 ja=j+1
+0251 x.ja=x.j
+0252 End
+0253 x.i=x
+0254 yl.x=y
+0255 x.0=x.0+1
+0256 Return
+0257 
+0258 sho: Procedure Expose x. yl. g.
+0259 Do i=1 To x.0
+0260 x=x.i
+0261 say  format(i,2) 'x='format(x,3) 'yl='yl.x
+0262 End
+0263 Say ''
+0264 Return
+0265 
+0266 maxv: Procedure Expose g.
+0267 Call trace 'O'
+0268 Parse Arg l
+0269 res=-1000
+0270 Do While l<>''
+0271 Parse Var l v l
+0272 If v>res Then res=v
+0273 End
+0274 Return res
+0275 
+0276 minv: Procedure Expose g.
+0277 Call trace 'O'
+0278 Parse Arg l
+0279 res=1000
+0280 Do While l<>''
+0281 Parse Var l v l
+0282 If v<res Then res=v
+0283 End
+0284 Return res
+0285 
+0286 sortv: Procedure Expose g.
+0287 Call trace 'O'
+0288 Parse Arg l
+0289 res=''
+0290 Do Until l=''
+0291 v=minv(l)
+0292 res=res v
+0293 l=remove(v,l)
+0294 End
+0295 Return space(res)
+0296 
+0297 lastword: return word(arg(1),words(arg(1)))
+0298 
+0299 kdx: Procedure  Expose xy. g.
+0300 /*---------------------------------------------------------------------
+0301 * Compute slope and y-displacement of a straight line
+0302 * that is defined by two points:  y=k*x+d
+0303 * Specialty; k='*' x=xa if xb=xa
+0304 *--------------------------------------------------------------------*/
+0305 Call trace 'O'
+0306 Parse Arg xya,xyb
+0307 Parse Var xya xa '/' ya
+0308 Parse Var xyb xb '/' yb
+0309 If xa=xb Then
+0310 Parse Value '*' '-' xa With k d x
+0311 Else Do
+0312 k=(yb-ya)/(xb-xa)
+0313 d=yb-k*xb
+0314 x='*'
+0315 End
+0316 Return k d x
+0317 
+0318 remove:
+0319 /*---------------------------------------------------------------------
+0320 * Remove a specified element (e) from a given string (s)
+0321 *--------------------------------------------------------------------*/
+0322 Parse Arg e,s
+0323 Parse Var s sa (e) sb
+0324 Return space(sa sb)
+0325 
+0326 o: Procedure Expose g.
+0327 /*---------------------------------------------------------------------
+0328 * Write a line to the debug file
+0329 *--------------------------------------------------------------------*/
+0330 If arg(2)=1 Then say arg(1)
+0331 Return lineout(g.0oid,arg(1))
+0332 
+0333 is_ok: Procedure Expose x. yl. g. sigl
+0334 /*---------------------------------------------------------------------
+0335 * Test if a given point (b) is above/on/or below a straight line
+0336 * defined by two points (a and c)
+0337 *--------------------------------------------------------------------*/
+0338 Parse Arg a,b,c,op
+0339 Call o    'is_ok' a b c op
+0340 Parse Value kdx(a,c) With k d x
+0341 Parse Var b x'/'y
+0342 If op='U' Then y=maxv(yl.x)
+0343 Else y=minv(yl.x)
+0344 Call o    y x (k*x+d)
+0345 If (abs(y-(k*x+d))<1.e-8) Then Return 0
+0346 If op='U' Then res=(y<=(k*x+d))
+0347 Else res=(y>=(k*x+d))
+0348 Return res
+0349 
+0350 mk_nhull: Procedure Expose x. yl. g.
+0351 /*---------------------------------------------------------------------
+0352 * Compute the upper (north) hull between two points (xya and xyb)
+0353 * Move x from xyb back to xya until all points within the current
+0354 * range (x and xyb) are BELOW the straight line defined xya and x
+0355 * Then make x the new starting point
+0356 *--------------------------------------------------------------------*/
+0357 Parse Arg xya,xyb
+0358 Call o 'mk_nhull' xya xyb
+0359 If xya=xyb Then Return xya
+0360 Parse Var xya xa '/' ya
+0361 Parse Var xyb xb '/' yb
+0362 iu=0
+0363 iv=0
+0364 Do xi=1 To x.0
+0365 if x.xi>=xa & iu=0 Then iu=xi
+0366 if x.xi<=xb Then iv=xi
+0367 If x.xi>xb Then Leave
+0368 End
+0369 Call o    iu iv
+0370 xu=x.iu
+0371 xyu=xu'/'maxv(yl.xu)
+0372 Do h=iv To iu+1 By -1 Until good
+0373 Call o 'iv='iv,g.0debug
+0374 Call o ' h='h,g.0debug
+0375 xh=x.h
+0376 xyh=xh'/'maxv(yl.xh)
+0377 Call o    'Testing' xyu xyh,g.0debug
+0378 good=1
+0379 Do hh=h-1 To iu+1 By -1 While good
+0380 xhh=x.hh
+0381 xyhh=xhh'/'maxv(yl.xhh)
+0382 Call o 'iu hh iv=' iu hh h,g.0debug
+0383 If is_ok(xyu,xyhh,xyh,'U') Then Do
+0384 Call o    xyhh 'is under' xyu xyh,g.0debug
+0385 Nop
+0386 End
+0387 Else Do
+0388 good=0
+0389 Call o    xyhh 'is above' xyu xyh '-' xyh 'ist nicht gut'
+0390 End
+0391 End
+0392 End
+0393 Call o xyh 'is the one'
+0394 
+0395 Return xyh
+0396 
+0397 p: Return
+0398 Say arg(1)
+0399 Pull  .
+0400 Return
+0401 
+0402 mk_shull: Procedure Expose x. yl. g.
+0403 /*---------------------------------------------------------------------
+0404 * Compute the lower (south) hull between two points (xya and xyb)
+0405 * Move x from xyb back to xya until all points within the current
+0406 * range (x and xyb) are ABOVE the straight line defined xya and x
+0407 * Then make x the new starting point
+0408 *-----
+0409 ---------------------------------------------------------------*/
+0410 Parse Arg xya,xyb
+0411 Call o 'mk_shull' xya xyb
+0412 If xya=xyb Then Return xya
+0413 Parse Var xya xa '/' ya
+0414 Parse Var xyb xb '/' yb
+0415 iu=0
+0416 iv=0
+0417 Do xi=x.0 To 1 By -1
+0418 if x.xi<=xa & iu=0 Then iu=xi
+0419 if x.xi>=xb Then iv=xi
+0420 If x.xi<xb Then Leave
+0421 End
+0422 Call o iu iv '_' x.iu x.iv
+0423 Call o 'mk_shull iv iu' iv iu
+0424 xu=x.iu
+0425 xyu=xu'/'minv(yl.xu)
+0426 good=0
+0427 Do h=iv To iu-1 Until good
+0428 xh=x.h
+0429 xyh=xh'/'minv(yl.xh)
+0430 Call o    'Testing' xyu xyh   h iu
+0431 good=1
+0432 Do hh=h+1 To iu-1 While good
+0433 Call o 'iu hh h=' iu hh h
+0434 xhh=x.hh
+0435 xyhh=xhh'/'minv(yl.xhh)
+0436 If is_ok(xyu,xyhh,xyh,'O') Then Do
+0437 Call o xyhh 'is above' xyu xyh
+0438 Nop
+0439 End
+0440 Else Do
+0441 Call o xyhh 'is under' xyu xyh '-' xyh 'ist nicht gut'
+0442 good=0
+0443 End
+0444 End
+0445 End
+0446 Call o xyh 'is the one'
+0447 Return xyh
+0448 
+0449 Novalue:
+0450 Say 'Novalue raised in line' sigl
+0451 Say sourceline(sigl)
+0452 Say 'Variable' condition('D')
+0453 Signal lookaround
+0454 
+0455 Syntax:
+0456 Say 'Syntax raised in line' sigl
+0457 Say sourceline(sigl)
+0458 Say 'rc='rc '('errortext(rc)')'
+0459 
+0460 halt:
+0461 lookaround:
+0462 Say 'You can look around now.'
+0463 Trace ?R
+0464 Nop
+0465 Exit 12
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 xyb              414
+002 xb               414
+003 yb               414
+004 iu               415 418
+005 iv               416 419
+006 xi               417
+007 xu               424
+008 xyu              425
+009 good             426 431 442
+010 h                427
+011 xh               428
+012 xyh              429
+013 hh               432
+014 xhh              434
+015 xyhh             435
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 (e)              -> newV1            323

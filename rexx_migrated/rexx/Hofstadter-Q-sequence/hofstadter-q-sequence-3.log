@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:16
+-------------------------------------------------------------------------
+0001 /*REXX program generates the    Hofstadter  Q     sequence for any specified   N.       */
+0002 parse arg a b c d .                              /*obtain optional arguments from the CL*/
+0003 if a=='' | a==","  then a=       10              /*Not specified?  Then use the default.*/
+0004 if b=='' | b==","  then b=    -1000              /* "      "         "   "   "      "   */
+0005 if c=='' | c==","  then c=  -100000              /* "      "         "   "   "      "   */
+0006 if d=='' | d==","  then d= -1000000              /* "      "         "   "   "      "   */
+0007 @.= 0;     @.1= 1;    @.2= 1;       ac= abs(c)   /* [↑]  negative #'s don't show values.*/
+0008 call HofstadterQ  a;   say
+0009 call HofstadterQ  b;   say 'HofstadterQ '  commas(abs(b))th(b) " term is: " commas(result)
+0010 call HofstadterQ  c;   say
+0011 downs= 0;                         do j=2  for ac-1;     jm= j - 1
+0012 downs= downs + (@.j<@.jm)
+0013 end   /*j*/
+0014 
+0015 say commas(downs)    ' HofstatdterQ terms are less then the previous term,' ,
+0016 ' HofstatdterQ('commas(ac)  ||  th(ac)")  term is: "     commas(@.ac)
+0017 call HofstadterQ  d;                                             ad= abs(d);           say
+0018 say 'The '   commas(ad) || th(ad)    ' HofstatdterQ term is: '       commas(@.ad)
+0019 exit                                             /*stick a fork in it,  we're all done. */
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 HofstadterQ: procedure expose @.; parse arg x 1 ox     /*get number to generate through.*/
+0022 /* [↑]   OX    is the same as X. */
+0023 x= abs(x);                    w= length( commas(x) )   /*use absolute value; get length.*/
+0024 do j=1  for x
+0025 if @.j==0 then @.j= QR(j)                   /*Not defined?    Then define it.*/
+0026 if ox>0  then say 'HofstadterQ('right(j, w)"): "  right(@.j,max(w,length(@.j)))
+0027 end    /*j*/
+0028 return @.x                                             /*return the │X│th term to caller*/
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 QR: procedure expose @.;   parse arg n                 /*this  QR function is recursive.*/
+0031 if @.n==0  then @.n= QR(n-QR(n-1)) + QR(n-QR(n-2)) /*Not defined?    Then define it.*/
+0032 return @.n                                         /*return the value to the invoker*/
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 th: procedure; #=abs(arg(1)); return word('th st nd rd',1+#//10*(#//100%10\==1)*(#//10<4))
+0035 commas:  parse arg _;  do ?=length(_)-3  to 1  by -3; _=insert(',', _, ?); end;   return _
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           7 7 7 25 31
+002 #                -> newV2            34
+003 _                -> newV3            35 35
+004 ?                -> newV4            35

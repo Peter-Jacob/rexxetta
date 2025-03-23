@@ -1,0 +1,47 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program lists a  sequence of  SPDS  (Smarandache prime-digital sequence)  primes.*/
+0002 parse arg n q                                    /*get optional number of primes to find*/
+0003 if n=='' | n==","  then n=  25                   /*Not specified?  Then use the default.*/
+0004 if q=''            then q= 100  1000             /* "      "         "   "   "     "    */
+0005 say '═══listing the first'     n     "SPDS primes═══"
+0006 call spds n
+0007 do i=1  for words(q)+1;     y=word(q, i);    if y=='' | y==","   then iterate
+0008 say
+0009 say '═══listing the last of '    y     "SPDS primes═══"
+0010 call spds -y
+0011 end   /*i*/
+0012 exit                                             /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 spds: parse arg x 1 ox;  x= abs(x)               /*obtain the limit to be used for list.*/
+0015 c= 0                                       /*C  number of SPDS primes found so far*/
+0016 #= 0                                       /*#  number of      primes found so far*/
+0017 do j=1  by 2  while  c<x;    z= j    /*start: 1st even prime, then use odd. */
+0018 if z==1  then z= 2                   /*handle the even prime (special case) */
+0019 /* [↓]  divide by the primes.   ___    */
+0020 do k=2  to #  while  k*k<=z  /*divide  Z  with all primes ≤ √ Z     */
+0021 if z//@.k==0  then iterate j /*÷ by prev. prime?  ¬prime     ___    */
+0022 end   /*j*/                  /* [↑]   only divide up to     √ Z     */
+0023 #= # + 1;             @.#= z         /*bump the prime count;  assign prime #*/
+0024 if verify(z, 2357)>0  then iterate j /*Digits ¬prime?  Then skip this prime.*/
+0025 c= c + 1                             /*bump the number of SPDS primes found.*/
+0026 if ox<0  then iterate                /*don't display it, display the last #.*/
+0027 say right(z, 21)                     /*maybe display this prime ──► terminal*/
+0028 end   /*j*/                          /* [↑]  only display N number of primes*/
+0029 if ox<0  then say right(z, 21)             /*display one  (the last)  SPDS prime. */
+0030 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                14 14
+002 ox               14
+003 c                15 25
+004 j                17
+005 z                17 18
+006 k                20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           23
+002 #                -> newV2            16 23

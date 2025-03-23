@@ -1,0 +1,73 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:03
+-------------------------------------------------------------------------
+0001 /*REXX program to simulate the problem of 100 prisoners:  random,  and optimal strategy.*/
+0002 parse arg men trials seed .                      /*obtain optional arguments from the CL*/
+0003 if    men=='' |    men==","  then    men=    100 /*number of   prisoners   for this run.*/
+0004 if trials=='' | trials==","  then trials= 100000 /*  "     "  simulations   "    "   "  */
+0005 if datatype(seed, 'W')  then call random ,,seed  /*seed for the random number generator.*/
+0006 try= men % 2;                swaps= men * 3      /*number tries for searching for a card*/
+0007 $.1= ' a simple ';           $.2= "an optimal"   /*literals used for the SAY instruction*/
+0008 say center(' running'  commas(trials)   "trials with"  commas(men)  'prisoners ', 70, "═")
+0009 say
+0010 do strategy=1  for 2;    pardons= 0          /*perform the two types of strategies. */
+0011 
+0012 do trials;             call gCards         /*do trials for a strategy;  gen cards.*/
+0013 do p=1  for men  until failure           /*have each prisoner go through process*/
+0014 if strategy==1  then failure= simple()   /*Is 1st strategy?  Use simple strategy*/
+0015 else failure= picker()   /* " 2nd     "       "  optimal   "    */
+0016 end   /*p*/                              /*FAILURE ≡ 1?  Then a prisoner failed.*/
+0017 if #==men  then pardons= pardons + 1       /*was there a pardon of all prisoners? */
+0018 end     /*trials*/                         /*if 1 prisoner fails, then they all do*/
+0019 
+0020 pc= format( pardons/trials*100, , 3);                           _= left('', pc<10)
+0021 say right('Using', 9)  $.strategy  "strategy yields pardons "   _||pc"%  of the time."
+0022 end       /*strategy*/
+0023 exit                                             /*stick a fork in it,  we're all done. */
+0024 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0025 commas:  parse arg _;  do c=length(_)-3  to 1  by -3; _= insert(',', _, c); end;  return _
+0026 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0027 gCards: #= 0;                do j=1  for men;  @.j= j             /*define seq. of cards*/
+0028 end   /*j*/                          /*same as seq. of men.*/
+0029 do swaps;             a= random(1, men)            /*get 1st rand number.*/
+0030 do until  b\==a;  b= random(1, men)            /* "  2nd   "     "   */
+0031 end   /*until*/                                /* [↑] ensure A ¬== B */
+0032 parse value  @.a @.b  with  @.b @.a                /*swap 2 random cards.*/
+0033 end       /*swaps*/;  return
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 simple: !.= 0; do try;         do until !.?==0; ?= random(1, men) /*get random card ··· */
+0036 end   /*until*/                    /*··· not used before.*/
+0037 if @.?==p  then do;   #= #+1;  return 0;  end      /*found his own card? */
+0038 !.?= 1                                             /*flag as being used. */
+0039 end   /*try*/;        return 1                     /*didn't find his card*/
+0040 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0041 picker: ?= p;  do try; if @.?==p  then do;   #= #+1;    return 0  /*Found his own card? */
+0042 end       /* [↑]  indicate success for prisoner. */
+0043 ?= @.?                            /*choose next drawer from current card.*/
+0044 end   /*try*/;        return 1    /*choose half of the number of drawers.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 c                25
+002 j                27
+003 a                29
+004 until            30 35
+005 b                30
+006 strategy         10
+007 pardons          10 17
+008 p                13
+009 failure          14
+010 pc               20
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $.               -> newV1.           7 7
+002 @.               -> newV2.           27 32 32
+003 !.               -> newV3.           38
+004 _                -> newV4            20 25 25
+005 ?                -> newV5            35 43
+006 #                -> newV6            37 41

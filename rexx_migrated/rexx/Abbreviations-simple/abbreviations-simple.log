@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program validates a user  "word"  against a  "command table"  with abbreviations.*/
+0002 parse arg uw                                     /*obtain optional arguments from the CL*/
+0003 if uw=''  then uw= 'riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin'
+0004 say 'user words: '   uw
+0005 
+0006 @= 'add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3',
+0007 'compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate',
+0008 '3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2',
+0009 'forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load',
+0010 'locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2',
+0011 'msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3',
+0012 'refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left',
+0013 '2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1'
+0014 
+0015 say 'full words: '   validate(uw)                /*display the result(s) to the terminal*/
+0016 exit                                             /*stick a fork in it,  we're all done. */
+0017 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0018 validate: procedure expose @;  arg x;  upper @   /*ARG   capitalizes all the  X  words. */
+0019 $=                                     /*initialize the return string to null.*/
+0020 do j=1  to words(x);   _=word(x, j) /*obtain a word from the     X  list.  */
+0021 do k=1  to words(@); a=word(@, k) /*get a legitmate command name from  @.*/
+0022 L=word(@, k+1)                    /*··· and maybe get it's abbrev length.*/
+0023 if datatype(L, 'W')  then k=k + 1       /*yuppers, it's an abbrev length.*/
+0024 else L=length(a)   /*nope,  it can't be abbreviated.*/
+0025 if abbrev(a, _, L)   then do; $=$ a;  iterate j;  end  /*is valid abbrev?*/
+0026 end   /*k*/
+0027 $=$ '*error*'                       /*processed the whole list, not valid. */
+0028 end     /*j*/
+0029 return strip($)                        /*elide the superfluous leading blank. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 uw               2 3
+002 j                20
+003 k                21 23
+004 a                21
+005 L                22
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @                -> newV1            6
+002 $                -> newV2            19 25 27
+003 _                -> newV3            20

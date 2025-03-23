@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 /*REXX program  capitalizes  each word in string, and maintains imbedded blanks.        */
+0002 x= "alef bet gimel dalet he vav zayin het tet yod kaf lamed mem nun samekh",
+0003 "ayin pe tzadi qof resh shin  tav."           /*the "old" spelling of Hebrew letters.*/
+0004 y= capitalize(x)                                 /*capitalize each word in the string.  */
+0005 say x                                            /*display the original string of words.*/
+0006 say y                                            /*   "     "    capitalized      words.*/
+0007 exit                                             /*stick a fork in it,  we're all done. */
+0008 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0009 capitalize: procedure;  parse arg z;   $=' 'z    /*prefix    $    string with a  blank. */
+0010 abc = "abcdefghijklmnopqrstuvwxyz"   /*define all  Latin  lowercase letters.*/
+0011 
+0012 do j=1  for 26             /*process each letter in the alphabet. */
+0013 _=' 'substr(abc,j,1); _U=_ /*get a  lowercase  (Latin) letter.    */
+0014 upper _U                   /* "  "  uppercase     "       "       */
+0015 $=changestr(_, $, _U)      /*maybe capitalize some word(s).       */
+0016 end   /*j*/
+0017 
+0018 return substr($, 2)                  /*return the capitalized words.        */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                9
+002 abc              10
+003 j                12
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _U               -> newV1            13
+002 $                -> newV2            9 15
+003 _                -> newV3            13

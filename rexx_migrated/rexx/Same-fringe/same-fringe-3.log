@@ -1,0 +1,70 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX pgm examines the leaves of 2 binary trees (as shown below), and finds inequities.*/
+0002 _= left('', 28);    say _   "        A                                       A     "
+0003 say _   "       / \    ◄════1st tree                    / \    "
+0004 say _   "      /   \                                   /   \   "
+0005 say _   "     /     \                                 /     \  "
+0006 say _   "    B       C                               B       C "
+0007 say _   "   / \     /              2nd tree════►    / \     /  "
+0008 say _   "  D   E   F                               D   E   F   "
+0009 say _   " /       / \                             /       / \  "
+0010 say _   "G       H   I                           G       δ   I " ; say
+0011 #= 0;     done.= 0;   @.= 0                      /*initialize:  # (leaves), DONE., nodes*/
+0012 do t#=1  for 2;   call make_tree  t#;   end  /*define tree numbers  1  and  2.      */
+0013 z1= root.1;      L1= @.1.z1;    done.1.z1= 1     /*L1:    is a leaf on tree number  1.  */
+0014 z2= z1;          L2= @.2.z2;    done.2.z2= 1     /*L2:     " "   "   "   "     "    2.  */
+0015 do #%2                                        /*loop for the number of (tree) leaves.*/
+0016 if L1==L2  then do; if L1==0  then do; say  'The trees are equal.';    leave;  end
+0017 say 'The '     L1      " leaf is identical in both trees."
+0018 do until \done.1.z1;  z1=nxt(z1,1);  L1=@.1.z1; end;  done.1.z1=1
+0019 do until \done.2.z2;  z2=nxt(z2,2);  L2=@.2.z2; end;  done.2.z2=1
+0020 iterate
+0021 end
+0022 if L1==0   then say L2  'exceeds leaves in 1st tree'
+0023 if L2==0   then say L1  'exceeds leaves in 2nd tree'
+0024 say     'A difference is: '    L1    "¬="    L2;        leave
+0025 end   /*#%2*/
+0026 exit 0
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 nxt: procedure expose @.;   arg q,t;        next= .          /*find next node in tree.  */
+0029 if @.t.q._Lson\==0  &  @.t.q._Lson.vis==0          then /*L branch & not visited ? */
+0030 do;  next=@.t.q._Lson;  @.t.q._Lson.vis=1;  end      /* ──►next node; Lside done*/
+0031 if next==. & @.t.q._Rson\==0 & @.t.q._Rson.vis==0  then /*R branch & not visited ? */
+0032 do;  next=@.t.q._Rson;  @.t.q._Rson.vis=1;  end      /* ──►next node; Rside done*/
+0033 if next==.  then next= @.t.q._dad;     return next      /*father node; zero if done*/
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 make_node: parse arg name,t;    #= # + 1;    q= @.t.0 + 1 /*make new node/branch on tree*/
+0036 @.t.q= name;    @.t.q._Lson= 0;   @.t.0= q
+0037 @.t.q._dad= 0;  @.t.q._Rson= 0;     return q   /*number of node just created.*/
+0038 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0039 make_tree: procedure expose @. root. #; parse arg tree    /*construct a couple of trees.*/
+0040 a= make_node('A', tree);     root.tree= a;           hhh= substr('Hδ', tree, 1)
+0041 b= make_node('B', tree);     call son 'L', b, a, tree
+0042 c= make_node('C', tree);     call son 'R', c, a, tree
+0043 d= make_node('D', tree);     call son 'L', d, b, tree
+0044 e= make_node('E', tree);     call son 'R', e, b, tree
+0045 f= make_node('F', tree);     call son 'L', f, c, tree
+0046 g= make_node('G', tree);     call son 'L', g, d, tree
+0047 h= make_node(hhh, tree);     call son 'L', h, f, tree  /*quacks like a duck? */
+0048 i= make_node('I', tree);     call son 'R', i, f, tree;          return
+0049 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0050 son: procedure expose @.;  parse arg ?,son,dad,t;   LR= '_'?"SON";   @.t.son._dad= dad
+0051 q= @.t.dad.LR;          if q\==0  then do;   @.t.q._dad= son;   @.t.son.LR= q;    end
+0052 @.t.dad.LR= son;      return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 son              50
+002 dad              50
+003 t                50
+004 LR               50
+005 q                51
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           11 30 32 36 36 36 37 37 50 51 51 52
+002 _                -> newV2            2
+003 #                -> newV3            11 35
+004 ?                -> newV4            50

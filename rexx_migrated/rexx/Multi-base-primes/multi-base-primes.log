@@ -1,0 +1,61 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX pgm finds primes whose values in other bases (2──►36) have the most diff. bases. */
+0002 parse arg widths .                               /*obtain optional argument from the CL.*/
+0003 if widths=='' | widths==","  then widths= 5      /*Not specified?  Then use the default.*/
+0004 call genP                                        /*build array of semaphores for primes.*/
+0005 names= 'one two three four five six seven eight' /*names for some low decimal numbers.  */
+0006 $.=
+0007 do j=1  for #                                /*only use primes that are within range*/
+0008 do b=36  by -1  for 35;  n= base(@.j, b)  /*use different bases for each prime.  */
+0009 L= length(n);  if L>widths  then iterate  /*obtain length; Length too big?  Skip.*/
+0010 if L==1  then $.L.n= b  $.L.n             /*Length  =  unity?   Prepend the base.*/
+0011 else $.L.n= $.L.n  b             /*   "   ¬=    "       Append  "    "  */
+0012 end   /*b*/
+0013 end      /*j*/
+0014 /*display info for each of the widths. */
+0015 do w=1  for widths;             cnt= 0     /*show for each width: cnt,number,bases*/
+0016 bot= left(1, w, 0);    top= left(9, w, 9)      /*calculate range for DO. */
+0017 do n=bot  to top;     y= words($.w.n)  /*find the sets of numbers for a width.*/
+0018 if y>cnt  then do;  mxn=n;  cnt= max(cnt, y);  end  /*found a max? Remember it*/
+0019 end   /*n*/
+0020 say
+0021 say;  say center(' 'word(names, w)"─character numbers that are"      ,
+0022 'prime in the most bases: ('cnt      "bases) ",  101, '─')
+0023 do n=bot  to top;     y= words($.w.n)             /*search again for maximums.*/
+0024 if y==cnt  then say n  '──►'  strip($.w.n)        /*display  ───a─── maximum. */
+0025 end   /*n*/
+0026 end       /*w*/
+0027 exit 0                                           /*stick a fork in it,  we're all done. */
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 base: procedure; parse arg x,r,,z;               @= '0123456789abcdefghijklmnopqrsruvwxyz'
+0030 do j=1;  _= r**j;  if _>x  then leave
+0031 end   /*j*/
+0032 do k=j-1  to 1  by -1;   _= r**k;  z= z || substr(@, (x % _) + 1, 1);   x= x // _
+0033 end   /*k*/;                   return z || substr(@, x+1, 1)
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 genP: @.1=2;  @.2=3;  @.3=5;  @.4=7;  @.5=11     /*define some low primes.              */
+0036 #= 5;  sq.#= @.# ** 2     /*number primes so far;  prime squared.*/
+0037 do j=@.#+2  by 2  to 2 * 36 * 10**widths /*find odd primes from here on.        */
+0038 parse var  j   ''  -1  _;  if _==5  then iterate     /*J is ÷ by 5? (right dig).*/
+0039 if j//3==0  then iterate;  if j//7==0  then iterate  /*"  " " "  3?;  ÷ by  7?  */
+0040 do k=5  while sq.k<=j             /* [↓]  divide by the known odd primes.*/
+0041 if j//@.k==0  then iterate j      /*Is  J ÷ X?  Then not prime.     ___  */
+0042 end   /*k*/                       /* [↑]  only process numbers  ≤  √ J   */
+0043 #= # + 1;            @.#= j;  sq.#= j*j  /*bump # Ps; assign next P;  P squared.*/
+0044 end          /*j*/;           return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                38
+002 k                40
+003 sq.              43
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $.               -> newV1.           6 10
+002 @.               -> newV2.           35 35 35 35 43
+003 @                -> newV3            29
+004 _                -> newV4            30 32 38
+005 #                -> newV5            36 43

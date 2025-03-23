@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:34
+-------------------------------------------------------------------------
+0001 /*REXX program encodes a  URL  text,    blanks ──► +,    preserves  -._*    and   -._~  */
+0002 url.=;                              url.1= 'http://foo bar/'
+0003 url.2= 'mailto:"Ivan Aim" <ivan.aim@email.com>'
+0004 url.3= 'mailto:"Irma User" <irma.user@mail.com>'
+0005 url.4= 'http://foo.bar.com/~user-name/_subdir/*~.html'
+0006 do j=1  while url.j\=='';  say
+0007 say '  original: '             url.j
+0008 say '   encoded: '   URLencode(url.j)
+0009 end   /*j*/
+0010 exit                                             /*stick a fork in it,  we're all done. */
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 URLencode: procedure; parse arg $,,z;        t1= '-._~'              /*get args, null Z.*/
+0013 skip=0;                           t2= '-._*'
+0014 do k=1  for length($);   _=substr($, k, 1)       /*get a character. */
+0015 if skip\==0  then do;    skip=skip-1             /*skip t1 or t2 ?  */
+0016 iterate                 /*skip a character.*/
+0017 end
+0018 select
+0019 when datatype(_, 'A')    then z=z || _        /*is alphanumeric ?*/
+0020 when _==' '              then z=z'+'          /*is it  a  blank ?*/
+0021 when substr($, k, 4)==t1 |,                   /*is it  t1 or t2 ?*/
+0022 substr($, k, 4)==t2   then do;  skip=3   /*skip 3 characters*/
+0023 z=z || substr($, k, 4)
+0024 end
+0025 otherwise   z=z'%'c2x(_)                      /*special character*/
+0026 end   /*select*/
+0027 end      /*k*/
+0028 return z
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 url.             2 2 3 4 5
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

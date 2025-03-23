@@ -1,0 +1,19 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /*REXX program displays numbers  1 ──► 100  (some transformed) for the FizzBuzz problem.*/
+0002 
+0003 do j=1  for 100;  _=
+0004 if j//3 ==0  then _=_'Fizz'
+0005 if j//5 ==0  then _=_'Buzz'
+0006 /* if j//7 ==0  then _=_'Jazz' */                /* ◄─── note that this is a comment.   */
+0007 say right(word(_ j,1),8)
+0008 end   /*j*/                                   /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 j                3
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 _                -> newV1            3 4 5

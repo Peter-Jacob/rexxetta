@@ -1,0 +1,83 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX program cuts rectangles into two symmetric pieces,  the rectangles are cut along */
+0002 /*────────────────────────────────────────────────── unit dimensions and may be rotated.*/
+0003 numeric digits 40                                /*be able to handle some big integers. */
+0004 parse arg m .                                    /*obtain optional argument from the CL.*/
+0005 if m=='' | m==","  then m= 9                     /*Not specified?  Then use the default.*/
+0006 if m<0             then start= max(2, abs(m) )   /*<0? Then just use this size rectangle*/
+0007 else start=  2                /*start from two for regular invocation*/
+0008 dir.= 0;   dir.0.1= -1;   dir.1.0= -1;   dir.2.1= 1;   dir.3.0= 1    /*the 4 directions.*/
+0009 $= '# @. dir. h len next. w wp'
+0010 /*define the default for memoizations. */
+0011 do   y=start  to abs(m);  yOdd= y//2;  say /*calculate rectangles up to size  MxM.*/
+0012 do x=1  for y;    if x//2  then if yOdd  then iterate      /*X and Y odd?  Skip.*/
+0013 z= solve(y, x, 1);        zc= comma(z)   /*add commas to the result for  SOLVE. */
+0014 zca= right(zc, max(14,length(zc) ) )     /*align the output for better perusing.*/
+0015 say right(y, 9)   "x"    right(x, 2)     'rectangle can be cut'   zca   "way"s(z).
+0016 end   /*x*/
+0017 end     /*y*/
+0018 exit 0                                           /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 comma: procedure; arg ?;  do k=length(?)-3  to 1  by -3; ?=insert(',',?,k); end;  return ?
+0021 s:     if arg(1)=1  then return arg(3);     return word(arg(2) 's', 1)     /*pluralizer.*/
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 solve: procedure expose ($);  @.= 0                        /*zero rectangle coördinates.*/
+0024 parse arg h,w,recurse                               /*get values for some args.  */
+0025 if w==3  then do;      z= h % 2  + 2;      return 2**z  -  (z + z)  +  1
+0026 end
+0027 if h//2  then do;      t= w;    w= h;      h= t;           if h//2  then return 0
+0028 end
+0029 if w==1  then return 1
+0030 if w==2  then return h
+0031 if h==2  then return w                    /* [↓]   %  is REXX's integer division.*/
+0032 cy= h % 2;       cx= w % 2;     wp= w + 1 /*cut the  [XY]  rectangle in half.    */
+0033 len= (h+1) * wp - 1                       /*extend the area of the rectangle.    */
+0034 next.0= '-1';    next.1= -wp;   next.2= 1;    next.3= wp   /*direction & distance*/
+0035 if recurse  then #= 0                                      /*doing recursion ?   */
+0036 cywp= cy * wp                                              /*shortcut calculation*/
+0037 do x=cx+1  to  w-1;    t= cywp + x;      @.t= 1
+0038 __= len - t;           @.__= 1;          call walk cy - 1,  x
+0039 end   /*x*/
+0040 #= # + 1
+0041 if h==w  then #= # + #                    /*double the count of rectangle cuts.  */
+0042 else if w//2==0  then if recurse  then call solve w, h, 0
+0043 return #
+0044 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0045 walk:  procedure expose ($);           parse arg y,x
+0046 if y==h  then do;   #= # + 2;   return;   end  /* ◄──┐      REXX short circuit.  */
+0047 if x==0  then do;   #= # + 2;   return;   end  /* ◄──┤        "    "      "      */
+0048 if x==w  then do;   #= # + 2;   return;   end  /* ◄──┤        "    "      "      */
+0049 if y==0  then do;   #= # + 2;   return;   end  /* ◄──┤        "    "      "      */
+0050 q= y*wp + x;      @.q= @.q + 1;     _= len - q /*    │ordered by most likely ►──┐*/
+0051 @._= @._ + 1                                   /*    └──────────────────────────┘*/
+0052 do j=0  for 4;  _= q + next.j    /*try each of the four directions.*/
+0053 if @._==0  then do;      yn= y + dir.j.0
+0054 if yn==h  then do;   #= # + 2;   iterate;   end
+0055 xn= x + dir.j.1
+0056 if xn==0  then do;   #= # + 2;   iterate;   end
+0057 if xn==w  then do;   #= # + 2;   iterate;   end
+0058 if yn==0  then do;   #= # + 2;   iterate;   end
+0059 call walk  yn, xn
+0060 end
+0061 end   /*j*/
+0062 @.q= @.q - 1;                 _= len - q;          @._= @._ - 1;           return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 y                45
+002 x                45
+003 q                50
+004 j                52
+005 yn               53
+006 xn               55
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           23 37 38 50 51 62 62
+002 __               -> newV2            38
+003 $                -> newV3            9
+004 ?                -> newV4            20
+005 #                -> newV5            35 40 41 46 47 48 49 54 56 57 58
+006 _                -> newV6            50 52 62

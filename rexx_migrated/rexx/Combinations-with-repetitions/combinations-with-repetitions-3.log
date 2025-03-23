@@ -1,0 +1,73 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX compute (and show) combination sets for nt things in ns places*/
+0002 Numeric Digits 20
+0003 debug=0
+0004 Call time 'R'
+0005 Call IcombN 3,2,'iced,jam,plain'  /* The 1st part of the task      */
+0006 Call IcombN -10,3,'iced,jam,plain,d,e,f,g,h,i,j' /* 2nd part       */
+0007 Call IcombN -10,9,'iced,jam,plain,d,e,f,g,h,i,j' /* extra part     */
+0008 Say time('E') 'seconds'
+0009 Exit
+0010 
+0011 IcombN: Procedure Expose thing. debug
+0012 Parse Arg nt,ns,thinglist
+0013 tell=nt>0
+0014 nt=abs(nt)
+0015 Say '------------' nt 'doughnut selection taken' ns 'at a time:'
+0016 If tell=0 Then
+0017 Say ' list output suppressed'
+0018 Do i=1 By 1 While thinglist>''
+0019 Parse Var thinglist thing.i ',' thinglist /* assign things.      */
+0020 End
+0021 index.=1
+0022 cmb=0
+0023 Call show
+0024 i=ns+1
+0025 Do While i>1
+0026 i=i-1
+0027 Do j=1 By 1 While index.i<nt
+0028 index.i=index.i+1
+0029 Call show
+0030 End
+0031 i1=i-1
+0032 If index.i1<nt Then Do
+0033 index.i1=index.i1+1
+0034 Do ii=i To ns
+0035 index.ii=index.i1
+0036 End
+0037 Call show
+0038 i=ns+1
+0039 End
+0040 If index.1=nt Then Leave
+0041 End
+0042 Say cmb
+0043 Return
+0044 
+0045 show: Procedure Expose ns index. thing. tell cmb
+0046 cmb=cmb+1
+0047 If tell Then Do
+0048 l=''
+0049 Do i=1 To ns
+0050 j=index.i
+0051 l=l thing.j
+0052 End
+0053 Say l
+0054 End
+0055 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 thinglist        19 19
+002 thing.           19
+003 index.           21 28 33 35
+004 cmb              22 46
+005 i                24 26 38 49
+006 j                27 50
+007 i1               31
+008 ii               34
+009 l                48 51
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

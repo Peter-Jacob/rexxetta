@@ -1,0 +1,62 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX pgm draws a Sierpinski triangle by running the  chaos game  with a million points*/
+0002 parse value  scrsize()   with  sd  sw  .         /*obtain the depth and width of screen.*/
+0003 sw= sw - 2                                       /*adjust the screen width down by two. */
+0004 sd= sd - 4                                       /*   "    "     "   depth   "   " four.*/
+0005 parse arg pts chr seed .                         /*obtain optional arguments from the CL*/
+0006 if pts=='' | pts==","  then pts= 1000000         /*Not specified?  Then use the default.*/
+0007 if chr=='' | chr==","  then chr= '∙'             /* "      "         "   "   "      "   */
+0008 if datatype(seed,'W')  then call random ,,seed   /*Is  specified?    "   "  RANDOM seed.*/
+0009 x= sw;       hx= x % 2;     y= sd                /*define the initial starting position.*/
+0010 @.= ' '                                          /*   "   all screen points as a blank. */
+0011 do pts;  ?= random(1, 3)                 /* [↓]  draw a # of (million?)  points.*/
+0012 select                    /*?:  will be a random number: 1 ──► 3.*/
+0013 when ?==1  then parse value          x%2          y%2   with   x  y
+0014 when ?==2  then parse value  hx+(hx-x)%2  sd-(sd-y)%2   with   x  y
+0015 otherwise       parse value  sw-(sw-x)%2          y%2   with   x  y
+0016 end   /*select*/
+0017 @.x.y= chr                               /*set the    X, Y    point to a bullet.*/
+0018 end   /*pts*/                            /* [↑]  one million points ≡ overkill? */
+0019 /* [↓]  display the points to the term.*/
+0020 do      row=sd   to 0  by -1;   _=       /*display the points, one row at a time*/
+0021 do col=0   for sw+2                 /*   "     a  row (one line) of image. */
+0022 _= _ || @.col.row                   /*construct a  "    "    "    "   "    */
+0023 end   /*col*/                       /*Note: display image from top──►bottom*/
+0024 /* [↑]  strip trailing blanks (output).*/
+0025 say strip(_, 'T')                        /*display one row (line) of the image. */
+0026 end        /*row*/                       /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pts              5 6
+002 chr              5 7
+003 seed             5
+004 x                9 13 14 15
+005 hx               9
+006 y                9 13 14 15
+007 NORMAL.7         
+008 NORMAL.8         
+009 NORMAL.9         
+010 NORMAL.10        
+011 NORMAL.11        
+012 NORMAL.12        
+013 NORMAL.13        
+014 NORMAL.14        
+015 NORMAL.15        
+016 NORMAL.16        
+017 sd               2 4
+018 sw               2 3
+019 NORMAL.19        
+020 NORMAL.20        
+021 NORMAL.21        
+022 NORMAL.22        
+023 row              20
+024 col              21
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           10 17
+002 ?                -> newV2            11
+003 _                -> newV3            20 22

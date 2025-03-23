@@ -1,0 +1,71 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:31
+-------------------------------------------------------------------------
+0001 Call time 'R'
+0002 Do s=2 To 100
+0003 a=satisfies_statement3(s)
+0004 If a>0 Then Do
+0005 p=a*(s-a)
+0006 Say a'/'||(s-a) 's='s 'p='p
+0007 End
+0008 End
+0009 Say 'Elapsed time:' time('E') 'seconds'
+0010 Exit
+0011 
+0012 satisfies_statement1: Procedure
+0013 Parse Arg s
+0014 Do a=2 To s/2
+0015 If is_prime(a) & is_prime(s-a) Then
+0016 Return 0
+0017 End
+0018 Return 1
+0019 
+0020 satisfies_statement2: Procedure
+0021 Parse Arg p
+0022 winner=0
+0023 Do i=2 By 1 While i**2<p
+0024 If p//i=0 Then Do
+0025 j=p%i
+0026 If 2<=j & j<=99 Then Do
+0027 if satisfies_statement1(i+j) Then Do
+0028 if winner Then
+0029 Return 0
+0030 winner=1
+0031 End
+0032 End
+0033 End
+0034 End
+0035 Return winner
+0036 
+0037 satisfies_statement3: Procedure
+0038 Parse Arg s
+0039 winner=0
+0040 If satisfies_statement1(s)=0 Then
+0041 Return 0
+0042 Do a=2 To s/2
+0043 b=s-a
+0044 If satisfies_statement2(a*b) Then Do
+0045 If winner>0 Then
+0046 Return 0
+0047 winner=a
+0048 End
+0049 End
+0050 Return winner
+0051 
+0052 is_prime: Procedure
+0053 call Trace 'O'
+0054 Parse Arg x
+0055 If x<=3 Then Return 1
+0056 i=2
+0057 Do i=2 By 1 While i**2<=x
+0058 If datatype(x/i,'W') Then Return 0
+0059 End
+0060 Return 1
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                54
+002 i                56 57
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

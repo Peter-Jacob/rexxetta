@@ -1,0 +1,65 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program lists a sequence  (or a count)  of  ──safe──   or   ──unsafe──   primes. */
+0002 parse arg N kind _ . 1 . okind;     upper kind   /*obtain optional arguments from the CL*/
+0003 if N=='' | N==","  then N= 35                    /*Not specified?   Then assume default.*/
+0004 if kind=='' | kind==","  then kind= 'SAFE'       /* "      "          "     "      "    */
+0005 if _\==''                             then call ser 'too many arguments specified.'
+0006 if kind\=='SAFE'  &  kind\=='UNSAFE'  then call ser 'invalid 2nd argument: '   okind
+0007 if kind =='UNSAFE'  then safe= 0;  else safe= 1  /*SAFE  is a binary value for function.*/
+0008 w = linesize() - 1                               /*obtain the usable width of the term. */
+0009 tell= (N>0);    @.=;    N= abs(N)                /*N is negative?   Then don't display. */
+0010 !.=0;   !.1=2;  !.2=3;  !.3=5;  !.4=7;  !.5=11;  !.6=13;  !.7=17;  !.8=19;    #= 8
+0011 @.='';  @.2=1;  @.3=1;  @.5=1;  @.7=1;  @.11=1;  @.13=1;  @.17=1;  @.19=1;    start= # + 1
+0012 m= 0;                         lim=0              /*#  is the number of low primes so far*/
+0013 $=;     do i=1  for #   while lim<=N;  j= !.i    /* [↓]  find primes, and maybe show 'em*/
+0014 call safeUnsafe;      $= strip($)        /*go see if other part of a KIND prime.*/
+0015 end   /*i*/                              /* [↑]  allows faster loop (below).    */
+0016 /* [↓]  N:  default lists up to 35 #'s.*/
+0017 do j=!.#+2  by 2  while  lim<N                /*continue on with the next odd prime. */
+0018 if j // 3 == 0  then iterate                  /*is this integer a multiple of three? */
+0019 parse var  j    ''  -1  _                     /*obtain the last decimal digit of  J  */
+0020 if _      == 5  then iterate                  /*is this integer a multiple of five?  */
+0021 if j // 7 == 0  then iterate                  /* "   "     "    "     "     " seven? */
+0022 if j //11 == 0  then iterate                  /* "   "     "    "     "     " eleven?*/
+0023 if j //13 == 0  then iterate                  /* "   "     "    "     "     "  13 ?  */
+0024 if j //17 == 0  then iterate                  /* "   "     "    "     "     "  17 ?  */
+0025 if j //19 == 0  then iterate                  /* "   "     "    "     "     "  19 ?  */
+0026 /* [↓]  divide by the primes.   ___    */
+0027 do k=start  to #  while !.k * !.k<=j /*divide  J  by other primes ≤ √ J     */
+0028 if j // !.k ==0   then iterate j     /*÷ by prev. prime?  ¬prime     ___    */
+0029 end   /*k*/                          /* [↑]   only divide up to     √ J     */
+0030 #= # + 1                                      /*bump the count of number of primes.  */
+0031 !.#= j;                     @.j= 1            /*define a prime  and  its index value.*/
+0032 call safeUnsafe                               /*go see if other part of a KIND prime.*/
+0033 end   /*j*/
+0034 /* [↓]  display number of primes found.*/
+0035 if $\==''  then say $                            /*display any residual primes in $ list*/
+0036 say
+0037 if tell  then say commas(m)' '     kind    "primes found."
+0038 else say commas(m)' '     kind    "primes found below or equal to "    commas(N).
+0039 exit                                             /*stick a fork in it,  we're all done. */
+0040 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0041 add: m= m+1; lim= m; if \tell & j>N  then do; lim= j; m= m-1; end; else call app; return 1
+0042 app: if tell  then if length($ j)>w  then do;  say $; $ =j;   end; else $= $ j;   return 1
+0043 ser: say;  say;  say '***error***' arg(1);  say;  say;  exit 13   /*tell error message. */
+0044 commas: parse arg _;  do jc=length(_)-3  to 1  by -3; _=insert(',', _, jc); end;  return _
+0045 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0046 safeUnsafe: ?= (j-1) % 2                         /*obtain the other part of KIND prime. */
+0047 if safe  then if @.? == ''  then return 0             /*not a    safe prime.*/
+0048 else return add()         /*is  "      "    "   */
+0049 else if @.? == ''  then return add()         /*is  an unsafe prime.*/
+0050 else return 0             /*not  "   "      "   */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 jc               44
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           9 11 11 11 11 11 11 11 11 11 31
+002 !.               -> newV2.           10 10 10 10 10 10 10 10 10 31
+003 _                -> newV3            2 19 44 44
+004 #                -> newV4            10 30
+005 $                -> newV5            13 14 42

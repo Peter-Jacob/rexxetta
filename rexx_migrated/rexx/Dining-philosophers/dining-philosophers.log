@@ -1,0 +1,65 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates a solution in solving the  dining philosophers problem.     */
+0002 signal on halt                                   /*branches to  HALT:   (on Ctrl─break).*/
+0003 parse arg seed diners                            /*obtain optional arguments from the CL*/
+0004 if datatype(seed, 'W')  then call random ,, seed /*this allows for random repeatability.*/
+0005 if diners= ''           then diners = 'Aristotle, Kant, Spinoza, Marx, Russell'
+0006 tell= left(seed, 1) \== '+'                    /*Leading + in SEED? Then no statistics*/
+0007 diners= space( translate(diners, , ',') )        /*change to an uncommatized diners list*/
+0008 #= words(diners);      @.=   0              /*#: the number of dining philosophers.*/
+0009 eatL= 15;               eatH=  60              /*minimum & maximum minutes for eating.*/
+0010 thinkL= 30;             thinkH= 180              /*   "    "    "       "     " thinking*/
+0011 forks.=  1                                       /*indicate that all forks are on table.*/
+0012 do tic=1         /*'til halted.*/    /*use  "minutes"  for time advancement.*/
+0013 call grabForks                       /*determine if anybody can grab 2 forks*/
+0014 call passTime                        /*handle philosophers eating|thinking. */
+0015 end   /*tic*/                        /*     ··· and time marches on ···     */
+0016 /* [↓]    this REXX program was halted,*/
+0017 halt: say '  ··· REXX program halted!'           /*probably by Ctrl─Break or equivalent.*/
+0018 exit                                             /*stick a fork in it,  we're all done. */
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 fork: parse arg x 1 ox;  x= abs(x) ;  L= x - 1 ;  if L==0  then L= # /*use "round Robin"*/
+0021 if ox<0  then do;  forks.L= 1;  forks.x=1;  return;  end       /*drop the forks.  */
+0022 got2= forks.L  &  forks.x                                      /*get 2 forks │ not*/
+0023 if got2  then do;  forks.L= 0;  forks.x=0;           end       /*obtained 2 forks */
+0024 return got2                                /*return with success  ··· or failure. */
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 grabForks:   do person=1  for  #                 /*see if any person can grab two forks.*/
+0027 if @.person.state\==0  then iterate /*this diner ain't in a waiting state. */
+0028 if \fork(person)       then iterate /*  "    "   didn't grab two forks.    */
+0029 @.person.state= 'eating'            /*  "    "   is slurping spaghetti.    */
+0030 @.person.dur= random(eatL, eatH)    /*how long will this diner eat pasta ? */
+0031 end   /*person*/                    /* [↑]  process the dining philosophers*/
+0032 return                                 /*all the diners have been examined.   */
+0033 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0034 passTime: if tell  then say                      /*display a handy blank line separator.*/
+0035 do p=1  for #                        /*handle each of the diner's activity. */
+0036 if tell  then say  right(tic, 9, .)           right( word( diners, p), 20),
+0037 right(word(@.p.state 'waiting',1+(@.p.state==0)),9) right(@.p.dur,5)
+0038 if @.p.dur==0   then iterate         /*this diner is waiting for two forks. */
+0039 @.p.dur= @.p.dur - 1                 /*indicate single time unit has passed.*/
+0040 if @.p.dur\==0  then iterate         /*Activity done?   No, then keep it up.*/
+0041 if @.p.state=='eating'  then do                      /*now, leave the table.*/
+0042 call fork  -p           /*drop the darn forks. */
+0043 @.p.state= 'thinking'                 /*status.*/
+0044 @.p.dur= random(thinkL, thinkH)       /*length.*/
+0045 end     /* [↓]  a diner goes   ──►  the table. */
+0046 else if  @.p.state=='thinking'  then @.p.state=0
+0047 end   /*p*/                          /*[↑]  P (person)≡ dining philosophers.*/
+0048 return                                 /*now, have some human beans grab forks*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                20 20
+002 ox               20
+003 L                20 20
+004 forks.           21 21 23 23
+005 got2             22
+006 p                35
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           8 29 30 39 43 44
+002 #                -> newV2            8

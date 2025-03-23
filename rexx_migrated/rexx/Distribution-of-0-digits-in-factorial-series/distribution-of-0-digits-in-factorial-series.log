@@ -1,0 +1,47 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:11
+-------------------------------------------------------------------------
+0001 /*REXX program computes the mean of the proportion of "0" digits a series of factorials.*/
+0002 parse arg $                                      /*obtain optional arguments from the CL*/
+0003 if $='' | $=","  then $= 100 1000 10000          /*not specified?  Then use the default.*/
+0004 #= words($)                                      /*the number of ranges to be used here.*/
+0005 numeric digits 100                               /*increase dec. digs, but only to 100. */
+0006 big= word($, #);  != 1                           /*obtain the largest number in ranges. */
+0007 do i=1  for big  /*calculate biggest  !  using 100 digs.*/
+0008 != ! * i         /*calculate the factorial of  BIG.     */
+0009 end   /*i*/
+0010 if pos('E', !)>0  then do                        /*In exponential format?  Then get EXP.*/
+0011 parse var !  'E'  x       /*parse the exponent from the number.  */
+0012 numeric digits    x+1     /*set the decimal digits to  X  plus 1.*/
+0013 end                       /* [↑]  the  +1  is for the dec. point.*/
+0014 
+0015 title= ' mean proportion of zeros in the (decimal) factorial products for  N'
+0016 say '     N     │'center(title, 80)              /*display the title for the output.    */
+0017 say '───────────┼'center(""   , 80, '─')         /*   "     a   sep   "   "     "       */
+0018 
+0019 do j=1  for #;  n= word($, j)                  /*calculate some factorial ranges.     */
+0020 say center( commas(n), 11)'│' left(0dist(n), 75)...    /*show results for above range.*/
+0021 end   /*j*/
+0022 
+0023 say '───────────┴'center(""   , 80, '─')         /*display a foot sep for the output.   */
+0024 exit 0                                           /*stick a fork in it,  we're all done. */
+0025 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0026 commas: parse arg ?;  do jc=length(?)-3  to 1  by -3; ?=insert(',', ?, jc); end;  return ?
+0027 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0028 0dist:  procedure; parse arg z;        != 1;         y= 0
+0029 do k=1  for z;    != ! * k;     y= y   +   countstr(0, !) / length(!)
+0030 end   /*k*/
+0031 return y/z
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 z                28
+002 y                28 29
+003 k                29
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $                -> newV1            2 3
+002 #                -> newV2            4
+003 !                -> newV3            6 8 11 28 29
+004 ?                -> newV4            26 26

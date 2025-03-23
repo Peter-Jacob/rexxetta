@@ -1,0 +1,51 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX program displays a list,  then prompts the user for a selection number (integer).*/
+0002 do forever                               /*keep prompting until response is OK. */
+0003 call list_create                         /*create the list from scratch.        */
+0004 call list_show                           /*display (show)  the list to the user.*/
+0005 if #==0   then return ''                 /*if list is empty,  then return  null.*/
+0006 say right(' choose an item by entering a number from 1 ───►' #, 70, '═')
+0007 parse pull x                             /*get the user's choice  (if any).     */
+0008 
+0009 select
+0010 when x=''              then call sayErr  "a choice wasn't entered"
+0011 when words(x)\==1      then call sayErr  'too many choices entered:'
+0012 when \datatype(x,'N')  then call sayErr  "the choice isn't numeric:"
+0013 when \datatype(x,'W')  then call sayErr  "the choice isn't an integer:"
+0014 when x<1 | x>#         then call sayErr  "the choice isn't within range:"
+0015 otherwise              leave       /*this leaves the    DO FOREVER   loop.*/
+0016 end   /*select*/
+0017 end         /*forever*/
+0018 /*user might've entered   2.  or  003  */
+0019 x=x/1                                            /*normalize the number (maybe).        */
+0020 say;  say 'you chose item' x": " #.x
+0021 return #.x                                       /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 list_create:   #.1= 'fee fie'                    /*this is one method for list-building.*/
+0024 #.2= 'huff and puff'
+0025 #.3= 'mirror mirror'
+0026 #.4= 'tick tock'
+0027 #=4                               /*store the number of choices in   #   */
+0028 return                            /*(above)  is just one convention.     */
+0029 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0030 list_show:     say                               /*display a blank line.                */
+0031 do j=1  for #              /*display the list of choices.         */
+0032 say '[item'   j"]   " #.j  /*display item number with its choice. */
+0033 end   /*j*/
+0034 say                               /*display another blank line.          */
+0035 return
+0036 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0037 sayErr:        say;         say  '***error***'  arg(1)  x;          say;            return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 pull             7
+002 x                7 19
+003 j                31
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #.               -> newV1.           24 25 26
+002 #                -> newV2            27

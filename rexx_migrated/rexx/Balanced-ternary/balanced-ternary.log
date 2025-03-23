@@ -1,0 +1,78 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:06
+-------------------------------------------------------------------------
+0001 /*REXX program converts decimal  ◄───►  balanced ternary;  it also performs arithmetic. */
+0002 numeric digits 10000                             /*be able to handle  gihugic  numbers. */
+0003 Ao = '+-0++0+' ;    Abt =      Ao                /*   [↓]  2 literals used by subroutine*/
+0004 Bo =    '-436' ;    Bbt = d2bt(Bo);                    @ = "(decimal)"
+0005 Co =   '+-++-' ;    Cbt =      Co ;                   @@ = "balanced ternary ="
+0006 call btShow  '[a]',       Abt
+0007 call btShow  '[b]',       Bbt
+0008 call btShow  '[c]',       Cbt
+0009 say;                      $bt = btMul(Abt, btSub(Bbt, Cbt) )
+0010 call btShow '[a*(b-c)]',  $bt
+0011 exit 0                                           /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 d2bt: procedure; parse arg x 1;  x= x / 1;    p= 0;  $.= '-';   $.1= "+";   $.0= 0;     #=
+0014 do  until x==0;           _= (x // (3** (p+1) ) )  %  3**p
+0015 if _== 2  then _= -1
+0016 else if _== -2  then _= 1
+0017 x= x  -  _ * (3**p);      p= p + 1;                     #= $._  ||  #
+0018 end   /*until*/;          return #
+0019 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0020 bt2d: procedure; parse arg x;  r= reverse(x);  $.= -1;  $.0= 0;  #= 0;    _= '+';   $._= 1
+0021 do j=1  for length(x);  _= substr(r, j, 1);  #= #  +  $._ * 3 ** (j-1)
+0022 end   /*j*/;                         return #
+0023 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0024 btAdd: procedure; parse arg x,y;    rx= reverse(x);      ry= reverse(y);          carry= 0
+0025 @.= 0;   _= '-';   @._= -1;   _= "+";  @._= 1;  $.= '-';   $.0= 0;   $.1= "+";   #=
+0026 do j=1  for max( length(x), length(y) )
+0027 x_= substr(rx, j, 1);            xn= @.x_
+0028 y_= substr(ry, j, 1);            yn= @.y_
+0029 s= xn + yn + carry;           carry= 0
+0030 if s== 2  then do;   s=-1;    carry= 1;    end
+0031 if s== 3  then do;   s= 0;    carry= 1;    end
+0032 if s==-2  then do;   s= 1;    carry=-1;    end
+0033 #= $.s || #
+0034 end   /*j*/
+0035 if carry\==0  then #= $.carry || #;                      return btNorm(#)
+0036 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0037 btMul: procedure; parse arg x 1 x1 2, y 1 y1 2; if x==0 | y==0  then return 0;  S= 1;  P=0
+0038 x= btNorm(x); y= btNorm(y); Lx= length(x); Ly= length(y)  /*handle: 0-xxx values.*/
+0039 if x1=='-'  then do;   x= btNeg(x);   S= -S;   end        /*positate the number. */
+0040 if y1=='-'  then do;   y= btNeg(y);   S= -S;   end        /*    "     "    "     */
+0041 if Ly>Lx    then parse value  x y  with  y x              /*optimize  "    "     */
+0042 do   until  y==0    /*keep adding 'til done*/
+0043 P= btAdd(P,  x )    /*multiple the hard way*/
+0044 y= btSub(y, '+')    /*subtract  1  from  Y.*/
+0045 end   /*until*/
+0046 if S==-1  then P= btNeg(P);  return P       /*adjust the product's sign;  return.*/
+0047 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0048 btNeg:  return translate( arg(1), '-+', "+-")                    /*negate bal_ternary #.*/
+0049 btNorm: _= strip(arg(1), 'L', 0);  if _==''  then _=0;  return _ /*normalize the number.*/
+0050 btSub:  return btAdd( arg(1), btNeg( arg(2) ) )                  /*subtract two BT args.*/
+0051 btShow: say center( arg(1), 9)  right( arg(2), 20)  @@  right( bt2d(arg(2)), 9) @;  return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                37 38 39 41
+002 x1               37
+003 y                37 38 40 41 44
+004 y1               37
+005 S                37 39 40
+006 P                37 43 46
+007 Lx               38
+008 Ly               38
+009 y_               28
+010 yn               28
+011 until            42
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $bt              -> newV1            9
+002 @@               -> newV2            5
+003 $.               -> newV3.           13 13 13 20 20 20 25 25 25
+004 @.               -> newV4.           25 25 25
+005 @                -> newV5            4
+006 #                -> newV6            13 17 20 21 25 33 35
+007 _                -> newV7            14 15 20 21 25 25 49

@@ -1,0 +1,76 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:28
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates a method of    set consolidating    using some sample sets. */
+0002 @.=;               @.1 = '{A,B}     {C,D}'
+0003 @.2 = "{A,B}     {B,D}"
+0004 @.3 = '{A,B}     {C,D}     {D,B}'
+0005 @.4 = '{H,I,K}   {A,B}     {C,D}     {D,B}     {F,G,H}'
+0006 @.5 = '{snow,ice,slush,frost,fog} {icebergs,icecubes} {rain,fog,sleet}'
+0007 
+0008 do j=1  while @.j\==''                /*traipse through each of sample sets. */
+0009 call SETconsolidate @.j               /*have the function do the heavy work. */
+0010 end   /*j*/
+0011 exit 0                                           /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 isIn:  return wordpos(arg(1), arg(2))\==0        /*is (word) argument 1 in the set arg2?*/
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 SETconsolidate: procedure;  parse arg old;       #= words(old);       new=
+0016 say ' the old set='  space(old)
+0017 
+0018 do k=1  for #                           /* [↓]  change all commas to a blank.  */
+0019 !.k= translate( word(old, k), , '},{')  /*create a list of words  (aka, a set).*/
+0020 end   /*k*/                             /* [↑]  ··· and also remove the braces.*/
+0021 
+0022 do  until \changed;     changed= 0      /*consolidate some sets  (well, maybe).*/
+0023 do set=1  for #-1
+0024 do item=1  for words(!.set);       x= word(!.set, item)
+0025 do other=set+1  to #
+0026 if isIn(x, !.other)  then do;  changed= 1           /*it's changed*/
+0027 !.set= !.set !.other;       !.other=
+0028 iterate set
+0029 end
+0030 end   /*other*/
+0031 end       /*item */
+0032 end           /*set  */
+0033 end                /*until ¬changed*/
+0034 
+0035 do set=1  for #;                  $=                            /*elide dups*/
+0036 do items=1  for words(!.set);   x= word(!.set, items)
+0037 if x==','  then iterate;        if x==''  then leave
+0038 $= $ x                                                        /*build new.*/
+0039 do  until  \isIn(x, !.set);      _= wordpos(x, !.set)
+0040 _= wordpos(x, !.set)
+0041 !.set= subword(!.set, 1, _-1) ',' subword(!.set, _+1)  /*purify set*/
+0042 end   /*until ¬isIn ··· */
+0043 end          /*items*/
+0044 !.set= translate( strip($), ',', " ")
+0045 end            /*set*/
+0046 
+0047 do i=1  for #; if !.i==''  then iterate /*ignore any  set  that is a null set. */
+0048 new= space(new   '{'!.i"}")             /*prepend and append a set identifier. */
+0049 end   /*i*/
+0050 
+0051 say ' the new set='  new;         say
+0052 return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 old              15
+002 new              15 48
+003 k                18
+004 changed          22 26
+005 set              23 35
+006 item             24
+007 x                24 36
+008 other            25
+009 items            36
+010 i                47
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 2 3 4 5 6
+002 !.               -> newV2.           19 27 27 41 44
+003 #                -> newV3            15
+004 $                -> newV4            35 38
+005 _                -> newV5            39 40

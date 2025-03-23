@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Test program to compare Versions 1 and 2
+0003 * (the latter tweaked to be acceptable by my (oo)Rexx
+0004 * and to give the same output.)
+0005 * version 1 was extended to accept the strings of the incorrect flag
+0006 * 22.05.2013 Walter Pachl (I won't analyze the minor differences)
+0007 * 25.05.2013 I did now analyze and had to discover that
+0008 *            'my' log routine is apparently incorrect
+0009 * 25.05.2013 problem identified & corrected
+0010 *********************************************************************/
+0011 Call both '1223334444'
+0012 Call both '1223334444555555555'
+0013 Call both '122333'
+0014 Call both '1227774444'
+0015 Call both 'aaBBcccDDDD'
+0016 Call both '1234567890abcdefghijklmnopqrstuvwxyz'
+0017 Exit
+0018 both:
+0019 Parse Arg s
+0020 Call entropy  s
+0021 Call entropy2 s
+0022 Say ' '
+0023 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 s                19
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

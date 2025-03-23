@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:20
+-------------------------------------------------------------------------
+0001 /*REXX program demonstrates several versions of  DO  loops with  "unusual"  iterations. */
+0002 @.=;      @.1=  '  -2      2       1  '      /*"normal".                                */
+0003 @.2=  '  -2      2       0  '      /*"normal",                zero  increment.*/
+0004 @.3=  '  -2      2      -1  '      /*increases away from stop, neg  increment.*/
+0005 @.4=  '  -2      2      10  '      /*1st increment > stop, positive increment.*/
+0006 @.5=  '   2     -2       1  '      /*start > stop,         positive increment.*/
+0007 @.6=  '   2      2       1  '      /*start equals stop,    positive increment.*/
+0008 @.7=  '   2      2      -1  '      /*start equals stop,    negative increment.*/
+0009 @.8=  '   2      2       0  '      /*start equals stop,       zero  increment.*/
+0010 @.9=  '   0      0       0  '      /*start equals stop,       zero  increment.*/
+0011 zLim= 10                                     /*a limit to check for runaway (race) loop.*/
+0012 /*a zero increment is not an error in REXX.*/
+0013 do k=1  while  @.k\==''                    /*perform a  DO  loop with several ranges. */
+0014 parse var   @.k    x  y  z  .              /*obtain the three values for a DO loop.   */
+0015 say
+0016 say center('start of performing DO loop number '   k   " with range: "  x y z,  79, '═')
+0017 zz= 0
+0018 do  j=x   to y   by z   until zz>=zLim           /* ◄───  perform the  DO  loop.*/
+0019 say '   j ───►'  right(j, max(3, length(j) ) )   /*right justify J for alignment*/
+0020 if z==0  then zz= zz + 1                         /*if zero inc, count happenings*/
+0021 end   /*j*/
+0022 
+0023 if zz>=zLim  then say 'the DO loop for the '    k    " entry was terminated (runaway)."
+0024 say center(' end  of performing DO loop number '   k   " with range: "  x y z,  79, '─')
+0025 say
+0026 end         /*k*/                              /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                14
+002 y                14
+003 z                14
+004 zz               17 20
+005 j                18
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 2 3 4 5 6 7 8 9 10 14

@@ -1,0 +1,18 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:09
+-------------------------------------------------------------------------
+0001 /*REXX pgm  demonstrates  writing records  to an attached magnetic tape.*/
+0002 dsName = 'TAPE.FILE'                   /*dsName of "file" being written.*/
+0003 
+0004 do j=1  for 100              /*write 100 records to mag tape. */
+0005 call lineout  dsName,  'this is record'   j   ||   "."
+0006 end   /*j*/
+0007 /*stick a fork in it, we're done.*/
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 dsName           2
+002 j                4
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

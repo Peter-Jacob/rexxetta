@@ -1,0 +1,98 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:29
+-------------------------------------------------------------------------
+0001 /*REXX program solves a  Numbrix (R) puzzle, it also displays the puzzle and solution.  */
+0002 maxR=   0;     maxC=   0;          maxX=   0;    /*define  maxR,  maxC,  and  maxX.     */
+0003 minR= 9e9;     minC= 9e9;          minX= 9e9;    /*   "    minR,  minC,   "   minX.     */
+0004 cells=  0                                        /*the number of cells  (so far).       */
+0005 parse arg xxx                                    /*get the cell definitions from the CL.*/
+0006 xxx=translate(xxx,  ',,,,,'  ,  "/\;:_")         /*also allow other characters as comma.*/
+0007 @.=
+0008 do  while xxx\='';       parse var  xxx    r c   marks  ','  xxx
+0009 do  while marks\='';               _=@.r.c
+0010 parse var marks  x  marks
+0011 if datatype(x, 'N')  then x= abs(x) / 1                /*normalize  │x│  */
+0012 minR= min(minR, r);       minC= min(minC, c)           /*find min R and C*/
+0013 maxR= max(maxR, r);       maxC= max(maxC, c)           /*  "  max "  "  "*/
+0014 if x==1    then do;   !r= r;   !c= c                   /*the START cell. */
+0015 end
+0016 if _\==''  then call err  "cell at"  r  c  'is already occupied with:'  _
+0017 @.r.c= x;       c=  c +1;           cells= cells + 1   /*assign a mark.  */
+0018 if x==.              then iterate                      /*is a hole?  Skip*/
+0019 if \datatype(x,'W')  then call err  'illegal marker specified:'    x
+0020 minX= min(minX, x);  maxX= max(maxX, x)                /*min  &  max   X.*/
+0021 end   /*while marks\='' */
+0022 end       /*while xxx  \='' */
+0023 call show                                        /* [↓]  is used for making fast moves. */
+0024 Nr = '0  1   0  -1    -1   1   1  -1'            /*possible  row     for the next move. */
+0025 Nc = '1  0  -1   0     1  -1   1  -1'            /*   "      column   "   "    "    "   */
+0026 pMoves= words(Nr)   -   4                        /*is this to be a Numbrix puzzle ?     */
+0027 
+0028 do i=1  for pMoves;    Nr.i= word(Nr, i);    Nc.i= word(Nc, i)   /*for fast moves. */
+0029 end   /*i*/
+0030 say
+0031 if \next(2, !r, !c)  then call err   'No solution possible for this Numbrix puzzle.'
+0032 say 'A solution for the Numbrix puzzle exists.';          say;          call show
+0033 exit                                             /*stick a fork in it,  we're all done. */
+0034 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0035 err:  say;   say '***error*** (from Numbrix puzzle): '    arg(1);       say;       exit 13
+0036 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0037 next: procedure expose @. Nr. Nc. cells pMoves;  parse arg #,r,c;       ##= # + 1
+0038 do t=1  for pMoves                                      /* [↓]  try some moves. */
+0039 parse value   r+Nr.t  c+Nc.t    with   nr  nc           /*next move coördinates.*/
+0040 if @.nr.nc==.  then do;                  @.nr.nc= #     /*let's try this move.  */
+0041 if #==cells          then return 1  /*is this the last move?*/
+0042 if next(##, nr, nc)  then return 1
+0043 @.nr.nc=.                           /*undo the above move.  */
+0044 iterate                             /*go & try another move.*/
+0045 end
+0046 if @.nr.nc==#  then do                                  /*this a fill─in move ? */
+0047 if #==cells          then return 1  /*this is the last move.*/
+0048 if next(##, nr, nc)  then return 1  /*a fill─in move.       */
+0049 end
+0050 end   /*t*/
+0051 return 0                                                  /*this ain't working.   */
+0052 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0053 show: if maxR<1 | maxC<1  then call err  'no legal cell was specified.'
+0054 if minX<1           then call err  'no  1  was specified for the puzzle start'
+0055 w= max(2, length(cells) );      do   r=maxR  to minR  by -1;   _=
+0056 do c=minC  to maxC;          _= _  right(@.r.c, w)
+0057 end   /*c*/
+0058 say _
+0059 end   /*r*/
+0060 say;      return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 r                37 55
+002 c                37 56
+003 t                38
+004 minC             12
+005 maxR             13
+006 maxC             13
+007 c                17
+008 cells            17
+009 minX             20
+010 maxX             20
+011 Nr               24
+012 Nc               25
+013 pMoves           26
+014 i                28
+015 Nr.              28
+016 Nc.              28
+017 NORMAL.17        
+018 NORMAL.18        
+019 NORMAL.19        
+020 NORMAL.20        
+021 nr               39
+022 nc               39
+023 w                55
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           7 17 40 43
+002 !r               -> newV2            14
+003 !c               -> newV3            14
+004 ##               -> newV4            37
+005 _                -> newV5            9 55 56
+006 #                -> newV6            37

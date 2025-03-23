@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:24
+-------------------------------------------------------------------------
+0001 /*REXX program  tests  if a  number  (or a range of numbers)  is/are  perfect.          */
+0002 parse arg low high .                             /*obtain optional arguments from the CL*/
+0003 if high=='' & low==""  then high=34000000        /*if no arguments, then use a  range.  */
+0004 if  low==''            then  low=1               /*if no   LOW,  then assume  unity.    */
+0005 if high==''            then high=low             /*if no  HIGH,  then assume   LOW.     */
+0006 w=length(high)                                   /*use   W   for formatting the output. */
+0007 numeric digits max(9,w+2)                        /*ensure enough digits to handle number*/
+0008 
+0009 do i=low  to high                    /*process the single number or a range.*/
+0010 if isPerfect(i)  then say  right(i,w)   'is a perfect number.'
+0011 end   /*i*/
+0012 exit                                             /*stick a fork in it,  we're all done. */
+0013 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0014 isPerfect: procedure;  parse arg x               /*obtain the number to be tested.      */
+0015 if x<6  then return 0                 /*perfect numbers can't be  <  six.    */
+0016 s=1                                   /*the first factor of  X.           ___*/
+0017 do j=2  while  j*j<=x     /*starting at 2, find the factors ≤√ X */
+0018 if x//j\==0  then iterate /*J  isn't a factor of  X,  so skip it.*/
+0019 s = s + j + x%j           /* ··· add it  and  the other factor.  */
+0020 end   /*j*/               /*(above)  is marginally faster.       */
+0021 return s==x                            /*if the sum matches  X, it's perfect! */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                14
+002 s                16 19
+003 j                17
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

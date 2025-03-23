@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:21
+-------------------------------------------------------------------------
+0001 /*REXX program simulates a visual (textual)  metronome  (with no sound).                */
+0002 parse arg bpm bpb dur .                          /*obtain optional arguments from the CL*/
+0003 if bpm=='' | bpm==","  then bpm=72               /*the number of  beats  per minute.    */
+0004 if bpb=='' | bpb==","  then bpb= 4               /* "     "    "    "     "   bar.      */
+0005 if dur=='' | dur==","  then dur= 5               /*duration of the  run  in seconds.    */
+0006 call time 'Reset'                                /*reset the REXX elapsed timer.        */
+0007 bt=1/bpb                                         /*calculate a   tock-time   interval.  */
+0008 
+0009 do until et>=dur;    et=time('Elasped')        /*process  tick-tocks  for the duration*/
+0010 say; call charout ,'TICK'                      /*show the first tick for the period.  */
+0011 es=et+1                                        /*bump the elapsed time  "limiter".    */
+0012 $t=et+bt
+0013 do until e>=es;        e=time('Elapsed')
+0014 if e<$t then iterate                       /*time for tock?     */
+0015 call charout , ' tock'                     /*show a  "tock".    */
+0016 $t=$t+bt                                   /*bump the TOCK time.*/
+0017 end   /*until e≥es*/
+0018 end   /*until et≥dur*/
+0019 /*stick a fork in it,  we're all done. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 bpm              2 3
+002 bpb              2 4
+003 dur              2 5
+004 bt               7
+005 until            9 13
+006 et               9
+007 es               11
+008 e                13
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $t               -> newV1            12 16

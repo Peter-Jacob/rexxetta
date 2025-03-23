@@ -1,0 +1,26 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:27
+-------------------------------------------------------------------------
+0001 /*REXX program  demonstrates  the  use of    labels    and  also a   CALL   statement.  */
+0002 blarney = -0                                     /*just a blarney & balderdash statement*/
+0003 signal do_add                                    /*transfer program control to a  label.*/
+0004 ttt = sinD(30)                                   /*this REXX statement is never executed*/
+0005 /* [↓]   Note the case doesn't matter. */
+0006 DO_Add:                                          /*coming here from the SIGNAL statement*/
+0007 
+0008 say 'calling the sub:  add.2.args'
+0009 call add.2.args 1, 7                             /*pass two arguments:   1   and a   7  */
+0010 say 'sum =' result                               /*display the result from the function.*/
+0011 exit                                             /*stick a fork in it,  we're all done. */
+0012 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0013 add.2.args: procedure;  parse arg x,y;   return x+y       /*first come, first served ···*/
+0014 add.2.args: say 'Whoa Nelly!! Has the universe run amok?' /*didactic, but never executed*/
+0015 add.2.args: return  arg(1) + arg(2)                       /*concise,   "    "       "   */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                13
+002 y                13
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

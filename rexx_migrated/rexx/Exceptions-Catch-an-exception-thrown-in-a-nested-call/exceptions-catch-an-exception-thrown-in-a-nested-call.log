@@ -1,0 +1,32 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:12
+-------------------------------------------------------------------------
+0001 /*REXX program  creates  two exceptions and demonstrates how to  handle  (catch)  them. */
+0002 call foo                                         /*invoke the  FOO  function  (below).  */
+0003 say 'The REXX mainline program has completed.'   /*indicate that Elroy was here.        */
+0004 exit                                             /*stick a fork in it,  we're all done. */
+0005 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0006 foo:   call bar;   call bar                      /*invoke  BAR  function  twice.        */
+0007 return 0                                  /*return a zero to the invoker.        */
+0008 /*the 1st  U0  in REXX program is used.*/
+0009 U0:    say 'exception U0 caught in FOO'          /*handle the  U0  exception.           */
+0010 return -2                                 /*return to the invoker.               */
+0011 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0012 bar:   call baz                                  /*have BAR function invoke BAZ function*/
+0013 return 0                                  /*return a zero to the invoker.        */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 baz:   if symbol('BAZ#')=='LIT'  then baz#=0     /*initialize the first BAZ invocation #*/
+0016 baz# = baz#+1                             /*bump the BAZ invocation number by 1. */
+0017 if baz#==1  then signal U0                /*if first  invocation, then raise  U0 */
+0018 if baz#==2  then signal U1                /* " second      "        "    "    U1 */
+0019 return 0                                  /*return a   0  (zero)  to the invoker.*/
+0020 /* [↓]  this  U0 subroutine is ignored.*/
+0021 U0:    return -1                                 /*handle exception if not caught.      */
+0022 U1:    return -1                                 /*   "       "      "  "     "         */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 baz#             16
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

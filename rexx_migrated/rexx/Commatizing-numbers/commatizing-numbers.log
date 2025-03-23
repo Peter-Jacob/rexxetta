@@ -1,0 +1,88 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:08
+-------------------------------------------------------------------------
+0001 /*REXX program adds commas (or other chars) to a  string  or a  number  within a string.*/
+0002 @. =
+0003 @.1= "pi=3.14159265358979323846264338327950288419716939937510582097494459231"
+0004 @.2= "The author has two Z$100000000000000 Zimbabwe notes (100 trillion)."
+0005 @.3= "-in Aus$+1411.8millions"
+0006 @.4= "===US$0017440 millions=== (in 2000 dollars)"
+0007 @.5= "123.e8000 is pretty big."
+0008 @.6= "The land area of the earth is  57268900(29% of the surface)  square miles."
+0009 @.7= "Ain't no numbers in this here words, nohow, no way, Jose."
+0010 @.8= "James was never known as  0000000007"
+0011 @.9= "Arthur Eddington wrote: I believe there are 15747724136275002577605653961181555468044717914527116709366231425076185631031296 protons in the universe."
+0012 @.10= "   $-140000±100  millions."
+0013 @.11= "6/9/1946 was a good year for some."
+0014 
+0015 do i=1  while  @.i\=='';               if i\==1  then say  /*process each string.*/
+0016 say 'before──►'@.i                           /*show the before str.*/
+0017 if i==1  then say ' after──►'comma(@.i, 'blank', 5, , 6)   /*   p=5,  start=6.   */
+0018 if i==2  then say ' after──►'comma(@.i, ".")               /*comma=decimal point.*/
+0019 if i>2   then say ' after──►'comma(@.i)                    /*use the defaults.   */
+0020 end   /*j*/
+0021 exit                                             /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 comma: procedure; parse arg x,sep,period,times,start       /*obtain true case arguments.*/
+0024 arg  ,sepU                         /*   "   uppercase 2nd arg.  */
+0025 bla= ' '                                            /*literal to hold a  "blank".*/
+0026 sep= word(sep ',', 1)                               /*define comma (string/char.)*/
+0027 if sepU=='BLANK'  then sep= bla                     /*allow the use of  'BLANK'. */
+0028 period= word(period 3, 1)                           /*defined "period" to be used*/
+0029 times= word(times 999999999, 1)                     /*limits # changes to be made*/
+0030 start= word(start 1        , 1)                     /*where to start commatizing.*/
+0031 /* [↓]  various error tests. */
+0032 if \datatype(period, 'W')  | ,                      /*test for a whole number.   */
+0033 \datatype(times , 'W')  | ,                      /*  "   "  "   "      "      */
+0034 \datatype(start , 'W')  | ,                      /*  "   "  "   "      "      */
+0035 start <1                | ,                      /*start can't be less then 1.*/
+0036 arg() >5                      then return x      /*# of args can't be  >  5.  */
+0037 /* [↑]  some arg is invalid. */
+0038 op= period                                          /*save the original period.  */
+0039 period= abs(period)                                 /*use the absolute value.    */
+0040 n= x'.9'                                            /*a literal string for  end. */
+0041 digs=   123456789                                   /*the legal digits for start.*/
+0042 digsz=  1234567890                                  /* "    "      "    "   fin. */
+0043 digszp= 1234567890.                                 /* "    "      "    "   fin. */
+0044 /* [↓]  note: no zero in digs*/
+0045 if op<0  then do                                    /*Negative?  Treat as chars. */
+0046 beg= start                            /*begin at the start.        */
+0047 L= length(x)                          /*obtain the length of  X.   */
+0048 fin= L - verify( reverse(x), bla) + 1 /*find the ending of the num.*/
+0049 end                                   /* [↑]  find number ending.  */
+0050 else do                                    /*Positive?  Treat as numbers*/
+0051 beg=   verify(n, digs,  "M",start)    /*find beginning of number.  */
+0052 v2=max(verify(n, digszp,'M',start),1) /*end of the usable number.  */
+0053 fin=verify(n, digsz, , v2) -period -1 /*adjust the ending  (fin).  */
+0054 end                                   /* [↑]  find ending of number*/
+0055 #= 0                                                /*the count of changes made. */
+0056 if beg>0  &  fin>0  then                            /* [↓]  process  TIMES  times*/
+0057 do j=fin   to beg   by -period   while #<times
+0058 x= insert(sep, x, j)                  /*insert a comma into string.*/
+0059 #= # + 1                              /*bump the count of changes. */
+0060 end   /*j*/                           /*(maybe no changes are made)*/
+0061 return x                                            /*return the commatized str. */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 x                23 58
+002 sep              23 26 27
+003 period           23 28 39
+004 times            23 29
+005 start            23 30
+006 bla              25
+007 op               38
+008 n                40
+009 digs             41
+010 digsz            42
+011 digszp           43
+012 beg              46 51
+013 L                47
+014 fin              48 53
+015 v2               52
+016 j                57
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 @.               -> newV1.           2 3 4 5 6 7 8 9 10 11 12 13
+002 #                -> newV2            55 59

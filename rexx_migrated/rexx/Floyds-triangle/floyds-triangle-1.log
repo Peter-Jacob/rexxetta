@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 /* REXX ***************************************************************
+0002 * Parse Arg rowcount
+0003 * 12.07.2012 Walter Pachl  - translated from Python
+0004 **********************************************************************/
+0005 Parse Arg rowcount
+0006 col=0
+0007 ll=''                               /* last line of triangle         */
+0008 Do j=rowcount*(rowcount-1)/2+1 to rowcount*(rowcount+1)/2
+0009 col=col+1                         /* column number                 */
+0010 ll=ll j                           /* build last line               */
+0011 len.col=length(j)                 /* remember length of column     */
+0012 End
+0013 Do i=1 To rowcount-1                /* now do and output the rest    */
+0014 ol=''
+0015 col=0
+0016 Do j=i*(i-1)/2+1 to i*(i+1)/2     /* elements of line i            */
+0017 col=col+1
+0018 ol=ol right(j,len.col)          /* element in proper length      */
+0019 end
+0020 Say ol                            /* output ith line               */
+0021 end
+0022 Say ll                              /* output last line              */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 rowcount         5
+002 col              6 9 15 17
+003 ll               7 10
+004 j                8 16
+005 len.             11
+006 i                13
+007 ol               14 18
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

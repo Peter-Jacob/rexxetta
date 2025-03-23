@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:32
+-------------------------------------------------------------------------
+0001 /* REXX ---------------------------------------------------------------
+0002 * 14.12.2013 Walter Pachl  a short solution
+0003 * 16.12.2013 fix duplicate element problem in input
+0004 * 16.12.2013 added duplicate to t.
+0005 * Handles only sets the elements of which do not contain blanks
+0006 *--------------------------------------------------------------------*/
+0007 s='John Bob Mary Serena'
+0008 t='Jim Mary John Bob Jim '
+0009 Say difference(s,t)
+0010 Exit
+0011 difference:
+0012 Parse Arg a,b
+0013 res=''
+0014 Do i=1 To words(a)
+0015 If wordpos(word(a,i),b)=0 Then
+0016 Call out word(a,i)
+0017 End
+0018 Do i=1 To words(b)
+0019 If wordpos(word(b,i),a)=0 Then
+0020 Call out word(b,i)
+0021 End
+0022 Return strip(res)
+0023 out: parse Arg e
+0024 If wordpos(e,res)=0 Then res=res e
+0025 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 e                23
+002 res              24
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

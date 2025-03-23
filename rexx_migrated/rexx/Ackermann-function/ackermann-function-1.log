@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:04
+-------------------------------------------------------------------------
+0001 /*REXX program  calculates and displays  some values for the  Ackermann function.       */
+0002 /*╔════════════════════════════════════════════════════════════════════════╗
+0003 ║  Note:  the Ackermann function  (as implemented here)  utilizes deep   ║
+0004 ║         recursive and is limited by the largest number that can have   ║
+0005 ║         "1"  (unity) added to a number  (successfully and accurately). ║
+0006 ╚════════════════════════════════════════════════════════════════════════╝*/
+0007 high=24
+0008 do     j=0  to 3;                    say
+0009 do k=0  to high % (max(1, j))
+0010 call tell_Ack  j, k
+0011 end   /*k*/
+0012 end       /*j*/
+0013 exit                                             /*stick a fork in it,  we're all done. */
+0014 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0015 tell_Ack:  parse arg mm,nn;   calls=0            /*display an echo message to terminal. */
+0016 #=right(nn,length(high))
+0017 say 'Ackermann('mm", "#')='right(ackermann(mm, nn), high),
+0018 left('', 12)     'calls='right(calls, high)
+0019 return
+0020 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0021 ackermann: procedure expose calls                /*compute value of Ackermann function. */
+0022 parse arg m,n;   calls=calls+1
+0023 if m==0  then return n+1
+0024 if n==0  then return ackermann(m-1, 1)
+0025 return ackermann(m-1, ackermann(m, n-1) )
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 m                22
+002 n                22
+003 calls            22
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 #                -> newV1            16

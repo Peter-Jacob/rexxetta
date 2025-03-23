@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:17
+-------------------------------------------------------------------------
+0001 /* REXX ************************************************************
+0002 * There is no equivalent to PL/I's SIZE condition in REXX.
+0003 * The result of an arithmetic expression is rounded
+0004 * according to the current setting of Numeric Digits.
+0005 * ooRexx introduced, however, a LOSTDIGITS condition that checks
+0006 * if any of the OPERANDS exceeds this number of digits.
+0007 *      Unfortunately this check is currently a little too weak
+0008 *      and will not recognise a 10-digit number to be too large.
+0009 *      This little bug will be fixed in the next release of ooRexx.
+0010 **********************************************************************/
+0011 Parse Version v .
+0012 Say v
+0013 z=999999998
+0014 Do i=1 To 3
+0015 z=z+1
+0016 Say z
+0017 End
+0018 Numeric Digits 20
+0019 z=999999998
+0020 Do i=1 To 3
+0021 z=z+1
+0022 Say z
+0023 End
+0024 Numeric Digits 9
+0025 If left(v,11)='REXX-ooRexx' Then
+0026 Signal On Lostdigits
+0027 z=100000000012
+0028 Say z
+0029 z=z+1
+0030 Say z
+0031 Exit
+0032 lostdigits:
+0033 Say 'LOSTDIGITS condition raised in line' sigl
+0034 Say 'sourceline='sourceline(sigl)
+0035 Say "condition('D')="condition('D')
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 Version          11
+002 v                11
+003 z                13 15 19 21 27 29
+004 i                14 20
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

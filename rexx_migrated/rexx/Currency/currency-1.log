@@ -1,0 +1,46 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:10
+-------------------------------------------------------------------------
+0001 /*REXX program shows a method of computing the total price and tax  for purchased items.*/
+0002 numeric digits 200                                        /*support for gihugic numbers.*/
+0003 taxRate= 7.65                                             /*number is:   nn   or   nn%  */
+0004 if right(taxRate, 1)\=='%'  then taxRate= taxRate / 100   /*handle plain tax rate number*/
+0005 taxRate= strip(taxRate, , '%')                            /*strip the  %   (if present).*/
+0006 item.  =;                          items= 0               /*zero out the register.      */
+0007 item.1 = '4000000000000000  $5.50  hamburger'             /*the  first  item purchased. */
+0008 item.2 = '               2  $2.86  milkshake'             /* "  second    "      "      */
+0009 say  center('quantity', 22)          center("item", 22)           center('price', 22)
+0010 hdr= center('',         27, "─")     center('',     20, "─")      center('',      27, "─")
+0011 say hdr;                             total= 0
+0012 do j=1  while item.j\==''                        /*calculate the total and tax.*/
+0013 parse var item.j   quantity price thing          /*ring up an item on register.*/
+0014 items    = items + quantity                      /*tally the number of items.  */
+0015 price    = translate(price, , '$')               /*maybe scrub out the $ symbol*/
+0016 subtotal = quantity * price                      /*calculate the     sub-total.*/
+0017 total    = total + subtotal                      /*    "      "  running total.*/
+0018 say right(quantity, 27)     left(thing, 20)        show$(subtotal)
+0019 end   /*j*/
+0020 say                                              /*display a blank line for separator.  */
+0021 say translate(hdr, '═', "─")                     /*display the separator part of the hdr*/
+0022 tax= format(total * taxRate, , 2)                /*round the total tax for all the items*/
+0023 say right(items  "(items)", 35)     right('total=', 12)            show$(total)
+0024 say right('tax at'  (taxRate * 100 / 1)"%=", 48)                   show$(tax)
+0025 say
+0026 say right('grand total=', 48)                                   show$(total+tax)
+0027 exit                                             /*stick a fork in it,  we're all done. */
+0028 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0029 show$:  return right( '$'arg(1), 27)             /*right─justify and format a number.   */
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 item.            13
+002 quantity         13
+003 price            13 15
+004 thing            13
+005 items            14
+006 subtotal         16
+007 total            17
+008 tax              22
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

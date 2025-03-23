@@ -1,0 +1,218 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*- REXX --------------------------------------------------------------
+0002 * Brace expansion
+0003 * 26.07.2016
+0004 * s.* holds the set of strings
+0005 *--------------------------------------------------------------------*/
+0006 text.1='{,{,gotta have{ ,\, again\, }}more }cowbell!'
+0007 text.2='~/{Downloads,Pictures}/*.{jpg,gif,png}'
+0008 text.3='It{{em,alic}iz,erat}e{d,}, please. '
+0009 text.4='{}} some }{,{\\{ edge, edge} \,}{ cases, {here} \\\\\} '
+0010 text.5='x{,a,b,c}{d,e}y'
+0011 text.6='aa{,{,11}cc}22'
+0012 text.7='{}'
+0013 Parse Arg dbg
+0014 oid='brace.xxx'; 'erase' oid
+0015 Do case=1 To 7
+0016 Call brac text.case
+0017 End
+0018 Return
+0019 brac:
+0020 s.=0
+0021 Parse Arg s
+0022 Say ''
+0023 Say '  's
+0024 s.1.0=1                            /* first iteration              */
+0025 s.1.1=s                            /* the initial string           */
+0026 Do it=1 To 10 Until todo=0         /* Iterate until all done       */
+0027 todo=0                           /* will be 1 if more to be done */
+0028 Call dbg 'Iteration' it
+0029 do di=1 To s.it.0                /* show current state           */
+0030 Call dbg 's.'it'.'di  s.it.di
+0031 End
+0032 ita=it+1                         /* index for next set of strings*/
+0033 xp=0
+0034 do di=1 To s.it.0                /* loop over all strings        */
+0035 Call dbg it'.'di s.it.di
+0036 Call bra s.it.di               /* analyze current string       */
+0037 If braces=1 Then Do            /* If brace groups were found   */
+0038 Do bgi=1 To bgdata.0         /* loop over grace groups       */
+0039 If end.bgi=0 Then Iterate  /* Incomplete bg (... )         */
+0040 clist=''
+0041 Do cj=1 To ci.bgi.0
+0042 clist=clist ci.bgi.cj
+0043 End
+0044 Call dbg bgdata.bgi '->' clist
+0045 If ccount.bgi>0 Then Do    /* comma(s) founf in bg         */
+0046 Call expand bgi          /* expand this bg               */
+0047 xp=1                     /* indicate that we worked      */
+0048 Leave
+0049 End
+0050 End
+0051 If xp=0 Then Do              /* nothing done                 */
+0052 z=s.ita.0+1                /* copy string to next iteration*/
+0053 s.ita.z=s.it.di
+0054 End
+0055 End
+0056 Else Do                        /* no brace group               */
+0057 z=s.ita.0+1                  /* copy string to next iteration*/
+0058 s.ita.z=s
+0059 s.ita.0=z
+0060 End
+0061 End
+0062 Do dd=1 To s.ita.0               /* log current set of strings   */
+0063 Call dbg ita dd s.ita.dd
+0064 End
+0065 End
+0066 Do dd=1 To s.it.0                  /* show final set of strings    */
+0067 Say dd s.it.dd
+0068 End
+0069 Return
+0070 
+0071 bra:
+0072 /*---------------------------------------------------------------------
+0073 * Analyze the given string
+0074 * Input: s
+0075 * Output:
+0076 * bgdata.*  Array of data about brace groups:
+0077 *                      level start column comma positions end column
+0078 *--------------------------------------------------------------------*/
+0079 parse Arg s
+0080 Call dbg 'bra:' s
+0081 level=0
+0082 bgdata.=0
+0083 bgn=0
+0084 bgnmax=0
+0085 ccount.=0
+0086 ol=''
+0087 ci.=0
+0088 bgnl=''
+0089 braces=0
+0090 end.=0
+0091 escape=0
+0092 Do i=1 To length(s)
+0093 c=substr(s,i,1)
+0094 Select
+0095 When escape Then
+0096 escape=0
+0097 When c='\' Then
+0098 escape=1
+0099 When c='{' Then Do
+0100 level=level+1
+0101 Call bm c
+0102 co=level
+0103 End
+0104 When c='}' Then Do
+0105 If level>0 Then Do
+0106 co=level
+0107 Call bm c
+0108 level=level-1
+0109 End
+0110 End
+0111 When c=',' Then Do
+0112 co=level
+0113 If co>0 Then Do
+0114 ccount.bgn=ccount.bgn+1
+0115 z=ccount.bgn
+0116 ci.bgn.0=z
+0117 ci.bgn.z=i
+0118 End
+0119 If ccount.bgn>0 Then
+0120 braces=1
+0121 End
+0122 Otherwise
+0123 co=level
+0124 End
+0125 ol=ol||co
+0126 bgnl=bgnl||bgn
+0127 End
+0128 Call dbg s
+0129 Call dbg ol
+0130 Call dbg left(copies('123456789.',10),length(s))
+0131 Call dbg bgnl
+0132 Do bgi=1 To bgdata.0
+0133 If end.bgi=1 Then Do
+0134 cl=''
+0135 Do cii=1 To ci.bgi.0
+0136 cl=cl ci.bgi.cii
+0137 End
+0138 Parse Var bgdata.bgi level a e
+0139 Call dbg bgi level a cl e
+0140 End
+0141 End
+0142 Return
+0143 
+0144 bm:
+0145 /*---------------------------------------------------------------------
+0146 * Brace Management
+0147 * for '{' create a new brace group )record level and start column
+0148 * for '}' look for corresponding bg and add end column
+0149 * Input: column and character ( '{' or '}' )
+0150 * Output: bgdata.*  level start-column [end-column]
+0151 *--------------------------------------------------------------------*/
+0152 Parse Arg oc
+0153 Call dbg oc i level
+0154 If oc='{' Then Do
+0155 z=bgdata.0+1
+0156 bgdata.z=level i
+0157 bgdata.0=z
+0158 bgn=bgnmax+1
+0159 bgnmax=bgn
+0160 End
+0161 Else Do
+0162 Do bgi=bgdata.0 To 1 By -1
+0163 If level=word(bgdata.bgi,1) Then Do
+0164 bgdata.bgi=bgdata.bgi i
+0165 end.bgi=1
+0166 Leave
+0167 End
+0168 End
+0169 bgn=bgn-1
+0170 Call dbg bgdata.bgi 'bgn='bgn
+0171 End
+0172 Return
+0173 
+0174 expand:
+0175 /*---------------------------------------------------------------------
+0176 * Expand a brace group in string s
+0177 *--------------------------------------------------------------------*/
+0178 Parse Arg bgi
+0179 Parse Var bgdata.bgi . start end
+0180 clist=start clist end
+0181 If words(clist)>0 Then Do          /* commas in brace group        */
+0182 left=left(s,start-1)             /* part of s before the '{'     */
+0183 rite=substr(s,end+1)             /* part of s after the '}'      */
+0184 Do k=1 To words(clist)-1         /* Loop over comma positions    */
+0185 a=word(clist,k)                /* start position               */
+0186 e=word(clist,k+1)              /* end position                 */
+0187 choice.k=substr(s,a+1,e-a-1)   /* one of the choices           */
+0188 z=s.ita.0+1                    /* add new string to next set   */
+0189 s.ita.z=left||choice.k||rite   /* construct new string         */
+0190 s.ita.0=z
+0191 todo=1                         /* maybe more to be done        */
+0192 End
+0193 End
+0194 Else Do                            /* no commas                    */
+0195 z=s.ita.0+1                      /* copy string as is to next set*/
+0196 s.ita.z=s
+0197 s.ita.0=z
+0198 End
+0199 Do zz=1 To s.ita.0
+0200 Call dbg zz s.ita.zz
+0201 End
+0202 Return
+0203 
+0204 dbg:                                 /* handle debug output          */
+0205 If dbg<>'' Then                    /* argument given               */
+0206 Say arg(1)                       /* show on screen               */
+0207 Call lineout oid,arg(1)            /* write to file                */
+0208 Return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 text.            6 7
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

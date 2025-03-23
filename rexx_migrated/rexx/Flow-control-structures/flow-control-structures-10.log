@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:14
+-------------------------------------------------------------------------
+0001 ...
+0002 prod=1
+0003 a=7               /*or somesuch.*/
+0004 b=3               /*  likewise. */
+0005 
+0006 op='**'           /*or whatever.*/
+0007 ...
+0008 select
+0009 when op=='+'         then  r=a+b           /*add.                   */
+0010 when op=='-'         then  r=a-b           /*subtract.              */
+0011 when op=='∙'         then do; r=a*b; prod=prod*r; end    /*multiply.*/
+0012 when op=='*'         then  r=a*b           /*multiply.              */
+0013 when op=='**'        then  r=a**b          /*power (exponentiation) */
+0014 when op=='/'  & b\=0 then  r=a/b           /*divide.                */
+0015 when op=='%'  & b\=0 then  r=a/b           /*interger divide.       */
+0016 when op=='//' & b\=0 then  r=a/b           /*modulus (remainder).   */
+0017 when op=='||'        then  r=a||b          /*concatenation.         */
+0018 when op=='caw'       then  r=xyz(a,b)      /*call the XYZ subroutine*/
+0019 otherwise                  r='[n/a]'       /*signify not applicable.*/
+0020 end   /*select*/
+0021 
+0022 say 'result for'   a   op   b   "="   r
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 prod             2 11
+002 a                3
+003 b                4
+004 op               6
+005 r                11
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------

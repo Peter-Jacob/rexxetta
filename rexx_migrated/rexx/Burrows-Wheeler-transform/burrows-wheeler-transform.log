@@ -1,0 +1,78 @@
+-------------------------------------------------------------------------
+Initial REXX INFILE on 23 Mar 2025 at 10:43:07
+-------------------------------------------------------------------------
+0001 /*REXX program performs a  Burrows─Wheeler transform  (BWT)  on a character string(s).  */
+0002 $.=                                              /*the default text for (all) the inputs*/
+0003 parse arg $.1                                    /*obtain optional arguments from the CL*/
+0004 if $.1=''  then do;  $.1= "banana"               /*Not specified?  Then use the defaults*/
+0005 $.2= "BANANA"
+0006 $.3= "appellee"
+0007 $.4= "dogwood"
+0008 $.5= "TO BE OR NOT TO BE OR WANT TO BE OR NOT?"
+0009 $.6= "SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES"
+0010 $.7= "^ABC|"
+0011 $.7= "bad─bad thingy"'fd'x  /* ◄─── this string can't be processed.*/
+0012 end
+0013 /* [↑]  show blank line between outputs*/
+0014 do t=1  while $.t\='';  if t\==1 then say /*process each of the inputs (or input)*/
+0015 out=  BWT($.t)                            /*invoke the  BWT  function, get result*/
+0016 ori= iBWT(out)                            /*   "    "  iBWT      "      "     "  */
+0017 say '   input ───► '   $.t                /*display    input      string to term.*/
+0018 say '  output ───► '   out                /*   "       output        "    "   "  */
+0019 say 'original ───► '   ori                /*   "    reconstituted    "    "   "  */
+0020 end    /*t*/
+0021 exit                                             /*stick a fork in it,  we're all done. */
+0022 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0023 BWT:   procedure expose ?.; parse arg y,,$       /*obtain the input;  nullify $ string. */
+0024 ?.1= 'fd'x;          ?.2= "fc"x           /*assign the  STX  and  ETX  strings.  */
+0025 do i=1  for 2                          /* [↓]  check for invalid input string.*/
+0026 _= verify(y, ?.i, 'M');  if _==0  then iterate;        er= '***error***  BWT: '
+0027 say er "invalid input: "    y
+0028 say er 'The input string contains an invalid character at position' _"."; exit _
+0029 end   /*i*/                            /* [↑]  if error,  perform a hard exit.*/
+0030 y= ?.1 || y || ?.2;      L= length(y)     /*get the input & add a fence; gel len.*/
+0031 @.1= y;                  m= L - 1         /*define the first element of the table*/
+0032 do j=2  for m;        _= j-1 /*now, define the rest of the elements.*/
+0033 @.j= right(@._,1)left(@._,m) /*construct a table from the  Y  input.*/
+0034 end   /*j*/                  /* [↑]  each element: left & right part*/
+0035 call cSort L                              /*invoke lexicographical sort for array*/
+0036 do k=1  for L                /* [↓]  construct the answer from array*/
+0037 $= $  ||  right(@.k, 1)      /*build the answer from each of  ···   */
+0038 end   /*k*/                  /* ··· the array's right─most character*/
+0039 return $                                  /*return the constructed answer.       */
+0040 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0041 iBWT:  procedure expose ?.; parse arg y,,@.      /*obtain the input;  nullify @. string.*/
+0042 L= length(y)                              /*compute the length of the input str. */
+0043 do   j=1  for L               /* [↓]  step through each input letters*/
+0044 do k=1  for L               /* [↓]  step through each row of table.*/
+0045 @.k= substr(y, k, 1) || @.k /*construct a row of the table of chars*/
+0046 end   /*k*/                 /* [↑]  order of table row is inverted.*/
+0047 call cSort L                  /*invoke lexicographical sort for array*/
+0048 end    /*j*/                  /* [↑]  answer is the penultimate entry*/
+0049 do #=1
+0050 if right(@.#, 1)==?.2  then return substr(@.#, 2, L-2)  /*return correct result*/
+0051 end   /*#*/
+0052 /*──────────────────────────────────────────────────────────────────────────────────────*/
+0053 cSort: procedure expose @.;  parse arg n;  m=n-1 /*N: is the number of @ array elements.*/
+0054 do m=m  for m  by -1  until ok;  ok=1 /*keep sorting the  @ array until done.*/
+0055 do j=1  for m;  k= j+1;   if @.j<<=@.k  then iterate   /*elements in order?*/
+0056 _= @.j;  @.j= @.k;  @.k= _;   ok= 0 /*swap two elements;  flag as not done.*/
+0057 end   /*j*/
+0058 end     /*m*/;       return
+-------------------------------------------------------------------------
+Cross Reference Table Solid Variable Names
+-------------------------------------------------------------------------
+001 n                53
+002 m                53 54
+003 ok               54 56
+004 j                55
+005 k                55
+-------------------------------------------------------------------------
+Cross Reference Table Bizarre Variable Names
+-------------------------------------------------------------------------
+001 $.               -> newV1.           2 3 4 5 6 7 8 9 10 11
+002 ?.               -> newV2.           24 24
+003 @.               -> newV3.           31 33 41 45 56 56
+004 $                -> newV4            23 37
+005 _                -> newV5            26 32 56
+006 #                -> newV6            49
